@@ -210,7 +210,7 @@ function ProductsPage() {
               </span>
               <select
                 value={sort}
-                onChange={(e) => navigate({ search: (p) => ({ ...p, sort: e.target.value as never }) })}
+                onChange={(e) => navigate({ search: (p: Record<string, unknown>) => ({ ...p, sort: e.target.value as never }) })}
                 className="bg-surface border border-border rounded-full px-4 py-2 text-sm font-display uppercase tracking-wide outline-none focus:border-neon"
               >
                 <option value="newest">Newest</option>
