@@ -48,7 +48,7 @@ function ProductsPage() {
   const ALL_SIZES = [39, 40, 41, 42, 43, 44, 45, 46];
 
   const setParam = (key: "brand" | "category", value?: string) => {
-    navigate({ search: (prev) => ({ ...prev, [key]: value }) });
+    navigate({ search: (prev: Record<string, unknown>) => ({ ...prev, [key]: value }) });
   };
 
   const clearAll = () => {
