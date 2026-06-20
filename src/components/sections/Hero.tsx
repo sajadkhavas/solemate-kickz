@@ -2,9 +2,10 @@ import { motion } from "framer-motion";
 import { ArrowRight, ArrowDown } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { SHOES } from "@/data/shoes";
+import heroShoe from "@/assets/hero-shoe.jpg";
 
 export function Hero() {
-  const featured = SHOES[1]; // Air Jordan 1 Chicago
+  const featured = { ...SHOES[1], image: heroShoe }; // Air Jordan 1 Chicago
 
   return (
     <section className="relative min-h-[100svh] overflow-hidden grain bg-ink">
