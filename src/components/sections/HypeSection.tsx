@@ -4,7 +4,11 @@ import { ArrowRight } from "lucide-react";
 import { SHOES } from "@/data/shoes";
 
 export function HypeSection() {
-  const limited = SHOES.filter(s => s.isLimited).slice(0, 3);
+  // Pull the three hero-rendered limited drops by id (Yeezy Zebra, AJ4 Bred, AJ11 Space Jam)
+  const limited = [3, 16, 22]
+    .map(id => SHOES.find(s => s.id === id))
+    .filter((s): s is NonNullable<typeof s> => Boolean(s));
+
   return (
     <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-ink via-purple-hype/20 to-ink grain">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(255,92,0,0.2),transparent_50%)]" />
@@ -48,7 +52,7 @@ export function HypeSection() {
                 zIndex: 3 - i,
               }}
             >
-              <img src={s.image} alt={s.name} className="w-full aspect-square object-cover" />
+              <img src={s.image} alt={s.name} loading="lazy" className="w-full aspect-square object-cover" />
               <div className="p-3">
                 <div className="eyebrow text-neon">{s.brand}</div>
                 <div className="font-display font-bold text-sm truncate">{s.name}</div>
