@@ -11,6 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { CartDrawer } from "@/components/CartDrawer";
+import { Toaster } from "sonner";
 
 function NotFoundComponent() {
   return (
@@ -120,8 +122,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <CartDrawer />
+      <Toaster theme="dark" position="bottom-right" toastOptions={{ style: { background: "#141414", border: "1px solid #2a2a2a", color: "#f5f5f0" } }} />
     </QueryClientProvider>
   );
 }
