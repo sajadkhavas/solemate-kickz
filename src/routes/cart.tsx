@@ -5,6 +5,7 @@ import { Minus, Plus, Trash2, ShoppingBag, Tag, ShieldCheck, Truck, RotateCcw } 
 import { toast } from "sonner";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/sections/Footer";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { useStore } from "@/store";
 import { SHOES, formatPrice } from "@/data/shoes";
 
@@ -223,6 +224,7 @@ function CartPage() {
       </main>
 
       <Footer />
+      <MobileBottomNav />
     </div>
   );
 }
