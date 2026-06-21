@@ -38,7 +38,8 @@ export const Route = createFileRoute("/product/$id")({
 });
 
 function ProductPage() {
-  const { shoe } = Route.useLoaderData();
+  const data = Route.useLoaderData() as { shoe: (typeof SHOES)[number] };
+  const { shoe } = data;
   const router = useRouter();
   const addToCart = useStore((s) => s.addToCart);
   const setCartOpen = useStore((s) => s.setCartOpen);
