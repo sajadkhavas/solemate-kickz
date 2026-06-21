@@ -1,12 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { Search, ShoppingBag, User, Menu, X } from "lucide-react";
+import { Search, ShoppingBag, User, Menu, X, Heart } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useStore, useCartCount } from "@/store";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const setCartOpen = useStore((s) => s.setCartOpen);
+  const user = useStore((s) => s.user);
+  const cartCount = useCartCount();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
@@ -14,7 +20,6 @@ export function Navbar() {
 
   return (
     <>
-      {/* Announcement */}
       <div className="bg-neon text-ink py-2 text-center text-xs font-display font-semibold tracking-wider overflow-hidden">
         <span className="inline-flex items-center gap-6">
           <span>🚚 ارسال رایگان بالای ۳ میلیون</span>
@@ -27,9 +32,7 @@ export function Navbar() {
 
       <header
         className={`sticky top-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-ink/95 backdrop-blur-xl border-b border-border"
-            : "bg-ink/50 backdrop-blur-md"
+          scrolled ? "bg-ink/95 backdrop-blur-xl border-b border-border" : "bg-ink/50 backdrop-blur-md"
         }`}
       >
         <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
@@ -47,16 +50,22 @@ export function Navbar() {
 
           <div className="flex items-center gap-1">
             <button className="p-2.5 hover:text-neon transition-colors" aria-label="Search"><Search size={18} /></button>
-            <button className="p-2.5 hover:text-neon transition-colors hidden sm:block" aria-label="Account"><User size={18} /></button>
-            <button className="p-2.5 hover:text-neon transition-colors relative" aria-label="Cart">
-              <ShoppingBag size={18} />
-              <span className="absolute -top-0.5 -right-0.5 bg-neon text-ink text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center font-mono-num">3</span>
-            </button>
+            <Link to="/auth" className="p-2.5 hover:text-neon transition-colors hidden sm:block" aria-label="Account">
+              {user ? <span className="text-xs font-display uppercase">{user.name.split(" ")[0]}</span> : <User size={18} />}
+            </Link>
             <button
-              className="p-2.5 md:hidden"
-              onClick={() => setOpen(!open)}
-              aria-label="Menu"
+              onClick={() => setCartOpen(true)}
+              className="p-2.5 hover:text-neon transition-colors relative"
+              aria-label="Cart"
             >
+              <ShoppingBag size={18} />
+              {mounted && cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-neon text-ink text-[10px] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center font-mono-num">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+            <button className="p-2.5 md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">
               {open ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
@@ -67,8 +76,9 @@ export function Navbar() {
             <nav className="flex flex-col p-6 gap-4 font-display uppercase tracking-wider">
               <Link to="/" onClick={() => setOpen(false)}>Home</Link>
               <Link to="/products" onClick={() => setOpen(false)}>Shop</Link>
+              <Link to="/cart" onClick={() => setOpen(false)}>Cart</Link>
+              <Link to="/auth" onClick={() => setOpen(false)}>Account</Link>
               <a href="#brands" onClick={() => setOpen(false)}>Brands</a>
-              <a href="#about" onClick={() => setOpen(false)}>About</a>
             </nav>
           </div>
         )}
@@ -76,3 +86,5 @@ export function Navbar() {
     </>
   );
 }
+
+export { Heart };
