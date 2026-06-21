@@ -370,14 +370,7 @@ function ProductPage() {
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {related.map((s, i) => (
-                <Link
-                  key={s.id}
-                  to="/product/$id"
-                  params={{ id: String(s.id) }}
-                  onClick={() => router.invalidate()}
-                >
-                  <ShoeCard shoe={s} index={i} />
-                </Link>
+                <ShoeCard key={s.id} shoe={s} index={i} />
               ))}
             </div>
           </section>

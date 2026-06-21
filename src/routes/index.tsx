@@ -9,6 +9,7 @@ import { HypeSection } from "@/components/sections/HypeSection";
 import { TrustBadges } from "@/components/sections/TrustBadges";
 import { Newsletter } from "@/components/sections/Newsletter";
 import { Footer } from "@/components/sections/Footer";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -35,6 +36,7 @@ function Home() {
         <Newsletter />
       </main>
       <Footer />
+      <MobileBottomNav />
     </div>
   );
 }
