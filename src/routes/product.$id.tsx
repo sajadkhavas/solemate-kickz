@@ -1,10 +1,11 @@
-import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Heart, Share2, Truck, RotateCcw, ShieldCheck, ChevronDown, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/sections/Footer";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ShoeCard } from "@/components/ShoeCard";
 import { SHOES, formatPrice } from "@/data/shoes";
 import { useStore } from "@/store";
@@ -40,7 +41,6 @@ export const Route = createFileRoute("/product/$id")({
 function ProductPage() {
   const data = Route.useLoaderData() as { shoe: (typeof SHOES)[number] };
   const { shoe } = data;
-  const router = useRouter();
   const addToCart = useStore((s) => s.addToCart);
   const setCartOpen = useStore((s) => s.setCartOpen);
   const toggleWishlist = useStore((s) => s.toggleWishlist);
@@ -370,14 +370,7 @@ function ProductPage() {
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {related.map((s, i) => (
-                <Link
-                  key={s.id}
-                  to="/product/$id"
-                  params={{ id: String(s.id) }}
-                  onClick={() => router.invalidate()}
-                >
-                  <ShoeCard shoe={s} index={i} />
-                </Link>
+                <ShoeCard key={s.id} shoe={s} index={i} />
               ))}
             </div>
           </section>
@@ -385,6 +378,7 @@ function ProductPage() {
       </main>
 
       <Footer />
+      <MobileBottomNav />
     </div>
   );
 }
