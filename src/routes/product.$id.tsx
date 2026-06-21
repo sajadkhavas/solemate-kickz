@@ -1,10 +1,11 @@
-import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Heart, Share2, Truck, RotateCcw, ShieldCheck, ChevronDown, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/sections/Footer";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ShoeCard } from "@/components/ShoeCard";
 import { SHOES, formatPrice } from "@/data/shoes";
 import { useStore } from "@/store";
@@ -40,7 +41,6 @@ export const Route = createFileRoute("/product/$id")({
 function ProductPage() {
   const data = Route.useLoaderData() as { shoe: (typeof SHOES)[number] };
   const { shoe } = data;
-  const router = useRouter();
   const addToCart = useStore((s) => s.addToCart);
   const setCartOpen = useStore((s) => s.setCartOpen);
   const toggleWishlist = useStore((s) => s.toggleWishlist);
@@ -378,6 +378,7 @@ function ProductPage() {
       </main>
 
       <Footer />
+      <MobileBottomNav />
     </div>
   );
 }
