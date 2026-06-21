@@ -49,20 +49,21 @@ function FooterCol({ section }: { section: Section }) {
     <div className="border-b border-border md:border-0">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between py-4 md:py-0 md:pointer-events-none md:mb-4"
+        className="w-full flex items-center justify-between py-4 md:py-0 md:cursor-default md:mb-4"
       >
         <span className="eyebrow text-neon">{section.title}</span>
         <ChevronDown size={16} className={`md:hidden transition ${open ? "rotate-180" : ""}`} />
       </button>
-      <div className="md:!h-auto md:!opacity-100">
+      {/* Mobile: collapsible */}
+      <div className="md:hidden">
         <AnimatePresence initial={false}>
-          {(open || typeof window === "undefined") && (
+          {open && (
             <motion.ul
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="overflow-hidden md:!h-auto md:!opacity-100 space-y-2 font-fa text-sm text-muted-foreground pb-4 md:pb-0"
+              className="overflow-hidden space-y-2 font-fa text-sm text-muted-foreground pb-4"
             >
               {section.links.map((l, i) => (
                 <li key={i}>
@@ -76,19 +77,19 @@ function FooterCol({ section }: { section: Section }) {
             </motion.ul>
           )}
         </AnimatePresence>
-        {/* Always-visible on desktop */}
-        <ul className="hidden md:block space-y-2 font-fa text-sm text-muted-foreground">
-          {section.links.map((l, i) => (
-            <li key={i}>
-              {l.to ? (
-                <Link to={l.to} className="hover:text-neon transition-colors">{l.label}</Link>
-              ) : (
-                <a href={l.href} className="hover:text-neon transition-colors">{l.label}</a>
-              )}
-            </li>
-          ))}
-        </ul>
       </div>
+      {/* Desktop: always visible */}
+      <ul className="hidden md:block space-y-2 font-fa text-sm text-muted-foreground">
+        {section.links.map((l, i) => (
+          <li key={i}>
+            {l.to ? (
+              <Link to={l.to} className="hover:text-neon transition-colors">{l.label}</Link>
+            ) : (
+              <a href={l.href} className="hover:text-neon transition-colors">{l.label}</a>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
