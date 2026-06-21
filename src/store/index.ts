@@ -102,11 +102,7 @@ export const useStore = create<Store>()(
       storage: createJSONStorage(() =>
         typeof window !== "undefined"
           ? window.localStorage
-          : ({
-              getItem: () => null,
-              setItem: () => {},
-              removeItem: () => {},
-            } as Storage),
+          : (undefined as unknown as Storage),
       ),
       partialize: (s) => ({
         cart: s.cart,
