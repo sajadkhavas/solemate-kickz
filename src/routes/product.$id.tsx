@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Heart, Share2, Truck, RotateCcw, ShieldCheck, ChevronDown, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/Navbar";
@@ -9,6 +9,7 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ShoeCard } from "@/components/ShoeCard";
 import { SHOES, formatPrice } from "@/data/shoes";
 import { useStore } from "@/store";
+import { useSharedTransition } from "@/hooks/useSharedTransition";
 
 export const Route = createFileRoute("/product/$id")({
   loader: ({ params }) => {
