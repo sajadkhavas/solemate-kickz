@@ -6,6 +6,7 @@ import { KineticText } from "@/components/KineticText";
 
 export function FeaturedDrops() {
   const featured = SHOES.filter(s => s.isNew || s.isLimited).slice(0, 8);
+  void ArrowRight;
 
   return (
     <section className="py-24 px-6">
