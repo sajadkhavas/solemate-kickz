@@ -217,3 +217,19 @@
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
 }
+
+@keyframes hero-particle {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.15; }
+  50% { transform: translateY(-30px) translateX(10px); opacity: 0.4; }
+}
+.hero-particle {
+  position: absolute;
+  border-radius: 9999px;
+  background: var(--neon);
+  filter: blur(1px);
+  animation: hero-particle 10s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-particle { display: none; }
+}
