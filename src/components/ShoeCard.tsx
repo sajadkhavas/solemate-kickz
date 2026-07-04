@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
+import { useRef, useState } from "react";
 import { Heart, ShoppingBag, Star, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { formatPrice, type Shoe } from "@/data/shoes";
 import { useStore } from "@/store";
+import { useSharedTransition } from "@/hooks/useSharedTransition";
 
 interface Props {
   shoe: Shoe;
@@ -11,11 +13,26 @@ interface Props {
   variant?: "grid" | "list";
 }
 
+function buildVariants(shoe: Shoe) {
+  const labels = ["Original", "Alt", "Rare", "Limited"];
+  return shoe.colors.slice(0, 4).map((color, i) => ({
+    color,
+    label: labels[i] ?? `V${i + 1}`,
+    image: shoe.images[i] ?? shoe.image,
+  }));
+}
+
 export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
   const toggleWishlist = useStore((s) => s.toggleWishlist);
   const isWishlisted = useStore((s) => s.wishlist.includes(shoe.id));
   const addToCart = useStore((s) => s.addToCart);
   const setCartOpen = useStore((s) => s.setCartOpen);
+  const { saveRect } = useSharedTransition();
+
+  const imageRef = useRef<HTMLImageElement | null>(null);
+  const variants = buildVariants(shoe);
+  const [activeVariant, setActiveVariant] = useState(0);
+  const activeImage = variants[activeVariant]?.image ?? shoe.image;
 
   const discount = shoe.sale_price
     ? Math.round(((shoe.price - shoe.sale_price) / shoe.price) * 100)
@@ -38,6 +55,10 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
     setCartOpen(true);
   };
 
+  const handleNav = () => {
+    if (imageRef.current) saveRect(shoe.id, imageRef.current);
+  };
+
   if (variant === "list") {
     return (
       <motion.div
@@ -49,12 +70,14 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
         <Link
           to="/product/$id"
           params={{ id: String(shoe.id) }}
+          onClick={handleNav}
+          data-magnetic
           className="group grid grid-cols-[120px_1fr_auto] sm:grid-cols-[160px_1fr_auto] gap-4 p-3 bg-surface border border-border rounded-2xl hover:border-neon/60 transition-colors items-center"
         >
-          <div className="relative aspect-square rounded-xl overflow-hidden bg-surface-2">
-            <img src={shoe.image} alt={shoe.name} loading="lazy" className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ${shoe.isSoldOut ? "grayscale opacity-50" : ""}`} />
+          <motion.div layoutId={`shoe-image-${shoe.id}`} className="relative aspect-square rounded-xl overflow-hidden bg-surface-2">
+            <img ref={imageRef} src={activeImage} alt={shoe.name} loading="lazy" className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ${shoe.isSoldOut ? "grayscale opacity-50" : ""}`} />
             {shoe.isNew && <span className="absolute top-1.5 left-1.5 bg-neon text-ink eyebrow px-1.5 py-0.5 rounded-full">NEW</span>}
-          </div>
+          </motion.div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-xs">
               <span className="eyebrow text-muted-foreground">{shoe.brand}</span>
@@ -74,10 +97,10 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
               {shoe.sale_price && <div className="font-mono-num text-[10px] text-muted-foreground line-through">{formatPrice(shoe.price)}</div>}
             </div>
             <div className="flex gap-1">
-              <button onClick={handleWish} className="w-8 h-8 rounded-full border border-border hover:border-neon grid place-items-center" aria-label="Wishlist">
+              <button onClick={handleWish} data-magnetic className="w-8 h-8 rounded-full border border-border hover:border-neon grid place-items-center" aria-label="Wishlist">
                 <Heart size={13} className={isWishlisted ? "fill-neon text-neon" : ""} />
               </button>
-              <button onClick={handleAdd} disabled={shoe.isSoldOut} className="w-8 h-8 rounded-full bg-neon text-ink grid place-items-center hover:scale-110 transition disabled:opacity-30" aria-label="Add">
+              <button onClick={handleAdd} disabled={shoe.isSoldOut} data-magnetic className="w-8 h-8 rounded-full bg-neon text-ink grid place-items-center hover:scale-110 transition disabled:opacity-30" aria-label="Add">
                 <ShoppingBag size={13} />
               </button>
             </div>
@@ -93,11 +116,17 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.55, delay: (index % 4) * 0.07, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ y: -6 }}
-      className="group relative bg-surface border border-border rounded-2xl overflow-hidden hover:border-neon/60 hover:shadow-[0_20px_50px_-20px_rgba(200,241,53,0.25)] transition-all"
+      whileHover={{ scale: 1.03, y: -6 }}
+      whileTap={{ scale: 0.98 }}
+      data-magnetic
+      className="group relative bg-surface border border-border rounded-2xl overflow-hidden hover:border-neon/60 hover:shadow-[0_20px_50px_-20px_rgba(200,241,53,0.25)] transition-colors"
+      style={{ transitionProperty: "border-color, box-shadow" }}
     >
-      <Link to="/product/$id" params={{ id: String(shoe.id) }} className="block">
-        <div className="relative aspect-square bg-gradient-to-br from-surface-2 to-ink overflow-hidden">
+      <Link to="/product/$id" params={{ id: String(shoe.id) }} onClick={handleNav} className="block">
+        <motion.div
+          layoutId={`shoe-image-${shoe.id}`}
+          className="relative aspect-square bg-gradient-to-br from-surface-2 to-ink overflow-hidden"
+        >
           <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
             {shoe.isNew && <span className="bg-neon text-ink eyebrow px-2 py-0.5 rounded-full">NEW</span>}
             {shoe.isLimited && <span className="bg-neon-orange text-white eyebrow px-2 py-0.5 rounded-full">LIMITED</span>}
@@ -106,6 +135,7 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
 
           <button
             onClick={handleWish}
+            data-magnetic
             className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full backdrop-blur flex items-center justify-center transition-colors ${
               isWishlisted ? "bg-neon text-ink" : "bg-ink/60 hover:bg-neon hover:text-ink"
             }`}
@@ -114,20 +144,17 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
             <Heart size={14} className={isWishlisted ? "fill-current" : ""} />
           </button>
 
-          <img
-            src={shoe.image}
+          <motion.img
+            key={activeImage}
+            ref={imageRef}
+            src={activeImage}
             alt={`${shoe.brand} ${shoe.name}`}
             loading="lazy"
-            className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${shoe.isSoldOut ? "grayscale opacity-60" : ""}`}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${shoe.isSoldOut ? "grayscale opacity-60" : ""}`}
           />
-          {shoe.images[1] && !shoe.isSoldOut && (
-            <img
-              src={shoe.images[1]}
-              alt=""
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-            />
-          )}
 
           {shoe.isSoldOut && (
             <div className="absolute inset-0 flex items-center justify-center">
@@ -144,13 +171,14 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
             <button
               onClick={handleAdd}
               disabled={shoe.isSoldOut}
+              data-magnetic
               className="w-10 h-10 rounded-full bg-neon text-ink grid place-items-center hover:scale-110 transition disabled:opacity-30"
               aria-label="Add"
             >
               <ShoppingBag size={14} />
             </button>
           </div>
-        </div>
+        </motion.div>
 
         <div className="p-4">
           <div className="flex items-center justify-between mb-1">
@@ -167,9 +195,25 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
           </h3>
           <p className="text-xs text-muted-foreground mb-3 truncate">{shoe.colorway}</p>
 
-          <div className="flex gap-1 mb-3">
-            {shoe.colors.slice(0, 4).map((c, i) => (
-              <span key={i} className="w-3.5 h-3.5 rounded-full border border-border" style={{ background: c }} />
+          {/* Color variant swatches — visible on hover */}
+          <div className="flex gap-1.5 mb-3 h-4 items-center opacity-70 group-hover:opacity-100 transition-opacity">
+            {variants.map((v, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setActiveVariant(i);
+                }}
+                aria-label={v.label}
+                title={v.label}
+                data-magnetic
+                className={`w-4 h-4 rounded-full border-2 transition-transform ${
+                  i === activeVariant ? "border-neon scale-125" : "border-border hover:border-muted-foreground"
+                }`}
+                style={{ background: v.color }}
+              />
             ))}
           </div>
 
