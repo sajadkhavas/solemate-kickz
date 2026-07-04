@@ -139,7 +139,7 @@ export function Hero() {
           animate={{ opacity: 1, x: 0, rotateY: 0 }}
           transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className="relative z-10 order-1 lg:order-2"
-          style={{ perspective: 1200 }}
+          style={{ perspective: 1200, transformStyle: "preserve-3d" }}
         >
           <ShoeViewer3D fallbackImage={featured.image} alt={featured.name} />
         </motion.div>
