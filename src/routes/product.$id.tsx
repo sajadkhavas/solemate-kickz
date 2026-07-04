@@ -416,6 +416,6 @@ function ProductPage() {
 
       <Footer />
       <MobileBottomNav />
-    </div>
+    </motion.div>
   );
 }
