@@ -125,6 +125,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Outlet />
       <CartDrawer />
+      <MagneticCursor />
       <Toaster theme="dark" position="bottom-right" toastOptions={{ style: { background: "#141414", border: "1px solid #2a2a2a", color: "#f5f5f0" } }} />
     </QueryClientProvider>
   );
