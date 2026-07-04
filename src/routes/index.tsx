@@ -10,6 +10,7 @@ import { TrustBadges } from "@/components/sections/TrustBadges";
 import { Newsletter } from "@/components/sections/Newsletter";
 import { Footer } from "@/components/sections/Footer";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { RevealOnScroll } from "@/components/RevealOnScroll";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -28,12 +29,12 @@ function Home() {
       <main>
         <Hero />
         <Marquee />
-        <FeaturedDrops />
-        <Categories />
-        <HypeSection />
-        <BrandWall />
-        <TrustBadges />
-        <Newsletter />
+        <RevealOnScroll direction="up"><FeaturedDrops /></RevealOnScroll>
+        <RevealOnScroll direction="scale"><Categories /></RevealOnScroll>
+        <RevealOnScroll direction="left"><HypeSection /></RevealOnScroll>
+        <RevealOnScroll direction="up" delay={0.05}><BrandWall /></RevealOnScroll>
+        <RevealOnScroll direction="up"><TrustBadges /></RevealOnScroll>
+        <RevealOnScroll direction="up"><Newsletter /></RevealOnScroll>
       </main>
       <Footer />
       <MobileBottomNav />

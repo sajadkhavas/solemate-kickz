@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Heart, Share2, Truck, RotateCcw, ShieldCheck, ChevronDown, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/Navbar";
@@ -9,6 +9,7 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ShoeCard } from "@/components/ShoeCard";
 import { SHOES, formatPrice } from "@/data/shoes";
 import { useStore } from "@/store";
+import { useSharedTransition } from "@/hooks/useSharedTransition";
 
 export const Route = createFileRoute("/product/$id")({
   loader: ({ params }) => {
@@ -51,9 +52,25 @@ function ProductPage() {
   const [size, setSize] = useState<number | null>(shoe.sizes[Math.floor(shoe.sizes.length / 2)] ?? null);
   const [activeColor, setActiveColor] = useState(0);
   const [openSection, setOpenSection] = useState<string | null>("specs");
+  const { getRect } = useSharedTransition();
+  const galleryRef = useRef<HTMLDivElement | null>(null);
+  const [flip, setFlip] = useState<{ x: number; y: number; sx: number; sy: number } | null>(null);
 
   useEffect(() => {
     addRecentlyViewed(shoe.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shoe.id]);
+
+  useEffect(() => {
+    const from = getRect(shoe.id);
+    if (!from || !galleryRef.current) return;
+    const to = galleryRef.current.getBoundingClientRect();
+    const dx = from.left - to.left;
+    const dy = from.top - to.top;
+    const sx = from.width / to.width;
+    const sy = from.height / to.height;
+    setFlip({ x: dx, y: dy, sx, sy });
+    requestAnimationFrame(() => setFlip({ x: 0, y: 0, sx: 1, sy: 1 }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shoe.id]);
 
@@ -85,7 +102,12 @@ function ProductPage() {
   }
 
   return (
-    <div className="bg-ink text-foreground min-h-screen">
+    <motion.div
+      className="bg-ink text-foreground min-h-screen"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+    >
       <Navbar />
 
       <main className="max-w-[1400px] mx-auto px-6 py-10">
@@ -101,7 +123,22 @@ function ProductPage() {
         <div className="grid lg:grid-cols-[1.2fr_1fr] gap-10">
           {/* Gallery */}
           <div>
-            <div className="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-surface-2 to-surface border border-border group">
+            <div
+              ref={galleryRef}
+              style={
+                flip
+                  ? {
+                      transform: `translate(${flip.x}px, ${flip.y}px) scale(${flip.sx}, ${flip.sy})`,
+                      transformOrigin: "top left",
+                      transition:
+                        flip.x === 0 && flip.y === 0
+                          ? "transform 0.6s cubic-bezier(0.16,1,0.3,1)"
+                          : "none",
+                    }
+                  : undefined
+              }
+              className="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-surface-2 to-surface border border-border group"
+            >
               {shoe.isNew && (
                 <span className="absolute top-4 left-4 z-10 bg-neon text-ink eyebrow px-3 py-1 rounded-full">NEW</span>
               )}
@@ -379,6 +416,6 @@ function ProductPage() {
 
       <Footer />
       <MobileBottomNav />
-    </div>
+    </motion.div>
   );
 }

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { SHOES } from "@/data/shoes";
 import { ShoeCard } from "@/components/ShoeCard";
+import { KineticText } from "@/components/KineticText";
 
 export function FeaturedDrops() {
   const featured = SHOES.filter(s => s.isNew || s.isLimited).slice(0, 8);
@@ -13,7 +14,7 @@ export function FeaturedDrops() {
           <div>
             <div className="eyebrow text-neon mb-3">⚡ Hot Right Now</div>
             <h2 className="font-display font-black text-5xl md:text-6xl lg:text-7xl uppercase leading-none">
-              Just <span className="text-neon">Dropped</span>
+              <KineticText text="Just Dropped" mode="words" stagger={0.09} className="text-neon" />
             </h2>
             <p className="font-fa text-muted-foreground mt-3">محدود. تازه. واقعی.</p>
           </div>
