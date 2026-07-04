@@ -102,7 +102,12 @@ function ProductPage() {
   }
 
   return (
-    <div className="bg-ink text-foreground min-h-screen">
+    <motion.div
+      className="bg-ink text-foreground min-h-screen"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+    >
       <Navbar />
 
       <main className="max-w-[1400px] mx-auto px-6 py-10">
@@ -118,7 +123,22 @@ function ProductPage() {
         <div className="grid lg:grid-cols-[1.2fr_1fr] gap-10">
           {/* Gallery */}
           <div>
-            <div className="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-surface-2 to-surface border border-border group">
+            <div
+              ref={galleryRef}
+              style={
+                flip
+                  ? {
+                      transform: `translate(${flip.x}px, ${flip.y}px) scale(${flip.sx}, ${flip.sy})`,
+                      transformOrigin: "top left",
+                      transition:
+                        flip.x === 0 && flip.y === 0
+                          ? "transform 0.6s cubic-bezier(0.16,1,0.3,1)"
+                          : "none",
+                    }
+                  : undefined
+              }
+              className="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-surface-2 to-surface border border-border group"
+            >
               {shoe.isNew && (
                 <span className="absolute top-4 left-4 z-10 bg-neon text-ink eyebrow px-3 py-1 rounded-full">NEW</span>
               )}
