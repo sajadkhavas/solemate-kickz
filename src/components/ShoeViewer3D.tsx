@@ -2,30 +2,41 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useMouseParallax } from "@/hooks/useMouseParallax";
 
-// TypeScript declaration for <model-viewer> web component
+// TypeScript declaration for <model-viewer> web component (React 19 uses React.JSX)
+type ModelViewerProps = React.DetailedHTMLProps<
+  React.HTMLAttributes<HTMLElement> & {
+    src?: string;
+    alt?: string;
+    poster?: string;
+    "auto-rotate"?: boolean;
+    "camera-controls"?: boolean;
+    ar?: boolean;
+    "shadow-intensity"?: string;
+    exposure?: string;
+    "environment-image"?: string;
+    "rotation-per-second"?: string;
+    "field-of-view"?: string;
+    "min-camera-orbit"?: string;
+    "max-camera-orbit"?: string;
+    "disable-zoom"?: boolean;
+    "interaction-prompt"?: string;
+  },
+  HTMLElement
+>;
+
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      "model-viewer": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & {
-          src?: string;
-          alt?: string;
-          poster?: string;
-          "auto-rotate"?: boolean;
-          "camera-controls"?: boolean;
-          ar?: boolean;
-          "shadow-intensity"?: string;
-          exposure?: string;
-          "environment-image"?: string;
-          "rotation-per-second"?: string;
-          "field-of-view"?: string;
-          "min-camera-orbit"?: string;
-          "max-camera-orbit"?: string;
-          "disable-zoom"?: boolean;
-          "interaction-prompt"?: string;
-        },
-        HTMLElement
-      >;
+      "model-viewer": ModelViewerProps;
+    }
+  }
+  // React 19 reads intrinsic elements from React.JSX
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace React {
+    namespace JSX {
+      interface IntrinsicElements {
+        "model-viewer": ModelViewerProps;
+      }
     }
   }
 }
