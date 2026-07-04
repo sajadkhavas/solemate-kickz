@@ -9,11 +9,17 @@ const HEADLINE_WORDS = ["Air", "Jordan", "1", "Retro", "High", "OG"];
 
 export function Hero() {
   const featured = { ...SHOES[1], image: heroShoe };
+  const { scrollY } = useScroll();
+  const glowY = useTransform(scrollY, [0, 600], [0, -180]);
+  const glowScale = useTransform(scrollY, [0, 600], [1, 1.15]);
 
   return (
     <section className="relative min-h-[100svh] overflow-hidden grain bg-ink">
       {/* Glow orb */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full bg-neon/20 blur-[120px] animate-pulse-glow" />
+      <motion.div
+        style={{ y: glowY, scale: glowScale }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full bg-neon/20 blur-[120px] animate-pulse-glow"
+      />
 
       {/* Floating neon particles — pure CSS */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
