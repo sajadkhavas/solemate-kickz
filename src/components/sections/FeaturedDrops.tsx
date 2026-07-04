@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { SHOES } from "@/data/shoes";
 import { ShoeCard } from "@/components/ShoeCard";
+import { KineticText } from "@/components/KineticText";
 
 export function FeaturedDrops() {
   const featured = SHOES.filter(s => s.isNew || s.isLimited).slice(0, 8);
