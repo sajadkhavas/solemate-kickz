@@ -52,9 +52,25 @@ function ProductPage() {
   const [size, setSize] = useState<number | null>(shoe.sizes[Math.floor(shoe.sizes.length / 2)] ?? null);
   const [activeColor, setActiveColor] = useState(0);
   const [openSection, setOpenSection] = useState<string | null>("specs");
+  const { getRect } = useSharedTransition();
+  const galleryRef = useRef<HTMLDivElement | null>(null);
+  const [flip, setFlip] = useState<{ x: number; y: number; sx: number; sy: number } | null>(null);
 
   useEffect(() => {
     addRecentlyViewed(shoe.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shoe.id]);
+
+  useEffect(() => {
+    const from = getRect(shoe.id);
+    if (!from || !galleryRef.current) return;
+    const to = galleryRef.current.getBoundingClientRect();
+    const dx = from.left - to.left;
+    const dy = from.top - to.top;
+    const sx = from.width / to.width;
+    const sy = from.height / to.height;
+    setFlip({ x: dx, y: dy, sx, sy });
+    requestAnimationFrame(() => setFlip({ x: 0, y: 0, sx: 1, sy: 1 }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shoe.id]);
 
