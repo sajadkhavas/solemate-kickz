@@ -68,13 +68,13 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true, margin: "-40px" }}
         transition={{ duration: 0.4, delay: (index % 6) * 0.05 }}
-        className="grid grid-cols-[120px_1fr_auto] items-center gap-4 rounded-2xl border border-border bg-surface p-3 transition-colors hover:border-neon/60 motion-reduce:transform-none sm:grid-cols-[160px_1fr_auto]"
+        className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-3 transition-colors hover:border-neon/60 motion-reduce:transform-none sm:gap-4"
       >
         <Link
           {...productTarget}
           onClick={handleNav}
           data-magnetic
-          className="group contents"
+          className="group grid min-w-0 flex-1 grid-cols-[96px_minmax(0,1fr)] items-center gap-3 rounded-xl sm:grid-cols-[160px_minmax(0,1fr)] sm:gap-4"
           aria-label={`مشاهده محصول نمونه ${shoe.name}`}
         >
           <motion.div
@@ -97,8 +97,8 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
             ) : null}
           </motion.div>
 
-          <div className="min-w-0 rounded-md focus-within:outline-none">
-            <div className="flex items-center gap-2 text-xs">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
               <span className="eyebrow text-muted-foreground">{shoe.brand}</span>
               <span className="rounded-full border border-border px-2 py-0.5 text-[0.65rem] text-muted-foreground">
                 داده نمونه
@@ -122,7 +122,7 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
 
         <div className="flex shrink-0 flex-col items-end gap-2">
           <div className="text-left">
-            <div className="font-mono-num text-sm font-bold text-neon">
+            <div className="font-mono-num text-xs font-bold text-neon sm:text-sm">
               {formatPrice(shoe.sale_price ?? shoe.price)}
             </div>
             {shoe.sale_price ? (
@@ -240,11 +240,17 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
             isWishlisted ? "bg-neon text-ink" : "bg-ink/70 hover:bg-neon hover:text-ink"
           }`}
           aria-label={
-            isWishlisted ? `حذف ${shoe.name} از علاقه‌مندی` : `افزودن ${shoe.name} به علاقه‌مندی`
+            isWishlisted
+              ? `حذف ${shoe.name} از علاقه‌مندی`
+              : `افزودن ${shoe.name} به علاقه‌مندی`
           }
           aria-pressed={isWishlisted}
         >
-          <Heart aria-hidden="true" size={16} className={isWishlisted ? "fill-current" : ""} />
+          <Heart
+            aria-hidden="true"
+            size={16}
+            className={isWishlisted ? "fill-current" : ""}
+          />
         </button>
 
         <div className="absolute inset-x-3 bottom-3 z-20 flex translate-y-2 gap-2 opacity-0 transition-all duration-300 group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:transition-none">
