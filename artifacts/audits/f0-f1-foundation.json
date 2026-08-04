@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "audit": "f0-f1-foundation",
   "baseline": "137344f1d89373a55e3bf4bb4d82b48d8247b45f",
-  "generatedAt": "2026-08-04T16:51:05.583Z",
+  "generatedAt": "2026-08-04T16:53:05.182Z",
   "pass": true,
   "summary": {
     "total": 20,
@@ -86,38 +86,7 @@
       "id": "interaction.out-of-scope-nesting-observed",
       "status": "pass",
       "severity": "warning",
-      "evidence": [
-        {
-          "type": "button-inside-link",
-          "file": "src/components/ShoeCard.tsx",
-          "line": 100,
-          "detail": "Link > button"
-        },
-        {
-          "type": "button-inside-link",
-          "file": "src/components/ShoeCard.tsx",
-          "line": 103,
-          "detail": "Link > button"
-        },
-        {
-          "type": "button-inside-link",
-          "file": "src/components/ShoeCard.tsx",
-          "line": 136,
-          "detail": "Link > button"
-        },
-        {
-          "type": "button-inside-link",
-          "file": "src/components/ShoeCard.tsx",
-          "line": 171,
-          "detail": "Link > button"
-        },
-        {
-          "type": "button-inside-link",
-          "file": "src/components/ShoeCard.tsx",
-          "line": 201,
-          "detail": "Link > button"
-        }
-      ]
+      "evidence": []
     },
     {
       "id": "tokens.semantic",

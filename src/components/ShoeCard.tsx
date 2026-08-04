@@ -137,7 +137,11 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
               onClick={handleWish}
               data-magnetic
               className="grid size-11 place-items-center rounded-full border border-border transition-colors hover:border-neon"
-              aria-label={isWishlisted ? `حذف ${shoe.name} از علاقه‌مندی` : `افزودن ${shoe.name} به علاقه‌مندی`}
+              aria-label={
+                isWishlisted
+                  ? `حذف ${shoe.name} از علاقه‌مندی`
+                  : `افزودن ${shoe.name} به علاقه‌مندی`
+              }
               aria-pressed={isWishlisted}
             >
               <Heart
@@ -235,14 +239,12 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
           className={`absolute right-3 top-3 z-20 grid size-11 place-items-center rounded-full backdrop-blur transition-colors ${
             isWishlisted ? "bg-neon text-ink" : "bg-ink/70 hover:bg-neon hover:text-ink"
           }`}
-          aria-label={isWishlisted ? `حذف ${shoe.name} از علاقه‌مندی` : `افزودن ${shoe.name} به علاقه‌مندی`}
+          aria-label={
+            isWishlisted ? `حذف ${shoe.name} از علاقه‌مندی` : `افزودن ${shoe.name} به علاقه‌مندی`
+          }
           aria-pressed={isWishlisted}
         >
-          <Heart
-            aria-hidden="true"
-            size={16}
-            className={isWishlisted ? "fill-current" : ""}
-          />
+          <Heart aria-hidden="true" size={16} className={isWishlisted ? "fill-current" : ""} />
         </button>
 
         <div className="absolute inset-x-3 bottom-3 z-20 flex translate-y-2 gap-2 opacity-0 transition-all duration-300 group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:transition-none">
