@@ -83,12 +83,28 @@ jobs:
           }
 
           run_visual_qa() {
-            bun run preview -- --host 127.0.0.1 --port 4173 > "$evidence/preview.txt" 2>&1 &
-            local preview_pid=$!
+            local preview_pid
             local ready=0
 
+            if [[ -x node_modules/.bin/wrangler && -f .output/server/wrangler.json ]]; then
+              echo "runner=wrangler-generated-cloudflare-worker" > "$evidence/visual-server.txt"
+              node_modules/.bin/wrangler dev \
+                --config .output/server/wrangler.json \
+                --local \
+                --ip 127.0.0.1 \
+                --port 4173 \
+                --show-interactive-dev-session=false \
+                --no-bundle \
+                > "$evidence/preview.txt" 2>&1 &
+              preview_pid=$!
+            else
+              echo "runner=vite-development-ssr-fallback" > "$evidence/visual-server.txt"
+              bun run dev -- --host 127.0.0.1 --port 4173 > "$evidence/preview.txt" 2>&1 &
+              preview_pid=$!
+            fi
+
             for _ in $(seq 1 60); do
-              if curl -fsS http://127.0.0.1:4173/ > /dev/null; then
+              if curl -fsS http://127.0.0.1:4173/ > /dev/null 2>&1; then
                 ready=1
                 break
               fi
@@ -98,7 +114,7 @@ jobs:
             if [[ $ready -ne 1 ]]; then
               kill "$preview_pid" 2>/dev/null || true
               wait "$preview_pid" 2>/dev/null || true
-              echo "Preview server did not become ready."
+              echo "Visual QA server did not become ready."
               return 1
             fi
 
