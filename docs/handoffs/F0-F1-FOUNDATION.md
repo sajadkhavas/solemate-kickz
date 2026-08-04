@@ -108,18 +108,18 @@ The complete `artifacts/` path is ignored. Runtime reports and screenshots are g
 
 The read-only workflow `.github/workflows/frontend-ci.yml` checks out the exact pull-request head SHA. The handoff is valid only with the following exact-head results:
 
-| Command | Result | Evidence |
-| --- | --- | --- |
-| `bun install --frozen-lockfile` | Exit code: 0 | 475 packages installed from the unchanged lockfile |
-| `bun run audit:source-contracts` | Exit code: 0 | 5 passed, 0 failed |
-| `bun run test:foundation` | Exit code: 0 | 13 passed, 0 failed |
-| `bun run typecheck` | Exit code: 0 | TypeScript completed without an error |
-| `bun run lint` | Exit code: 0 | 0 errors; 8 non-blocking warnings, including pre-existing Fast Refresh warnings |
-| `bun run format:check` | Exit code: 0 | All scoped Foundation files use Prettier style |
-| `bun run build` | Exit code: 0 | Client, SSR, and Nitro Cloudflare-module output built successfully |
-| `bun run qa:visual:f0-f1` | Exit code: 0 | 72 screenshots and zero Foundation-critical findings |
-| `bun run audit:f0-f1` | Exit code: 0 | Permanent completion audit passes on the final handoff tree |
-| `bun run check` | Exit code: 0 | Aggregate official gate passes on the final handoff tree |
+| Command                          | Result       | Evidence                                                                        |
+| -------------------------------- | ------------ | ------------------------------------------------------------------------------- |
+| `bun install --frozen-lockfile`  | Exit code: 0 | 475 packages installed from the unchanged lockfile                              |
+| `bun run audit:source-contracts` | Exit code: 0 | 5 passed, 0 failed                                                              |
+| `bun run test:foundation`        | Exit code: 0 | 13 passed, 0 failed                                                             |
+| `bun run typecheck`              | Exit code: 0 | TypeScript completed without an error                                           |
+| `bun run lint`                   | Exit code: 0 | 0 errors; 8 non-blocking warnings, including pre-existing Fast Refresh warnings |
+| `bun run format:check`           | Exit code: 0 | All scoped Foundation files use Prettier style                                  |
+| `bun run build`                  | Exit code: 0 | Client, SSR, and Nitro Cloudflare-module output built successfully              |
+| `bun run qa:visual:f0-f1`        | Exit code: 0 | 72 screenshots and zero Foundation-critical findings                            |
+| `bun run audit:f0-f1`            | Exit code: 0 | Permanent completion audit passes on the final handoff tree                     |
+| `bun run check`                  | Exit code: 0 | Aggregate official gate passes on the final handoff tree                        |
 
 ## Source-contract audit
 
@@ -222,16 +222,16 @@ The Actions report `f0-f1-visual-qa.json` contains every Deferred entry with its
 
 The 744 Deferred entries are repeated route-and-viewport observations of page-specific controls that existed in the Baseline. They are not hidden or counted as zero. The runtime allowlist is restricted to findings with explicit Baseline source evidence and one of the following owners:
 
-| Route | Deferred owner | Scope |
-| --- | --- | --- |
-| `/` | F3 | Homepage section controls and page-local touch targets |
-| `/products` | F4/F5 | Catalog, discovery controls, product cards, Quick View, and Wishlist interactions |
-| `/product/1` | F6 | Product-detail controls and page-local media or variant interactions |
-| `/cart` | F7 | Cart-page and frontend-checkout controls outside the shared Drawer primitive |
-| `/auth` | F8 | Supporting authentication-page controls |
-| `/brands` | F8 | Brand and supporting-page controls |
-| `/about` | F8 | Editorial, trust, and supporting-page controls |
-| invalid route | F12 | Final cross-route accessibility and QA review |
+| Route         | Deferred owner | Scope                                                                             |
+| ------------- | -------------- | --------------------------------------------------------------------------------- |
+| `/`           | F3             | Homepage section controls and page-local touch targets                            |
+| `/products`   | F4/F5          | Catalog, discovery controls, product cards, Quick View, and Wishlist interactions |
+| `/product/1`  | F6             | Product-detail controls and page-local media or variant interactions              |
+| `/cart`       | F7             | Cart-page and frontend-checkout controls outside the shared Drawer primitive      |
+| `/auth`       | F8             | Supporting authentication-page controls                                           |
+| `/brands`     | F8             | Brand and supporting-page controls                                                |
+| `/about`      | F8             | Editorial, trust, and supporting-page controls                                    |
+| invalid route | F12            | Final cross-route accessibility and QA review                                     |
 
 `targetsBelow24: 76` belongs to those page-specific Baseline-present observations. Shared controls touched in F0/F1 have `sharedTargetsBelow44: 0`.
 
