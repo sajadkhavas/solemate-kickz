@@ -106,3 +106,46 @@ jobs:
           path: |
             artifacts/reports/
             artifacts/visual-qa/
+
+  format-export:
+    name: format-export (${{ matrix.file }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        file:
+          - docs/frontend/SOLE_DESIGN_SYSTEM.md
+          - docs/frontend/SOLE_FRONTEND_CONSTITUTION.md
+          - scripts/audit-f0-f1-foundation.mjs
+          - scripts/browser-harness.mjs
+          - scripts/run-browser-check.mjs
+          - scripts/test-f0-f1-behavior.mjs
+          - scripts/visual-qa-f0-f1.mjs
+          - src/components/CartDrawer.tsx
+          - src/foundation.css
+    steps:
+      - name: Check out exact head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+          no-cache: true
+
+      - name: Install from lockfile
+        run: bun install --frozen-lockfile
+
+      - name: Export exact Prettier result
+        env:
+          TARGET_FILE: ${{ matrix.file }}
+        shell: bash
+        run: |
+          node_modules/.bin/prettier --write "$TARGET_FILE" >/dev/null
+          echo "FORMAT_EXPORT_BEGIN=$TARGET_FILE"
+          base64 -w0 "$TARGET_FILE"
+          echo
+          echo "FORMAT_EXPORT_END=$TARGET_FILE"
