@@ -152,6 +152,7 @@ jobs:
             package.json \
             src/routes/__root.tsx \
             src/routes/about.tsx \
+            src/routes/brands.tsx \
             src/styles.css \
             src/components/CartDrawer.tsx \
             src/components/ShoeCard.tsx \
