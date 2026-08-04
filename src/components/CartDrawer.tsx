@@ -1,9 +1,11 @@
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { useMemo } from "react";
+
 import { useStore } from "@/store";
 import { SHOES, formatPrice } from "@/data/shoes";
-import { useMemo } from "react";
 
 export function CartDrawer() {
   const isOpen = useStore((s) => s.isCartOpen);
@@ -15,162 +17,173 @@ export function CartDrawer() {
   const items = useMemo(
     () =>
       cart
-        .map((c) => {
-          const shoe = SHOES.find((s) => s.id === c.id);
-          return shoe ? { ...c, shoe } : null;
+        .map((cartItem) => {
+          const shoe = SHOES.find((candidate) => candidate.id === cartItem.id);
+          return shoe ? { ...cartItem, shoe } : null;
         })
-        .filter(Boolean) as Array<{ id: number; size: number; qty: number; shoe: (typeof SHOES)[number] }>,
+        .filter(Boolean) as Array<{
+        id: number;
+        size: number;
+        qty: number;
+        shoe: (typeof SHOES)[number];
+      }>,
     [cart],
   );
 
   const subtotal = items.reduce(
-    (acc, i) => acc + (i.shoe.sale_price ?? i.shoe.price) * i.qty,
+    (total, item) => total + (item.shoe.sale_price ?? item.shoe.price) * item.qty,
     0,
   );
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setOpen(false)}
-            className="fixed inset-0 z-[60] bg-ink/70 backdrop-blur-sm"
-          />
-          <motion.aside
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 320, damping: 36 }}
-            className="fixed top-0 right-0 bottom-0 z-[61] w-full sm:w-[420px] bg-surface border-l border-border flex flex-col"
-          >
-            <div className="flex items-center justify-between p-5 border-b border-border">
-              <div>
-                <div className="eyebrow text-neon">Your Bag</div>
-                <div className="font-display font-black text-2xl">
-                  {items.length} <span className="text-muted-foreground text-base font-normal">آیتم</span>
-                </div>
+    <DialogPrimitive.Root open={isOpen} onOpenChange={setOpen}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-[var(--z-overlay)] bg-overlay backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 motion-reduce:animate-none" />
+        <DialogPrimitive.Content
+          dir="rtl"
+          className="fixed inset-y-0 inset-inline-end-0 z-[var(--z-modal)] flex w-full flex-col border-s border-border bg-surface shadow-[var(--shadow-overlay)] outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right motion-reduce:animate-none sm:w-[420px]"
+        >
+          <div className="flex items-center justify-between border-b border-border p-5">
+            <div>
+              <DialogPrimitive.Title className="eyebrow text-primary">سبد خرید</DialogPrimitive.Title>
+              <div className="font-display text-2xl font-black">
+                {items.length}{" "}
+                <span className="text-base font-normal text-muted-foreground">آیتم</span>
               </div>
-              <button
-                onClick={() => setOpen(false)}
-                className="w-9 h-9 rounded-full bg-ink hover:bg-neon hover:text-ink flex items-center justify-center transition"
-                aria-label="Close"
-              >
-                <X size={16} />
-              </button>
+              <DialogPrimitive.Description className="sr-only">
+                مدیریت محصولات انتخاب‌شده و رفتن به صفحه سبد خرید
+              </DialogPrimitive.Description>
             </div>
+            <DialogPrimitive.Close asChild>
+              <button
+                type="button"
+                className="flex size-11 items-center justify-center rounded-full bg-background transition-colors hover:bg-primary hover:text-primary-foreground"
+                aria-label="بستن سبد خرید"
+              >
+                <X aria-hidden="true" size={18} />
+              </button>
+            </DialogPrimitive.Close>
+          </div>
 
-            {items.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center px-8 gap-4">
-                <div className="w-20 h-20 rounded-full bg-ink flex items-center justify-center">
-                  <ShoppingBag size={32} className="text-muted-foreground" />
-                </div>
-                <div>
-                  <div className="font-display font-bold text-xl mb-1">کیفت خالیه!</div>
-                  <div className="text-muted-foreground text-sm">برو یه چیز باحال پیدا کن</div>
-                </div>
-                <Link
-                  to="/products"
-                  onClick={() => setOpen(false)}
-                  className="btn-hype mt-2"
-                >
-                  Shop Now →
-                </Link>
+          {items.length === 0 ? (
+            <div className="flex flex-1 flex-col items-center justify-center gap-4 px-8 text-center">
+              <div className="flex size-20 items-center justify-center rounded-full bg-background">
+                <ShoppingBag aria-hidden="true" size={32} className="text-muted-foreground" />
               </div>
-            ) : (
-              <>
-                <div className="flex-1 overflow-y-auto p-5 space-y-4">
-                  <AnimatePresence initial={false}>
-                    {items.map((i) => (
-                      <motion.div
-                        key={`${i.id}-${i.size}`}
-                        layout
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, x: 80 }}
-                        className="flex gap-3 bg-ink rounded-2xl p-3 border border-border"
+              <div>
+                <div className="mb-1 font-display text-xl font-bold">سبدت خالیه!</div>
+                <div className="text-sm text-muted-foreground">برای شروع، محصولات را ببین.</div>
+              </div>
+              <Link to="/products" onClick={() => setOpen(false)} className="btn-hype mt-2">
+                مشاهده محصولات
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="flex-1 space-y-4 overflow-y-auto p-5">
+                <AnimatePresence initial={false}>
+                  {items.map((item) => (
+                    <motion.div
+                      key={`${item.id}-${item.size}`}
+                      layout
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: 32 }}
+                      transition={{ duration: 0.2 }}
+                      className="flex gap-3 rounded-2xl border border-border bg-background p-3 motion-reduce:transform-none"
+                    >
+                      <Link
+                        to="/product/$id"
+                        params={{ id: String(item.id) }}
+                        onClick={() => setOpen(false)}
+                        className="shrink-0 rounded-xl"
                       >
-                        <Link
-                          to="/product/$id"
-                          params={{ id: String(i.id) }}
-                          onClick={() => setOpen(false)}
-                          className="shrink-0"
-                        >
-                          <img
-                            src={i.shoe.image}
-                            alt={i.shoe.name}
-                            className="w-20 h-20 rounded-xl object-cover bg-surface-2"
-                          />
-                        </Link>
-                        <div className="flex-1 min-w-0">
-                          <div className="eyebrow text-muted-foreground">{i.shoe.brand}</div>
-                          <div className="font-display font-bold text-sm leading-tight truncate">
-                            {i.shoe.name}
+                        <img
+                          src={item.shoe.image}
+                          alt={item.shoe.name}
+                          width={80}
+                          height={80}
+                          className="size-20 rounded-xl bg-surface-elevated object-cover"
+                        />
+                      </Link>
+                      <div className="min-w-0 flex-1">
+                        <div className="eyebrow text-muted-foreground">{item.shoe.brand}</div>
+                        <div className="truncate font-display text-sm font-bold leading-tight" dir="auto">
+                          {item.shoe.name}
+                        </div>
+                        <div className="mt-0.5 text-xs text-muted-foreground">
+                          سایز <bdi dir="ltr">{item.size}</bdi> · {item.shoe.colorway}
+                        </div>
+                        <div className="mt-2 flex items-center justify-between gap-2">
+                          <div
+                            className="flex items-center gap-1 rounded-full bg-surface p-1"
+                            role="group"
+                            aria-label={`تعداد ${item.shoe.name}`}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => updateQty(item.id, item.size, item.qty - 1)}
+                              className="flex size-10 items-center justify-center rounded-full hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
+                              aria-label="کاهش تعداد"
+                              disabled={item.qty <= 1}
+                            >
+                              <Minus aria-hidden="true" size={14} />
+                            </button>
+                            <output aria-live="polite" className="w-7 text-center font-mono-num text-sm">
+                              {item.qty}
+                            </output>
+                            <button
+                              type="button"
+                              onClick={() => updateQty(item.id, item.size, item.qty + 1)}
+                              className="flex size-10 items-center justify-center rounded-full hover:bg-primary hover:text-primary-foreground"
+                              aria-label="افزایش تعداد"
+                            >
+                              <Plus aria-hidden="true" size={14} />
+                            </button>
                           </div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            سایز {i.size} · {i.shoe.colorway}
-                          </div>
-                          <div className="flex items-center justify-between mt-2">
-                            <div className="flex items-center gap-1 bg-surface rounded-full p-1">
-                              <button
-                                onClick={() => updateQty(i.id, i.size, i.qty - 1)}
-                                className="w-6 h-6 rounded-full hover:bg-neon hover:text-ink flex items-center justify-center"
-                                aria-label="Decrease"
-                              >
-                                <Minus size={12} />
-                              </button>
-                              <span className="w-6 text-center font-mono-num text-sm">{i.qty}</span>
-                              <button
-                                onClick={() => updateQty(i.id, i.size, i.qty + 1)}
-                                className="w-6 h-6 rounded-full hover:bg-neon hover:text-ink flex items-center justify-center"
-                                aria-label="Increase"
-                              >
-                                <Plus size={12} />
-                              </button>
-                            </div>
-                            <div className="font-mono-num font-semibold text-sm">
-                              {formatPrice((i.shoe.sale_price ?? i.shoe.price) * i.qty)}
-                            </div>
+                          <div className="font-mono-num text-sm font-semibold">
+                            {formatPrice((item.shoe.sale_price ?? item.shoe.price) * item.qty)}
                           </div>
                         </div>
-                        <button
-                          onClick={() => removeFromCart(i.id, i.size)}
-                          className="self-start text-muted-foreground hover:text-destructive transition"
-                          aria-label="Remove"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeFromCart(item.id, item.size)}
+                        className="flex size-10 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-danger/10 hover:text-danger"
+                        aria-label={`حذف ${item.shoe.name} از سبد`}
+                      >
+                        <Trash2 aria-hidden="true" size={16} />
+                      </button>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
 
-                <div className="border-t border-border p-5 space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">جمع کل</span>
-                    <span className="font-mono-num font-bold text-lg">{formatPrice(subtotal)}</span>
-                  </div>
-                  <Link
-                    to="/cart"
-                    onClick={() => setOpen(false)}
-                    className="btn-hype w-full justify-center"
-                  >
-                    مشاهده سبد →
-                  </Link>
+              <div className="safe-area-bottom space-y-3 border-t border-border p-5">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">جمع کل</span>
+                  <span className="font-mono-num text-lg font-bold">{formatPrice(subtotal)}</span>
+                </div>
+                <Link
+                  to="/cart"
+                  onClick={() => setOpen(false)}
+                  className="btn-hype w-full justify-center"
+                >
+                  مشاهده سبد
+                </Link>
+                <DialogPrimitive.Close asChild>
                   <button
-                    onClick={() => setOpen(false)}
-                    className="block w-full text-center text-xs text-muted-foreground hover:text-neon transition"
+                    type="button"
+                    className="block min-h-11 w-full rounded-md text-center text-xs text-muted-foreground transition-colors hover:text-primary"
                   >
                     ادامه خرید
                   </button>
-                </div>
-              </>
-            )}
-          </motion.aside>
-        </>
-      )}
-    </AnimatePresence>
+                </DialogPrimitive.Close>
+              </div>
+            </>
+          )}
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }
