@@ -53,7 +53,7 @@ function AboutPage() {
     <div className="min-h-screen bg-ink text-foreground">
       <Navbar />
 
-      <main id="main-content" tabIndex={-1} className="outline-none">
+      <main className="outline-none">
         <section className="relative overflow-hidden border-b border-border px-6 pb-24 pt-16">
           <div className="absolute inset-0 opacity-[0.08] [background-image:radial-gradient(circle_at_1px_1px,#c8f135_1px,transparent_0)] [background-size:32px_32px]" />
           <div className="absolute -left-20 -top-20 size-96 rounded-full bg-neon/20 blur-3xl" />
