@@ -7,6 +7,18 @@ import { useMemo } from "react";
 import { SHOES, formatPrice } from "@/data/shoes";
 import { useStore } from "@/store";
 
+function restoreCartTriggerFocus() {
+  const triggers = Array.from(
+    document.querySelectorAll<HTMLElement>('button[aria-label="Cart"]'),
+  );
+  const visibleTrigger = triggers.find((element) => {
+    const style = window.getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
+  });
+  (visibleTrigger ?? triggers[0])?.focus({ preventScroll: true });
+}
+
 export function CartDrawer() {
   const isOpen = useStore((state) => state.isCartOpen);
   const setOpen = useStore((state) => state.setCartOpen);
@@ -46,6 +58,10 @@ export function CartDrawer() {
           data-foundation-dialog="cart"
           data-foundation-shared
           dir="rtl"
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            restoreCartTriggerFocus();
+          }}
           className="fixed inset-y-0 inset-inline-end-0 z-[var(--z-modal)] flex w-full flex-col border-s border-border bg-surface shadow-[var(--shadow-overlay)] outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left motion-reduce:animate-none sm:w-[420px]"
         >
           <div className="flex items-center justify-between border-b border-border p-5">
