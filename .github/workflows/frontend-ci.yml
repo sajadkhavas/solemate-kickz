@@ -76,9 +76,8 @@ jobs:
           name: f0-f1-visual-qa-screenshots
           overwrite: true
           compression-level: 9
-          if-no-files-found: warn
-          retention-days: 14
+          if-no-files-found: error
+          retention-days: 1
           path: |
             artifacts/reports/
-            artifacts/runtime/
             artifacts/visual-qa/
