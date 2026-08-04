@@ -1,67 +1,26 @@
 # F0/F1 Foundation Handoff
 
-## Repository
+## Repository and refs
 
-`sajadkhavas/solemate-kickz`
+- Repository: `sajadkhavas/solemate-kickz`
+- Branch: `phase/sole-f0-f1-foundation`
+- Baseline SHA: `137344f1d89373a55e3bf4bb4d82b48d8247b45f`
+- Previous rejected head: `614bdbc29ca1efb85a44c3b69e599e7abee09c05`
+- Validated implementation SHA: `587008445befebac78cef9dcc0fdbf5b5c13d7d7`
+- Latest exact-head quality run SHA before this blocker-status commit: `b8b3e69185ca6f556b1f1d691fb00b0ad112547f`
 
-## Branch
-
-`phase/sole-f0-f1-foundation`
-
-## Baseline SHA
-
-`137344f1d89373a55e3bf4bb4d82b48d8247b45f`
-
-## Previous rejected head
-
-`614bdbc29ca1efb85a44c3b69e599e7abee09c05`
-
-## Validated implementation SHA
-
-Validated implementation SHA: `587008445befebac78cef9dcc0fdbf5b5c13d7d7`
-
-This SHA is the implementation tree that completed the full browser behavior suite and Visual QA with zero Foundation-critical findings. The final branch-head SHA includes this handoff and is recorded in the Draft PR body and supervisor delivery response after the exact-head CI run completes.
+The implementation and all code-quality checks pass. Final delivery is blocked only because GitHub rejects creation of a new Actions Artifact at the account-quota layer. This document deliberately does not mark the phase ready while the exact-head workflow is red.
 
 ## Scope delivered
 
 - Frontend Constitution and Design System rules for F0/F1.
 - Persian `lang="fa"`, global RTL, stable SSR skip-link target, route-change focus, and polite route announcements.
-- Semantic Foundation CSS for document overflow containment, visible keyboard focus, shared 44×44 touch targets, and reduced-motion behavior.
+- Foundation CSS for document overflow containment, visible keyboard focus, shared 44×44 touch targets, and reduced-motion behavior.
 - Shared commerce primitives: `IconButton`, `TextLink`, `SearchInput`, `Price`, `DiscountPrice`, `StockState`, `QuantityStepper`, `Spinner`, `EmptyState`, `ErrorState`, and `VisuallyHidden`.
 - Button default-type, loading, disabled, and Radix `asChild` contracts.
-- Cart Drawer modal behavior using Radix Dialog, including Escape close, focus trap, explicit focus restoration, body scroll lock, and overlay dismissal.
+- Cart Drawer modal behavior: Escape close, focus trap, focus restoration, body scroll lock, and overlay dismissal.
 - Internal favicon and removal of shared brand-logo CDN requests touched by this phase.
 - Permanent source audit, browser behavior acceptance, Visual QA, and a read-only GitHub Actions gate.
-
-## Files changed or added
-
-- `.github/workflows/frontend-ci.yml`
-- `.gitignore`
-- `docs/frontend/SOLE_FRONTEND_CONSTITUTION.md`
-- `docs/frontend/SOLE_DESIGN_SYSTEM.md`
-- `docs/handoffs/F0-F1-FOUNDATION.md`
-- `eslint.config.js`
-- `package.json`
-- `public/favicon.svg`
-- `scripts/audit-f0-f1-foundation.mjs`
-- `scripts/browser-harness.mjs`
-- `scripts/fixtures/foundation-behavior-entry.tsx`
-- `scripts/run-browser-check.mjs`
-- `scripts/test-f0-f1-behavior.mjs`
-- `scripts/test-f0-f1-primitives.mjs`
-- `scripts/visual-qa-f0-f1.mjs`
-- `src/components/CartDrawer.tsx`
-- `src/components/MagneticCursor.tsx`
-- `src/components/ShoeCard.tsx`
-- `src/components/sections/BrandWall.tsx`
-- `src/components/sections/Footer.tsx`
-- `src/components/ui/button.tsx`
-- `src/components/ui/commerce-primitives.tsx`
-- `src/foundation.css`
-- `src/routes/__root.tsx`
-- `src/routes/about.tsx`
-- `src/routes/brands.tsx`
-- `src/styles.css`
 
 ## Files removed
 
@@ -78,90 +37,73 @@ Temporary or self-mutating workflows:
 - `.github/workflows/f0-f1-finalize-once.yml`
 - `.github/workflows/f0-f1-handoff-once.yml`
 - `.github/workflows/f0-f1-artifact-maintenance.yml`
+- `.github/workflows/f0-f1-artifact-inventory.yml`
+- `.github/workflows/f0-f1-format-handoff.yml`
 
-Committed runtime evidence removed from the product history:
+Committed runtime evidence removed and ignored:
 
 - `artifacts/audits/`
 - `artifacts/bootstrap/`
 - `artifacts/validation/`
 - `artifacts/visual-qa/`
 
-The complete `artifacts/` path is ignored. Runtime reports and screenshots are generated only inside CI and uploaded as a GitHub Actions Artifact.
+## Dependencies and toolchain
 
-## Dependencies and lockfile
-
-- Runtime dependency set: unchanged.
-- Development dependency set: unchanged.
-- `bun.lock`: unchanged from the Baseline.
-- Added package metadata only:
-  - `packageManager: bun@1.3.14`
-  - `engines.node: 22.23.1`
-
-## Toolchain
-
-- Operating system: GitHub-hosted Ubuntu `24.04.4 LTS`.
+- Runtime dependencies: unchanged.
+- Development dependencies: unchanged.
+- `bun.lock`: unchanged from Baseline.
 - Node: `v22.23.1`.
-- Bun: `1.3.14` (`1.3.14+0d9b296af`).
-- Package manager lockfile: `bun.lock`.
+- Bun: `1.3.14`.
+- `packageManager`: `bun@1.3.14`.
+- Workflow uses `oven-sh/setup-bun@v2` with `no-cache: true`.
 
-## Final command results
+## Exact command results
 
-The read-only workflow `.github/workflows/frontend-ci.yml` checks out the exact pull-request head SHA. The handoff is valid only with the following exact-head results:
+On exact head `b8b3e69185ca6f556b1f1d691fb00b0ad112547f`:
 
-| Command                          | Result       | Evidence                                                                        |
-| -------------------------------- | ------------ | ------------------------------------------------------------------------------- |
-| `bun install --frozen-lockfile`  | Exit code: 0 | 475 packages installed from the unchanged lockfile                              |
-| `bun run audit:source-contracts` | Exit code: 0 | 5 passed, 0 failed                                                              |
-| `bun run test:foundation`        | Exit code: 0 | 13 passed, 0 failed                                                             |
-| `bun run typecheck`              | Exit code: 0 | TypeScript completed without an error                                           |
-| `bun run lint`                   | Exit code: 0 | 0 errors; 8 non-blocking warnings, including pre-existing Fast Refresh warnings |
-| `bun run format:check`           | Exit code: 0 | All scoped Foundation files use Prettier style                                  |
-| `bun run build`                  | Exit code: 0 | Client, SSR, and Nitro Cloudflare-module output built successfully              |
-| `bun run qa:visual:f0-f1`        | Exit code: 0 | 72 screenshots and zero Foundation-critical findings                            |
-| `bun run audit:f0-f1`            | Exit code: 0 | Permanent completion audit passes on the final handoff tree                     |
-| `bun run check`                  | Exit code: 0 | Aggregate official gate passes on the final handoff tree                        |
+| Command | Result |
+| --- | --- |
+| `bun install --frozen-lockfile` | Exit code: 0 |
+| `bun run audit:source-contracts` | Exit code: 0 — 5 passed, 0 failed |
+| `bun run test:foundation` | Exit code: 0 — 13 passed, 0 failed |
+| `bun run typecheck` | Exit code: 0 |
+| `bun run lint` | Exit code: 0 — 0 errors, 8 non-blocking warnings |
+| `bun run format:check` | Exit code: 0 |
+| `bun run build` | Exit code: 0 |
+| `bun run qa:visual:f0-f1` | Exit code: 0 |
+| `bun run audit:f0-f1` | Exit code: 0 — 46 passed, 0 failed |
+| `bun run check` | Exit code: 0 |
+| tracked working-tree verification | Exit code: 0 |
+| `actions/upload-artifact@v4` | Exit code: 1 — account Actions artifact storage quota |
 
-## Source-contract audit
+GitHub error:
 
-`scripts/test-f0-f1-primitives.mjs` is explicitly classified as a source-contract audit, not a behavioral component test.
+`Failed to CreateArtifact: Artifact storage quota has been hit. Unable to upload any new artifacts. Usage is recalculated every 6-12 hours.`
 
-Result:
+Repository-side inventory and cleanup completed before the last run:
 
-- total: 5
-- passed: 5
-- failed: 0
+- Stored Repository Artifacts: `0`
+- Stored Repository Actions caches after cleanup: `0`
+- Bun executable caching disabled for future runs.
 
 ## Browser behavior tests
 
-`scripts/test-f0-f1-behavior.mjs` runs in headless Chrome against the real Vite/TanStack application origin.
+Result: 13 passed, 0 failed.
 
-Result:
+Verified:
 
-- total: 13
-- passed: 13
-- failed: 0
-
-Verified behavior:
-
-- Button default `type="button"` and no accidental form submission.
-- Button loading, disabled, `aria-busy`, loading label, and loading state.
+- Button default type and no accidental form submission.
+- Button loading and disabled behavior.
 - IconButton accessible name.
-- QuantityStepper minimum and maximum boundaries.
-- Price RTL wrapper and LTR numeric isolation.
-- Cart Drawer open behavior.
-- Escape close.
-- Focus trap.
-- Focus restoration to the visible Cart control.
-- Body scroll lock and release.
-- Overlay dismissal policy.
-- Route-change focus to `#main-content`.
-- Skip-link target integrity.
+- QuantityStepper minimum and maximum behavior.
+- Price direction rendering.
+- Cart Drawer open, Escape close, focus trap, focus restoration, body scroll lock, and overlay dismissal.
+- Route-change focus.
+- Skip-link target.
 - Reduced-motion behavior.
-- No hydration or runtime exception in the tested interactions.
+- No hydration or runtime error in tested interactions.
 
 ## Visual QA
-
-Visual QA result:
 
 - screenshots: 72
 - routes: 8
@@ -177,72 +119,20 @@ Visual QA result:
 - foundationCriticalFindings: 0
 - reduced-motion: pass
 - keyboard-focus visibility: pass
-- zoom 200% document overflow and main-landmark checks: pass
+- zoom 200% checks: pass
 
-Routes inspected:
+The 744 Deferred entries are Baseline-present page-specific observations with route, viewport, selector, dimensions, source evidence, and phase owner. They are not reported as zero.
 
-- `/`
-- `/products`
-- `/product/1`
-- `/cart`
-- `/auth`
-- `/brands`
-- `/about`
-- `/route-that-does-not-exist`
+## Deferred ownership
 
-Viewports inspected:
-
-- 320×568
-- 375×812
-- 390×844
-- 430×932
-- 768×1024
-- 1024×768
-- 1280×800
-- 1440×900
-- 1920×1080
-
-The Actions report `f0-f1-visual-qa.json` contains every Deferred entry with its route, viewport, selector, measured dimensions, Baseline source evidence, and phase owner. Screenshot files and JSON reports are uploaded as the `f0-f1-visual-qa-screenshots` Actions Artifact and are not committed to the Repository.
-
-## Foundation findings resolved
-
-- Temporary source replacement and connector-probe files removed.
-- Self-mutating CI, automated Evidence commits, and write permissions removed from the final Workflow.
-- Document-level horizontal overflow reduced from the rejected-report failures to zero across all tested routes and viewports.
-- Hydration mismatch caused by client-side root attribute mutation removed by a stable SSR focus target.
-- Radix `asChild` single-child violation removed.
-- Same-origin asset failures reduced to zero with an internal favicon and valid Foundation resources.
-- External brand-logo network failures touched by this phase reduced to zero.
-- Shared Header, Footer, fixed navigation, and Cart Drawer controls enforce 44×44 minimum interaction boxes.
-- Shared touch-target findings reduced to zero.
-- Cart Drawer focus restoration made explicit for its controlled-dialog trigger.
-- Reduced-motion and keyboard-focus browser checks pass.
-
-## Deferred findings and phase owners
-
-The 744 Deferred entries are repeated route-and-viewport observations of page-specific controls that existed in the Baseline. They are not hidden or counted as zero. The runtime allowlist is restricted to findings with explicit Baseline source evidence and one of the following owners:
-
-| Route         | Deferred owner | Scope                                                                             |
-| ------------- | -------------- | --------------------------------------------------------------------------------- |
-| `/`           | F3             | Homepage section controls and page-local touch targets                            |
-| `/products`   | F4/F5          | Catalog, discovery controls, product cards, Quick View, and Wishlist interactions |
-| `/product/1`  | F6             | Product-detail controls and page-local media or variant interactions              |
-| `/cart`       | F7             | Cart-page and frontend-checkout controls outside the shared Drawer primitive      |
-| `/auth`       | F8             | Supporting authentication-page controls                                           |
-| `/brands`     | F8             | Brand and supporting-page controls                                                |
-| `/about`      | F8             | Editorial, trust, and supporting-page controls                                    |
-| invalid route | F12            | Final cross-route accessibility and QA review                                     |
-
-`targetsBelow24: 76` belongs to those page-specific Baseline-present observations. Shared controls touched in F0/F1 have `sharedTargetsBelow44: 0`.
-
-## Known limitations
-
-- Automated screenshots do not replace a human review of Persian line quality and visual composition.
-- Physical screen-reader and real touch-device verification remains part of F12.
-- Lint emits eight warnings but zero errors; unrelated pre-existing Fast Refresh warnings remain outside this Foundation correction scope.
-- Production build reports large chunk warnings for the Homepage and model-viewer path; route-level code splitting and the approximately 8 MB 3D model belong to F9 and F11.
-- Deferred page-specific touch targets remain explicitly tracked rather than globally overridden.
-- Actions artifacts use one-day retention to minimize Repository storage consumption.
+- `/` → F3
+- `/products` → F4/F5
+- `/product/1` → F6
+- `/cart` → F7
+- `/auth` → F8
+- `/brands` → F8
+- `/about` → F8
+- invalid route → F12
 
 ## Out-of-scope phase map
 
@@ -259,19 +149,25 @@ The 744 Deferred entries are repeated route-and-viewport observations of page-sp
 
 ## Final workflow contract
 
-`.github/workflows/frontend-ci.yml` is the only Workflow in the final tree.
+`.github/workflows/frontend-ci.yml` is the only Workflow in the Product Tree.
 
 - `permissions: contents: read`
-- No `git commit`
-- No `git push`
-- No automatic Repository file changes
-- No committed runtime Evidence
-- Exact Node `22.23.1`
-- Exact Bun `1.3.14`
-- Frozen-lockfile install
-- Source audit, browser behavior tests, Typecheck, Lint, Format check, production build, Visual QA, permanent audit, aggregate check, and clean tracked-tree verification
-- Reports and screenshots uploaded only as a GitHub Actions Artifact
+- exact pull-request head checkout
+- Node `22.23.1`
+- Bun `1.3.14`
+- `no-cache: true`
+- no `git commit` or `git push`
+- no automatic file mutation
+- frozen-lockfile install
+- source audit, behavior tests, Typecheck, Lint, Format check, production build, Visual QA, permanent audit, aggregate check, and tracked clean-tree verification
+- reports and screenshots configured for GitHub Actions Artifact upload with one-day retention
+
+## Known limitations and blocker
+
+- Human Persian typography review, physical screen-reader testing, and real touch-device verification remain F12 work.
+- Page-specific Deferred findings remain assigned to their owning phases.
+- Final exact-head GitHub Actions status cannot become green until GitHub recalculates or increases the account Actions Artifact storage quota.
 
 ## Ready for supervisor review
 
-Ready for supervisor review: Yes
+Ready for supervisor review: No
