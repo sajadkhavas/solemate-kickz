@@ -49,18 +49,29 @@ jobs:
         run: |
           set +e
           evidence="$GITHUB_WORKSPACE/artifacts/validation"
+          baseline="137344f1d89373a55e3bf4bb4d82b48d8247b45f"
           mkdir -p "$evidence" "$GITHUB_WORKSPACE/artifacts/audits"
           rm -f "$evidence"/*.txt
 
           {
             echo "source_commit=$(git rev-parse HEAD)"
             echo "validated_tree=$(git write-tree)"
-            echo "baseline=137344f1d89373a55e3bf4bb4d82b48d8247b45f"
+            echo "baseline=$baseline"
             echo "node=$(node --version)"
             echo "bun=$(bun --version)"
             echo "lockfile=$(test -f bun.lock && echo bun.lock || echo missing)"
             echo "package_manager=bun"
           } | tee "$evidence/toolchain.txt"
+
+          git log --reverse --format='%H %s' "$baseline"..HEAD > "$evidence/commits.txt"
+          git diff --name-status "$baseline"...HEAD > "$evidence/files-changed.txt"
+          {
+            echo "package_json_changed=$(git diff --quiet "$baseline"...HEAD -- package.json; test $? -eq 0 && echo no || echo yes)"
+            echo "lockfile_changed=$(git diff --quiet "$baseline"...HEAD -- bun.lock; test $? -eq 0 && echo no || echo yes)"
+            echo "dependency_diff_begin"
+            git diff --unified=0 "$baseline"...HEAD -- package.json bun.lock || true
+            echo "dependency_diff_end"
+          } > "$evidence/dependencies.txt"
 
           run_and_record() {
             local name="$1"
@@ -126,6 +137,7 @@ jobs:
             echo "overall=0" >> "$evidence/status.txt"
           fi
 
+          git status --short > "$evidence/working-tree-before-evidence-commit.txt"
           cat "$evidence/status.txt"
 
       - name: Commit formatted files and validation evidence
