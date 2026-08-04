@@ -34,12 +34,18 @@ computing gzip size...
 .output/public/assets/index-DCOfeYNS.js               550.83 kB │ gzip: 168.07 kB
 .output/public/assets/model-viewer-DA5qJrLg.js        884.09 kB │ gzip: 252.43 kB
 
-[32m✓ built in 2.42s[39m
+[33m[33m[PLUGIN_TIMINGS] [0mYour build spent significant time in plugins. Here is a breakdown:
+  - vite-tsconfig-paths (43%)
+  - tanstack-start-core:import-protection-transform-cache (39%)
+  - tanstack-start-core:import-protection (18%)
+See https://rolldown.rs/options/checks#plugintimings for more details.
+[39m
 [33m[plugin builtin:vite-reporter] 
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
 - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[32m✓ built in 3.21s[39m
 [36mvite v8.0.16 [32mbuilding ssr environment for production...[36m[39m
 [2Ktransforming...✓ 98 modules transformed.
 rendering chunks...
@@ -77,7 +83,7 @@ node_modules/.nitro/vite/services/ssr/assets/Navbar-DxfpDBld.js                 
 node_modules/.nitro/vite/services/ssr/assets/routes-DMuyVdK3.js                               32.27 kB │ gzip:  8.41 kB
 node_modules/.nitro/vite/services/ssr/assets/server-CF7trx-V.js                               42.03 kB │ gzip: 11.35 kB
 
-[32m✓ built in 771ms[39m
+[32m✓ built in 1.05s[39m
 [start] [nitro] Building [[35mNitro[39m] [2m(preset: `cloudflare-module`, compatibility: `2026-08-04`)[22m
 [success] [nitro] Generated public [36m.output/public[39m
 [36mvite v8.0.16 [32mbuilding nitro environment for production...[36m[39m
@@ -123,7 +129,7 @@ computing gzip size...
 .output/server/_libs/@tanstack/react-router+[...].mjs             652.77 kB │ gzip: 137.49 kB
 .output/server/_libs/@google/model-viewer+[...].mjs             1,552.11 kB │ gzip: 349.84 kB
 
-[32m✓ built in 1.29s[39m
+[32m✓ built in 1.20s[39m
 [info] [nitro] Using auto generated worker name: `sajadkhavas-solemate-kickz`
 [info] Generated [36m.output/server/wrangler.json[39m
 [info] Generated [36m.wrangler/deploy/config.json[39m
