@@ -47,7 +47,7 @@ function BrandsPage() {
     <div className="min-h-screen bg-ink text-foreground">
       <Navbar />
 
-      <main id="main-content" tabIndex={-1} className="outline-none">
+      <main className="outline-none">
         <section className="relative overflow-hidden border-b border-border px-6 pb-10 pt-12">
           <div className="absolute inset-0 opacity-[0.06] [background-image:radial-gradient(circle_at_1px_1px,#c8f135_1px,transparent_0)] [background-size:24px_24px]" />
           <div className="relative mx-auto max-w-[1400px]">
