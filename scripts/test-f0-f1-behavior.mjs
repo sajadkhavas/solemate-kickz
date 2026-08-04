@@ -25,6 +25,27 @@ function record(name, pass, evidence) {
 }
 
 async function click(client, selector) {
+  if (selector === '[aria-label="Cart"]') {
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      await evaluate(
+        client,
+        `(() => {
+          const candidates = [...document.querySelectorAll('[aria-label="Cart"]')];
+          const target = candidates.find((element) => {
+            const style = getComputedStyle(element);
+            const rect = element.getBoundingClientRect();
+            return element.tagName === 'BUTTON' && style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+          });
+          target?.click();
+          return Boolean(target);
+        })()`,
+      );
+      await sleep(200);
+      if (await evaluate(client, `Boolean(document.querySelector('[role="dialog"]'))`)) return;
+    }
+    throw new Error("Cart trigger did not open the dialog after 20 attempts.");
+  }
+
   await evaluate(client, `document.querySelector(${JSON.stringify(selector)})?.click()`);
 }
 
