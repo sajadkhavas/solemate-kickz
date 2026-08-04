@@ -171,6 +171,7 @@ jobs:
             src/routes/brands.tsx \
             src/styles.css \
             src/components/CartDrawer.tsx \
+            src/components/MagneticCursor.tsx \
             src/components/ShoeCard.tsx \
             src/components/sections/BrandWall.tsx \
             src/components/sections/Footer.tsx \
