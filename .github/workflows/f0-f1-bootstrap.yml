@@ -44,7 +44,7 @@ jobs:
           set -u
           evidence="$GITHUB_WORKSPACE/branch/artifacts/bootstrap"
           mkdir -p "$evidence"
-          rm -f "$evidence"/*.log "$evidence"/*.txt
+          rm -f "$evidence"/*.txt "$evidence"/*.tsv
 
           cd "$GITHUB_WORKSPACE/baseline"
           {
@@ -62,17 +62,17 @@ jobs:
 
           grep -RInE --exclude-dir=.git --exclude='bun.lock' \
             'href=["'"']#["'"']|javascript:|tabIndex=[{]?[1-9]|lang=["'"']en["'"']|dir=["'"']ltr["'"']' \
-            . > "$evidence/foundation-patterns.log" 2>&1 || true
+            . > "$evidence/foundation-patterns.txt" 2>&1 || true
 
           set +e
-          bun install --frozen-lockfile > "$evidence/install.log" 2>&1
+          bun install --frozen-lockfile > "$evidence/install.txt" 2>&1
           install_code=$?
           echo "install=$install_code" > "$evidence/status.txt"
 
           run_and_record() {
             local name="$1"
             shift
-            "$@" > "$evidence/${name}.log" 2>&1
+            "$@" > "$evidence/${name}.txt" 2>&1
             local code=$?
             echo "${name}=${code}" >> "$evidence/status.txt"
           }
@@ -93,10 +93,10 @@ jobs:
           cd "$GITHUB_WORKSPACE/branch"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add artifacts/bootstrap
+          git add -f artifacts/bootstrap
           if git diff --cached --quiet; then
             echo "No baseline evidence changes to commit."
             exit 0
           fi
-          git commit -m "chore(audit): record F0-F1 baseline evidence"
+          git commit -m "chore(audit): refresh F0-F1 baseline evidence"
           git push origin HEAD:phase/sole-f0-f1-foundation
