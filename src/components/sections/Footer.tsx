@@ -67,6 +67,7 @@ function FooterItem({ item }: { item: FooterLink }) {
 
 function FooterCol({ section }: { section: Section }) {
   const [open, setOpen] = useState(false);
+  const contentId = `footer-section-${section.id}`;
 
   return (
     <div className="border-b border-border md:border-0">
@@ -74,18 +75,20 @@ function FooterCol({ section }: { section: Section }) {
         type="button"
         onClick={() => setOpen((current) => !current)}
         aria-expanded={open}
-        aria-controls={`footer-section-${section.id}`}
-        className="flex min-h-11 w-full items-center justify-between py-4 md:mb-4 md:cursor-default md:py-0"
+        aria-controls={contentId}
+        className="flex min-h-11 w-full items-center justify-between py-4 md:hidden"
       >
         <span className="eyebrow text-neon">{section.title}</span>
         <ChevronDown
           aria-hidden="true"
           size={16}
-          className={`transition-transform motion-reduce:transition-none md:hidden ${open ? "rotate-180" : ""}`}
+          className={`transition-transform motion-reduce:transition-none ${open ? "rotate-180" : ""}`}
         />
       </button>
 
-      <div id={`footer-section-${section.id}`} className="md:hidden">
+      <h2 className="eyebrow mb-4 hidden text-neon md:block">{section.title}</h2>
+
+      <div id={contentId} className="md:hidden">
         <AnimatePresence initial={false}>
           {open ? (
             <motion.ul
