@@ -21,7 +21,7 @@ import { Toaster } from "@/components/ui/sonner";
 function NotFoundComponent() {
   return (
     <main
-      id="route-focus-target"
+      id="main-content"
       tabIndex={-1}
       className="flex min-h-screen items-center justify-center bg-background px-4 outline-none"
     >
@@ -53,7 +53,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
   return (
     <main
-      id="route-focus-target"
+      id="main-content"
       tabIndex={-1}
       className="flex min-h-screen items-center justify-center bg-background px-4 outline-none"
     >
@@ -120,7 +120,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <a className="skip-link" href="#route-focus-target">
+        <a className="skip-link" href="#main-content">
           رفتن به محتوای اصلی
         </a>
         {children}
@@ -155,7 +155,7 @@ function RouteAccessibility() {
   return (
     <>
       <div
-        id="route-focus-target"
+        id="main-content"
         ref={focusTargetRef}
         tabIndex={-1}
         role={routeNeedsMainLandmark ? "main" : undefined}
