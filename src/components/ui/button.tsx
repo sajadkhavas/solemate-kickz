@@ -19,7 +19,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "px-4 py-2",
-        sm: "min-h-10 rounded-md px-3 text-xs",
+        sm: "min-h-11 rounded-md px-3 text-xs",
         lg: "min-h-12 rounded-md px-8",
         icon: "h-11 w-11 p-0",
       },
@@ -50,6 +50,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       loading = false,
       loadingLabel = "در حال انجام",
       children,
+      onClick,
+      tabIndex,
       ...props
     },
     ref,
@@ -58,14 +60,27 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const classes = cn(buttonVariants({ variant, size, className }));
 
     if (asChild) {
+      const handleClick: React.MouseEventHandler<HTMLElement> = (event) => {
+        if (unavailable) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+
+        onClick?.(event as unknown as React.MouseEvent<HTMLButtonElement>);
+      };
+
       return (
         <Slot
+          {...props}
           className={classes}
           ref={ref}
           aria-disabled={unavailable || undefined}
           aria-busy={loading || undefined}
+          data-disabled={unavailable ? "true" : undefined}
           data-loading={loading ? "true" : undefined}
-          {...props}
+          tabIndex={unavailable ? -1 : tabIndex}
+          onClick={handleClick}
         >
           {React.Children.only(children)}
         </Slot>
@@ -74,13 +89,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button
+        {...props}
         className={classes}
         ref={ref}
         type={type ?? "button"}
         disabled={unavailable}
         aria-busy={loading || undefined}
         data-loading={loading ? "true" : undefined}
-        {...props}
+        tabIndex={tabIndex}
+        onClick={onClick}
       >
         {loading ? (
           <span
