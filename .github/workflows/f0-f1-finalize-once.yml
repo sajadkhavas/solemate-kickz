@@ -1,0 +1,602 @@
+name: F0/F1 One-Shot Finalizer
+
+on:
+  push:
+    branches:
+      - phase/sole-f0-f1-foundation
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: f0-f1-one-shot-finalizer
+  cancel-in-progress: true
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out mission branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase/sole-f0-f1-foundation
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Write final foundation contracts
+        shell: bash
+        run: |
+          cat > src/routes/__root.tsx <<'ROOT_EOF'
+          import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+          import {
+            Outlet,
+            Link,
+            createRootRouteWithContext,
+            useLocation,
+            useRouter,
+            HeadContent,
+            Scripts,
+          } from "@tanstack/react-router";
+          import { MotionConfig } from "framer-motion";
+          import { useEffect, useRef, useState, type ReactNode } from "react";
+
+          import appCss from "../styles.css?url";
+          import { reportLovableError } from "../lib/lovable-error-reporting";
+          import { CartDrawer } from "@/components/CartDrawer";
+          import { MagneticCursor } from "@/components/MagneticCursor";
+          import { Button } from "@/components/ui/button";
+          import { Toaster } from "@/components/ui/sonner";
+
+          function NotFoundComponent() {
+            return (
+              <main className="flex min-h-screen items-center justify-center bg-background px-4 outline-none">
+                <div className="max-w-md text-center">
+                  <p className="font-mono-num text-7xl font-bold text-foreground" aria-hidden="true">
+                    404
+                  </p>
+                  <h1 className="mt-4 text-xl font-semibold text-foreground">صفحه پیدا نشد</h1>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    نشانی واردشده وجود ندارد یا جابه‌جا شده است.
+                  </p>
+                  <div className="mt-6">
+                    <Button asChild>
+                      <Link to="/">بازگشت به خانه</Link>
+                    </Button>
+                  </div>
+                </div>
+              </main>
+            );
+          }
+
+          function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+            console.error(error);
+            const router = useRouter();
+
+            useEffect(() => {
+              reportLovableError(error, { boundary: "tanstack_root_error_component" });
+            }, [error]);
+
+            return (
+              <main className="flex min-h-screen items-center justify-center bg-background px-4 outline-none">
+                <div className="max-w-md text-center">
+                  <h1 className="text-xl font-semibold tracking-tight text-foreground">
+                    این صفحه بارگذاری نشد
+                  </h1>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    خطایی رخ داده است. دوباره تلاش کنید یا به صفحه اصلی برگردید.
+                  </p>
+                  <div className="mt-6 flex flex-wrap justify-center gap-2">
+                    <Button
+                      onClick={() => {
+                        router.invalidate();
+                        reset();
+                      }}
+                    >
+                      تلاش دوباره
+                    </Button>
+                    <Button asChild variant="outline">
+                      <Link to="/">بازگشت به خانه</Link>
+                    </Button>
+                  </div>
+                </div>
+              </main>
+            );
+          }
+
+          export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+            head: () => ({
+              meta: [
+                { charSet: "utf-8" },
+                {
+                  name: "viewport",
+                  content: "width=device-width, initial-scale=1, viewport-fit=cover",
+                },
+                { title: "SOLE — قدم بعدی تو" },
+                {
+                  name: "description",
+                  content: "تجربه نمایشی فروشگاه کفش لوکس و استریت‌ویر به زبان فارسی.",
+                },
+                { name: "theme-color", content: "#0a0a0a" },
+                { name: "color-scheme", content: "dark" },
+                { property: "og:title", content: "SOLE — قدم بعدی تو" },
+                {
+                  property: "og:description",
+                  content: "تجربه نمایشی کفش‌های لوکس و استریت‌ویر.",
+                },
+                { property: "og:type", content: "website" },
+                { name: "twitter:card", content: "summary_large_image" },
+              ],
+              links: [{ rel: "stylesheet", href: appCss }],
+            }),
+            shellComponent: RootShell,
+            component: RootComponent,
+            notFoundComponent: NotFoundComponent,
+            errorComponent: ErrorComponent,
+          });
+
+          function RootShell({ children }: { children: ReactNode }) {
+            return (
+              <html lang="fa" dir="rtl" className="dark">
+                <head>
+                  <HeadContent />
+                </head>
+                <body>
+                  <a className="skip-link" href="#main-content">
+                    رفتن به محتوای اصلی
+                  </a>
+                  <div id="main-content" tabIndex={-1} className="min-w-0 outline-none">
+                    {children}
+                  </div>
+                  <Scripts />
+                </body>
+              </html>
+            );
+          }
+
+          function RouteAccessibility() {
+            const location = useLocation();
+            const firstRender = useRef(true);
+            const [announcement, setAnnouncement] = useState("");
+            const routeNeedsMainLandmark = location.pathname === "/products";
+
+            useEffect(() => {
+              if (typeof document === "undefined") return;
+
+              const frame = window.requestAnimationFrame(() => {
+                if (!firstRender.current) {
+                  document.getElementById("main-content")?.focus({ preventScroll: true });
+                }
+
+                setAnnouncement(`صفحه ${document.title || "SOLE"}`);
+                firstRender.current = false;
+              });
+
+              return () => window.cancelAnimationFrame(frame);
+            }, [location.pathname]);
+
+            return (
+              <>
+                <div
+                  role={routeNeedsMainLandmark ? "main" : undefined}
+                  aria-label={routeNeedsMainLandmark ? "محتوای اصلی" : undefined}
+                  className="min-w-0"
+                >
+                  <Outlet />
+                </div>
+                <div className="route-announcer" aria-live="polite" aria-atomic="true">
+                  {announcement}
+                </div>
+              </>
+            );
+          }
+
+          function RootComponent() {
+            const { queryClient } = Route.useRouteContext();
+
+            return (
+              <QueryClientProvider client={queryClient}>
+                <MotionConfig reducedMotion="user">
+                  <RouteAccessibility />
+                  <CartDrawer />
+                  <MagneticCursor />
+                  <Toaster dir="rtl" theme="dark" position="bottom-left" closeButton />
+                </MotionConfig>
+              </QueryClientProvider>
+            );
+          }
+          ROOT_EOF
+
+          cat > src/components/ui/button.tsx <<'BUTTON_EOF'
+          import * as React from "react";
+          import { Slot } from "@radix-ui/react-slot";
+          import { cva, type VariantProps } from "class-variance-authority";
+
+          import { cn } from "@/lib/utils";
+
+          const buttonVariants = cva(
+            "relative inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium cursor-pointer transition-[background-color,color,border-color,box-shadow,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-y-px disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-[var(--opacity-disabled)] aria-disabled:pointer-events-none aria-disabled:cursor-not-allowed aria-disabled:opacity-[var(--opacity-disabled)] motion-reduce:transition-none motion-reduce:active:translate-y-0 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+            {
+              variants: {
+                variant: {
+                  default: "bg-primary text-primary-foreground shadow hover:bg-[var(--primary-hover)]",
+                  destructive:
+                    "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+                  outline:
+                    "border border-input bg-background shadow-sm hover:border-[var(--border-strong)] hover:bg-interactive hover:text-foreground",
+                  secondary:
+                    "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+                  ghost: "hover:bg-interactive hover:text-foreground",
+                  link: "min-h-11 text-primary underline-offset-4 hover:text-[var(--primary-hover)] hover:underline",
+                },
+                size: {
+                  default: "px-4 py-2",
+                  sm: "min-h-10 rounded-md px-3 text-xs",
+                  lg: "min-h-12 rounded-md px-8",
+                  icon: "h-11 w-11 p-0",
+                },
+              },
+              defaultVariants: {
+                variant: "default",
+                size: "default",
+              },
+            },
+          );
+
+          export interface ButtonProps
+            extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+              VariantProps<typeof buttonVariants> {
+            asChild?: boolean;
+            loading?: boolean;
+            loadingLabel?: string;
+          }
+
+          const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+            (
+              {
+                className,
+                variant,
+                size,
+                asChild = false,
+                type,
+                disabled,
+                loading = false,
+                loadingLabel = "در حال انجام",
+                children,
+                ...props
+              },
+              ref,
+            ) => {
+              const unavailable = disabled || loading;
+              const classes = cn(buttonVariants({ variant, size, className }));
+
+              if (asChild) {
+                return (
+                  <Slot
+                    className={classes}
+                    ref={ref}
+                    aria-disabled={unavailable || undefined}
+                    aria-busy={loading || undefined}
+                    data-loading={loading ? "true" : undefined}
+                    {...props}
+                  >
+                    {React.Children.only(children)}
+                  </Slot>
+                );
+              }
+
+              return (
+                <button
+                  className={classes}
+                  ref={ref}
+                  type={type ?? "button"}
+                  disabled={unavailable}
+                  aria-busy={loading || undefined}
+                  data-loading={loading ? "true" : undefined}
+                  {...props}
+                >
+                  {loading ? (
+                    <span
+                      aria-hidden="true"
+                      className="absolute size-4 animate-spin rounded-full border-2 border-current border-t-transparent motion-reduce:animate-none"
+                    />
+                  ) : null}
+                  <span className={cn(loading && "invisible")}>{children}</span>
+                  {loading ? <span className="sr-only">{loadingLabel}</span> : null}
+                </button>
+              );
+            },
+          );
+          Button.displayName = "Button";
+
+          export { Button, buttonVariants };
+          BUTTON_EOF
+
+          cat > src/components/MagneticCursor.tsx <<'CURSOR_EOF'
+          import { useEffect, useRef } from "react";
+
+          export function MagneticCursor() {
+            const ringRef = useRef<HTMLDivElement | null>(null);
+            const dotRef = useRef<HTMLDivElement | null>(null);
+
+            useEffect(() => {
+              if (typeof window === "undefined") return;
+              const isCoarse = window.matchMedia("(pointer: coarse)").matches;
+              const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+              if (isCoarse || prefersReduced || !ringRef.current || !dotRef.current) return;
+
+              document.body.style.cursor = "none";
+              document.body.classList.add("has-magnetic-cursor");
+
+              const position = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+              const target = { x: position.x, y: position.y };
+              let animationFrame = 0;
+
+              const move = (event: MouseEvent) => {
+                target.x = event.clientX;
+                target.y = event.clientY;
+                if (dotRef.current) {
+                  dotRef.current.style.transform = `translate3d(${event.clientX - 3}px, ${event.clientY - 3}px, 0)`;
+                }
+              };
+
+              const tick = () => {
+                position.x += (target.x - position.x) * 0.15;
+                position.y += (target.y - position.y) * 0.15;
+                if (ringRef.current) {
+                  ringRef.current.style.transform = `translate3d(${position.x - 20}px, ${position.y - 20}px, 0)`;
+                }
+                animationFrame = window.requestAnimationFrame(tick);
+              };
+
+              const enter = (event: MouseEvent) => {
+                const element = (event.target as HTMLElement | null)?.closest?.("[data-magnetic]");
+                if (!element || !ringRef.current) return;
+                ringRef.current.style.width = "56px";
+                ringRef.current.style.height = "56px";
+                ringRef.current.style.borderColor = "#c8f135";
+                ringRef.current.style.backgroundColor = "rgba(200,241,53,0.12)";
+              };
+
+              const leave = (event: MouseEvent) => {
+                const relatedTarget = event.relatedTarget as HTMLElement | null;
+                if (relatedTarget?.closest?.("[data-magnetic]")) return;
+                if (!ringRef.current) return;
+                ringRef.current.style.width = "40px";
+                ringRef.current.style.height = "40px";
+                ringRef.current.style.borderColor = "rgba(200,241,53,0.55)";
+                ringRef.current.style.backgroundColor = "transparent";
+              };
+
+              window.addEventListener("mousemove", move, { passive: true });
+              document.addEventListener("mouseover", enter);
+              document.addEventListener("mouseout", leave);
+              animationFrame = window.requestAnimationFrame(tick);
+
+              return () => {
+                document.body.style.cursor = "";
+                document.body.classList.remove("has-magnetic-cursor");
+                window.removeEventListener("mousemove", move);
+                document.removeEventListener("mouseover", enter);
+                document.removeEventListener("mouseout", leave);
+                window.cancelAnimationFrame(animationFrame);
+              };
+            }, []);
+
+            return (
+              <div
+                aria-hidden="true"
+                className="pointer-events-none fixed inset-0 z-[90] hidden overflow-hidden [contain:strict] md:block"
+              >
+                <div
+                  ref={ringRef}
+                  className="absolute left-0 top-0 size-10 rounded-full border-2 will-change-transform"
+                  style={{
+                    borderColor: "rgba(200,241,53,0.55)",
+                    transition:
+                      "width 0.2s ease, height 0.2s ease, border-color 0.2s ease, background-color 0.2s ease",
+                    mixBlendMode: "difference",
+                  }}
+                />
+                <div
+                  ref={dotRef}
+                  className="absolute left-0 top-0 size-1.5 rounded-full bg-neon will-change-transform"
+                />
+              </div>
+            );
+          }
+          CURSOR_EOF
+
+          cat > scripts/test-f0-f1-primitives.mjs <<'TEST_EOF'
+          import assert from "node:assert/strict";
+          import fs from "node:fs";
+          import path from "node:path";
+          import test from "node:test";
+
+          const ROOT = process.cwd();
+          const source = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), "utf8");
+
+          const button = source("src/components/ui/button.tsx");
+          const commerce = source("src/components/ui/commerce-primitives.tsx");
+          const cartDrawer = source("src/components/CartDrawer.tsx");
+          const root = source("src/routes/__root.tsx");
+          const styles = source("src/styles.css");
+
+          test("Button defaults to non-submitting behavior", () => {
+            assert.match(button, /type=\{type \?\? "button"\}/);
+          });
+
+          test("Button exposes loading and disabled semantics", () => {
+            assert.match(button, /aria-busy=\{loading \|\| undefined\}/);
+            assert.match(button, /disabled=\{unavailable\}/);
+            assert.match(button, /loadingLabel/);
+          });
+
+          test("Button asChild preserves the Radix single-child contract", () => {
+            assert.match(button, /if \(asChild\)/);
+            assert.match(button, /React\.Children\.only\(children\)/);
+            assert.doesNotMatch(button, /<Slot[\s\S]*absolute size-4[\s\S]*<\/Slot>/);
+          });
+
+          test("IconButton requires an accessible label", () => {
+            assert.match(commerce, /type IconButtonProps[\s\S]*label: string/);
+            assert.match(commerce, /aria-label=\{label\}/);
+          });
+
+          test("QuantityStepper clamps values and disables boundaries", () => {
+            assert.match(commerce, /Math\.min\(max, Math\.max\(min, value\)\)/);
+            assert.match(commerce, /disabled=\{!canDecrease\}/);
+            assert.match(commerce, /disabled=\{!canIncrease\}/);
+            assert.match(commerce, /aria-live="polite"/);
+          });
+
+          test("Price content isolates mixed-direction numeric values", () => {
+            assert.match(commerce, /<bdi dir="ltr">\{formattedValue\}<\/bdi>/);
+            assert.match(commerce, /Intl\.NumberFormat/);
+          });
+
+          test("Cart drawer uses a modal primitive with an accessible name", () => {
+            assert.match(cartDrawer, /DialogPrimitive\.Root/);
+            assert.match(cartDrawer, /DialogPrimitive\.Title/);
+            assert.match(cartDrawer, /DialogPrimitive\.Description/);
+            assert.match(cartDrawer, /DialogPrimitive\.Close/);
+          });
+
+          test("Root document owns stable RTL skip navigation and route focus", () => {
+            assert.match(root, /<html lang="fa" dir="rtl"/);
+            assert.match(root, /href="#main-content"/);
+            assert.match(root, /id="main-content"/);
+            assert.match(root, /document\.getElementById\("main-content"\)\?\.focus/);
+            assert.match(root, /aria-live="polite"/);
+            assert.doesNotMatch(root, /\.id = "main-content"/);
+            assert.doesNotMatch(root, /\.tabIndex = -1/);
+          });
+
+          test("Global CSS preserves focus and reduced-motion behavior", () => {
+            assert.match(styles, /:focus-visible/);
+            assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+            assert.match(styles, /animation-duration: 0\.01ms !important/);
+          });
+          TEST_EOF
+
+          rm -f src/routes/__root.next.tsx tmp-test-do-not-use
+          rm -f .github/workflows/f0-f1-finalize-once.yml
+
+      - name: Install from lockfile
+        run: bun install --frozen-lockfile
+
+      - name: Format F0/F1 files only
+        run: bun run format:foundation
+
+      - name: Run static foundation gate
+        shell: bash
+        run: |
+          mkdir -p artifacts/validation artifacts/audits
+          bun run audit:f0-f1 > artifacts/validation/audit.txt 2>&1
+          bun run test:foundation > artifacts/validation/tests.txt 2>&1
+          bun run typecheck > artifacts/validation/typecheck.txt 2>&1
+          bun run lint > artifacts/validation/lint.txt 2>&1
+          bun run build > artifacts/validation/build.txt 2>&1
+          bun run format:check > artifacts/validation/format_check.txt 2>&1
+          bun run check > artifacts/validation/check.txt 2>&1
+
+      - name: Run exact viewport visual QA
+        shell: bash
+        run: |
+          set +e
+          bun run dev -- --host 127.0.0.1 --port 4173 > artifacts/validation/preview.txt 2>&1 &
+          server_pid=$!
+          ready=0
+          for _ in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:4173/ > /dev/null 2>&1; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [[ $ready -ne 1 ]]; then
+            kill "$server_pid" 2>/dev/null || true
+            wait "$server_pid" 2>/dev/null || true
+            exit 1
+          fi
+          bun run qa:visual:f0-f1 > artifacts/validation/visual_qa.txt 2>&1
+          visual_code=$?
+          kill "$server_pid" 2>/dev/null || true
+          wait "$server_pid" 2>/dev/null || true
+          exit "$visual_code"
+
+      - name: Record exact finalizer status
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "baseline=137344f1d89373a55e3bf4bb4d82b48d8247b45f"
+            echo "validated_tree=$(git write-tree)"
+            echo "node=$(node --version)"
+            echo "bun=$(bun --version)"
+            echo "lockfile_changed=$(git diff --quiet 137344f1d89373a55e3bf4bb4d82b48d8247b45f...HEAD -- bun.lock; test $? -eq 0 && echo no || echo yes)"
+          } > artifacts/validation/finalizer.txt
+
+      - name: Commit validated source and evidence
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A \
+            .github/workflows/f0-f1-finalize-once.yml \
+            src/routes/__root.tsx \
+            src/components/ui/button.tsx \
+            src/components/MagneticCursor.tsx \
+            scripts/test-f0-f1-primitives.mjs \
+            src/routes/__root.next.tsx \
+            tmp-test-do-not-use 2>/dev/null || true
+          git add -f artifacts/validation artifacts/audits artifacts/visual-qa/f0-f1-visual-qa.json artifacts/visual-qa/manifest.txt
+          git commit -m "chore(audit): record validated F0-F1 final foundation"
+          if ! git push origin HEAD:phase/sole-f0-f1-foundation; then
+            mkdir -p /tmp/f0-f1-final
+            cp src/routes/__root.tsx /tmp/f0-f1-final/root.tsx
+            cp src/components/ui/button.tsx /tmp/f0-f1-final/button.tsx
+            cp src/components/MagneticCursor.tsx /tmp/f0-f1-final/cursor.tsx
+            cp scripts/test-f0-f1-primitives.mjs /tmp/f0-f1-final/tests.mjs
+            cp -R artifacts/validation /tmp/f0-f1-final/validation
+            cp -R artifacts/audits /tmp/f0-f1-final/audits
+            cp artifacts/visual-qa/f0-f1-visual-qa.json /tmp/f0-f1-final/visual-report.json
+            cp artifacts/visual-qa/manifest.txt /tmp/f0-f1-final/visual-manifest.txt
+
+            git fetch origin phase/sole-f0-f1-foundation
+            git reset --hard origin/phase/sole-f0-f1-foundation
+            cp /tmp/f0-f1-final/root.tsx src/routes/__root.tsx
+            cp /tmp/f0-f1-final/button.tsx src/components/ui/button.tsx
+            cp /tmp/f0-f1-final/cursor.tsx src/components/MagneticCursor.tsx
+            cp /tmp/f0-f1-final/tests.mjs scripts/test-f0-f1-primitives.mjs
+            rm -f src/routes/__root.next.tsx tmp-test-do-not-use .github/workflows/f0-f1-finalize-once.yml
+            rm -rf artifacts/validation artifacts/audits
+            cp -R /tmp/f0-f1-final/validation artifacts/validation
+            cp -R /tmp/f0-f1-final/audits artifacts/audits
+            mkdir -p artifacts/visual-qa
+            cp /tmp/f0-f1-final/visual-report.json artifacts/visual-qa/f0-f1-visual-qa.json
+            cp /tmp/f0-f1-final/visual-manifest.txt artifacts/visual-qa/manifest.txt
+
+            git add -A src/routes/__root.tsx src/components/ui/button.tsx src/components/MagneticCursor.tsx scripts/test-f0-f1-primitives.mjs src/routes/__root.next.tsx tmp-test-do-not-use .github/workflows/f0-f1-finalize-once.yml 2>/dev/null || true
+            git add -f artifacts/validation artifacts/audits artifacts/visual-qa/f0-f1-visual-qa.json artifacts/visual-qa/manifest.txt
+            git commit -m "chore(audit): record validated F0-F1 final foundation"
+            git push origin HEAD:phase/sole-f0-f1-foundation
+          fi
+
+      - name: Upload final screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: f0-f1-final-visual-qa-screenshots
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            artifacts/visual-qa/screenshots/
+            artifacts/visual-qa/f0-f1-visual-qa.json
+            artifacts/visual-qa/manifest.txt
