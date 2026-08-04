@@ -6,11 +6,14 @@ import {
   IconButton,
   Price,
   QuantityStepper,
+  SearchInput,
 } from "@/components/ui/commerce-primitives";
 
 function FoundationBehaviorFixture() {
   const [quantity, setQuantity] = useState(1);
   const [submits, setSubmits] = useState(0);
+  const [asChildActivations, setAsChildActivations] = useState(0);
+  const [searchValue, setSearchValue] = useState("shoe");
 
   return (
     <main data-testid="foundation-harness">
@@ -23,13 +26,38 @@ function FoundationBehaviorFixture() {
         }}
       >
         <Button data-testid="button-default">Default button</Button>
+        <Button data-testid="button-small" size="sm">
+          Small button
+        </Button>
         <Button data-testid="button-loading" loading loadingLabel="Loading acceptance">
           Save
+        </Button>
+        <Button
+          asChild
+          loading
+          loadingLabel="Loading link acceptance"
+          data-testid="button-as-child-loading"
+          onClick={() => setAsChildActivations((value) => value + 1)}
+        >
+          <a href="#blocked-activation" data-activations={asChildActivations}>
+            Blocked link
+          </a>
         </Button>
         <IconButton data-testid="icon-button" label="Acceptance icon">
           <span aria-hidden="true">★</span>
         </IconButton>
+        <IconButton data-testid="icon-button-small" label="Acceptance compact icon" size="sm">
+          <span aria-hidden="true">☆</span>
+        </IconButton>
       </form>
+
+      <SearchInput
+        data-testid="search-input"
+        value={searchValue}
+        onChange={(event) => setSearchValue(event.currentTarget.value)}
+        onClear={() => setSearchValue("")}
+        clearLabel="Clear acceptance search"
+      />
 
       <div data-testid="quantity-wrapper">
         <QuantityStepper
