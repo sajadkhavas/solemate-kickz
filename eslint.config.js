@@ -48,7 +48,11 @@ export default tseslint.config(
     files: ["scripts/**/*.mjs"],
     languageOptions: {
       ecmaVersion: 2022,
-      globals: globals.node,
+      globals: {
+        ...globals.node,
+        fetch: "readonly",
+        WebSocket: "readonly",
+      },
     },
   },
 );
