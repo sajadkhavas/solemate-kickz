@@ -138,8 +138,8 @@ export function Footer() {
         <div className="mt-10 flex items-start gap-3 border-t border-border pt-6 font-fa text-sm text-muted-foreground">
           <Info aria-hidden="true" size={18} className="mt-0.5 shrink-0 text-neon" />
           <p>
-            نشانی، شماره تماس، شبکه‌های اجتماعی و روش‌های پرداخت پس از تأیید اطلاعات رسمی
-            کسب‌وکار نمایش داده می‌شوند.
+            نشانی، شماره تماس، شبکه‌های اجتماعی و روش‌های پرداخت پس از تأیید اطلاعات رسمی کسب‌وکار
+            نمایش داده می‌شوند.
           </p>
         </div>
       </div>

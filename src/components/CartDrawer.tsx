@@ -45,7 +45,9 @@ export function CartDrawer() {
         >
           <div className="flex items-center justify-between border-b border-border p-5">
             <div>
-              <DialogPrimitive.Title className="eyebrow text-primary">سبد خرید</DialogPrimitive.Title>
+              <DialogPrimitive.Title className="eyebrow text-primary">
+                سبد خرید
+              </DialogPrimitive.Title>
               <div className="font-display text-2xl font-black">
                 {items.length}{" "}
                 <span className="text-base font-normal text-muted-foreground">آیتم</span>
@@ -108,7 +110,10 @@ export function CartDrawer() {
                       </Link>
                       <div className="min-w-0 flex-1">
                         <div className="eyebrow text-muted-foreground">{item.shoe.brand}</div>
-                        <div className="truncate font-display text-sm font-bold leading-tight" dir="auto">
+                        <div
+                          className="truncate font-display text-sm font-bold leading-tight"
+                          dir="auto"
+                        >
                           {item.shoe.name}
                         </div>
                         <div className="mt-0.5 text-xs text-muted-foreground">
@@ -129,7 +134,10 @@ export function CartDrawer() {
                             >
                               <Minus aria-hidden="true" size={14} />
                             </button>
-                            <output aria-live="polite" className="w-7 text-center font-mono-num text-sm">
+                            <output
+                              aria-live="polite"
+                              className="w-7 text-center font-mono-num text-sm"
+                            >
                               {item.qty}
                             </output>
                             <button

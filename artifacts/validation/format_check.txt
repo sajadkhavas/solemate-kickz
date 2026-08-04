@@ -1,9 +1,3 @@
-$ prettier --check src/routes/__root.tsx src/styles.css src/components/ui/button.tsx src/components/ui/commerce-primitives.tsx src/components/CartDrawer.tsx scripts/audit-f0-f1-foundation.mjs scripts/test-f0-f1-primitives.mjs
+$ prettier --check .github/workflows/f0-f1-bootstrap.yml eslint.config.js package.json src/routes/__root.tsx src/routes/about.tsx src/styles.css src/components/CartDrawer.tsx src/components/sections/BrandWall.tsx src/components/sections/Footer.tsx src/components/ui/button.tsx src/components/ui/commerce-primitives.tsx scripts/audit-f0-f1-foundation.mjs scripts/test-f0-f1-primitives.mjs
 Checking formatting...
-[[33mwarn[39m] src/routes/__root.tsx
-[[33mwarn[39m] src/styles.css
-[[33mwarn[39m] src/components/ui/commerce-primitives.tsx
-[[33mwarn[39m] src/components/CartDrawer.tsx
-[[33mwarn[39m] scripts/audit-f0-f1-foundation.mjs
-[[33mwarn[39m] Code style issues found in 5 files. Run Prettier with --write to fix.
-error: script "format:check" exited with code 1
+All matched files use Prettier code style!

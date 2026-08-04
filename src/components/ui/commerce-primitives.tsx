@@ -54,7 +54,8 @@ type SearchInputProps = Omit<React.ComponentProps<typeof Input>, "type"> & {
 
 const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
   ({ className, value, defaultValue, clearLabel = "پاک‌کردن جستجو", onClear, ...props }, ref) => {
-    const hasValue = value !== undefined ? String(value).length > 0 : String(defaultValue ?? "").length > 0;
+    const hasValue =
+      value !== undefined ? String(value).length > 0 : String(defaultValue ?? "").length > 0;
 
     return (
       <div className="relative" role="search">
@@ -98,7 +99,10 @@ function Price({ value, currency = "تومان", locale = "fa-IR", className, ..
   return (
     <span
       dir="rtl"
-      className={cn("inline-flex items-baseline gap-1 font-mono-num text-[length:var(--text-price)]", className)}
+      className={cn(
+        "inline-flex items-baseline gap-1 font-mono-num text-[length:var(--text-price)]",
+        className,
+      )}
       {...props}
     >
       <bdi dir="ltr">{formattedValue}</bdi>
@@ -147,7 +151,11 @@ function StockState({ status, label, className, ...props }: StockStateProps) {
   const config = STOCK_CONFIG[status];
   return (
     <span
-      className={cn("inline-flex items-center gap-2 text-sm font-medium", config.className, className)}
+      className={cn(
+        "inline-flex items-center gap-2 text-sm font-medium",
+        config.className,
+        className,
+      )}
       {...props}
     >
       <span aria-hidden="true" className="size-2 rounded-full border border-current bg-current" />
@@ -255,9 +263,15 @@ function EmptyState({ title, description, icon, action, className, ...props }: S
       )}
       {...props}
     >
-      {icon ? <div aria-hidden="true" className="text-muted-foreground">{icon}</div> : null}
+      {icon ? (
+        <div aria-hidden="true" className="text-muted-foreground">
+          {icon}
+        </div>
+      ) : null}
       <h2 className="text-lg font-semibold">{title}</h2>
-      {description ? <p className="max-w-prose text-sm text-muted-foreground">{description}</p> : null}
+      {description ? (
+        <p className="max-w-prose text-sm text-muted-foreground">{description}</p>
+      ) : null}
       {action ? <div className="mt-1">{action}</div> : null}
     </div>
   );
@@ -273,16 +287,24 @@ function ErrorState({ title, description, icon, action, className, ...props }: S
       )}
       {...props}
     >
-      {icon ? <div aria-hidden="true" className="text-danger">{icon}</div> : null}
+      {icon ? (
+        <div aria-hidden="true" className="text-danger">
+          {icon}
+        </div>
+      ) : null}
       <h2 className="text-lg font-semibold">{title}</h2>
-      {description ? <p className="max-w-prose text-sm text-muted-foreground">{description}</p> : null}
+      {description ? (
+        <p className="max-w-prose text-sm text-muted-foreground">{description}</p>
+      ) : null}
       {action ? <div className="mt-1">{action}</div> : null}
     </div>
   );
 }
 
 const VisuallyHidden = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTMLSpanElement>>(
-  ({ className, ...props }, ref) => <span ref={ref} className={cn("sr-only", className)} {...props} />,
+  ({ className, ...props }, ref) => (
+    <span ref={ref} className={cn("sr-only", className)} {...props} />
+  ),
 );
 VisuallyHidden.displayName = "VisuallyHidden";
 

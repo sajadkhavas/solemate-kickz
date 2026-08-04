@@ -1,7 +1,229 @@
 $ bun run audit:f0-f1 && bun run test:foundation && bun run typecheck && bun run lint && bun run build
 $ node scripts/audit-f0-f1-foundation.mjs
-{"total":20,"passed":19,"failed":1}
+{"total":20,"passed":20,"failed":0}
 Foundation audit report: artifacts/audits/f0-f1-foundation.json
-FAIL interaction.no-unsafe-url: [{"type":"unsafe-url","file":"src/components/sections/BrandWall.tsx","line":20,"detail":"#"},{"type":"unsafe-url","file":"src/components/sections/Footer.tsx","line":110,"detail":"#"},{"type":"unsafe-url","file":"src/components/sections/Footer.tsx","line":113,"detail":"#"},{"type":"unsafe-url","file":"src/routes/about.tsx","line":174,"detail":"#"},{"type":"unsafe-url","file":"src/routes/about.tsx","line":175,"detail":"#"}]
-error: script "audit:f0-f1" exited with code 1
-error: script "check" exited with code 1
+$ node --test scripts/test-f0-f1-primitives.mjs
+TAP version 13
+# Subtest: Button defaults to non-submitting behavior
+ok 1 - Button defaults to non-submitting behavior
+  ---
+  duration_ms: 1.888413
+  type: 'test'
+  ...
+# Subtest: Button exposes loading and disabled semantics
+ok 2 - Button exposes loading and disabled semantics
+  ---
+  duration_ms: 0.162481
+  type: 'test'
+  ...
+# Subtest: IconButton requires an accessible label
+ok 3 - IconButton requires an accessible label
+  ---
+  duration_ms: 0.193078
+  type: 'test'
+  ...
+# Subtest: QuantityStepper clamps values and disables boundaries
+ok 4 - QuantityStepper clamps values and disables boundaries
+  ---
+  duration_ms: 0.219518
+  type: 'test'
+  ...
+# Subtest: Price content isolates mixed-direction numeric values
+ok 5 - Price content isolates mixed-direction numeric values
+  ---
+  duration_ms: 0.213245
+  type: 'test'
+  ...
+# Subtest: Cart drawer uses a modal primitive with an accessible name
+ok 6 - Cart drawer uses a modal primitive with an accessible name
+  ---
+  duration_ms: 0.152243
+  type: 'test'
+  ...
+# Subtest: Root document owns RTL, skip navigation, and route announcements
+ok 7 - Root document owns RTL, skip navigation, and route announcements
+  ---
+  duration_ms: 0.204089
+  type: 'test'
+  ...
+# Subtest: Global CSS preserves focus and reduced-motion behavior
+ok 8 - Global CSS preserves focus and reduced-motion behavior
+  ---
+  duration_ms: 0.142234
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 76.113837
+$ tsc --noEmit
+$ eslint .
+
+/home/runner/work/solemate-kickz/solemate-kickz/src/components/ShoeViewer3D.tsx
+  29:3  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-namespace')
+
+/home/runner/work/solemate-kickz/solemate-kickz/src/components/ui/badge.tsx
+  32:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/runner/work/solemate-kickz/solemate-kickz/src/components/ui/button.tsx
+  85:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/runner/work/solemate-kickz/solemate-kickz/src/components/ui/form.tsx
+  163:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/runner/work/solemate-kickz/solemate-kickz/src/components/ui/navigation-menu.tsx
+  111:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/runner/work/solemate-kickz/solemate-kickz/src/components/ui/sidebar.tsx
+  743:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/runner/work/solemate-kickz/solemate-kickz/src/components/ui/toggle.tsx
+  42:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+✖ 7 problems (0 errors, 7 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+
+$ vite build
+[33mThe plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the [1mresolve.tsconfigPaths[22m option. You can remove the plugin and set [1mresolve.tsconfigPaths: true[22m in your Vite config instead.[39m
+[36mvite v8.0.16 [32mbuilding client environment for production...[36m[39m
+[2Ktransforming...✓ 2499 modules transformed.
+rendering chunks...
+computing gzip size...
+.output/public/assets/hype-2-D1ZcouUB.jpg              25.44 kB
+.output/public/assets/hype-1-DY9Xra9E.jpg              31.83 kB
+.output/public/assets/hype-3-BbBnbKhx.jpg              47.35 kB
+.output/public/assets/cat-luxury-D3MTgHPk.jpg          62.72 kB
+.output/public/assets/hero-shoe-BNckDxvV.jpg           66.81 kB
+.output/public/assets/cat-skateboarding-DcgLsoxa.jpg   80.75 kB
+.output/public/assets/cat-running-DdhyobU9.jpg         98.73 kB
+.output/public/assets/cat-basketball-PsUJ4FTl.jpg     100.02 kB
+.output/public/assets/cat-trail-CCWaLRVA.jpg          130.23 kB
+.output/public/assets/cat-lifestyle-G4Wlj_Ba.jpg      159.83 kB
+.output/public/assets/styles-CdaCQu5i.css             111.50 kB │ gzip:  19.03 kB
+.output/public/assets/eye-BIDgMKGA.js                   0.24 kB │ gzip:   0.19 kB
+.output/public/assets/tag-Bz3YEMUK.js                   0.31 kB │ gzip:   0.24 kB
+.output/public/assets/shield-check-B5spf4Ki.js          0.45 kB │ gzip:   0.31 kB
+.output/public/assets/product._id-BfmGaoCR.js           0.49 kB │ gzip:   0.33 kB
+.output/public/assets/brands-D4hvNCzR.js                4.94 kB │ gzip:   1.81 kB
+.output/public/assets/auth-CvNr6U86.js                  5.13 kB │ gzip:   2.12 kB
+.output/public/assets/cart-DPiY2Km8.js                  6.95 kB │ gzip:   2.36 kB
+.output/public/assets/MobileBottomNav-Dkt_NkTA.js       7.04 kB │ gzip:   2.73 kB
+.output/public/assets/about-D_mAti9d.js                 7.67 kB │ gzip:   2.84 kB
+.output/public/assets/ShoeCard-CnX5mtHD.js              8.85 kB │ gzip:   2.93 kB
+.output/public/assets/products-DB7w5DqE.js             10.85 kB │ gzip:   3.46 kB
+.output/public/assets/product._id-DicOoodr.js          11.51 kB │ gzip:   3.88 kB
+.output/public/assets/Navbar-CJnFHYMS.js               14.32 kB │ gzip:   4.43 kB
+.output/public/assets/routes-CbvQHonr.js               30.34 kB │ gzip:  10.33 kB
+.output/public/assets/link-CsShC-rv.js                 36.06 kB │ gzip:  12.79 kB
+.output/public/assets/index-pLHTUgdu.js               616.93 kB │ gzip: 189.16 kB
+.output/public/assets/model-viewer-BdrpuKBk.js        884.09 kB │ gzip: 252.43 kB
+
+[32m✓ built in 2.41s[39m
+[33m[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[36mvite v8.0.16 [32mbuilding ssr environment for production...[36m[39m
+[2Ktransforming...✓ 101 modules transformed.
+rendering chunks...
+computing gzip size...
+node_modules/.nitro/vite/services/ssr/assets/hype-2-D1ZcouUB.jpg                              25.44 kB
+node_modules/.nitro/vite/services/ssr/assets/hype-1-DY9Xra9E.jpg                              31.83 kB
+node_modules/.nitro/vite/services/ssr/assets/hype-3-BbBnbKhx.jpg                              47.35 kB
+node_modules/.nitro/vite/services/ssr/assets/cat-luxury-D3MTgHPk.jpg                          62.72 kB
+node_modules/.nitro/vite/services/ssr/assets/hero-shoe-BNckDxvV.jpg                           66.81 kB
+node_modules/.nitro/vite/services/ssr/assets/cat-skateboarding-DcgLsoxa.jpg                   80.75 kB
+node_modules/.nitro/vite/services/ssr/assets/cat-running-DdhyobU9.jpg                         98.73 kB
+node_modules/.nitro/vite/services/ssr/assets/cat-basketball-PsUJ4FTl.jpg                     100.02 kB
+node_modules/.nitro/vite/services/ssr/assets/cat-trail-CCWaLRVA.jpg                          130.23 kB
+node_modules/.nitro/vite/services/ssr/assets/cat-lifestyle-G4Wlj_Ba.jpg                      159.83 kB
+node_modules/.nitro/vite/services/ssr/assets/styles-CdaCQu5i.css                             111.50 kB │ gzip: 19.03 kB
+node_modules/.nitro/vite/services/ssr/assets/__23tanstack-start-plugin-adapters-BzCA6dXo.js    0.18 kB │ gzip:  0.13 kB
+node_modules/.nitro/vite/services/ssr/assets/start-ObTnauo7.js                                 0.64 kB │ gzip:  0.39 kB
+node_modules/.nitro/vite/services/ssr/assets/product._id-CcPg4yJt.js                           0.79 kB │ gzip:  0.45 kB
+node_modules/.nitro/vite/services/ssr/assets/products-Dk7z8xEe.js                              1.02 kB │ gzip:  0.57 kB
+node_modules/.nitro/vite/services/ssr/assets/product._id-7c2MwqPf.js                           1.19 kB │ gzip:  0.55 kB
+node_modules/.nitro/vite/services/ssr/assets/createStart-BWB9HM9w.js                           1.56 kB │ gzip:  0.55 kB
+node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-CsavCgFe.js            2.73 kB │ gzip:  0.60 kB
+node_modules/.nitro/vite/services/ssr/index.js                                                 3.27 kB │ gzip:  1.42 kB
+node_modules/.nitro/vite/services/ssr/assets/auth-64UUQAOD.js                                  7.21 kB │ gzip:  2.39 kB
+node_modules/.nitro/vite/services/ssr/assets/brands-DJqi7Dl6.js                                7.39 kB │ gzip:  2.28 kB
+node_modules/.nitro/vite/services/ssr/assets/MobileBottomNav-Dxce0eJT.js                       9.13 kB │ gzip:  2.88 kB
+node_modules/.nitro/vite/services/ssr/assets/about-nPdy8uBV.js                                 9.66 kB │ gzip:  2.88 kB
+node_modules/.nitro/vite/services/ssr/assets/cart-DyhzIelY.js                                 11.62 kB │ gzip:  3.03 kB
+node_modules/.nitro/vite/services/ssr/assets/ShoeCard-B3lPK2xY.js                             12.86 kB │ gzip:  3.39 kB
+node_modules/.nitro/vite/services/ssr/assets/shoes-B3jYqIys.js                                15.68 kB │ gzip:  4.06 kB
+node_modules/.nitro/vite/services/ssr/assets/products-DIOf_BHR.js                             16.17 kB │ gzip:  4.05 kB
+node_modules/.nitro/vite/services/ssr/assets/product._id-Bx_jFB2v.js                          17.89 kB │ gzip:  4.58 kB
+node_modules/.nitro/vite/services/ssr/assets/Navbar-DxfpDBld.js                               19.50 kB │ gzip:  4.67 kB
+node_modules/.nitro/vite/services/ssr/assets/router-DQ2FMePy.js                               25.40 kB │ gzip:  7.01 kB
+node_modules/.nitro/vite/services/ssr/assets/routes-Do26Uvo0.js                               32.51 kB │ gzip:  8.51 kB
+node_modules/.nitro/vite/services/ssr/assets/server-D7AOOGOf.js                               42.03 kB │ gzip: 11.35 kB
+
+[32m✓ built in 760ms[39m
+[start] [nitro] Building [[35mNitro[39m] [2m(preset: `cloudflare-module`, compatibility: `2026-08-04`)[22m
+[success] [nitro] Generated public [36m.output/public[39m
+[36mvite v8.0.16 [32mbuilding nitro environment for production...[36m[39m
+[warn] `inlineDynamicImports` option is ignored because the `codeSplitting` option is specified.
+[2Ktransforming...✓ 2509 modules transformed.
+rendering chunks...
+computing gzip size...
+.output/server/__23tanstack-start-plugin-adapters-BzCA6dXo.mjs      0.24 kB │ gzip:   0.17 kB
+.output/server/_libs/radix-ui__primitive.mjs                        0.42 kB │ gzip:   0.23 kB
+.output/server/_chunks/ssr-renderer.mjs                             0.60 kB │ gzip:   0.36 kB
+.output/server/_libs/tanstack__react-query.mjs                      0.79 kB │ gzip:   0.39 kB
+.output/server/_ssr/product._id-CcPg4yJt.mjs                        1.04 kB │ gzip:   0.52 kB
+.output/server/_ssr/products-Dk7z8xEe.mjs                           1.15 kB │ gzip:   0.64 kB
+.output/server/_libs/hookable.mjs                                   1.16 kB │ gzip:   0.51 kB
+.output/server/_ssr/product._id-7c2MwqPf.mjs                        1.27 kB │ gzip:   0.60 kB
+.output/server/_runtime.mjs                                         1.66 kB │ gzip:   0.75 kB
+.output/server/_ssr/start-ObTnauo7.mjs                              2.03 kB │ gzip:   0.79 kB
+.output/server/_tanstack-start-manifest_v-CsavCgFe.mjs              2.79 kB │ gzip:   0.63 kB
+.output/server/_libs/class-variance-authority+clsx.mjs              3.17 kB │ gzip:   1.24 kB
+.output/server/_ssr/ssr.mjs                                         3.21 kB │ gzip:   1.42 kB
+.output/server/_libs/radix-ui__react-slot.mjs                       4.39 kB │ gzip:   1.38 kB
+.output/server/_libs/radix-ui__react-context+react.mjs              4.80 kB │ gzip:   1.48 kB
+.output/server/_libs/zustand.mjs                                    6.70 kB │ gzip:   2.08 kB
+.output/server/_ssr/auth-64UUQAOD.mjs                               8.62 kB │ gzip:   2.56 kB
+.output/server/_ssr/brands-DJqi7Dl6.mjs                             8.72 kB │ gzip:   2.43 kB
+.output/server/_libs/h3-v2+srvx.mjs                                 9.72 kB │ gzip:   3.01 kB
+.output/server/_ssr/MobileBottomNav-Dxce0eJT.mjs                   10.59 kB │ gzip:   3.05 kB
+.output/server/_ssr/about-nPdy8uBV.mjs                             10.98 kB │ gzip:   3.00 kB
+.output/server/_libs/tanstack__history.mjs                         12.09 kB │ gzip:   3.48 kB
+.output/server/_ssr/cart-DyhzIelY.mjs                              13.67 kB │ gzip:   3.21 kB
+.output/server/_libs/h3+rou3+srvx.mjs                              14.21 kB │ gzip:   4.23 kB
+.output/server/_ssr/ShoeCard-B3lPK2xY.mjs                          14.55 kB │ gzip:   3.55 kB
+.output/server/_ssr/shoes-B3jYqIys.mjs                             15.18 kB │ gzip:   4.04 kB
+.output/server/index.mjs                                           15.26 kB │ gzip:   4.53 kB
+.output/server/_libs/@radix-ui/react-compose-refs+[...].mjs        16.53 kB │ gzip:   4.59 kB
+.output/server/_ssr/products-DIOf_BHR.mjs                          18.72 kB │ gzip:   4.23 kB
+.output/server/_libs/lucide-react.mjs                              20.65 kB │ gzip:   4.43 kB
+.output/server/_ssr/product._id-Bx_jFB2v.mjs                       20.79 kB │ gzip:   4.76 kB
+.output/server/_ssr/Navbar-DxfpDBld.mjs                            22.66 kB │ gzip:   4.86 kB
+.output/server/_ssr/router-DQ2FMePy.mjs                            27.43 kB │ gzip:   7.11 kB
+.output/server/_ssr/routes-Do26Uvo0.mjs                            36.02 kB │ gzip:   8.65 kB
+.output/server/_ssr/server-D7AOOGOf.mjs                            40.60 kB │ gzip:  11.25 kB
+.output/server/_libs/tanstack__query-core.mjs                      47.80 kB │ gzip:  10.59 kB
+.output/server/_libs/sonner.mjs                                    51.97 kB │ gzip:  11.78 kB
+.output/server/_libs/@tanstack/router-core+[...].mjs               75.07 kB │ gzip:  19.13 kB
+.output/server/_libs/@radix-ui/react-dialog+[...].mjs              79.79 kB │ gzip:  19.40 kB
+.output/server/_libs/tailwind-merge.mjs                            85.65 kB │ gzip:  15.21 kB
+.output/server/_libs/tanstack__zod-adapter+zod.mjs                101.44 kB │ gzip:  17.69 kB
+.output/server/_libs/framer-motion.mjs                            377.79 kB │ gzip:  98.83 kB
+.output/server/_libs/@tanstack/react-router+[...].mjs             647.61 kB │ gzip: 136.23 kB
+.output/server/_libs/@google/model-viewer+[...].mjs             1,552.11 kB │ gzip: 349.84 kB
+
+[32m✓ built in 1.35s[39m
+[info] [nitro] Using auto generated worker name: `sajadkhavas-solemate-kickz`
+[info] Generated [36m.output/server/wrangler.json[39m
+[info] Generated [36m.wrangler/deploy/config.json[39m
+[info] Generated [36m.output/public/_headers[39m
+[info] Generated [36m.output/nitro.json[39m
+[success] [nitro] You can preview this build using `npx vite preview`
+[success] [nitro] You can deploy this build using `npx nitro deploy --prebuilt`

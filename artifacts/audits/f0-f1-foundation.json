@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "audit": "f0-f1-foundation",
   "baseline": "137344f1d89373a55e3bf4bb4d82b48d8247b45f",
-  "generatedAt": "2026-08-04T16:45:41.516Z",
-  "pass": false,
+  "generatedAt": "2026-08-04T16:51:05.583Z",
+  "pass": true,
   "summary": {
     "total": 20,
-    "passed": 19,
-    "failed": 1
+    "passed": 20,
+    "failed": 0
   },
   "checks": [
     {
@@ -60,40 +60,9 @@
     },
     {
       "id": "interaction.no-unsafe-url",
-      "status": "fail",
+      "status": "pass",
       "severity": "error",
-      "evidence": [
-        {
-          "type": "unsafe-url",
-          "file": "src/components/sections/BrandWall.tsx",
-          "line": 20,
-          "detail": "#"
-        },
-        {
-          "type": "unsafe-url",
-          "file": "src/components/sections/Footer.tsx",
-          "line": 110,
-          "detail": "#"
-        },
-        {
-          "type": "unsafe-url",
-          "file": "src/components/sections/Footer.tsx",
-          "line": 113,
-          "detail": "#"
-        },
-        {
-          "type": "unsafe-url",
-          "file": "src/routes/about.tsx",
-          "line": 174,
-          "detail": "#"
-        },
-        {
-          "type": "unsafe-url",
-          "file": "src/routes/about.tsx",
-          "line": 175,
-          "detail": "#"
-        }
-      ]
+      "evidence": []
     },
     {
       "id": "interaction.no-positive-tabindex",

@@ -57,7 +57,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
       className="flex min-h-screen items-center justify-center bg-background px-4 outline-none"
     >
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">این صفحه بارگذاری نشد</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">
+          این صفحه بارگذاری نشد
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           خطایی رخ داده است. دوباره تلاش کنید یا به صفحه اصلی برگردید.
         </p>

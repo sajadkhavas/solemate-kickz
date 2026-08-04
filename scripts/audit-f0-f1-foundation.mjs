@@ -106,9 +106,14 @@ function inspectTsxFile(absolutePath) {
     const normalizedName = name.toLowerCase();
     const href = attributeValue(node.attributes, "href");
     const tabIndex = attributeValue(node.attributes, "tabIndex");
-    const asChild = hasJsxAttribute(node.attributes, "asChild") && attributeValue(node.attributes, "asChild") !== false;
+    const asChild =
+      hasJsxAttribute(node.attributes, "asChild") &&
+      attributeValue(node.attributes, "asChild") !== false;
 
-    if (href === "#" || (typeof href === "string" && href.trim().toLowerCase().startsWith("javascript:"))) {
+    if (
+      href === "#" ||
+      (typeof href === "string" && href.trim().toLowerCase().startsWith("javascript:"))
+    ) {
       issues.push({
         type: "unsafe-url",
         file: filePath,
@@ -204,7 +209,8 @@ addCheck(
 );
 addCheck(
   "motion.reduced-foundation",
-  /prefers-reduced-motion:\s*reduce/.test(stylesSource) && /animation-duration:\s*0\.01ms/.test(stylesSource),
+  /prefers-reduced-motion:\s*reduce/.test(stylesSource) &&
+    /animation-duration:\s*0\.01ms/.test(stylesSource),
   stylesPath,
 );
 
@@ -216,7 +222,11 @@ const issuesByType = (type) => interactionIssues.filter((issue) => issue.type ==
 const scopedIssuesByType = (type) =>
   issuesByType(type).filter((issue) => isInFoundationInteractionScope(issue.file));
 
-addCheck("interaction.no-unsafe-url", issuesByType("unsafe-url").length === 0, issuesByType("unsafe-url"));
+addCheck(
+  "interaction.no-unsafe-url",
+  issuesByType("unsafe-url").length === 0,
+  issuesByType("unsafe-url"),
+);
 addCheck(
   "interaction.no-positive-tabindex",
   issuesByType("positive-tabindex").length === 0,
@@ -330,7 +340,9 @@ addCheck(
 
 addCheck(
   "performance.budget-documented",
-  /initial route JS/i.test(constitution) && /LCP/.test(constitution) && /3D model/.test(constitution),
+  /initial route JS/i.test(constitution) &&
+    /LCP/.test(constitution) &&
+    /3D model/.test(constitution),
   constitutionPath,
 );
 addCheck(
@@ -344,7 +356,9 @@ addCheck(
   designSystemPath,
 );
 
-const errorFailures = checks.filter((check) => check.severity === "error" && check.status === "fail");
+const errorFailures = checks.filter(
+  (check) => check.severity === "error" && check.status === "fail",
+);
 const report = {
   schemaVersion: 1,
   audit: "f0-f1-foundation",

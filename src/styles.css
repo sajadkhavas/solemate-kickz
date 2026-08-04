@@ -63,7 +63,8 @@
   color-scheme: dark;
 
   --font-display: "Space Grotesk", "Vazirmatn", system-ui, sans-serif;
-  --font-sans: "Vazirmatn", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans:
+    "Vazirmatn", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-fa: "Vazirmatn", Tahoma, system-ui, sans-serif;
   --font-mono: "DM Mono", ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, monospace;
 
@@ -337,7 +338,9 @@
   &:hover {
     background: var(--primary-hover);
     color: var(--primary-foreground);
-    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--primary);
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px var(--primary);
   }
 
   &:active {
@@ -377,8 +380,12 @@
 }
 
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 @utility animate-marquee {
@@ -386,8 +393,13 @@
 }
 
 @keyframes float-y {
-  0%, 100% { transform: translateY(-12px) rotate(-2deg); }
-  50% { transform: translateY(12px) rotate(2deg); }
+  0%,
+  100% {
+    transform: translateY(-12px) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(12px) rotate(2deg);
+  }
 }
 
 @utility animate-float {
@@ -395,8 +407,15 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
 }
 
 @utility animate-pulse-glow {
@@ -404,7 +423,9 @@
 }
 
 @keyframes spin-slow {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @utility animate-spin-slow {
@@ -426,12 +447,21 @@
 
 @utility no-scrollbar {
   scrollbar-width: none;
-  &::-webkit-scrollbar { display: none; }
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @keyframes hero-particle {
-  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.15; }
-  50% { transform: translateY(-30px) translateX(10px); opacity: 0.4; }
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translateY(-30px) translateX(10px);
+    opacity: 0.4;
+  }
 }
 
 .hero-particle {

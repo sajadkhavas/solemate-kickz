@@ -71,9 +71,9 @@ function AboutPage() {
                 درباره <span className="text-neon">SOLE</span>
               </h1>
               <p className="mt-6 max-w-2xl font-fa text-lg leading-relaxed text-muted-foreground md:text-xl">
-                نسخه فعلی SOLE یک نمونه فرانت‌اند برای تجربه فروشگاه کفش است. هویت تجاری،
-                اطلاعات تماس، سیاست‌های فروش، موجودی، پرداخت و ادعاهای اعتماد هنوز به منبع رسمی
-                متصل نشده‌اند و نباید واقعی تلقی شوند.
+                نسخه فعلی SOLE یک نمونه فرانت‌اند برای تجربه فروشگاه کفش است. هویت تجاری، اطلاعات
+                تماس، سیاست‌های فروش، موجودی، پرداخت و ادعاهای اعتماد هنوز به منبع رسمی متصل
+                نشده‌اند و نباید واقعی تلقی شوند.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link to="/products" className="btn-hype">
@@ -161,12 +161,15 @@ function AboutPage() {
         >
           <div className="mx-auto max-w-[900px] rounded-2xl border border-border bg-surface p-6 text-center md:p-10">
             <Users aria-hidden="true" size={36} className="mx-auto mb-4 text-neon" />
-            <h2 id="contact-heading" className="font-display text-3xl font-black uppercase md:text-4xl">
+            <h2
+              id="contact-heading"
+              className="font-display text-3xl font-black uppercase md:text-4xl"
+            >
               اطلاعات رسمی کسب‌وکار
             </h2>
             <p className="mx-auto mt-4 max-w-2xl font-fa leading-relaxed text-muted-foreground">
-              تیم، نشانی، شماره تماس، شبکه‌های اجتماعی و فرم تماس هنوز تأیید یا به سرویس واقعی
-              متصل نشده‌اند؛ بنابراین در این نسخه قابلیت نمایشی یا اطلاعات آزمایشی به کاربر ارائه
+              تیم، نشانی، شماره تماس، شبکه‌های اجتماعی و فرم تماس هنوز تأیید یا به سرویس واقعی متصل
+              نشده‌اند؛ بنابراین در این نسخه قابلیت نمایشی یا اطلاعات آزمایشی به کاربر ارائه
               نمی‌شود.
             </p>
           </div>
