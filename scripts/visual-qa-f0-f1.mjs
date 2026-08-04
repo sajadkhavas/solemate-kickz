@@ -424,16 +424,22 @@ async function main() {
         fs.writeFileSync(screenshotPath, Buffer.from(screenshot.data, "base64"));
 
         const routeConsole = consoleEvents.slice(consoleStart);
-        const hydrationWarnings = routeConsole.filter((entry) => HYDRATION_PATTERN.test(entry.text));
+        const hydrationWarnings = routeConsole.filter((entry) =>
+          HYDRATION_PATTERN.test(entry.text),
+        );
         const networkErrors = routeConsole.filter(
           (entry) => entry.source === "network" && entry.level === "error",
         );
         const criticalNetworkErrors = networkErrors.filter(isSameOriginNetworkError);
-        const externalNetworkErrors = networkErrors.filter((entry) => !isSameOriginNetworkError(entry));
+        const externalNetworkErrors = networkErrors.filter(
+          (entry) => !isSameOriginNetworkError(entry),
+        );
         const runtimeExceptions = routeConsole.filter(
           (entry) =>
             entry.source === "exception" ||
-            (entry.source !== "network" && entry.level === "error" && !HYDRATION_PATTERN.test(entry.text)),
+            (entry.source !== "network" &&
+              entry.level === "error" &&
+              !HYDRATION_PATTERN.test(entry.text)),
         );
         const result = {
           requestedViewport: viewport,

@@ -2,11 +2,16 @@
  M artifacts/validation/build.txt
  M artifacts/validation/check.txt
  M artifacts/validation/commits.txt
+ M artifacts/validation/dependencies.txt
  M artifacts/validation/files-changed.txt
+ M artifacts/validation/format_check.txt
+ M artifacts/validation/lint.txt
  M artifacts/validation/preview.txt
  M artifacts/validation/tests.txt
  M artifacts/validation/toolchain.txt
  M artifacts/validation/visual_qa.txt
  M artifacts/validation/working-tree-before-evidence-commit.txt
-?? artifacts/validation/visual-server.txt
-?? artifacts/visual-qa/
+ M artifacts/visual-qa/f0-f1-visual-qa.json
+ M scripts/visual-qa-f0-f1.mjs
+?? artifacts/visual-qa/chrome.txt
+?? artifacts/visual-qa/screenshots/

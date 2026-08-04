@@ -3,57 +3,63 @@ TAP version 13
 # Subtest: Button defaults to non-submitting behavior
 ok 1 - Button defaults to non-submitting behavior
   ---
-  duration_ms: 2.655695
+  duration_ms: 0.975273
   type: 'test'
   ...
 # Subtest: Button exposes loading and disabled semantics
 ok 2 - Button exposes loading and disabled semantics
   ---
-  duration_ms: 0.195387
+  duration_ms: 0.20942
+  type: 'test'
+  ...
+# Subtest: Button asChild preserves the Radix single-child contract
+ok 3 - Button asChild preserves the Radix single-child contract
+  ---
+  duration_ms: 0.191924
   type: 'test'
   ...
 # Subtest: IconButton requires an accessible label
-ok 3 - IconButton requires an accessible label
+ok 4 - IconButton requires an accessible label
   ---
-  duration_ms: 0.241774
+  duration_ms: 0.223441
   type: 'test'
   ...
 # Subtest: QuantityStepper clamps values and disables boundaries
-ok 4 - QuantityStepper clamps values and disables boundaries
+ok 5 - QuantityStepper clamps values and disables boundaries
   ---
-  duration_ms: 0.200045
+  duration_ms: 0.214257
   type: 'test'
   ...
 # Subtest: Price content isolates mixed-direction numeric values
-ok 5 - Price content isolates mixed-direction numeric values
+ok 6 - Price content isolates mixed-direction numeric values
   ---
-  duration_ms: 0.300063
+  duration_ms: 0.113158
   type: 'test'
   ...
 # Subtest: Cart drawer uses a modal primitive with an accessible name
-ok 6 - Cart drawer uses a modal primitive with an accessible name
+ok 7 - Cart drawer uses a modal primitive with an accessible name
   ---
-  duration_ms: 0.177333
+  duration_ms: 0.179565
   type: 'test'
   ...
-# Subtest: Root document owns RTL, skip navigation, and route announcements
-ok 7 - Root document owns RTL, skip navigation, and route announcements
+# Subtest: Root document owns stable RTL skip navigation and route focus
+ok 8 - Root document owns stable RTL skip navigation and route focus
   ---
-  duration_ms: 0.248276
+  duration_ms: 0.165806
   type: 'test'
   ...
 # Subtest: Global CSS preserves focus and reduced-motion behavior
-ok 8 - Global CSS preserves focus and reduced-motion behavior
+ok 9 - Global CSS preserves focus and reduced-motion behavior
   ---
-  duration_ms: 0.203762
+  duration_ms: 0.418309
   type: 'test'
   ...
-1..8
-# tests 8
+1..9
+# tests 9
 # suites 0
-# pass 8
+# pass 9
 # fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 104.949567
+# duration_ms 71.380219

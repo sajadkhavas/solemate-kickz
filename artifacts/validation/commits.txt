@@ -50,3 +50,14 @@ b78d06826dcca52e9bf8598c925204b2ed5fb758 chore(format): include brands foundatio
 1daca4a5bcbb44182c0c616f12b83607b9c5ce19 chore(audit): stage brands landmark repair
 804eb6ac1093bfb0cd9261174a1194e7bc74e2a9 chore(audit): record F0-F1 validation evidence
 920773c625dee836b73e95a773fb9db1ac07fb77 fix(qa): serve generated Cloudflare worker for visual audit
+30945a4191241045f816e26bfa037b8ddaf4b480 chore(audit): record F0-F1 validation evidence
+a3f163816d3bd4d30a3e3f962bcaddc0d658020f fix(ui): keep Radix asChild to one element
+a7be506e83751e3378a6a9160e90ea4ba1de8c4b fix(a11y): render stable route focus boundary
+8a387e412f496da439e931d69cf8580f4310db0b fix(a11y): keep stable main skip target contract
+4a9f30c6825a9b84e2d19fabfe625668b7fa0c3a fix(perf): contain custom cursor inside viewport
+c4b0118824d3e6ceca1d9c5ed8a89bac15f6e0b3 fix(a11y): avoid duplicate route focus target IDs
+7a422f4dd5a66ee5ea96233b1aafe97cb4996d50 fix(a11y): keep one root focus target per route
+07ec2bb412f8eed086686a702567160dc39af0f6 test(ui): cover stable focus and asChild contracts
+03c94d855186f395fde2d976cc0ce6cb2d468b3b chore(format): include cursor foundation repair
+e4013089edc09188ac2508c5b9c23ab99c83394b chore(audit): stage cursor containment repair
+596f878ea7ddab93d1d12961f0197873a12c680f test(ui): make visual QA exact and diagnostic

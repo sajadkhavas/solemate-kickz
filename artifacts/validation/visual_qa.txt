@@ -1,5 +1,5 @@
 $ node scripts/visual-qa-f0-f1.mjs
-{"screenshots":72,"routes":8,"viewports":9,"horizontalOverflowCases":5,"hydrationWarningCases":35,"runtimeErrorCases":72,"targetsBelow24":226,"criticalFindings":139}
+{"screenshots":72,"routes":8,"viewports":9,"viewportMismatchCases":0,"horizontalOverflowCases":9,"hydrationWarningCases":0,"runtimeErrorCases":0,"sameOriginNetworkErrorCases":10,"externalNetworkErrorCases":9,"targetsBelow24":226,"criticalFindings":28}
 Visual QA report: artifacts/visual-qa/f0-f1-visual-qa.json
 Screenshot manifest: artifacts/visual-qa/manifest.txt
 error: script "qa:visual:f0-f1" exited with code 1

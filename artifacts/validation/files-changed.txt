@@ -21,8 +21,11 @@ A	artifacts/validation/status.txt
 A	artifacts/validation/tests.txt
 A	artifacts/validation/toolchain.txt
 A	artifacts/validation/typecheck.txt
+A	artifacts/validation/visual-server.txt
 A	artifacts/validation/visual_qa.txt
 A	artifacts/validation/working-tree-before-evidence-commit.txt
+A	artifacts/visual-qa/f0-f1-visual-qa.json
+A	artifacts/visual-qa/manifest.txt
 A	docs/frontend/SOLE_DESIGN_SYSTEM.md
 A	docs/frontend/SOLE_FRONTEND_CONSTITUTION.md
 A	docs/handoffs/F0-F1-FOUNDATION.md
@@ -32,6 +35,7 @@ A	scripts/audit-f0-f1-foundation.mjs
 A	scripts/test-f0-f1-primitives.mjs
 A	scripts/visual-qa-f0-f1.mjs
 M	src/components/CartDrawer.tsx
+M	src/components/MagneticCursor.tsx
 M	src/components/ShoeCard.tsx
 M	src/components/sections/BrandWall.tsx
 M	src/components/sections/Footer.tsx
