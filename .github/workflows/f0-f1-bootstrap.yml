@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - phase/sole-f0-f1-foundation
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
