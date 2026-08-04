@@ -16,6 +16,9 @@ dist-ssr
 .nitro
 *.local
 
+# Runtime quality reports and screenshots are uploaded by GitHub Actions.
+/artifacts/
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars

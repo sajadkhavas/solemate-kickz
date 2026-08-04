@@ -1,3 +1,0 @@
-$ node scripts/audit-f0-f1-foundation.mjs
-{"total":20,"passed":20,"failed":0}
-Foundation audit report: artifacts/audits/f0-f1-foundation.json

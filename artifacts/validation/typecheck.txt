@@ -1,2 +1,0 @@
-$ tsc --noEmit
-src/routes/__root.next.tsx(1,1): error TS2304: Cannot find name 'temporary'.

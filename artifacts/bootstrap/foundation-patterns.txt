@@ -1,2 +1,0 @@
-/home/runner/work/_temp/574ad5b8-011f-47c8-bb79-65002451aaae.sh: line 21: .: filename argument required
-.: usage: . filename [arguments]
