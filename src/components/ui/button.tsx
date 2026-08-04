@@ -54,16 +54,30 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref,
   ) => {
-    const Comp = asChild ? Slot : "button";
     const unavailable = disabled || loading;
+    const classes = cn(buttonVariants({ variant, size, className }));
+
+    if (asChild) {
+      return (
+        <Slot
+          className={classes}
+          ref={ref}
+          aria-disabled={unavailable || undefined}
+          aria-busy={loading || undefined}
+          data-loading={loading ? "true" : undefined}
+          {...props}
+        >
+          {React.Children.only(children)}
+        </Slot>
+      );
+    }
 
     return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+      <button
+        className={classes}
         ref={ref}
-        type={asChild ? undefined : (type ?? "button")}
-        disabled={asChild ? undefined : unavailable}
-        aria-disabled={asChild && unavailable ? true : undefined}
+        type={type ?? "button"}
+        disabled={unavailable}
         aria-busy={loading || undefined}
         data-loading={loading ? "true" : undefined}
         {...props}
@@ -76,7 +90,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ) : null}
         <span className={cn(loading && "invisible")}>{children}</span>
         {loading ? <span className="sr-only">{loadingLabel}</span> : null}
-      </Comp>
+      </button>
     );
   },
 );
