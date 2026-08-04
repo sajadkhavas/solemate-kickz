@@ -1,12 +1,18 @@
-import { Instagram, Send, ChevronDown, Mail, Phone, MapPin } from "lucide-react";
+import { ChevronDown, Info } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
+interface FooterLink {
+  label: string;
+  to?: string;
+  unavailable?: boolean;
+}
+
 interface Section {
   id: string;
   title: string;
-  links: { label: string; to?: string; href?: string }[];
+  links: FooterLink[];
 }
 
 const SECTIONS: Section[] = [
@@ -24,69 +30,85 @@ const SECTIONS: Section[] = [
     id: "help",
     title: "راهنما",
     links: [
-      { label: "ارسال و پرداخت", href: "#" },
-      { label: "بازگشت کالا", href: "#" },
-      { label: "گارانتی اصالت", href: "#" },
-      { label: "راهنمای سایز", href: "#" },
-      { label: "سوالات متداول", href: "#" },
+      { label: "ارسال و پرداخت", unavailable: true },
+      { label: "بازگشت کالا", unavailable: true },
+      { label: "راهنمای سایز", unavailable: true },
+      { label: "سوالات متداول", unavailable: true },
     ],
   },
   {
     id: "about",
     title: "درباره SOLE",
     links: [
-      { label: "درباره ما", to: "/about" },
-      { label: "تماس با ما", to: "/about" },
-      { label: "فرصت‌های شغلی", href: "#" },
-      { label: "همکاری با ما", href: "#" },
+      { label: "درباره نمونه", to: "/about" },
+      { label: "اطلاعات تماس", unavailable: true },
+      { label: "فرصت‌های شغلی", unavailable: true },
+      { label: "همکاری با ما", unavailable: true },
     ],
   },
 ];
 
+function FooterItem({ item }: { item: FooterLink }) {
+  if (item.to) {
+    return (
+      <Link to={item.to} className="transition-colors hover:text-neon">
+        {item.label}
+      </Link>
+    );
+  }
+
+  return (
+    <span className="inline-flex items-center gap-2 text-muted-foreground/70" aria-disabled="true">
+      {item.label}
+      <span className="text-[0.65rem]">به‌زودی</span>
+    </span>
+  );
+}
+
 function FooterCol({ section }: { section: Section }) {
   const [open, setOpen] = useState(false);
+
   return (
     <div className="border-b border-border md:border-0">
       <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between py-4 md:py-0 md:cursor-default md:mb-4"
+        type="button"
+        onClick={() => setOpen((current) => !current)}
+        aria-expanded={open}
+        aria-controls={`footer-section-${section.id}`}
+        className="flex min-h-11 w-full items-center justify-between py-4 md:mb-4 md:cursor-default md:py-0"
       >
         <span className="eyebrow text-neon">{section.title}</span>
-        <ChevronDown size={16} className={`md:hidden transition ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          aria-hidden="true"
+          size={16}
+          className={`transition-transform motion-reduce:transition-none md:hidden ${open ? "rotate-180" : ""}`}
+        />
       </button>
-      {/* Mobile: collapsible */}
-      <div className="md:hidden">
+
+      <div id={`footer-section-${section.id}`} className="md:hidden">
         <AnimatePresence initial={false}>
-          {open && (
+          {open ? (
             <motion.ul
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="overflow-hidden space-y-2 font-fa text-sm text-muted-foreground pb-4"
+              className="space-y-2 overflow-hidden pb-4 font-fa text-sm text-muted-foreground motion-reduce:transition-none"
             >
-              {section.links.map((l, i) => (
-                <li key={i}>
-                  {l.to ? (
-                    <Link to={l.to} className="hover:text-neon transition-colors">{l.label}</Link>
-                  ) : (
-                    <a href={l.href} className="hover:text-neon transition-colors">{l.label}</a>
-                  )}
+              {section.links.map((item) => (
+                <li key={item.label}>
+                  <FooterItem item={item} />
                 </li>
               ))}
             </motion.ul>
-          )}
+          ) : null}
         </AnimatePresence>
       </div>
-      {/* Desktop: always visible */}
-      <ul className="hidden md:block space-y-2 font-fa text-sm text-muted-foreground">
-        {section.links.map((l, i) => (
-          <li key={i}>
-            {l.to ? (
-              <Link to={l.to} className="hover:text-neon transition-colors">{l.label}</Link>
-            ) : (
-              <a href={l.href} className="hover:text-neon transition-colors">{l.label}</a>
-            )}
+
+      <ul className="hidden space-y-2 font-fa text-sm text-muted-foreground md:block">
+        {section.links.map((item) => (
+          <li key={item.label}>
+            <FooterItem item={item} />
           </li>
         ))}
       </ul>
@@ -96,40 +118,36 @@ function FooterCol({ section }: { section: Section }) {
 
 export function Footer() {
   return (
-    <footer id="about" className="bg-ink border-t-2 border-neon mt-12">
-      <div className="max-w-[1400px] mx-auto px-6 py-12 md:py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
+    <footer id="about" className="mt-12 border-t-2 border-neon bg-ink">
+      <div className="mx-auto max-w-[1400px] px-6 py-12 md:py-16">
+        <div className="grid gap-6 md:grid-cols-2 md:gap-10 lg:grid-cols-4">
           <div className="pb-6 md:pb-0">
-            <Link to="/" className="font-display font-black text-3xl tracking-tighter">
+            <Link to="/" className="font-display text-3xl font-black tracking-tighter">
               SOLE<span className="text-neon">.</span>
             </Link>
-            <p className="font-fa text-muted-foreground mt-3 text-sm leading-relaxed">
-              قدم بعدی تو. بهترین کفش‌های دنیا، یک کلیک فاصله.
+            <p className="mt-3 font-fa text-sm leading-relaxed text-muted-foreground">
+              نمونه فرانت‌اند فروشگاه کفش با رابط فارسی و راست‌به‌چپ.
             </p>
-            <div className="flex gap-2 mt-5">
-              <a href="#" aria-label="Instagram" className="w-10 h-10 rounded-full bg-surface border border-border flex items-center justify-center hover:bg-neon hover:text-ink hover:border-neon transition-colors">
-                <Instagram size={16} />
-              </a>
-              <a href="#" aria-label="Telegram" className="w-10 h-10 rounded-full bg-surface border border-border flex items-center justify-center hover:bg-neon hover:text-ink hover:border-neon transition-colors">
-                <Send size={16} />
-              </a>
-            </div>
           </div>
 
-          {SECTIONS.map((s) => <FooterCol key={s.id} section={s} />)}
+          {SECTIONS.map((section) => (
+            <FooterCol key={section.id} section={section} />
+          ))}
         </div>
 
-        <div className="mt-10 pt-6 border-t border-border grid sm:grid-cols-3 gap-4 text-sm font-fa text-muted-foreground">
-          <div className="flex items-center gap-2"><MapPin size={14} className="text-neon" /> تهران، خیابان ولیعصر</div>
-          <div className="flex items-center gap-2"><Phone size={14} className="text-neon" /><span className="font-mono-num">۰۲۱-۸۸۸۸۸۸۸۸</span></div>
-          <div className="flex items-center gap-2"><Mail size={14} className="text-neon" /> hello@sole.shop</div>
+        <div className="mt-10 flex items-start gap-3 border-t border-border pt-6 font-fa text-sm text-muted-foreground">
+          <Info aria-hidden="true" size={18} className="mt-0.5 shrink-0 text-neon" />
+          <p>
+            نشانی، شماره تماس، شبکه‌های اجتماعی و روش‌های پرداخت پس از تأیید اطلاعات رسمی
+            کسب‌وکار نمایش داده می‌شوند.
+          </p>
         </div>
       </div>
 
       <div className="border-t border-border">
-        <div className="max-w-[1400px] mx-auto px-6 py-5 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
-          <span>© ۲۰۲۶ SOLE. تمامی حقوق محفوظ است.</span>
-          <span className="font-mono-num tracking-wider">SHAPARAK · ZARINPAL · VISA · MASTERCARD</span>
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-6 py-5 text-xs text-muted-foreground">
+          <span>© ۲۰۲۶ SOLE. نمونه نمایشی فرانت‌اند.</span>
+          <span>اطلاعات تجاری این نسخه تأیید نشده است.</span>
         </div>
       </div>
     </footer>
