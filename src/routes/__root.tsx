@@ -8,6 +8,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { MotionConfig } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
@@ -167,11 +168,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <RouteAccessibility />
-      <Outlet />
-      <CartDrawer />
-      <MagneticCursor />
-      <Toaster dir="rtl" theme="dark" position="bottom-left" closeButton />
+      <MotionConfig reducedMotion="user">
+        <RouteAccessibility />
+        <Outlet />
+        <CartDrawer />
+        <MagneticCursor />
+        <Toaster dir="rtl" theme="dark" position="bottom-left" closeButton />
+      </MotionConfig>
     </QueryClientProvider>
   );
 }
