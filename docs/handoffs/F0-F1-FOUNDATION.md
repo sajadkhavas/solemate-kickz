@@ -18,7 +18,7 @@
 
 ## Validated implementation SHA
 
-Validated implementation SHA: `587008445befebac78cef9dcc0fdbf5b5c13d7d7`
+Validated implementation SHA: `986d27d46cb5fe988b7963dd27fb1cb17ffc14fd`
 
 This SHA is the implementation tree that completed the full browser behavior suite and Visual QA with zero Foundation-critical findings. The final branch-head SHA includes this handoff and the read-only CI contract and is recorded in the Draft PR body and supervisor delivery response after the exact-head CI run completes.
 
@@ -108,13 +108,13 @@ The complete `artifacts/` path is ignored. Runtime reports and screenshots are g
 
 ## Final command results
 
-The read-only workflow `.github/workflows/frontend-ci.yml` checks out the exact pull-request head SHA. The implementation gate completed with these results on exact head `b8b3e69185ca6f556b1f1d691fb00b0ad112547f`; the same unchanged command chain is required on the final documentation and CI-contract head.
+The read-only workflow `.github/workflows/frontend-ci.yml` checks out the exact pull-request head SHA. The implementation behavior gate completed with these results on exact head `88663e7916a1ff420c1b8c93c2a69de6f01b16a4`; formatting was then applied without changing runtime behavior. The same complete command chain is required on the final documentation and read-only CI-contract head.
 
 | Command                          | Result       | Evidence                                                                        |
 | -------------------------------- | ------------ | ------------------------------------------------------------------------------- |
 | `bun install --frozen-lockfile`  | Exit code: 0 | 475 packages installed from the unchanged lockfile                              |
 | `bun run audit:source-contracts` | Exit code: 0 | 5 passed, 0 failed                                                              |
-| `bun run test:foundation`        | Exit code: 0 | 13 passed, 0 failed                                                             |
+| `bun run test:foundation`        | Exit code: 0 | 16 passed, 0 failed                                                             |
 | `bun run typecheck`              | Exit code: 0 | TypeScript completed without an error                                           |
 | `bun run lint`                   | Exit code: 0 | 0 errors; 8 non-blocking warnings, including pre-existing Fast Refresh warnings |
 | `bun run format:check`           | Exit code: 0 | All scoped Foundation files use Prettier style                                  |
@@ -139,15 +139,18 @@ Result:
 
 Result:
 
-- total: 13
-- passed: 13
+- total: 16
+- passed: 16
 - failed: 0
 
 Verified behavior:
 
 - Button default `type="button"` and no accidental form submission.
 - Button loading, disabled, `aria-busy`, loading label, and loading state.
+- Polymorphic `Button asChild` loading state blocks pointer and keyboard activation, leaves the tab order, and exposes a loading label.
 - IconButton accessible name.
+- Shared compact Button, IconButton, Search clear action, and QuantityStepper controls meet the 44×44 minimum target.
+- SearchInput clear behavior.
 - QuantityStepper minimum and maximum boundaries.
 - Price RTL wrapper and LTR numeric isolation.
 - Cart Drawer open behavior.
@@ -204,7 +207,7 @@ Viewports inspected:
 - 1440×900
 - 1920×1080
 
-The generated `f0-f1-visual-qa.json` report contains every Deferred entry with its route, viewport, selector, measured dimensions, Baseline source evidence, and phase owner. The exact report inventory is written to the GitHub Actions step summary. Screenshot and JSON ZIP publication can be enabled after account quota recovery by setting `ENABLE_QA_ARTIFACT_UPLOAD=true`; reports are never committed to the Repository.
+The generated `f0-f1-visual-qa.json` report contains every Deferred entry with its route, viewport, selector, measured dimensions, route-source and selector hints, and phase owner. The exact report inventory is written to the GitHub Actions step summary. Screenshot and JSON ZIP publication can be enabled after account quota recovery by setting `ENABLE_QA_ARTIFACT_UPLOAD=true`; reports are never committed to the Repository.
 
 ## Foundation findings resolved
 
@@ -222,7 +225,7 @@ The generated `f0-f1-visual-qa.json` report contains every Deferred entry with i
 
 ## Deferred findings and phase owners
 
-The 744 Deferred entries are repeated route-and-viewport observations of page-specific controls that existed in the Baseline. They are not hidden or counted as zero. The runtime allowlist is restricted to findings with explicit Baseline source evidence and one of the following owners:
+The 744 Deferred entries are repeated route-and-viewport observations of page-specific controls outside the shared F0/F1 ownership boundary. They are not hidden or counted as zero. Each entry has a route, viewport, selector, dimensions, route-source or selector hint where available, and one of the following explicit phase owners. These hints establish routing and ownership context; they do not claim exact historical DOM identity for every repeated observation:
 
 | Route         | Deferred owner | Scope                                                                             |
 | ------------- | -------------- | --------------------------------------------------------------------------------- |
@@ -235,7 +238,7 @@ The 744 Deferred entries are repeated route-and-viewport observations of page-sp
 | `/about`      | F8             | Editorial, trust, and supporting-page controls                                    |
 | invalid route | F12            | Final cross-route accessibility and QA review                                     |
 
-`targetsBelow24: 76` belongs to those page-specific Baseline-present observations. Shared controls touched in F0/F1 have `sharedTargetsBelow44: 0`.
+`targetsBelow24: 76` belongs to those page-specific deferred observations. Shared controls touched in F0/F1 have `sharedTargetsBelow44: 0`.
 
 ## Known limitations
 
@@ -243,7 +246,7 @@ The 744 Deferred entries are repeated route-and-viewport observations of page-sp
 - Physical screen-reader and real touch-device verification remains part of F12.
 - Lint emits eight warnings but zero errors; unrelated pre-existing Fast Refresh warnings remain outside this Foundation correction scope.
 - Production build reports large chunk warnings for the Homepage and model-viewer path; route-level code splitting and the approximately 8 MB 3D model belong to F9 and F11.
-- Deferred page-specific touch targets remain explicitly tracked rather than globally overridden.
+- Deferred page-specific touch targets remain explicitly tracked rather than globally overridden. Route-source and selector hints support ownership triage but are not treated as exact element-level Baseline proof; F12 must revalidate the resolved pages on the release candidate.
 - GitHub Actions ZIP Artifact publication is temporarily disabled by default because of account-level storage quota; this does not bypass or soften any source, browser, build, Visual QA, audit, or aggregate quality command.
 
 ## Out-of-scope phase map
