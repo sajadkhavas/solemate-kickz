@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "audit": "f0-f1-foundation",
+  "baseline": "137344f1d89373a55e3bf4bb4d82b48d8247b45f",
+  "generatedAt": "2026-08-04T16:45:41.516Z",
+  "pass": false,
+  "summary": {
+    "total": 20,
+    "passed": 19,
+    "failed": 1
+  },
+  "checks": [
+    {
+      "id": "constitution.exists",
+      "status": "pass",
+      "severity": "error",
+      "evidence": "docs/frontend/SOLE_FRONTEND_CONSTITUTION.md"
+    },
+    {
+      "id": "design-system.exists",
+      "status": "pass",
+      "severity": "error",
+      "evidence": "docs/frontend/SOLE_DESIGN_SYSTEM.md"
+    },
+    {
+      "id": "handoff.exists",
+      "status": "pass",
+      "severity": "error",
+      "evidence": "docs/handoffs/F0-F1-FOUNDATION.md"
+    },
+    {
+      "id": "document.lang-fa",
+      "status": "pass",
+      "severity": "error",
+      "evidence": "src/routes/__root.tsx"
+    },
+    {
+      "id": "document.dir-rtl",
+      "status": "pass",
+      "severity": "error",
+      "evidence": "src/routes/__root.tsx"
+    },
+    {
+      "id": "document.skip-link",
+      "status": "pass",
+      "severity": "error",
+      "evidence": "src/routes/__root.tsx"
+    },
+    {
+      "id": "focus.global-visible",
+      "status": "pass",
+      "severity": "error",
+      "evidence": "src/styles.css"
+    },
+    {
+      "id": "motion.reduced-foundation",
+      "status": "pass",
+      "severity": "error",
+      "evidence": "src/styles.css"
+    },
+    {
+      "id": "interaction.no-unsafe-url",
+      "status": "fail",
+      "severity": "error",
+      "evidence": [
+        {
+          "type": "unsafe-url",
+          "file": "src/components/sections/BrandWall.tsx",
+          "line": 20,
+          "detail": "#"
+        },
+        {
+          "type": "unsafe-url",
+          "file": "src/components/sections/Footer.tsx",
+          "line": 110,
+          "detail": "#"
+        },
+        {
+          "type": "unsafe-url",
+          "file": "src/components/sections/Footer.tsx",
+          "line": 113,
+          "detail": "#"
+        },
+        {
+          "type": "unsafe-url",
+          "file": "src/routes/about.tsx",
+          "line": 174,
+          "detail": "#"
+        },
+        {
+          "type": "unsafe-url",
+          "file": "src/routes/about.tsx",
+          "line": 175,
+          "detail": "#"
+        }
+      ]
+    },
+    {
+      "id": "interaction.no-positive-tabindex",
+      "status": "pass",
+      "severity": "error",
+      "evidence": []
+    },
+    {
+      "id": "interaction.no-button-inside-link",
+      "status": "pass",
+      "severity": "error",
+      "evidence": []
+    },
+    {
+      "id": "interaction.no-link-inside-button",
+      "status": "pass",
+      "severity": "error",
+      "evidence": []
+    },
+    {
+      "id": "interaction.out-of-scope-nesting-observed",
+      "status": "pass",
+      "severity": "warning",
+      "evidence": [
+        {
+          "type": "button-inside-link",
+          "file": "src/components/ShoeCard.tsx",
+          "line": 100,
+          "detail": "Link > button"
+        },
+        {
+          "type": "button-inside-link",
+          "file": "src/components/ShoeCard.tsx",
+          "line": 103,
+          "detail": "Link > button"
+        },
+        {
+          "type": "button-inside-link",
+          "file": "src/components/ShoeCard.tsx",
+          "line": 136,
+          "detail": "Link > button"
+        },
+        {
+          "type": "button-inside-link",
+          "file": "src/components/ShoeCard.tsx",
+          "line": 171,
+          "detail": "Link > button"
+        },
+        {
+          "type": "button-inside-link",
+          "file": "src/components/ShoeCard.tsx",
+          "line": 201,
+          "detail": "Link > button"
+        }
+      ]
+    },
+    {
+      "id": "tokens.semantic",
+      "status": "pass",
+      "severity": "error",
+      "evidence": {
+        "missing": []
+      }
+    },
+    {
+      "id": "primitives.shared-files",
+      "status": "pass",
+      "severity": "error",
+      "evidence": []
+    },
+    {
+      "id": "primitives.commerce",
+      "status": "pass",
+      "severity": "error",
+      "evidence": {
+        "path": "src/components/ui/commerce-primitives.tsx",
+        "missing": []
+      }
+    },
+    {
+      "id": "fonts.no-render-blocking-remote",
+      "status": "pass",
+      "severity": "error",
+      "evidence": "src/routes/__root.tsx"
+    },
+    {
+      "id": "performance.budget-documented",
+      "status": "pass",
+      "severity": "error",
+      "evidence": "docs/frontend/SOLE_FRONTEND_CONSTITUTION.md"
+    },
+    {
+      "id": "truthfulness.policy-documented",
+      "status": "pass",
+      "severity": "error",
+      "evidence": "docs/frontend/SOLE_FRONTEND_CONSTITUTION.md"
+    },
+    {
+      "id": "overlay.contract-documented",
+      "status": "pass",
+      "severity": "error",
+      "evidence": "docs/frontend/SOLE_DESIGN_SYSTEM.md"
+    }
+  ]
+}

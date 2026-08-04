@@ -1,0 +1,7 @@
+$ bun run audit:f0-f1 && bun run test:foundation && bun run typecheck && bun run lint && bun run build
+$ node scripts/audit-f0-f1-foundation.mjs
+{"total":20,"passed":19,"failed":1}
+Foundation audit report: artifacts/audits/f0-f1-foundation.json
+FAIL interaction.no-unsafe-url: [{"type":"unsafe-url","file":"src/components/sections/BrandWall.tsx","line":20,"detail":"#"},{"type":"unsafe-url","file":"src/components/sections/Footer.tsx","line":110,"detail":"#"},{"type":"unsafe-url","file":"src/components/sections/Footer.tsx","line":113,"detail":"#"},{"type":"unsafe-url","file":"src/routes/about.tsx","line":174,"detail":"#"},{"type":"unsafe-url","file":"src/routes/about.tsx","line":175,"detail":"#"}]
+error: script "audit:f0-f1" exited with code 1
+error: script "check" exited with code 1
