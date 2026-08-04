@@ -1,4 +1,7 @@
+A	.github/workflows/f0-f1-baseline-visual.yml
 A	.github/workflows/f0-f1-bootstrap.yml
+A	.github/workflows/f0-f1-finalize-corrected.yml
+A	.github/workflows/f0-f1-finalize-once.yml
 A	artifacts/audits/f0-f1-foundation.json
 A	artifacts/bootstrap/build.txt
 A	artifacts/bootstrap/files.tsv
@@ -41,7 +44,9 @@ M	src/components/sections/BrandWall.tsx
 M	src/components/sections/Footer.tsx
 M	src/components/ui/button.tsx
 A	src/components/ui/commerce-primitives.tsx
+A	src/routes/__root.next.tsx
 M	src/routes/__root.tsx
 M	src/routes/about.tsx
 M	src/routes/brands.tsx
 M	src/styles.css
+A	tmp-test-do-not-use

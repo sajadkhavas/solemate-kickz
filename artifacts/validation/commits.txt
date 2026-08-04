@@ -61,3 +61,9 @@ c4b0118824d3e6ceca1d9c5ed8a89bac15f6e0b3 fix(a11y): avoid duplicate route focus 
 03c94d855186f395fde2d976cc0ce6cb2d468b3b chore(format): include cursor foundation repair
 e4013089edc09188ac2508c5b9c23ab99c83394b chore(audit): stage cursor containment repair
 596f878ea7ddab93d1d12961f0197873a12c680f test(ui): make visual QA exact and diagnostic
+44ad78be3fdf8149e038f2b851ec13058cc460db chore(audit): record F0-F1 validation evidence
+db3e9a03c02e027759641f4a7ee6ac98166adb6b test(ui): capture exact baseline visual evidence
+be11896d9249e46222153148c7ffb536f6759573 chore(temp): stage root replacement content
+abd52d7c8d6fe39196b7116bd051544bc18012d8 chore(temp): connector capability probe
+12a0e6f979a140754ac15b1deca70f8706b08c4d chore(audit): add one-shot F0-F1 finalizer
+ec0efeb6738792bc17f0acd8af9ba50e2c18001c chore(audit): add corrected one-shot finalizer

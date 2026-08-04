@@ -1,10 +1,10 @@
 install=0
 audit=0
 tests=0
-typecheck=0
-lint=0
+typecheck=2
+lint=1
 build=0
 visual_qa=1
 format_check=0
-check=0
+check=2
 overall=1
