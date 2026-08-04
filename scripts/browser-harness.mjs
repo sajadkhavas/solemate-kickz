@@ -100,8 +100,24 @@ class CdpClient {
     });
   }
 
-  close() {
+  async close() {
+    try {
+      await Promise.race([this.send("Page.close"), sleep(1_000)]);
+    } catch {
+      // The page may already be closed after a navigation failure.
+    }
     this.socket.close();
+  }
+}
+
+async function stopProcess(child) {
+  if (child.exitCode !== null) return;
+  const exited = new Promise((resolve) => child.once("exit", resolve));
+  child.kill("SIGTERM");
+  const graceful = await Promise.race([exited.then(() => true), sleep(3_000).then(() => false)]);
+  if (!graceful && child.exitCode === null) {
+    child.kill("SIGKILL");
+    await Promise.race([exited, sleep(1_000)]);
   }
 }
 
@@ -145,8 +161,8 @@ export async function openBrowser({ debugPort, logPath, width = 1280, height = 8
   return {
     client,
     async close() {
-      client.close();
-      chrome.kill("SIGTERM");
+      await client.close();
+      await stopProcess(chrome);
       fs.closeSync(log);
     },
   };
