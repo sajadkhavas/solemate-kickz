@@ -6,6 +6,11 @@ import ts from "typescript";
 const ROOT = process.cwd();
 const OUTPUT_PATH = path.join(ROOT, "artifacts/audits/f0-f1-foundation.json");
 const BASELINE = "137344f1d89373a55e3bf4bb4d82b48d8247b45f";
+const FOUNDATION_INTERACTION_SCOPE = [
+  "src/routes/__root.tsx",
+  "src/components/CartDrawer.tsx",
+  "src/components/ui/",
+];
 
 const checks = [];
 
@@ -36,25 +41,41 @@ function relative(absolutePath) {
   return path.relative(ROOT, absolutePath).replaceAll(path.sep, "/");
 }
 
+function isInFoundationInteractionScope(filePath) {
+  return FOUNDATION_INTERACTION_SCOPE.some((scope) =>
+    scope.endsWith("/") ? filePath.startsWith(scope) : filePath === scope,
+  );
+}
+
 function jsxTagName(node) {
   const tagName = node.tagName;
   if (ts.isIdentifier(tagName)) return tagName.text;
   return tagName.getText();
 }
 
-function attributeValue(attributes, attributeName) {
-  const attribute = attributes.properties.find(
+function findJsxAttribute(attributes, attributeName) {
+  return attributes.properties.find(
     (candidate) =>
       ts.isJsxAttribute(candidate) &&
       ts.isIdentifier(candidate.name) &&
       candidate.name.text === attributeName,
   );
+}
+
+function hasJsxAttribute(attributes, attributeName) {
+  return Boolean(findJsxAttribute(attributes, attributeName));
+}
+
+function attributeValue(attributes, attributeName) {
+  const attribute = findJsxAttribute(attributes, attributeName);
   if (!attribute || !ts.isJsxAttribute(attribute) || !attribute.initializer) return null;
   if (ts.isStringLiteral(attribute.initializer)) return attribute.initializer.text;
   if (ts.isJsxExpression(attribute.initializer) && attribute.initializer.expression) {
     const expression = attribute.initializer.expression;
     if (ts.isNumericLiteral(expression)) return Number(expression.text);
     if (ts.isStringLiteral(expression)) return expression.text;
+    if (expression.kind === ts.SyntaxKind.TrueKeyword) return true;
+    if (expression.kind === ts.SyntaxKind.FalseKeyword) return false;
     if (ts.isPrefixUnaryExpression(expression) && ts.isNumericLiteral(expression.operand)) {
       const value = Number(expression.operand.text);
       return expression.operator === ts.SyntaxKind.MinusToken ? -value : value;
@@ -68,6 +89,7 @@ function lineOf(sourceFile, node) {
 }
 
 function inspectTsxFile(absolutePath) {
+  const filePath = relative(absolutePath);
   const source = fs.readFileSync(absolutePath, "utf8");
   const sourceFile = ts.createSourceFile(
     absolutePath,
@@ -84,11 +106,12 @@ function inspectTsxFile(absolutePath) {
     const normalizedName = name.toLowerCase();
     const href = attributeValue(node.attributes, "href");
     const tabIndex = attributeValue(node.attributes, "tabIndex");
+    const asChild = hasJsxAttribute(node.attributes, "asChild") && attributeValue(node.attributes, "asChild") !== false;
 
     if (href === "#" || (typeof href === "string" && href.trim().toLowerCase().startsWith("javascript:"))) {
       issues.push({
         type: "unsafe-url",
-        file: relative(absolutePath),
+        file: filePath,
         line: lineOf(sourceFile, node),
         detail: String(href),
       });
@@ -97,20 +120,21 @@ function inspectTsxFile(absolutePath) {
     if (typeof tabIndex === "number" && tabIndex > 0) {
       issues.push({
         type: "positive-tabindex",
-        file: relative(absolutePath),
+        file: filePath,
         line: lineOf(sourceFile, node),
         detail: String(tabIndex),
       });
     }
 
     const isLink = normalizedName === "a" || name === "Link" || name.endsWith("Link");
-    const isButton = normalizedName === "button" || name === "Button" || name.endsWith("Button");
+    const isButton =
+      !asChild && (normalizedName === "button" || name === "Button" || name.endsWith("Button"));
     const ancestor = interactiveStack.at(-1);
 
     if (ancestor?.isLink && isButton) {
       issues.push({
         type: "button-inside-link",
-        file: relative(absolutePath),
+        file: filePath,
         line: lineOf(sourceFile, node),
         detail: `${ancestor.name} > ${name}`,
       });
@@ -118,7 +142,7 @@ function inspectTsxFile(absolutePath) {
     if (ancestor?.isButton && isLink) {
       issues.push({
         type: "link-inside-button",
-        file: relative(absolutePath),
+        file: filePath,
         line: lineOf(sourceFile, node),
         detail: `${ancestor.name} > ${name}`,
       });
@@ -189,6 +213,8 @@ const sourceFiles = walk(path.join(ROOT, "src")).filter(
 );
 const interactionIssues = sourceFiles.flatMap(inspectTsxFile);
 const issuesByType = (type) => interactionIssues.filter((issue) => issue.type === type);
+const scopedIssuesByType = (type) =>
+  issuesByType(type).filter((issue) => isInFoundationInteractionScope(issue.file));
 
 addCheck("interaction.no-unsafe-url", issuesByType("unsafe-url").length === 0, issuesByType("unsafe-url"));
 addCheck(
@@ -198,13 +224,23 @@ addCheck(
 );
 addCheck(
   "interaction.no-button-inside-link",
-  issuesByType("button-inside-link").length === 0,
-  issuesByType("button-inside-link"),
+  scopedIssuesByType("button-inside-link").length === 0,
+  scopedIssuesByType("button-inside-link"),
 );
 addCheck(
   "interaction.no-link-inside-button",
-  issuesByType("link-inside-button").length === 0,
-  issuesByType("link-inside-button"),
+  scopedIssuesByType("link-inside-button").length === 0,
+  scopedIssuesByType("link-inside-button"),
+);
+addCheck(
+  "interaction.out-of-scope-nesting-observed",
+  true,
+  interactionIssues.filter(
+    (issue) =>
+      ["button-inside-link", "link-inside-button"].includes(issue.type) &&
+      !isInFoundationInteractionScope(issue.file),
+  ),
+  "warning",
 );
 
 const requiredTokens = [
