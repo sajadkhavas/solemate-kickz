@@ -185,11 +185,11 @@ export async function evaluate(client, expression) {
 }
 
 export async function navigate(client, url) {
-  const loaded = client.waitFor("Page.loadEventFired");
+  const ready = client.waitFor("Page.domContentEventFired");
   const result = await client.send("Page.navigate", { url });
   if (result.errorText) throw new Error(`${url}: ${result.errorText}`);
-  await loaded;
-  await sleep(750);
+  await ready;
+  await sleep(300);
 }
 
 export async function waitForExpression(client, expression, timeout = 10_000) {
