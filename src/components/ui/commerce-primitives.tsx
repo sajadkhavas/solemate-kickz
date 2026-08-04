@@ -17,7 +17,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
       ref={ref}
       size="icon"
       aria-label={label}
-      className={cn(size === "sm" && "h-10 w-10", className)}
+      className={cn(size === "sm" && "size-11", className)}
       {...props}
     >
       {children}
@@ -76,7 +76,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
             type="button"
             aria-label={clearLabel}
             onClick={onClear}
-            className="absolute inset-inline-end-1 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-interactive hover:text-foreground"
+            className="absolute inset-inline-end-1 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-interactive hover:text-foreground"
           >
             <X aria-hidden="true" className="size-4" />
           </button>
