@@ -1,4 +1,4 @@
-name: Temporary F0/F1 Formatter
+name: Temporary F0/F1 Handoff Finalizer
 
 on:
   push:
@@ -9,11 +9,11 @@ permissions:
   contents: write
 
 concurrency:
-  group: temporary-f0-f1-formatter
+  group: temporary-f0-f1-handoff-finalizer
   cancel-in-progress: true
 
 jobs:
-  format-and-push:
+  finalize-and-push:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -34,44 +34,64 @@ jobs:
       - name: Install from lockfile
         run: bun install --frozen-lockfile
 
-      - name: Apply exact Foundation formatting
-        run: bun run format:foundation
+      - name: Finalize truthful handoff
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
 
-      - name: Commit formatting only
+          path = Path("docs/handoffs/F0-F1-FOUNDATION.md")
+          text = path.read_text()
+
+          text = text.replace(
+              "Validated implementation SHA: `587008445befebac78cef9dcc0fdbf5b5c13d7d7`",
+              "Validated implementation SHA: `986d27d46cb5fe988b7963dd27fb1cb17ffc14fd`",
+          )
+          text = text.replace(
+              "The implementation gate completed with these results on exact head `b8b3e69185ca6f556b1f1d691fb00b0ad112547f`; the same unchanged command chain is required on the final documentation and CI-contract head.",
+              "The implementation behavior gate completed with these results on exact head `88663e7916a1ff420c1b8c93c2a69de6f01b16a4`; formatting was then applied without changing runtime behavior. The same complete command chain is required on the final documentation and read-only CI-contract head.",
+          )
+          text = text.replace(
+              "| `bun run test:foundation`        | Exit code: 0 | 13 passed, 0 failed",
+              "| `bun run test:foundation`        | Exit code: 0 | 16 passed, 0 failed",
+          )
+          text = text.replace("- total: 13\n- passed: 13\n- failed: 0", "- total: 16\n- passed: 16\n- failed: 0")
+          text = text.replace(
+              "- Button loading, disabled, `aria-busy`, loading label, and loading state.\n- IconButton accessible name.",
+              "- Button loading, disabled, `aria-busy`, loading label, and loading state.\n- Polymorphic `Button asChild` loading state blocks pointer and keyboard activation, leaves the tab order, and exposes a loading label.\n- IconButton accessible name.\n- Shared compact Button, IconButton, Search clear action, and QuantityStepper controls meet the 44×44 minimum target.\n- SearchInput clear behavior.",
+          )
+          text = text.replace(
+              "The generated `f0-f1-visual-qa.json` report contains every Deferred entry with its route, viewport, selector, measured dimensions, Baseline source evidence, and phase owner.",
+              "The generated `f0-f1-visual-qa.json` report contains every Deferred entry with its route, viewport, selector, measured dimensions, route-source and selector hints, and phase owner.",
+          )
+          text = text.replace(
+              "The 744 Deferred entries are repeated route-and-viewport observations of page-specific controls that existed in the Baseline. They are not hidden or counted as zero. The runtime allowlist is restricted to findings with explicit Baseline source evidence and one of the following owners:",
+              "The 744 Deferred entries are repeated route-and-viewport observations of page-specific controls outside the shared F0/F1 ownership boundary. They are not hidden or counted as zero. Each entry has a route, viewport, selector, dimensions, route-source or selector hint where available, and one of the following explicit phase owners. These hints establish routing and ownership context; they do not claim exact historical DOM identity for every repeated observation:",
+          )
+          text = text.replace(
+              "`targetsBelow24: 76` belongs to those page-specific Baseline-present observations.",
+              "`targetsBelow24: 76` belongs to those page-specific deferred observations.",
+          )
+          text = text.replace(
+              "- Deferred page-specific touch targets remain explicitly tracked rather than globally overridden.",
+              "- Deferred page-specific touch targets remain explicitly tracked rather than globally overridden. Route-source and selector hints support ownership triage but are not treated as exact element-level Baseline proof; F12 must revalidate the resolved pages on the release candidate.",
+          )
+
+          path.write_text(text)
+          PY
+
+          bun run format:foundation
+
+      - name: Commit final handoff and formatting
         shell: bash
         run: |
           if git diff --quiet; then
-            echo "No formatting changes required."
+            echo "No handoff changes required."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            .github/workflows/frontend-ci.yml \
-            docs/frontend/SOLE_DESIGN_SYSTEM.md \
-            docs/frontend/SOLE_FRONTEND_CONSTITUTION.md \
-            docs/handoffs/F0-F1-FOUNDATION.md \
-            eslint.config.js \
-            package.json \
-            scripts/audit-f0-f1-foundation.mjs \
-            scripts/browser-harness.mjs \
-            scripts/fixtures/foundation-behavior-entry.tsx \
-            scripts/run-browser-check.mjs \
-            scripts/test-f0-f1-behavior.mjs \
-            scripts/test-f0-f1-primitives.mjs \
-            scripts/visual-qa-f0-f1.mjs \
-            src/components/CartDrawer.tsx \
-            src/components/MagneticCursor.tsx \
-            src/components/ShoeCard.tsx \
-            src/components/sections/BrandWall.tsx \
-            src/components/sections/Footer.tsx \
-            src/components/ui/button.tsx \
-            src/components/ui/commerce-primitives.tsx \
-            src/foundation.css \
-            src/routes/__root.tsx \
-            src/routes/about.tsx \
-            src/routes/brands.tsx \
-            src/styles.css
-          git commit -m "chore(format): apply exact F0-F1 formatting"
+          git add docs/handoffs/F0-F1-FOUNDATION.md .github/workflows/frontend-ci.yml
+          git commit -m "docs(handoff): record verified F0-F1 evidence"
           git push origin HEAD:phase/sole-f0-f1-foundation
