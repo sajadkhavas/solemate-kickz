@@ -22,8 +22,15 @@ const MANIFEST_PATH = path.join(OUTPUT_DIR, "manifest.txt");
 const LOG_PATH = path.join(ROOT, "artifacts/runtime/visual-chrome.txt");
 
 const VIEWPORTS = [
-  [320, 568], [375, 812], [390, 844], [430, 932], [768, 1024],
-  [1024, 768], [1280, 800], [1440, 900], [1920, 1080],
+  [320, 568],
+  [375, 812],
+  [390, 844],
+  [430, 932],
+  [768, 1024],
+  [1024, 768],
+  [1280, 800],
+  [1440, 900],
+  [1920, 1080],
 ].map(([width, height]) => ({ name: `${width}x${height}`, width, height }));
 
 const ROUTES = [
@@ -34,7 +41,12 @@ const ROUTES = [
   { name: "auth", path: "/auth", owner: "F8", source: "src/routes/auth.tsx" },
   { name: "brands", path: "/brands", owner: "F8", source: "src/routes/brands.tsx" },
   { name: "about", path: "/about", owner: "F8", source: "src/routes/about.tsx" },
-  { name: "not-found", path: "/route-that-does-not-exist", owner: "F12", source: "src/routes/__root.tsx" },
+  {
+    name: "not-found",
+    path: "/route-that-does-not-exist",
+    owner: "F12",
+    source: "src/routes/__root.tsx",
+  },
 ];
 
 const HYDRATION = /hydration|hydrated|server rendered html|did not match/i;
@@ -92,7 +104,7 @@ const INSPECT = `(() => {
     if (testId) return '[data-testid="' + CSS.escape(testId) + '"]';
     const label = element.getAttribute('aria-label');
     if (label) return element.tagName.toLowerCase() + '[aria-label="' + label.replaceAll('"', '\\"') + '"]';
-    const classes = typeof element.className === 'string' ? element.className.trim().split(/\s+/).slice(0, 3) : [];
+    const classes = typeof element.className === 'string' ? element.className.trim().split(/\\s+/).slice(0, 3) : [];
     return element.tagName.toLowerCase() + classes.map((item) => '.' + CSS.escape(item)).join('');
   };
   const shared = (element) => Boolean(element.closest('header, footer, [role="dialog"], [data-foundation-shared], nav.fixed, nav.sticky'));
@@ -150,13 +162,20 @@ async function main() {
   const events = [];
 
   client.on("Runtime.consoleAPICalled", (event) => {
-    events.push({ source: "console", level: event.type, text: event.args.map(serialiseArgument).join(" ") });
+    events.push({
+      source: "console",
+      level: event.type,
+      text: event.args.map(serialiseArgument).join(" "),
+    });
   });
   client.on("Runtime.exceptionThrown", (event) => {
     events.push({
       source: "exception",
       level: "error",
-      text: event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception",
+      text:
+        event.exceptionDetails?.exception?.description ??
+        event.exceptionDetails?.text ??
+        "Runtime exception",
       url: event.exceptionDetails?.url,
     });
   });
@@ -188,7 +207,12 @@ async function main() {
   };
 
   const critical = (type, route, viewport, detail) =>
-    report.criticalFindings.push({ type, route: route?.path, viewport: viewport?.name, detail });
+    report.criticalFindings.push({
+      type,
+      route: route?.path,
+      viewport: viewport?.name,
+      detail,
+    });
 
   try {
     for (const viewport of VIEWPORTS) {
@@ -213,8 +237,18 @@ async function main() {
         await evaluate(client, `document.body?.focus(); true`);
         const focusSamples = [];
         for (let index = 0; index < 5; index += 1) {
-          await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
-          await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+          await client.send("Input.dispatchKeyEvent", {
+            type: "keyDown",
+            key: "Tab",
+            code: "Tab",
+            windowsVirtualKeyCode: 9,
+          });
+          await client.send("Input.dispatchKeyEvent", {
+            type: "keyUp",
+            key: "Tab",
+            code: "Tab",
+            windowsVirtualKeyCode: 9,
+          });
           focusSamples.push(
             await evaluate(
               client,
@@ -241,13 +275,22 @@ async function main() {
         const routeEvents = events.slice(start);
         const hydrationWarnings = routeEvents.filter((entry) => HYDRATION.test(entry.text));
         const runtimeErrors = routeEvents.filter(
-          (entry) => entry.source === "exception" || (entry.source !== "network" && entry.level === "error" && RUNTIME.test(entry.text)),
+          (entry) =>
+            entry.source === "exception" ||
+            (entry.source !== "network" && entry.level === "error" && RUNTIME.test(entry.text)),
         );
-        const networkErrors = routeEvents.filter((entry) => entry.source === "network" && entry.level === "error");
-        const sameOriginErrors = networkErrors.filter((entry) => sameOrigin(entry) && !expectedNotFound(entry, route));
+        const networkErrors = routeEvents.filter(
+          (entry) => entry.source === "network" && entry.level === "error",
+        );
+        const sameOriginErrors = networkErrors.filter(
+          (entry) => sameOrigin(entry) && !expectedNotFound(entry, route),
+        );
         const externalErrors = networkErrors.filter((entry) => !sameOrigin(entry));
         const visibleFocus = focusSamples.some(
-          (sample) => sample && ((sample.outline !== "none" && sample.outlineWidth !== "0px") || sample.boxShadow !== "none"),
+          (sample) =>
+            sample &&
+            ((sample.outline !== "none" && sample.outlineWidth !== "0px") ||
+              sample.boxShadow !== "none"),
         );
 
         report.results.push({
@@ -263,16 +306,45 @@ async function main() {
           focusSamples,
         });
 
-        if (inspection.lang !== "fa" || inspection.dir !== "rtl") critical("document-language-direction", route, viewport, { lang: inspection.lang, dir: inspection.dir });
-        if (inspection.viewport.width !== viewport.width || inspection.viewport.height !== viewport.height) critical("viewport-mismatch", route, viewport, { requested: viewport, actual: inspection.viewport });
+        if (inspection.lang !== "fa" || inspection.dir !== "rtl") {
+          critical("document-language-direction", route, viewport, {
+            lang: inspection.lang,
+            dir: inspection.dir,
+          });
+        }
+        if (
+          inspection.viewport.width !== viewport.width ||
+          inspection.viewport.height !== viewport.height
+        ) {
+          critical("viewport-mismatch", route, viewport, {
+            requested: viewport,
+            actual: inspection.viewport,
+          });
+        }
         if (!inspection.main) critical("missing-main", route, viewport, null);
-        if (inspection.focusTargetCount !== 1) critical("invalid-focus-target-count", route, viewport, inspection.focusTargetCount);
-        if (inspection.horizontalOverflow) critical("horizontal-overflow", route, viewport, { viewportWidth: viewport.width, documentWidth: inspection.documentWidth, offenders: inspection.overflowOffenders });
-        if (hydrationWarnings.length) critical("hydration-warning", route, viewport, hydrationWarnings);
+        if (inspection.focusTargetCount !== 1) {
+          critical("invalid-focus-target-count", route, viewport, inspection.focusTargetCount);
+        }
+        if (inspection.horizontalOverflow) {
+          critical("horizontal-overflow", route, viewport, {
+            viewportWidth: viewport.width,
+            documentWidth: inspection.documentWidth,
+            offenders: inspection.overflowOffenders,
+          });
+        }
+        if (hydrationWarnings.length) {
+          critical("hydration-warning", route, viewport, hydrationWarnings);
+        }
         if (runtimeErrors.length) critical("runtime-error", route, viewport, runtimeErrors);
-        if (sameOriginErrors.length) critical("same-origin-network-error", route, viewport, sameOriginErrors);
-        if (inspection.sharedTargetsBelow44.length) critical("shared-touch-target", route, viewport, inspection.sharedTargetsBelow44);
-        if (!visibleFocus) critical("keyboard-focus-not-visible", route, viewport, focusSamples);
+        if (sameOriginErrors.length) {
+          critical("same-origin-network-error", route, viewport, sameOriginErrors);
+        }
+        if (inspection.sharedTargetsBelow44.length) {
+          critical("shared-touch-target", route, viewport, inspection.sharedTargetsBelow44);
+        }
+        if (!visibleFocus) {
+          critical("keyboard-focus-not-visible", route, viewport, focusSamples);
+        }
 
         for (const target of inspection.pageTargetsBelow44) {
           const evidence = baselineEvidence(route, target);
@@ -308,7 +380,9 @@ async function main() {
       screenWidth: 390,
       screenHeight: 844,
     });
-    await client.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
+    await client.send("Emulation.setEmulatedMedia", {
+      features: [{ name: "prefers-reduced-motion", value: "reduce" }],
+    });
     await navigate(client, `${BASE_URL}/`);
     await sleep(300);
     report.reducedMotion = await evaluate(
@@ -324,7 +398,11 @@ async function main() {
         return { matches: matchMedia('(prefers-reduced-motion: reduce)').matches, motionAnimations: motionAnimations.length, cursor: cursor ? getComputedStyle(cursor).display : null };
       })()`,
     );
-    if (!report.reducedMotion.matches || report.reducedMotion.motionAnimations > 0 || ![null, "none"].includes(report.reducedMotion.cursor)) {
+    if (
+      !report.reducedMotion.matches ||
+      report.reducedMotion.motionAnimations > 0 ||
+      ![null, "none"].includes(report.reducedMotion.cursor)
+    ) {
       critical("reduced-motion", null, null, report.reducedMotion);
     }
     await client.send("Emulation.setEmulatedMedia", { features: [] });
@@ -338,7 +416,9 @@ async function main() {
         `(() => ({ route: location.pathname, viewportWidth: innerWidth, documentWidth: Math.max(document.documentElement.scrollWidth, document.body?.scrollWidth || 0), horizontalOverflow: Math.max(document.documentElement.scrollWidth, document.body?.scrollWidth || 0) > innerWidth + 1, mainPresent: Boolean(document.querySelector('main, [role="main"]')) }))()`,
       );
       report.zoom200.push(zoom);
-      if (zoom.horizontalOverflow || !zoom.mainPresent) critical("zoom-200", route, null, zoom);
+      if (zoom.horizontalOverflow || !zoom.mainPresent) {
+        critical("zoom-200", route, null, zoom);
+      }
     }
     await client.send("Emulation.setPageScaleFactor", { pageScaleFactor: 1 });
   } finally {
@@ -349,20 +429,33 @@ async function main() {
     screenshots: report.results.length,
     routes: ROUTES.length,
     viewports: VIEWPORTS.length,
-    horizontalOverflowCases: report.results.filter((item) => item.inspection.horizontalOverflow).length,
+    horizontalOverflowCases: report.results.filter((item) => item.inspection.horizontalOverflow)
+      .length,
     hydrationWarningCases: report.results.filter((item) => item.hydrationWarnings.length).length,
     runtimeErrorCases: report.results.filter((item) => item.runtimeErrors.length).length,
-    sameOriginNetworkErrorCases: report.results.filter((item) => item.sameOriginErrors.length).length,
+    sameOriginNetworkErrorCases: report.results.filter((item) => item.sameOriginErrors.length)
+      .length,
     externalNetworkErrorCases: report.results.filter((item) => item.externalErrors.length).length,
-    targetsBelow24: report.results.reduce((total, item) => total + item.inspection.targetsBelow24.length, 0),
-    sharedTargetsBelow44: report.results.reduce((total, item) => total + item.inspection.sharedTargetsBelow44.length, 0),
+    targetsBelow24: report.results.reduce(
+      (total, item) => total + item.inspection.targetsBelow24.length,
+      0,
+    ),
+    sharedTargetsBelow44: report.results.reduce(
+      (total, item) => total + item.inspection.sharedTargetsBelow44.length,
+      0,
+    ),
     deferredFindings: report.deferredFindings.length,
     foundationCriticalFindings: report.criticalFindings.length,
   };
   report.pass = report.criticalFindings.length === 0;
 
   fs.writeFileSync(REPORT_PATH, `${JSON.stringify(report, null, 2)}\n`);
-  fs.writeFileSync(MANIFEST_PATH, `${report.results.map((item) => `${item.viewport}\t${item.route}\t${item.screenshot}`).join("\n")}\n`);
+  fs.writeFileSync(
+    MANIFEST_PATH,
+    `${report.results
+      .map((item) => `${item.viewport}\t${item.route}\t${item.screenshot}`)
+      .join("\n")}\n`,
+  );
   console.log(JSON.stringify(report.summary));
   console.log(`Visual QA report: ${path.relative(ROOT, REPORT_PATH)}`);
   if (!report.pass) process.exitCode = 1;
@@ -372,7 +465,18 @@ main().catch((error) => {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   fs.writeFileSync(
     REPORT_PATH,
-    `${JSON.stringify({ schemaVersion: 3, audit: "f0-f1-visual-qa", baseline: BASELINE, generatedAt: new Date().toISOString(), pass: false, fatalError: error instanceof Error ? error.stack ?? error.message : String(error) }, null, 2)}\n`,
+    `${JSON.stringify(
+      {
+        schemaVersion: 3,
+        audit: "f0-f1-visual-qa",
+        baseline: BASELINE,
+        generatedAt: new Date().toISOString(),
+        pass: false,
+        fatalError: error instanceof Error ? error.stack ?? error.message : String(error),
+      },
+      null,
+      2,
+    )}\n`,
   );
   console.error(error instanceof Error ? error.stack ?? error.message : String(error));
   process.exitCode = 1;
