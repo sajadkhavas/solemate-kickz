@@ -57,7 +57,7 @@ async function main() {
       screenHeight: 800,
     });
 
-    await navigate(client, `${BASE_URL}/scripts/fixtures/foundation-behavior.html`);
+    await navigate(client, `${BASE_URL}/foundation-behavior.html`);
     await waitForExpression(client, `document.querySelector('[data-testid="foundation-harness"]')`);
 
     const defaultButton = await evaluate(
