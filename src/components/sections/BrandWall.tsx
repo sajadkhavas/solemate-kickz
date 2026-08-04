@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 
-import { BRANDS, BRAND_LOGO_SLUGS, SHOES } from "@/data/shoes";
+import { BRANDS, SHOES } from "@/data/shoes";
 
 export function BrandWall() {
   return (
@@ -17,7 +17,6 @@ export function BrandWall() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {BRANDS.map((brand, index) => {
             const count = SHOES.filter((shoe) => shoe.brand === brand).length;
-            const slug = BRAND_LOGO_SLUGS[brand];
 
             return (
               <motion.div
@@ -33,20 +32,9 @@ export function BrandWall() {
                   className="group relative flex min-h-[120px] flex-col items-center justify-center rounded-2xl border border-border bg-surface p-5 text-center transition-colors hover:border-neon"
                   aria-label={`مشاهده محصولات نمونه برند ${brand}`}
                 >
-                  {slug ? (
-                    <img
-                      src={`https://cdn.simpleicons.org/${slug}/ffffff`}
-                      alt=""
-                      loading="lazy"
-                      width={96}
-                      height={40}
-                      className="h-10 w-auto max-w-[80%] object-contain opacity-90 transition-all group-hover:opacity-100 group-hover:[filter:brightness(0)_saturate(100%)_invert(91%)_sepia(50%)_saturate(1000%)_hue-rotate(15deg)]"
-                    />
-                  ) : (
-                    <div className="font-display text-base font-bold leading-tight transition-colors group-hover:text-neon md:text-lg">
-                      {brand}
-                    </div>
-                  )}
+                  <div className="font-display text-base font-black leading-tight tracking-tight transition-colors group-hover:text-neon md:text-lg">
+                    {brand}
+                  </div>
                   <div className="mt-3 font-mono-num text-xs text-muted-foreground">
                     {count} مدل نمونه
                   </div>

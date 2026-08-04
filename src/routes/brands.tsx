@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { Footer } from "@/components/sections/Footer";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Navbar } from "@/components/Navbar";
-import { BRANDS, BRAND_LOGO_SLUGS, SHOES } from "@/data/shoes";
+import { BRANDS, SHOES } from "@/data/shoes";
 
 export const Route = createFileRoute("/brands")({
   head: () => ({
@@ -33,7 +33,6 @@ function BrandsPage() {
     return BRANDS.map((brand) => ({
       name: brand,
       count: SHOES.filter((shoe) => shoe.brand === brand).length,
-      slug: BRAND_LOGO_SLUGS[brand],
       sample: SHOES.find((shoe) => shoe.brand === brand)?.image,
     }))
       .filter((brand) => !term || brand.name.toLowerCase().includes(term))
@@ -107,17 +106,9 @@ function BrandsPage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-between p-5">
                         <div className="flex items-center justify-between gap-3">
-                          {brand.slug ? (
-                            <img
-                              src={`https://cdn.simpleicons.org/${brand.slug}/ffffff`}
-                              alt=""
-                              width={96}
-                              height={32}
-                              className="h-8 w-auto max-w-[60%] object-contain"
-                            />
-                          ) : (
-                            <div className="font-display text-2xl font-black">{brand.name}</div>
-                          )}
+                          <div className="font-display text-xl font-black leading-tight">
+                            {brand.name}
+                          </div>
                           <span className="font-mono-num text-xs text-muted-foreground">
                             {brand.count} مدل
                           </span>
@@ -160,20 +151,9 @@ function BrandsPage() {
                     className="group relative flex min-h-[130px] flex-col items-center justify-center rounded-2xl border border-border bg-surface p-5 text-center transition-colors hover:border-neon"
                     aria-label={`مشاهده محصولات نمونه ${brand.name}`}
                   >
-                    {brand.slug ? (
-                      <img
-                        src={`https://cdn.simpleicons.org/${brand.slug}/ffffff`}
-                        alt=""
-                        loading="lazy"
-                        width={96}
-                        height={40}
-                        className="h-10 w-auto max-w-[80%] object-contain opacity-80 transition-opacity group-hover:opacity-100"
-                      />
-                    ) : (
-                      <div className="font-display text-base font-bold leading-tight transition-colors group-hover:text-neon md:text-lg">
-                        {brand.name}
-                      </div>
-                    )}
+                    <div className="font-display text-base font-black leading-tight transition-colors group-hover:text-neon md:text-lg">
+                      {brand.name}
+                    </div>
                     <div className="mt-3 font-mono-num text-xs text-muted-foreground">
                       {brand.count} مدل نمونه
                     </div>

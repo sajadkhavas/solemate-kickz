@@ -1,30 +1,27 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  Outlet,
+  HeadContent,
   Link,
+  Outlet,
+  Scripts,
   createRootRouteWithContext,
   useLocation,
   useRouter,
-  HeadContent,
-  Scripts,
 } from "@tanstack/react-router";
 import { MotionConfig } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
+import foundationCss from "../foundation.css?url";
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartDrawer } from "@/components/CartDrawer";
 import { MagneticCursor } from "@/components/MagneticCursor";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
+import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
   return (
-    <main
-      id="main-content"
-      tabIndex={-1}
-      className="flex min-h-screen items-center justify-center bg-background px-4 outline-none"
-    >
+    <main className="flex min-h-screen items-center justify-center bg-background px-4 outline-none">
       <div className="max-w-md text-center">
         <p className="font-mono-num text-7xl font-bold text-foreground" aria-hidden="true">
           404
@@ -52,11 +49,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   }, [error]);
 
   return (
-    <main
-      id="main-content"
-      tabIndex={-1}
-      className="flex min-h-screen items-center justify-center bg-background px-4 outline-none"
-    >
+    <main className="flex min-h-screen items-center justify-center bg-background px-4 outline-none">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           این صفحه بارگذاری نشد
@@ -105,7 +98,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "stylesheet", href: foundationCss },
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -123,7 +120,9 @@ function RootShell({ children }: { children: ReactNode }) {
         <a className="skip-link" href="#main-content">
           رفتن به محتوای اصلی
         </a>
-        {children}
+        <div id="main-content" tabIndex={-1} className="min-w-0 outline-none">
+          {children}
+        </div>
         <Scripts />
       </body>
     </html>
@@ -132,7 +131,6 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RouteAccessibility() {
   const location = useLocation();
-  const focusTargetRef = useRef<HTMLDivElement>(null);
   const firstRender = useRef(true);
   const [announcement, setAnnouncement] = useState("");
   const routeNeedsMainLandmark = location.pathname === "/products";
@@ -142,7 +140,7 @@ function RouteAccessibility() {
 
     const frame = window.requestAnimationFrame(() => {
       if (!firstRender.current) {
-        focusTargetRef.current?.focus({ preventScroll: true });
+        document.getElementById("main-content")?.focus({ preventScroll: true });
       }
 
       setAnnouncement(`صفحه ${document.title || "SOLE"}`);
@@ -155,12 +153,9 @@ function RouteAccessibility() {
   return (
     <>
       <div
-        id="main-content"
-        ref={focusTargetRef}
-        tabIndex={-1}
         role={routeNeedsMainLandmark ? "main" : undefined}
         aria-label={routeNeedsMainLandmark ? "محتوای اصلی" : undefined}
-        className="min-w-0 outline-none"
+        className="min-w-0"
       >
         <Outlet />
       </div>

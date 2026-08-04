@@ -70,6 +70,7 @@ export function MagneticCursor() {
 
   return (
     <div
+      data-foundation-cursor
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-[90] hidden overflow-hidden [contain:strict] md:block"
     >

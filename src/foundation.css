@@ -1,0 +1,41 @@
+html,
+body {
+  max-inline-size: 100%;
+  overflow-x: clip;
+}
+
+#main-content {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow-x: clip;
+}
+
+:where(header, footer, [role="dialog"], [data-foundation-shared])
+  :where(a[href], button, [role="button"], input, select, textarea, summary),
+:where(nav.fixed, nav.sticky)
+  :where(a[href], button, [role="button"]) {
+  min-block-size: var(--size-touch);
+  min-inline-size: var(--size-touch);
+}
+
+:where(header, footer, [role="dialog"], [data-foundation-shared])
+  :where(a[href], button, [role="button"]):focus-visible,
+#main-content:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+[data-foundation-cursor] {
+  contain: strict;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  [data-foundation-cursor] {
+    display: none !important;
+  }
+}
