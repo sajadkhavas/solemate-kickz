@@ -48,3 +48,5 @@ ad005f3087246ec8412570798a09719ef68e72ba chore(audit): record exact F0-F1 delive
 eaa6917478628cdc218fd3a1243d27c58ba7d9ab fix(a11y): add brands main landmark and truthful labels
 b78d06826dcca52e9bf8598c925204b2ed5fb758 chore(format): include brands foundation repair
 1daca4a5bcbb44182c0c616f12b83607b9c5ce19 chore(audit): stage brands landmark repair
+804eb6ac1093bfb0cd9261174a1194e7bc74e2a9 chore(audit): record F0-F1 validation evidence
+920773c625dee836b73e95a773fb9db1ac07fb77 fix(qa): serve generated Cloudflare worker for visual audit

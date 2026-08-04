@@ -1,17 +1,12 @@
  M artifacts/audits/f0-f1-foundation.json
  M artifacts/validation/build.txt
  M artifacts/validation/check.txt
- M artifacts/validation/format_check.txt
- M artifacts/validation/status.txt
+ M artifacts/validation/commits.txt
+ M artifacts/validation/files-changed.txt
+ M artifacts/validation/preview.txt
  M artifacts/validation/tests.txt
  M artifacts/validation/toolchain.txt
- M scripts/visual-qa-f0-f1.mjs
- M src/components/CartDrawer.tsx
- M src/components/ShoeCard.tsx
- M src/routes/brands.tsx
-?? artifacts/validation/commits.txt
-?? artifacts/validation/dependencies.txt
-?? artifacts/validation/files-changed.txt
-?? artifacts/validation/preview.txt
-?? artifacts/validation/visual_qa.txt
-?? artifacts/validation/working-tree-before-evidence-commit.txt
+ M artifacts/validation/visual_qa.txt
+ M artifacts/validation/working-tree-before-evidence-commit.txt
+?? artifacts/validation/visual-server.txt
+?? artifacts/visual-qa/
