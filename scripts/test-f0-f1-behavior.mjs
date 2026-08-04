@@ -118,7 +118,9 @@ async function main() {
     );
     record(
       "Button default type",
-      defaultButton.type === "button" && defaultButton.attr === "button" && defaultButton.submitsAfter === "0",
+      defaultButton.type === "button" &&
+        defaultButton.attr === "button" &&
+        defaultButton.submitsAfter === "0",
       defaultButton,
     );
 
@@ -136,8 +138,47 @@ async function main() {
     );
     record(
       "Button loading and disabled behavior",
-      loading.disabled === true && loading.busy === "true" && loading.loading === "true" && loading.text.includes("Loading acceptance"),
+      loading.disabled === true &&
+        loading.busy === "true" &&
+        loading.loading === "true" &&
+        loading.text.includes("Loading acceptance"),
       loading,
+    );
+
+    const asChildLoading = await evaluate(
+      client,
+      `(() => {
+        const link = document.querySelector('[data-testid="button-as-child-loading"]');
+        const before = {
+          ariaDisabled: link?.getAttribute('aria-disabled'),
+          busy: link?.getAttribute('aria-busy'),
+          loading: link?.dataset.loading,
+          tabIndex: link?.tabIndex,
+          label: link?.getAttribute('aria-label'),
+          activations: link?.dataset.activations,
+          hash: location.hash,
+        };
+        link?.click();
+        return before;
+      })()`,
+    );
+    await sleep(50);
+    asChildLoading.activationsAfter = await evaluate(
+      client,
+      `document.querySelector('[data-testid="button-as-child-loading"]')?.dataset.activations`,
+    );
+    asChildLoading.hashAfter = await evaluate(client, `location.hash`);
+    record(
+      "Button asChild loading blocks activation",
+      asChildLoading.ariaDisabled === "true" &&
+        asChildLoading.busy === "true" &&
+        asChildLoading.loading === "true" &&
+        asChildLoading.tabIndex === -1 &&
+        asChildLoading.label === "Loading link acceptance" &&
+        asChildLoading.activations === "0" &&
+        asChildLoading.activationsAfter === "0" &&
+        asChildLoading.hashAfter !== "#blocked-activation",
+      asChildLoading,
     );
 
     const icon = await evaluate(
@@ -147,7 +188,71 @@ async function main() {
         return { tag: button?.tagName.toLowerCase(), label: button?.getAttribute('aria-label') };
       })()`,
     );
-    record("IconButton accessible name", icon.tag === "button" && icon.label === "Acceptance icon", icon);
+    record(
+      "IconButton accessible name",
+      icon.tag === "button" && icon.label === "Acceptance icon",
+      icon,
+    );
+
+    const touchTargets = await evaluate(
+      client,
+      `(() => {
+        const selectors = [
+          '[data-testid="button-default"]',
+          '[data-testid="button-small"]',
+          '[data-testid="icon-button-small"]',
+          '[aria-label="Clear acceptance search"]',
+          '[aria-label="Acceptance quantity"] button',
+        ];
+        return selectors.flatMap((selector) =>
+          [...document.querySelectorAll(selector)].map((element) => {
+            const rect = element.getBoundingClientRect();
+            return {
+              selector,
+              label: element.getAttribute('aria-label') || element.textContent?.trim(),
+              width: Math.round(rect.width * 10) / 10,
+              height: Math.round(rect.height * 10) / 10,
+            };
+          }),
+        );
+      })()`,
+    );
+    record(
+      "Shared primitive minimum touch targets",
+      touchTargets.length === 6 &&
+        touchTargets.every((target) => target.width >= 44 && target.height >= 44),
+      touchTargets,
+    );
+
+    const searchBefore = await evaluate(
+      client,
+      `(() => {
+        const input = document.querySelector('[data-testid="search-input"]');
+        const clear = document.querySelector('[aria-label="Clear acceptance search"]');
+        return { value: input?.value, clearPresent: Boolean(clear) };
+      })()`,
+    );
+    await click(client, `[aria-label="Clear acceptance search"]`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="search-input"]')?.value === ''`,
+    );
+    const searchAfter = await evaluate(
+      client,
+      `(() => {
+        const input = document.querySelector('[data-testid="search-input"]');
+        const clear = document.querySelector('[aria-label="Clear acceptance search"]');
+        return { value: input?.value, clearPresent: Boolean(clear) };
+      })()`,
+    );
+    record(
+      "SearchInput clear behavior",
+      searchBefore.value === "shoe" &&
+        searchBefore.clearPresent &&
+        searchAfter.value === "" &&
+        !searchAfter.clearPresent,
+      { before: searchBefore, after: searchAfter },
+    );
 
     const quantity = async () =>
       evaluate(
@@ -160,13 +265,24 @@ async function main() {
       );
     const minimum = await quantity();
     await click(client, `[aria-label="Acceptance quantity"] button:last-of-type`);
-    await waitForExpression(client, `document.querySelector('[aria-label="Acceptance quantity"] output')?.textContent?.trim() === '2'`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[aria-label="Acceptance quantity"] output')?.textContent?.trim() === '2'`,
+    );
     const maximum = await quantity();
     await click(client, `[aria-label="Acceptance quantity"] button:first-of-type`);
-    await waitForExpression(client, `document.querySelector('[aria-label="Acceptance quantity"] output')?.textContent?.trim() === '1'`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[aria-label="Acceptance quantity"] output')?.textContent?.trim() === '1'`,
+    );
     record(
       "QuantityStepper minimum and maximum behavior",
-      minimum.value === "1" && minimum.down === true && minimum.up === false && maximum.value === "2" && maximum.down === false && maximum.up === true,
+      minimum.value === "1" &&
+        minimum.down === true &&
+        minimum.up === false &&
+        maximum.value === "2" &&
+        maximum.down === false &&
+        maximum.up === true,
       { minimum, maximum },
     );
 
@@ -194,7 +310,11 @@ async function main() {
         return { href: link?.getAttribute('href'), count: document.querySelectorAll('#main-content').length, tabIndex: target?.tabIndex };
       })()`,
     );
-    record("Skip-link target", skip.href === "#main-content" && skip.count === 1 && skip.tabIndex === -1, skip);
+    record(
+      "Skip-link target",
+      skip.href === "#main-content" && skip.count === 1 && skip.tabIndex === -1,
+      skip,
+    );
 
     await click(client, `[aria-label="Cart"]`);
     await waitForExpression(client, `document.querySelector('[role="dialog"]')`);
@@ -308,7 +428,9 @@ async function main() {
     );
     record(
       "Route-change focus",
-      routeFocus.path === "/products" && routeFocus.activeId === "main-content" && routeFocus.count === 1,
+      routeFocus.path === "/products" &&
+        routeFocus.activeId === "main-content" &&
+        routeFocus.count === 1,
       routeFocus,
     );
 
@@ -332,12 +454,16 @@ async function main() {
     );
     record(
       "Reduced-motion behavior",
-      reduced.matches && reduced.motionAnimations === 0 && [null, "none"].includes(reduced.cursor),
+      reduced.matches &&
+        reduced.motionAnimations === 0 &&
+        [null, "none"].includes(reduced.cursor),
       reduced,
     );
 
     const meaningfulErrors = browserErrors.filter((text) =>
-      /hydration|hydrated|server rendered html|did not match|uncaught|typeerror|referenceerror|syntaxerror/i.test(text),
+      /hydration|hydrated|server rendered html|did not match|uncaught|typeerror|referenceerror|syntaxerror/i.test(
+        text,
+      ),
     );
     record("No hydration or runtime errors", meaningfulErrors.length === 0, meaningfulErrors);
   } finally {
