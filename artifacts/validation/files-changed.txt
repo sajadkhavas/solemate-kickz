@@ -2,6 +2,7 @@ A	.github/workflows/f0-f1-baseline-visual.yml
 A	.github/workflows/f0-f1-bootstrap.yml
 A	.github/workflows/f0-f1-finalize-corrected.yml
 A	.github/workflows/f0-f1-finalize-once.yml
+A	.github/workflows/f0-f1-handoff-once.yml
 A	artifacts/audits/f0-f1-foundation.json
 A	artifacts/bootstrap/build.txt
 A	artifacts/bootstrap/files.tsv

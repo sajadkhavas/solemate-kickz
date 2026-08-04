@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "audit": "f0-f1-visual-qa",
-  "generatedAt": "2026-08-04T17:42:54.515Z",
+  "generatedAt": "2026-08-04T17:46:27.687Z",
   "baseUrl": "http://127.0.0.1:4173",
   "chrome": "/usr/bin/google-chrome",
   "viewports": [
@@ -182,8 +182,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -5.9,
-            "right": 314.1,
+            "left": -5.8,
+            "right": 314.2,
             "width": 320,
             "position": "static",
             "overflowX": "visible"
@@ -192,8 +192,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -69,
-            "right": 95.2,
+            "left": -68.9,
+            "right": 95.3,
             "width": 164.2,
             "position": "static",
             "overflowX": "visible"
@@ -202,8 +202,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -69,
-            "right": -39.6,
+            "left": -68.9,
+            "right": -39.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -212,8 +212,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -294,
-            "right": -133,
+            "left": -293.9,
+            "right": -132.9,
             "width": 161,
             "position": "static",
             "overflowX": "visible"
@@ -222,8 +222,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -294,
-            "right": -264.6,
+            "left": -293.9,
+            "right": -264.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -232,8 +232,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -608.9,
-            "right": -358,
+            "left": -608.8,
+            "right": -357.9,
             "width": 250.9,
             "position": "static",
             "overflowX": "visible"
@@ -242,8 +242,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -608.9,
-            "right": -579.5,
+            "left": -608.8,
+            "right": -579.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -252,8 +252,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -811.4,
-            "right": -672.9,
+            "left": -811.3,
+            "right": -672.8,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -262,8 +262,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -811.4,
-            "right": -782,
+            "left": -811.3,
+            "right": -781.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -272,8 +272,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1077.2,
-            "right": -875.4,
+            "left": -1077.1,
+            "right": -875.3,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -282,8 +282,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1077.2,
-            "right": -1047.8,
+            "left": -1077.1,
+            "right": -1047.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -292,8 +292,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1273,
-            "right": -1141.2,
+            "left": -1272.9,
+            "right": -1141.1,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -302,8 +302,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1273,
-            "right": -1243.7,
+            "left": -1272.9,
+            "right": -1243.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -312,8 +312,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1503.4,
-            "right": -1337,
+            "left": -1503.2,
+            "right": -1336.9,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -322,8 +322,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1503.4,
-            "right": -1474,
+            "left": -1503.2,
+            "right": -1473.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -332,8 +332,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1705.9,
-            "right": -1567.4,
+            "left": -1705.7,
+            "right": -1567.2,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -342,8 +342,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1705.9,
-            "right": -1676.5,
+            "left": -1705.7,
+            "right": -1676.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -352,8 +352,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1962.1,
-            "right": -1769.9,
+            "left": -1962,
+            "right": -1769.7,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -362,8 +362,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1962.1,
-            "right": -1932.7,
+            "left": -1962,
+            "right": -1932.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -372,8 +372,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2257.1,
-            "right": -2026.1,
+            "left": -2257,
+            "right": -2026,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -382,8 +382,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2257.1,
-            "right": -2227.8,
+            "left": -2257,
+            "right": -2227.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -392,8 +392,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2457.8,
-            "right": -2321.1,
+            "left": -2457.7,
+            "right": -2321,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -402,8 +402,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2457.8,
-            "right": -2428.4,
+            "left": -2457.7,
+            "right": -2428.3,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -2087,10 +2087,21 @@
       ],
       "console": [
         {
+          "source": "console",
+          "level": "debug",
+          "text": "[vite] connecting..."
+        },
+        {
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/jordan/ffffff"
+        },
+        {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
+          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         },
         {
           "source": "network",
@@ -2103,17 +2114,6 @@
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/adidas/ffffff"
-        },
-        {
-          "source": "network",
-          "level": "error",
-          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
-        },
-        {
-          "source": "console",
-          "level": "debug",
-          "text": "[vite] connecting..."
         },
         {
           "source": "console",
@@ -2140,6 +2140,12 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
+          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
+        },
+        {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/nike/ffffff"
         },
         {
@@ -2147,12 +2153,6 @@
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/adidas/ffffff"
-        },
-        {
-          "source": "network",
-          "level": "error",
-          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         }
       ]
     },
@@ -2535,8 +2535,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -4.4,
-            "right": 370.6,
+            "left": -6,
+            "right": 369,
             "width": 375,
             "position": "static",
             "overflowX": "visible"
@@ -2545,8 +2545,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -12.5,
-            "right": 151.7,
+            "left": -14.1,
+            "right": 150,
             "width": 164.2,
             "position": "static",
             "overflowX": "visible"
@@ -2555,8 +2555,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -12.5,
-            "right": 16.9,
+            "left": -14.1,
+            "right": 15.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -2565,8 +2565,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -237.5,
-            "right": -76.5,
+            "left": -239.1,
+            "right": -78.1,
             "width": 161,
             "position": "static",
             "overflowX": "visible"
@@ -2575,8 +2575,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -237.5,
-            "right": -208.1,
+            "left": -239.1,
+            "right": -209.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -2585,8 +2585,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -552.4,
-            "right": -301.5,
+            "left": -554,
+            "right": -303.1,
             "width": 250.9,
             "position": "static",
             "overflowX": "visible"
@@ -2595,8 +2595,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -552.4,
-            "right": -523,
+            "left": -554,
+            "right": -524.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -2605,8 +2605,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -754.9,
-            "right": -616.4,
+            "left": -756.5,
+            "right": -618,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -2615,8 +2615,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -754.9,
-            "right": -725.5,
+            "left": -756.5,
+            "right": -727.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -2625,8 +2625,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1020.7,
-            "right": -818.9,
+            "left": -1022.3,
+            "right": -820.5,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -2635,8 +2635,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1020.7,
-            "right": -991.3,
+            "left": -1022.3,
+            "right": -992.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -2645,8 +2645,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1216.5,
-            "right": -1084.7,
+            "left": -1218.2,
+            "right": -1086.3,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -2655,8 +2655,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1216.5,
-            "right": -1187.2,
+            "left": -1218.2,
+            "right": -1188.8,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -2665,8 +2665,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1446.9,
-            "right": -1280.5,
+            "left": -1448.5,
+            "right": -1282.2,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -2675,8 +2675,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1446.9,
-            "right": -1417.5,
+            "left": -1448.5,
+            "right": -1419.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -2685,8 +2685,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1649.4,
-            "right": -1510.9,
+            "left": -1651,
+            "right": -1512.5,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -2695,8 +2695,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1649.4,
-            "right": -1620,
+            "left": -1651,
+            "right": -1621.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -2705,8 +2705,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1905.6,
-            "right": -1713.4,
+            "left": -1907.2,
+            "right": -1715,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -2715,8 +2715,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1905.6,
-            "right": -1876.2,
+            "left": -1907.2,
+            "right": -1877.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -2725,8 +2725,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2200.7,
-            "right": -1969.6,
+            "left": -2202.3,
+            "right": -1971.2,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -2735,8 +2735,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2200.7,
-            "right": -2171.3,
+            "left": -2202.3,
+            "right": -2172.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -2745,8 +2745,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2401.3,
-            "right": -2264.7,
+            "left": -2402.9,
+            "right": -2266.3,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -2755,8 +2755,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2401.3,
-            "right": -2371.9,
+            "left": -2402.9,
+            "right": -2373.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -3565,6 +3565,11 @@
       "console": [
         {
           "source": "console",
+          "level": "warning",
+          "text": "Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information."
+        },
+        {
+          "source": "console",
           "level": "debug",
           "text": "[vite] connecting..."
         },
@@ -4316,13 +4321,13 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/jordan/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/jordan/ffffff"
         },
         {
           "source": "network",
@@ -4360,13 +4365,13 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/jordan/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/jordan/ffffff"
         },
         {
           "source": "network",
@@ -4695,9 +4700,9 @@
             "tag": "div",
             "id": "",
             "className": "relative z-10 order-1 lg:order-2",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
+            "left": 89.8,
+            "right": 420.2,
+            "width": 330.3,
             "position": "relative",
             "overflowX": "visible"
           },
@@ -4705,9 +4710,9 @@
             "tag": "div",
             "id": "",
             "className": "relative w-full",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
+            "left": 89.8,
+            "right": 420.2,
+            "width": 330.3,
             "position": "relative",
             "overflowX": "visible"
           },
@@ -4715,9 +4720,9 @@
             "tag": "div",
             "id": "",
             "className": "pointer-events-none absolute inset-0 -z-10 transition-opacity",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
+            "left": 89.8,
+            "right": 420.2,
+            "width": 330.3,
             "position": "absolute",
             "overflowX": "visible"
           },
@@ -4725,9 +4730,9 @@
             "tag": "div",
             "id": "",
             "className": "relative w-full",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
+            "left": 89.8,
+            "right": 420.2,
+            "width": 330.3,
             "position": "relative",
             "overflowX": "visible"
           },
@@ -4735,9 +4740,9 @@
             "tag": "div",
             "id": "",
             "className": "relative h-[320px] md:h-[500px] w-full",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
+            "left": 89.8,
+            "right": 420.2,
+            "width": 330.3,
             "position": "relative",
             "overflowX": "visible"
           },
@@ -4745,28 +4750,18 @@
             "tag": "div",
             "id": "",
             "className": "absolute inset-0 rounded-3xl bg-surface animate-pulse",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
+            "left": 89.8,
+            "right": 420.2,
+            "width": 330.3,
             "position": "absolute",
-            "overflowX": "visible"
-          },
-          {
-            "tag": "model-viewer",
-            "id": "",
-            "className": "",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
-            "position": "relative",
             "overflowX": "visible"
           },
           {
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -4.6,
-            "right": 385.4,
+            "left": -4.2,
+            "right": 385.8,
             "width": 390,
             "position": "static",
             "overflowX": "visible"
@@ -4775,8 +4770,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -222.6,
-            "right": -61.7,
+            "left": -222.3,
+            "right": -61.3,
             "width": 161,
             "position": "static",
             "overflowX": "visible"
@@ -4785,8 +4780,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -222.6,
-            "right": -193.3,
+            "left": -222.3,
+            "right": -192.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -4795,8 +4790,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -537.6,
-            "right": -286.6,
+            "left": -537.2,
+            "right": -286.3,
             "width": 250.9,
             "position": "static",
             "overflowX": "visible"
@@ -4805,8 +4800,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -537.6,
-            "right": -508.2,
+            "left": -537.2,
+            "right": -507.8,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -4815,8 +4810,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -740.1,
-            "right": -601.6,
+            "left": -739.7,
+            "right": -601.2,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -4825,8 +4820,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -740.1,
-            "right": -710.7,
+            "left": -739.7,
+            "right": -710.3,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -4835,8 +4830,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1005.8,
-            "right": -804.1,
+            "left": -1005.5,
+            "right": -803.7,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -4845,8 +4840,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1005.8,
-            "right": -976.5,
+            "left": -1005.5,
+            "right": -976.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -4855,8 +4850,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1201.7,
-            "right": -1069.8,
+            "left": -1201.3,
+            "right": -1069.5,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -4865,8 +4860,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1201.7,
-            "right": -1172.3,
+            "left": -1201.3,
+            "right": -1172,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -4875,8 +4870,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1432,
-            "right": -1265.7,
+            "left": -1431.6,
+            "right": -1265.3,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -4885,8 +4880,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1432,
-            "right": -1402.7,
+            "left": -1431.6,
+            "right": -1402.3,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -4895,8 +4890,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1634.5,
-            "right": -1496,
+            "left": -1634.1,
+            "right": -1495.6,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -4905,8 +4900,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1634.5,
-            "right": -1605.2,
+            "left": -1634.1,
+            "right": -1604.8,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -4915,8 +4910,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1890.8,
-            "right": -1698.5,
+            "left": -1890.4,
+            "right": -1698.1,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -4925,8 +4920,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1890.8,
-            "right": -1861.4,
+            "left": -1890.4,
+            "right": -1861,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -4935,8 +4930,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2185.8,
-            "right": -1954.8,
+            "left": -2185.4,
+            "right": -1954.4,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -4945,8 +4940,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2185.8,
-            "right": -2156.5,
+            "left": -2185.4,
+            "right": -2156.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -4955,8 +4950,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2386.5,
-            "right": -2249.8,
+            "left": -2386.1,
+            "right": -2249.4,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -4965,8 +4960,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2386.5,
-            "right": -2357.1,
+            "left": -2386.1,
+            "right": -2356.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -4975,9 +4970,19 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2593.8,
-            "right": -2450.5,
+            "left": -2593.4,
+            "right": -2450.1,
             "width": 143.3,
+            "position": "static",
+            "overflowX": "visible"
+          },
+          {
+            "tag": "span",
+            "id": "",
+            "className": "text-ink/40",
+            "left": -2593.4,
+            "right": -2564,
+            "width": 29.4,
             "position": "static",
             "overflowX": "visible"
           }
@@ -5449,12 +5454,6 @@
           "level": "warning",
           "text": "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
           "url": "http://127.0.0.1:4173/"
-        },
-        {
-          "source": "rendering",
-          "level": "warning",
-          "text": "[.WebGL-0x3ee403321000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-          "url": "http://127.0.0.1:4173/"
         }
       ],
       "hydrationWarnings": [],
@@ -5805,12 +5804,6 @@
         }
       ],
       "console": [
-        {
-          "source": "rendering",
-          "level": "warning",
-          "text": "[.WebGL-0x3ee403321000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-          "url": "http://127.0.0.1:4173/"
-        },
         {
           "source": "console",
           "level": "debug",
@@ -6564,7 +6557,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
@@ -6576,7 +6569,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         },
         {
           "source": "console",
@@ -6608,7 +6601,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
@@ -6620,7 +6613,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         }
       ]
     },
@@ -7013,8 +7006,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -4.7,
-            "right": 425.3,
+            "left": -5.3,
+            "right": 424.7,
             "width": 430,
             "position": "static",
             "overflowX": "visible"
@@ -7023,8 +7016,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -182.8,
-            "right": -21.9,
+            "left": -183.4,
+            "right": -22.4,
             "width": 161,
             "position": "static",
             "overflowX": "visible"
@@ -7033,8 +7026,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -182.8,
-            "right": -153.5,
+            "left": -183.4,
+            "right": -154,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -7043,8 +7036,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -497.7,
-            "right": -246.8,
+            "left": -498.3,
+            "right": -247.4,
             "width": 250.9,
             "position": "static",
             "overflowX": "visible"
@@ -7053,8 +7046,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -497.7,
-            "right": -468.4,
+            "left": -498.3,
+            "right": -468.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -7063,8 +7056,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -700.2,
-            "right": -561.7,
+            "left": -700.8,
+            "right": -562.3,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -7073,8 +7066,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -700.2,
-            "right": -670.9,
+            "left": -700.8,
+            "right": -671.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -7083,8 +7076,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -966,
-            "right": -764.2,
+            "left": -966.6,
+            "right": -764.8,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -7093,8 +7086,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -966,
-            "right": -936.7,
+            "left": -966.6,
+            "right": -937.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -7103,8 +7096,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1161.9,
-            "right": -1030,
+            "left": -1162.5,
+            "right": -1030.6,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -7113,8 +7106,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1161.9,
-            "right": -1132.5,
+            "left": -1162.5,
+            "right": -1133.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -7123,8 +7116,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1392.2,
-            "right": -1225.9,
+            "left": -1392.8,
+            "right": -1226.5,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -7133,8 +7126,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1392.2,
-            "right": -1362.9,
+            "left": -1392.8,
+            "right": -1363.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -7143,8 +7136,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1594.7,
-            "right": -1456.2,
+            "left": -1595.3,
+            "right": -1456.8,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -7153,8 +7146,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1594.7,
-            "right": -1565.4,
+            "left": -1595.3,
+            "right": -1565.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -7163,8 +7156,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1850.9,
-            "right": -1658.7,
+            "left": -1851.5,
+            "right": -1659.3,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -7173,8 +7166,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1850.9,
-            "right": -1821.6,
+            "left": -1851.5,
+            "right": -1822.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -7183,8 +7176,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2146,
-            "right": -1914.9,
+            "left": -2146.6,
+            "right": -1915.5,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -7193,8 +7186,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2146,
-            "right": -2116.7,
+            "left": -2146.6,
+            "right": -2117.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -7203,8 +7196,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2346.6,
-            "right": -2210,
+            "left": -2347.2,
+            "right": -2210.6,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -7213,8 +7206,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2346.6,
-            "right": -2317.3,
+            "left": -2347.2,
+            "right": -2317.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -7223,8 +7216,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2553.9,
-            "right": -2410.6,
+            "left": -2554.5,
+            "right": -2411.2,
             "width": 143.3,
             "position": "static",
             "overflowX": "visible"
@@ -8760,7 +8753,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/jordan/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
@@ -8772,7 +8765,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/jordan/ffffff"
         },
         {
           "source": "console",
@@ -8804,7 +8797,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/jordan/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
@@ -8816,7 +8809,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/jordan/ffffff"
         }
       ]
     },
@@ -9199,8 +9192,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -6.7,
-            "right": 761.3,
+            "left": -4.6,
+            "right": 763.4,
             "width": 768,
             "position": "static",
             "overflowX": "visible"
@@ -9209,8 +9202,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -161.7,
-            "right": 89.2,
+            "left": -159.6,
+            "right": 91.3,
             "width": 250.9,
             "position": "static",
             "overflowX": "visible"
@@ -9219,8 +9212,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -161.7,
-            "right": -132.3,
+            "left": -159.6,
+            "right": -130.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -9229,8 +9222,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -364.2,
-            "right": -225.7,
+            "left": -362.1,
+            "right": -223.6,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -9239,8 +9232,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -364.2,
-            "right": -334.8,
+            "left": -362.1,
+            "right": -332.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -9249,8 +9242,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -630,
-            "right": -428.2,
+            "left": -627.9,
+            "right": -426.1,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -9259,8 +9252,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -630,
-            "right": -600.6,
+            "left": -627.9,
+            "right": -598.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -9269,8 +9262,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -825.8,
-            "right": -694,
+            "left": -823.8,
+            "right": -691.9,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -9279,8 +9272,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -825.8,
-            "right": -796.5,
+            "left": -823.8,
+            "right": -794.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -9289,8 +9282,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1056.1,
-            "right": -889.8,
+            "left": -1054.1,
+            "right": -887.8,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -9299,8 +9292,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1056.1,
-            "right": -1026.8,
+            "left": -1054.1,
+            "right": -1024.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -9309,8 +9302,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1258.6,
-            "right": -1120.1,
+            "left": -1256.6,
+            "right": -1118.1,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -9319,8 +9312,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1258.6,
-            "right": -1229.3,
+            "left": -1256.6,
+            "right": -1227.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -9329,8 +9322,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1514.9,
-            "right": -1322.6,
+            "left": -1512.8,
+            "right": -1320.6,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -9339,8 +9332,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1514.9,
-            "right": -1485.5,
+            "left": -1512.8,
+            "right": -1483.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -9349,8 +9342,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1809.9,
-            "right": -1578.9,
+            "left": -1807.9,
+            "right": -1576.8,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -9359,8 +9352,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1809.9,
-            "right": -1780.6,
+            "left": -1807.9,
+            "right": -1778.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -9369,8 +9362,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2010.6,
-            "right": -1873.9,
+            "left": -2008.5,
+            "right": -1871.9,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -9379,8 +9372,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2010.6,
-            "right": -1981.2,
+            "left": -2008.5,
+            "right": -1979.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -9389,8 +9382,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2217.9,
-            "right": -2074.6,
+            "left": -2215.8,
+            "right": -2072.5,
             "width": 143.3,
             "position": "static",
             "overflowX": "visible"
@@ -9399,8 +9392,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2217.9,
-            "right": -2188.5,
+            "left": -2215.8,
+            "right": -2186.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -9409,8 +9402,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2487.4,
-            "right": -2281.9,
+            "left": -2485.4,
+            "right": -2279.8,
             "width": 205.6,
             "position": "static",
             "overflowX": "visible"
@@ -9419,8 +9412,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2487.4,
-            "right": -2458.1,
+            "left": -2485.4,
+            "right": -2456,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -9857,6 +9850,16 @@
           "level": "warning",
           "text": "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
           "url": "http://127.0.0.1:4173/"
+        },
+        {
+          "source": "console",
+          "level": "warning",
+          "text": "Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information."
+        },
+        {
+          "source": "console",
+          "level": "warning",
+          "text": "Element model-viewer scheduled an update (generally because a property was set) after an update completed, causing a new update to be scheduled. This is inefficient and should be avoided unless the next update can only be scheduled as a side effect of the previous update. See https://lit.dev/msg/change-in-update for more information."
         }
       ],
       "hydrationWarnings": [],
@@ -10167,16 +10170,6 @@
         }
       ],
       "console": [
-        {
-          "source": "console",
-          "level": "warning",
-          "text": "Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information."
-        },
-        {
-          "source": "console",
-          "level": "warning",
-          "text": "Element model-viewer scheduled an update (generally because a property was set) after an update completed, causing a new update to be scheduled. This is inefficient and should be avoided unless the next update can only be scheduled as a side effect of the previous update. See https://lit.dev/msg/change-in-update for more information."
-        },
         {
           "source": "rendering",
           "level": "warning",
@@ -11200,6 +11193,12 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
+          "url": "https://cdn.simpleicons.org/jordan/ffffff"
+        },
+        {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         },
         {
@@ -11209,15 +11208,14 @@
           "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
-          "source": "network",
-          "level": "error",
-          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/jordan/ffffff"
+          "source": "console",
+          "level": "debug",
+          "text": "[vite] connecting..."
         },
         {
           "source": "console",
           "level": "debug",
-          "text": "[vite] connecting..."
+          "text": "[vite] connected."
         },
         {
           "source": "network",
@@ -11230,11 +11228,6 @@
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/reebok/ffffff"
-        },
-        {
-          "source": "console",
-          "level": "debug",
-          "text": "[vite] connected."
         },
         {
           "source": "console",
@@ -11256,6 +11249,12 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
+          "url": "https://cdn.simpleicons.org/jordan/ffffff"
+        },
+        {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         },
         {
@@ -11263,12 +11262,6 @@
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/adidas/ffffff"
-        },
-        {
-          "source": "network",
-          "level": "error",
-          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/jordan/ffffff"
         },
         {
           "source": "network",
@@ -11698,8 +11691,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -5.1,
-            "right": 1018.9,
+            "left": -14,
+            "right": 1010,
             "width": 1024,
             "position": "static",
             "overflowX": "visible"
@@ -11708,8 +11701,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -106.6,
-            "right": 31.9,
+            "left": -115.5,
+            "right": 23,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -11718,8 +11711,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -106.6,
-            "right": -77.3,
+            "left": -115.5,
+            "right": -86.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -11728,8 +11721,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -372.4,
-            "right": -170.6,
+            "left": -381.3,
+            "right": -179.5,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -11738,8 +11731,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -372.4,
-            "right": -343.1,
+            "left": -381.3,
+            "right": -351.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -11748,8 +11741,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -568.3,
-            "right": -436.4,
+            "left": -577.2,
+            "right": -445.3,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -11758,8 +11751,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -568.3,
-            "right": -538.9,
+            "left": -577.2,
+            "right": -547.8,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -11768,8 +11761,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -798.6,
-            "right": -632.3,
+            "left": -807.5,
+            "right": -641.2,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -11778,8 +11771,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -798.6,
-            "right": -769.2,
+            "left": -807.5,
+            "right": -778.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -11788,8 +11781,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1001.1,
-            "right": -862.6,
+            "left": -1010,
+            "right": -871.5,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -11798,8 +11791,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1001.1,
-            "right": -971.7,
+            "left": -1010,
+            "right": -980.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -11808,8 +11801,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1257.3,
-            "right": -1065.1,
+            "left": -1266.2,
+            "right": -1074,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -11818,8 +11811,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1257.3,
-            "right": -1228,
+            "left": -1266.2,
+            "right": -1236.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -11828,8 +11821,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1552.4,
-            "right": -1321.3,
+            "left": -1561.3,
+            "right": -1330.2,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -11838,8 +11831,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1552.4,
-            "right": -1523,
+            "left": -1561.3,
+            "right": -1531.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -11848,8 +11841,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1753,
-            "right": -1616.4,
+            "left": -1761.9,
+            "right": -1625.3,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -11858,8 +11851,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1753,
-            "right": -1723.7,
+            "left": -1761.9,
+            "right": -1732.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -11868,8 +11861,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1960.3,
-            "right": -1817,
+            "left": -1969.2,
+            "right": -1825.9,
             "width": 143.3,
             "position": "static",
             "overflowX": "visible"
@@ -11878,8 +11871,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1960.3,
-            "right": -1931,
+            "left": -1969.2,
+            "right": -1939.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -11888,8 +11881,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2229.9,
-            "right": -2024.3,
+            "left": -2238.8,
+            "right": -2033.2,
             "width": 205.6,
             "position": "static",
             "overflowX": "visible"
@@ -11898,8 +11891,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2229.9,
-            "right": -2200.5,
+            "left": -2238.8,
+            "right": -2209.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -11908,8 +11901,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2480.6,
-            "right": -2293.9,
+            "left": -2489.5,
+            "right": -2302.8,
             "width": 186.7,
             "position": "static",
             "overflowX": "visible"
@@ -11918,8 +11911,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2480.6,
-            "right": -2451.2,
+            "left": -2489.5,
+            "right": -2460.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -11928,8 +11921,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2797.7,
-            "right": -2544.6,
+            "left": -2806.6,
+            "right": -2553.5,
             "width": 253.2,
             "position": "static",
             "overflowX": "visible"
@@ -11938,8 +11931,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2797.7,
-            "right": -2768.4,
+            "left": -2806.6,
+            "right": -2777.3,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -11948,8 +11941,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -3021.4,
-            "right": -2861.7,
+            "left": -3030.2,
+            "right": -2870.6,
             "width": 159.6,
             "position": "static",
             "overflowX": "visible"
@@ -11958,8 +11951,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -3021.4,
-            "right": -2992,
+            "left": -3030.2,
+            "right": -3000.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -11968,8 +11961,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -3247.1,
-            "right": -3085.4,
+            "left": -3256,
+            "right": -3094.2,
             "width": 161.8,
             "position": "static",
             "overflowX": "visible"
@@ -11978,8 +11971,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -3247.1,
-            "right": -3217.8,
+            "left": -3256,
+            "right": -3226.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -12411,11 +12404,6 @@
           "source": "console",
           "level": "warning",
           "text": "Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information."
-        },
-        {
-          "source": "console",
-          "level": "warning",
-          "text": "Element model-viewer scheduled an update (generally because a property was set) after an update completed, causing a new update to be scheduled. This is inefficient and should be avoided unless the next update can only be scheduled as a side effect of the previous update. See https://lit.dev/msg/change-in-update for more information."
         }
       ],
       "hydrationWarnings": [],
@@ -12742,6 +12730,11 @@
         }
       ],
       "console": [
+        {
+          "source": "console",
+          "level": "warning",
+          "text": "Element model-viewer scheduled an update (generally because a property was set) after an update completed, causing a new update to be scheduled. This is inefficient and should be avoided unless the next update can only be scheduled as a side effect of the previous update. See https://lit.dev/msg/change-in-update for more information."
+        },
         {
           "source": "rendering",
           "level": "warning",
@@ -13778,13 +13771,25 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+        },
+        {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         },
         {
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/reebok/ffffff"
+        },
+        {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
+          "url": "https://cdn.simpleicons.org/puma/ffffff"
         },
         {
           "source": "console",
@@ -13795,18 +13800,6 @@
           "source": "console",
           "level": "debug",
           "text": "[vite] connected."
-        },
-        {
-          "source": "network",
-          "level": "error",
-          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/puma/ffffff"
-        },
-        {
-          "source": "network",
-          "level": "error",
-          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/reebok/ffffff"
         },
         {
           "source": "console",
@@ -13834,25 +13827,25 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
-        },
-        {
-          "source": "network",
-          "level": "error",
-          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/puma/ffffff"
+          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         },
         {
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/reebok/ffffff"
+        },
+        {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
+          "url": "https://cdn.simpleicons.org/puma/ffffff"
         }
       ]
     },
@@ -14270,8 +14263,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -4.7,
-            "right": 1275.3,
+            "left": -5.1,
+            "right": 1274.9,
             "width": 1280,
             "position": "static",
             "overflowX": "visible"
@@ -14280,8 +14273,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -116,
-            "right": 85.8,
+            "left": -116.4,
+            "right": 85.4,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -14290,8 +14283,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -116,
-            "right": -86.6,
+            "left": -116.4,
+            "right": -87.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14300,8 +14293,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -311.8,
-            "right": -180,
+            "left": -312.3,
+            "right": -180.4,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -14310,8 +14303,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -311.8,
-            "right": -282.5,
+            "left": -312.3,
+            "right": -282.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14320,8 +14313,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -542.2,
-            "right": -375.8,
+            "left": -542.6,
+            "right": -376.3,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -14330,8 +14323,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -542.2,
-            "right": -512.8,
+            "left": -542.6,
+            "right": -513.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14340,8 +14333,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -744.7,
-            "right": -606.2,
+            "left": -745.1,
+            "right": -606.6,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -14350,8 +14343,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -744.7,
-            "right": -715.3,
+            "left": -745.1,
+            "right": -715.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14360,8 +14353,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1000.9,
-            "right": -808.7,
+            "left": -1001.3,
+            "right": -809.1,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -14370,8 +14363,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1000.9,
-            "right": -971.6,
+            "left": -1001.3,
+            "right": -972,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14380,8 +14373,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1296,
-            "right": -1064.9,
+            "left": -1296.4,
+            "right": -1065.3,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -14390,8 +14383,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1296,
-            "right": -1266.6,
+            "left": -1296.4,
+            "right": -1267,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14400,8 +14393,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1496.6,
-            "right": -1360,
+            "left": -1497,
+            "right": -1360.4,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -14410,8 +14403,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1496.6,
-            "right": -1467.2,
+            "left": -1497,
+            "right": -1467.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14420,8 +14413,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1703.9,
-            "right": -1560.6,
+            "left": -1704.3,
+            "right": -1561,
             "width": 143.3,
             "position": "static",
             "overflowX": "visible"
@@ -14430,8 +14423,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1703.9,
-            "right": -1674.6,
+            "left": -1704.3,
+            "right": -1675,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14440,8 +14433,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1973.5,
-            "right": -1767.9,
+            "left": -1973.9,
+            "right": -1768.3,
             "width": 205.6,
             "position": "static",
             "overflowX": "visible"
@@ -14450,8 +14443,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1973.5,
-            "right": -1944.1,
+            "left": -1973.9,
+            "right": -1944.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14460,8 +14453,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2224.2,
-            "right": -2037.5,
+            "left": -2224.6,
+            "right": -2037.9,
             "width": 186.7,
             "position": "static",
             "overflowX": "visible"
@@ -14470,8 +14463,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2224.2,
-            "right": -2194.8,
+            "left": -2224.6,
+            "right": -2195.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14480,8 +14473,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2541.3,
-            "right": -2288.2,
+            "left": -2541.7,
+            "right": -2288.6,
             "width": 253.2,
             "position": "static",
             "overflowX": "visible"
@@ -14490,8 +14483,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2541.3,
-            "right": -2512,
+            "left": -2541.7,
+            "right": -2512.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14500,8 +14493,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2764.9,
-            "right": -2605.3,
+            "left": -2765.4,
+            "right": -2605.7,
             "width": 159.6,
             "position": "static",
             "overflowX": "visible"
@@ -14510,8 +14503,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2764.9,
-            "right": -2735.6,
+            "left": -2765.4,
+            "right": -2736,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14520,8 +14513,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2990.7,
-            "right": -2828.9,
+            "left": -2991.1,
+            "right": -2829.4,
             "width": 161.8,
             "position": "static",
             "overflowX": "visible"
@@ -14530,8 +14523,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2990.7,
-            "right": -2961.3,
+            "left": -2991.1,
+            "right": -2961.8,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14540,8 +14533,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -3177.7,
-            "right": -3054.7,
+            "left": -3178.1,
+            "right": -3055.1,
             "width": 123,
             "position": "static",
             "overflowX": "visible"
@@ -14550,8 +14543,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -3177.7,
-            "right": -3148.3,
+            "left": -3178.1,
+            "right": -3148.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -14968,22 +14961,6 @@
           "level": "warning",
           "text": "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
           "url": "http://127.0.0.1:4173/"
-        },
-        {
-          "source": "console",
-          "level": "warning",
-          "text": "Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information."
-        },
-        {
-          "source": "console",
-          "level": "warning",
-          "text": "Element model-viewer scheduled an update (generally because a property was set) after an update completed, causing a new update to be scheduled. This is inefficient and should be avoided unless the next update can only be scheduled as a side effect of the previous update. See https://lit.dev/msg/change-in-update for more information."
-        },
-        {
-          "source": "rendering",
-          "level": "warning",
-          "text": "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
-          "url": "http://127.0.0.1:4173/"
         }
       ],
       "hydrationWarnings": [],
@@ -15300,6 +15277,22 @@
         }
       ],
       "console": [
+        {
+          "source": "console",
+          "level": "warning",
+          "text": "Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information."
+        },
+        {
+          "source": "console",
+          "level": "warning",
+          "text": "Element model-viewer scheduled an update (generally because a property was set) after an update completed, causing a new update to be scheduled. This is inefficient and should be avoided unless the next update can only be scheduled as a side effect of the previous update. See https://lit.dev/msg/change-in-update for more information."
+        },
+        {
+          "source": "rendering",
+          "level": "warning",
+          "text": "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
+          "url": "http://127.0.0.1:4173/"
+        },
         {
           "source": "console",
           "level": "debug",
@@ -16318,7 +16311,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/nike/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
@@ -16330,18 +16323,13 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/nike/ffffff"
         },
         {
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/newbalance/ffffff"
-        },
-        {
-          "source": "console",
-          "level": "debug",
-          "text": "[vite] connecting..."
         },
         {
           "source": "network",
@@ -16354,6 +16342,11 @@
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/reebok/ffffff"
+        },
+        {
+          "source": "console",
+          "level": "debug",
+          "text": "[vite] connecting..."
         },
         {
           "source": "console",
@@ -16374,7 +16367,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/nike/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
@@ -16386,7 +16379,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/nike/ffffff"
         },
         {
           "source": "network",
@@ -16822,8 +16815,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -8.2,
-            "right": 1431.8,
+            "left": -3.8,
+            "right": 1436.2,
             "width": 1440,
             "position": "static",
             "overflowX": "visible"
@@ -16832,8 +16825,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -155.3,
-            "right": -23.5,
+            "left": -151,
+            "right": -19.1,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -16842,8 +16835,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -155.3,
-            "right": -126,
+            "left": -151,
+            "right": -121.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -16852,8 +16845,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -385.6,
-            "right": -219.3,
+            "left": -381.3,
+            "right": -215,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -16862,8 +16855,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -385.6,
-            "right": -356.3,
+            "left": -381.3,
+            "right": -352,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -16872,8 +16865,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -588.1,
-            "right": -449.6,
+            "left": -583.8,
+            "right": -445.3,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -16882,8 +16875,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -588.1,
-            "right": -558.8,
+            "left": -583.8,
+            "right": -554.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -16892,8 +16885,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -844.4,
-            "right": -652.1,
+            "left": -840.1,
+            "right": -647.8,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -16902,8 +16895,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -844.4,
-            "right": -815,
+            "left": -840.1,
+            "right": -810.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -16912,8 +16905,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1139.4,
-            "right": -908.4,
+            "left": -1135.1,
+            "right": -904.1,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -16922,8 +16915,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1139.4,
-            "right": -1110.1,
+            "left": -1135.1,
+            "right": -1105.8,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -16932,8 +16925,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1340.1,
-            "right": -1203.4,
+            "left": -1335.7,
+            "right": -1199.1,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -16942,8 +16935,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1340.1,
-            "right": -1310.7,
+            "left": -1335.7,
+            "right": -1306.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -16952,8 +16945,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1547.4,
-            "right": -1404.1,
+            "left": -1543.1,
+            "right": -1399.7,
             "width": 143.3,
             "position": "static",
             "overflowX": "visible"
@@ -16962,8 +16955,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1547.4,
-            "right": -1518,
+            "left": -1543.1,
+            "right": -1513.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -16972,8 +16965,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1816.9,
-            "right": -1611.4,
+            "left": -1812.6,
+            "right": -1607.1,
             "width": 205.6,
             "position": "static",
             "overflowX": "visible"
@@ -16982,8 +16975,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1816.9,
-            "right": -1787.6,
+            "left": -1812.6,
+            "right": -1783.3,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -16992,8 +16985,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2067.6,
-            "right": -1880.9,
+            "left": -2063.3,
+            "right": -1876.6,
             "width": 186.7,
             "position": "static",
             "overflowX": "visible"
@@ -17002,8 +16995,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2067.6,
-            "right": -2038.3,
+            "left": -2063.3,
+            "right": -2033.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -17012,8 +17005,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2384.8,
-            "right": -2131.6,
+            "left": -2380.5,
+            "right": -2127.3,
             "width": 253.2,
             "position": "static",
             "overflowX": "visible"
@@ -17022,8 +17015,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2384.8,
-            "right": -2355.4,
+            "left": -2380.5,
+            "right": -2351.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -17032,8 +17025,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2608.4,
-            "right": -2448.8,
+            "left": -2604.1,
+            "right": -2444.5,
             "width": 159.6,
             "position": "static",
             "overflowX": "visible"
@@ -17042,8 +17035,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2608.4,
-            "right": -2579,
+            "left": -2604.1,
+            "right": -2574.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -17052,8 +17045,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2834.2,
-            "right": -2672.4,
+            "left": -2829.9,
+            "right": -2668.1,
             "width": 161.8,
             "position": "static",
             "overflowX": "visible"
@@ -17062,8 +17055,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2834.2,
-            "right": -2804.8,
+            "left": -2829.9,
+            "right": -2800.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -17072,8 +17065,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -3021.1,
-            "right": -2898.2,
+            "left": -3016.8,
+            "right": -2893.9,
             "width": 123,
             "position": "static",
             "overflowX": "visible"
@@ -17082,8 +17075,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -3021.1,
-            "right": -2991.8,
+            "left": -3016.8,
+            "right": -2987.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -17092,8 +17085,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -3249.3,
-            "right": -3085.1,
+            "left": -3245,
+            "right": -3080.8,
             "width": 164.2,
             "position": "static",
             "overflowX": "visible"
@@ -17102,8 +17095,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -3249.3,
-            "right": -3219.9,
+            "left": -3245,
+            "right": -3215.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -17520,6 +17513,22 @@
           "level": "warning",
           "text": "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
           "url": "http://127.0.0.1:4173/"
+        },
+        {
+          "source": "console",
+          "level": "warning",
+          "text": "Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information."
+        },
+        {
+          "source": "console",
+          "level": "warning",
+          "text": "Element model-viewer scheduled an update (generally because a property was set) after an update completed, causing a new update to be scheduled. This is inefficient and should be avoided unless the next update can only be scheduled as a side effect of the previous update. See https://lit.dev/msg/change-in-update for more information."
+        },
+        {
+          "source": "rendering",
+          "level": "warning",
+          "text": "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
+          "url": "http://127.0.0.1:4173/"
         }
       ],
       "hydrationWarnings": [],
@@ -17836,22 +17845,6 @@
         }
       ],
       "console": [
-        {
-          "source": "console",
-          "level": "warning",
-          "text": "Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information."
-        },
-        {
-          "source": "console",
-          "level": "warning",
-          "text": "Element model-viewer scheduled an update (generally because a property was set) after an update completed, causing a new update to be scheduled. This is inefficient and should be avoided unless the next update can only be scheduled as a side effect of the previous update. See https://lit.dev/msg/change-in-update for more information."
-        },
-        {
-          "source": "rendering",
-          "level": "warning",
-          "text": "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
-          "url": "http://127.0.0.1:4173/"
-        },
         {
           "source": "console",
           "level": "debug",
@@ -18870,13 +18863,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/nike/ffffff"
-        },
-        {
-          "source": "network",
-          "level": "error",
-          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/jordan/ffffff"
         },
         {
           "source": "network",
@@ -18888,12 +18875,13 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/jordan/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
-          "source": "console",
-          "level": "debug",
-          "text": "[vite] connecting..."
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
+          "url": "https://cdn.simpleicons.org/nike/ffffff"
         },
         {
           "source": "network",
@@ -18906,6 +18894,11 @@
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/reebok/ffffff"
+        },
+        {
+          "source": "console",
+          "level": "debug",
+          "text": "[vite] connecting..."
         },
         {
           "source": "console",
@@ -18926,13 +18919,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/nike/ffffff"
-        },
-        {
-          "source": "network",
-          "level": "error",
-          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/jordan/ffffff"
         },
         {
           "source": "network",
@@ -18944,7 +18931,13 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/jordan/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+        },
+        {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
+          "url": "https://cdn.simpleicons.org/nike/ffffff"
         },
         {
           "source": "network",
@@ -20066,22 +20059,6 @@
           "source": "console",
           "level": "info",
           "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
-        },
-        {
-          "source": "rendering",
-          "level": "warning",
-          "text": "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
-          "url": "http://127.0.0.1:4173/"
-        },
-        {
-          "source": "console",
-          "level": "warning",
-          "text": "Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information."
-        },
-        {
-          "source": "console",
-          "level": "warning",
-          "text": "Element model-viewer scheduled an update (generally because a property was set) after an update completed, causing a new update to be scheduled. This is inefficient and should be avoided unless the next update can only be scheduled as a side effect of the previous update. See https://lit.dev/msg/change-in-update for more information."
         },
         {
           "source": "rendering",
@@ -21434,18 +21411,13 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         },
         {
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
-        },
-        {
-          "source": "console",
-          "level": "debug",
-          "text": "[vite] connecting..."
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
@@ -21458,6 +21430,11 @@
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/reebok/ffffff"
+        },
+        {
+          "source": "console",
+          "level": "debug",
+          "text": "[vite] connecting..."
         },
         {
           "source": "console",
@@ -21490,13 +21467,13 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         },
         {
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
@@ -21969,6 +21946,12 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
+          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
+        },
+        {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/nike/ffffff"
         },
         {
@@ -21976,12 +21959,6 @@
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/adidas/ffffff"
-        },
-        {
-          "source": "network",
-          "level": "error",
-          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         }
       ]
     },
@@ -21999,13 +21976,13 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/jordan/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/jordan/ffffff"
         },
         {
           "source": "network",
@@ -22029,7 +22006,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
@@ -22041,7 +22018,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         }
       ]
     },
@@ -22059,7 +22036,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/jordan/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
@@ -22071,7 +22048,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/jordan/ffffff"
         }
       ]
     },
@@ -22089,6 +22066,12 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
+          "url": "https://cdn.simpleicons.org/jordan/ffffff"
+        },
+        {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         },
         {
@@ -22096,12 +22079,6 @@
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/adidas/ffffff"
-        },
-        {
-          "source": "network",
-          "level": "error",
-          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/jordan/ffffff"
         },
         {
           "source": "network",
@@ -22137,25 +22114,25 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
-        },
-        {
-          "source": "network",
-          "level": "error",
-          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/puma/ffffff"
+          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         },
         {
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
           "url": "https://cdn.simpleicons.org/reebok/ffffff"
+        },
+        {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
+          "url": "https://cdn.simpleicons.org/puma/ffffff"
         }
       ]
     },
@@ -22167,7 +22144,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/nike/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
@@ -22179,7 +22156,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/nike/ffffff"
         },
         {
           "source": "network",
@@ -22209,13 +22186,7 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/nike/ffffff"
-        },
-        {
-          "source": "network",
-          "level": "error",
-          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/jordan/ffffff"
         },
         {
           "source": "network",
@@ -22227,7 +22198,13 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/jordan/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+        },
+        {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
+          "url": "https://cdn.simpleicons.org/nike/ffffff"
         },
         {
           "source": "network",
@@ -22263,13 +22240,13 @@
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/adidas/ffffff"
+          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
         },
         {
           "source": "network",
           "level": "error",
           "text": "Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin",
-          "url": "https://cdn.simpleicons.org/newbalance/ffffff"
+          "url": "https://cdn.simpleicons.org/adidas/ffffff"
         },
         {
           "source": "network",
@@ -22369,8 +22346,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -5.9,
-            "right": 314.1,
+            "left": -5.8,
+            "right": 314.2,
             "width": 320,
             "position": "static",
             "overflowX": "visible"
@@ -22379,8 +22356,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -69,
-            "right": 95.2,
+            "left": -68.9,
+            "right": 95.3,
             "width": 164.2,
             "position": "static",
             "overflowX": "visible"
@@ -22389,8 +22366,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -69,
-            "right": -39.6,
+            "left": -68.9,
+            "right": -39.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22399,8 +22376,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -294,
-            "right": -133,
+            "left": -293.9,
+            "right": -132.9,
             "width": 161,
             "position": "static",
             "overflowX": "visible"
@@ -22409,8 +22386,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -294,
-            "right": -264.6,
+            "left": -293.9,
+            "right": -264.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22419,8 +22396,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -608.9,
-            "right": -358,
+            "left": -608.8,
+            "right": -357.9,
             "width": 250.9,
             "position": "static",
             "overflowX": "visible"
@@ -22429,8 +22406,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -608.9,
-            "right": -579.5,
+            "left": -608.8,
+            "right": -579.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22439,8 +22416,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -811.4,
-            "right": -672.9,
+            "left": -811.3,
+            "right": -672.8,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -22449,8 +22426,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -811.4,
-            "right": -782,
+            "left": -811.3,
+            "right": -781.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22459,8 +22436,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1077.2,
-            "right": -875.4,
+            "left": -1077.1,
+            "right": -875.3,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -22469,8 +22446,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1077.2,
-            "right": -1047.8,
+            "left": -1077.1,
+            "right": -1047.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22479,8 +22456,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1273,
-            "right": -1141.2,
+            "left": -1272.9,
+            "right": -1141.1,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -22489,8 +22466,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1273,
-            "right": -1243.7,
+            "left": -1272.9,
+            "right": -1243.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22499,8 +22476,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1503.4,
-            "right": -1337,
+            "left": -1503.2,
+            "right": -1336.9,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -22509,8 +22486,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1503.4,
-            "right": -1474,
+            "left": -1503.2,
+            "right": -1473.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22519,8 +22496,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1705.9,
-            "right": -1567.4,
+            "left": -1705.7,
+            "right": -1567.2,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -22529,8 +22506,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1705.9,
-            "right": -1676.5,
+            "left": -1705.7,
+            "right": -1676.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22539,8 +22516,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1962.1,
-            "right": -1769.9,
+            "left": -1962,
+            "right": -1769.7,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -22549,8 +22526,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1962.1,
-            "right": -1932.7,
+            "left": -1962,
+            "right": -1932.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22559,8 +22536,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2257.1,
-            "right": -2026.1,
+            "left": -2257,
+            "right": -2026,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -22569,8 +22546,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2257.1,
-            "right": -2227.8,
+            "left": -2257,
+            "right": -2227.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22579,8 +22556,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2457.8,
-            "right": -2321.1,
+            "left": -2457.7,
+            "right": -2321,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -22589,8 +22566,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2457.8,
-            "right": -2428.4,
+            "left": -2457.7,
+            "right": -2428.3,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22714,8 +22691,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -4.4,
-            "right": 370.6,
+            "left": -6,
+            "right": 369,
             "width": 375,
             "position": "static",
             "overflowX": "visible"
@@ -22724,8 +22701,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -12.5,
-            "right": 151.7,
+            "left": -14.1,
+            "right": 150,
             "width": 164.2,
             "position": "static",
             "overflowX": "visible"
@@ -22734,8 +22711,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -12.5,
-            "right": 16.9,
+            "left": -14.1,
+            "right": 15.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22744,8 +22721,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -237.5,
-            "right": -76.5,
+            "left": -239.1,
+            "right": -78.1,
             "width": 161,
             "position": "static",
             "overflowX": "visible"
@@ -22754,8 +22731,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -237.5,
-            "right": -208.1,
+            "left": -239.1,
+            "right": -209.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22764,8 +22741,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -552.4,
-            "right": -301.5,
+            "left": -554,
+            "right": -303.1,
             "width": 250.9,
             "position": "static",
             "overflowX": "visible"
@@ -22774,8 +22751,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -552.4,
-            "right": -523,
+            "left": -554,
+            "right": -524.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22784,8 +22761,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -754.9,
-            "right": -616.4,
+            "left": -756.5,
+            "right": -618,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -22794,8 +22771,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -754.9,
-            "right": -725.5,
+            "left": -756.5,
+            "right": -727.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22804,8 +22781,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1020.7,
-            "right": -818.9,
+            "left": -1022.3,
+            "right": -820.5,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -22814,8 +22791,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1020.7,
-            "right": -991.3,
+            "left": -1022.3,
+            "right": -992.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22824,8 +22801,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1216.5,
-            "right": -1084.7,
+            "left": -1218.2,
+            "right": -1086.3,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -22834,8 +22811,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1216.5,
-            "right": -1187.2,
+            "left": -1218.2,
+            "right": -1188.8,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22844,8 +22821,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1446.9,
-            "right": -1280.5,
+            "left": -1448.5,
+            "right": -1282.2,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -22854,8 +22831,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1446.9,
-            "right": -1417.5,
+            "left": -1448.5,
+            "right": -1419.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22864,8 +22841,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1649.4,
-            "right": -1510.9,
+            "left": -1651,
+            "right": -1512.5,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -22874,8 +22851,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1649.4,
-            "right": -1620,
+            "left": -1651,
+            "right": -1621.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22884,8 +22861,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1905.6,
-            "right": -1713.4,
+            "left": -1907.2,
+            "right": -1715,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -22894,8 +22871,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1905.6,
-            "right": -1876.2,
+            "left": -1907.2,
+            "right": -1877.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22904,8 +22881,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2200.7,
-            "right": -1969.6,
+            "left": -2202.3,
+            "right": -1971.2,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -22914,8 +22891,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2200.7,
-            "right": -2171.3,
+            "left": -2202.3,
+            "right": -2172.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22924,8 +22901,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2401.3,
-            "right": -2264.7,
+            "left": -2402.9,
+            "right": -2266.3,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -22934,8 +22911,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2401.3,
-            "right": -2371.9,
+            "left": -2402.9,
+            "right": -2373.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -22986,9 +22963,9 @@
             "tag": "div",
             "id": "",
             "className": "relative z-10 order-1 lg:order-2",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
+            "left": 89.8,
+            "right": 420.2,
+            "width": 330.3,
             "position": "relative",
             "overflowX": "visible"
           },
@@ -22996,9 +22973,9 @@
             "tag": "div",
             "id": "",
             "className": "relative w-full",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
+            "left": 89.8,
+            "right": 420.2,
+            "width": 330.3,
             "position": "relative",
             "overflowX": "visible"
           },
@@ -23006,9 +22983,9 @@
             "tag": "div",
             "id": "",
             "className": "pointer-events-none absolute inset-0 -z-10 transition-opacity",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
+            "left": 89.8,
+            "right": 420.2,
+            "width": 330.3,
             "position": "absolute",
             "overflowX": "visible"
           },
@@ -23016,9 +22993,9 @@
             "tag": "div",
             "id": "",
             "className": "relative w-full",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
+            "left": 89.8,
+            "right": 420.2,
+            "width": 330.3,
             "position": "relative",
             "overflowX": "visible"
           },
@@ -23026,9 +23003,9 @@
             "tag": "div",
             "id": "",
             "className": "relative h-[320px] md:h-[500px] w-full",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
+            "left": 89.8,
+            "right": 420.2,
+            "width": 330.3,
             "position": "relative",
             "overflowX": "visible"
           },
@@ -23036,28 +23013,18 @@
             "tag": "div",
             "id": "",
             "className": "absolute inset-0 rounded-3xl bg-surface animate-pulse",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
+            "left": 89.8,
+            "right": 420.2,
+            "width": 330.3,
             "position": "absolute",
-            "overflowX": "visible"
-          },
-          {
-            "tag": "model-viewer",
-            "id": "",
-            "className": "",
-            "left": 57.1,
-            "right": 395.9,
-            "width": 338.8,
-            "position": "relative",
             "overflowX": "visible"
           },
           {
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -4.6,
-            "right": 385.4,
+            "left": -4.2,
+            "right": 385.8,
             "width": 390,
             "position": "static",
             "overflowX": "visible"
@@ -23066,8 +23033,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -222.6,
-            "right": -61.7,
+            "left": -222.3,
+            "right": -61.3,
             "width": 161,
             "position": "static",
             "overflowX": "visible"
@@ -23076,8 +23043,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -222.6,
-            "right": -193.3,
+            "left": -222.3,
+            "right": -192.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23086,8 +23053,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -537.6,
-            "right": -286.6,
+            "left": -537.2,
+            "right": -286.3,
             "width": 250.9,
             "position": "static",
             "overflowX": "visible"
@@ -23096,8 +23063,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -537.6,
-            "right": -508.2,
+            "left": -537.2,
+            "right": -507.8,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23106,8 +23073,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -740.1,
-            "right": -601.6,
+            "left": -739.7,
+            "right": -601.2,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -23116,8 +23083,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -740.1,
-            "right": -710.7,
+            "left": -739.7,
+            "right": -710.3,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23126,8 +23093,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1005.8,
-            "right": -804.1,
+            "left": -1005.5,
+            "right": -803.7,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -23136,8 +23103,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1005.8,
-            "right": -976.5,
+            "left": -1005.5,
+            "right": -976.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23146,8 +23113,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1201.7,
-            "right": -1069.8,
+            "left": -1201.3,
+            "right": -1069.5,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -23156,8 +23123,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1201.7,
-            "right": -1172.3,
+            "left": -1201.3,
+            "right": -1172,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23166,8 +23133,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1432,
-            "right": -1265.7,
+            "left": -1431.6,
+            "right": -1265.3,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -23176,8 +23143,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1432,
-            "right": -1402.7,
+            "left": -1431.6,
+            "right": -1402.3,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23186,8 +23153,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1634.5,
-            "right": -1496,
+            "left": -1634.1,
+            "right": -1495.6,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -23196,8 +23163,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1634.5,
-            "right": -1605.2,
+            "left": -1634.1,
+            "right": -1604.8,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23206,8 +23173,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1890.8,
-            "right": -1698.5,
+            "left": -1890.4,
+            "right": -1698.1,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -23216,8 +23183,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1890.8,
-            "right": -1861.4,
+            "left": -1890.4,
+            "right": -1861,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23226,8 +23193,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2185.8,
-            "right": -1954.8,
+            "left": -2185.4,
+            "right": -1954.4,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -23236,8 +23203,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2185.8,
-            "right": -2156.5,
+            "left": -2185.4,
+            "right": -2156.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23246,8 +23213,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2386.5,
-            "right": -2249.8,
+            "left": -2386.1,
+            "right": -2249.4,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -23256,8 +23223,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2386.5,
-            "right": -2357.1,
+            "left": -2386.1,
+            "right": -2356.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23266,9 +23233,19 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2593.8,
-            "right": -2450.5,
+            "left": -2593.4,
+            "right": -2450.1,
             "width": 143.3,
+            "position": "static",
+            "overflowX": "visible"
+          },
+          {
+            "tag": "span",
+            "id": "",
+            "className": "text-ink/40",
+            "left": -2593.4,
+            "right": -2564,
+            "width": 29.4,
             "position": "static",
             "overflowX": "visible"
           }
@@ -23388,8 +23365,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -4.7,
-            "right": 425.3,
+            "left": -5.3,
+            "right": 424.7,
             "width": 430,
             "position": "static",
             "overflowX": "visible"
@@ -23398,8 +23375,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -182.8,
-            "right": -21.9,
+            "left": -183.4,
+            "right": -22.4,
             "width": 161,
             "position": "static",
             "overflowX": "visible"
@@ -23408,8 +23385,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -182.8,
-            "right": -153.5,
+            "left": -183.4,
+            "right": -154,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23418,8 +23395,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -497.7,
-            "right": -246.8,
+            "left": -498.3,
+            "right": -247.4,
             "width": 250.9,
             "position": "static",
             "overflowX": "visible"
@@ -23428,8 +23405,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -497.7,
-            "right": -468.4,
+            "left": -498.3,
+            "right": -468.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23438,8 +23415,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -700.2,
-            "right": -561.7,
+            "left": -700.8,
+            "right": -562.3,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -23448,8 +23425,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -700.2,
-            "right": -670.9,
+            "left": -700.8,
+            "right": -671.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23458,8 +23435,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -966,
-            "right": -764.2,
+            "left": -966.6,
+            "right": -764.8,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -23468,8 +23445,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -966,
-            "right": -936.7,
+            "left": -966.6,
+            "right": -937.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23478,8 +23455,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1161.9,
-            "right": -1030,
+            "left": -1162.5,
+            "right": -1030.6,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -23488,8 +23465,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1161.9,
-            "right": -1132.5,
+            "left": -1162.5,
+            "right": -1133.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23498,8 +23475,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1392.2,
-            "right": -1225.9,
+            "left": -1392.8,
+            "right": -1226.5,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -23508,8 +23485,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1392.2,
-            "right": -1362.9,
+            "left": -1392.8,
+            "right": -1363.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23518,8 +23495,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1594.7,
-            "right": -1456.2,
+            "left": -1595.3,
+            "right": -1456.8,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -23528,8 +23505,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1594.7,
-            "right": -1565.4,
+            "left": -1595.3,
+            "right": -1565.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23538,8 +23515,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1850.9,
-            "right": -1658.7,
+            "left": -1851.5,
+            "right": -1659.3,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -23548,8 +23525,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1850.9,
-            "right": -1821.6,
+            "left": -1851.5,
+            "right": -1822.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23558,8 +23535,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2146,
-            "right": -1914.9,
+            "left": -2146.6,
+            "right": -1915.5,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -23568,8 +23545,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2146,
-            "right": -2116.7,
+            "left": -2146.6,
+            "right": -2117.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23578,8 +23555,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2346.6,
-            "right": -2210,
+            "left": -2347.2,
+            "right": -2210.6,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -23588,8 +23565,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2346.6,
-            "right": -2317.3,
+            "left": -2347.2,
+            "right": -2317.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23598,8 +23575,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2553.9,
-            "right": -2410.6,
+            "left": -2554.5,
+            "right": -2411.2,
             "width": 143.3,
             "position": "static",
             "overflowX": "visible"
@@ -23710,8 +23687,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -6.7,
-            "right": 761.3,
+            "left": -4.6,
+            "right": 763.4,
             "width": 768,
             "position": "static",
             "overflowX": "visible"
@@ -23720,8 +23697,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -161.7,
-            "right": 89.2,
+            "left": -159.6,
+            "right": 91.3,
             "width": 250.9,
             "position": "static",
             "overflowX": "visible"
@@ -23730,8 +23707,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -161.7,
-            "right": -132.3,
+            "left": -159.6,
+            "right": -130.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23740,8 +23717,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -364.2,
-            "right": -225.7,
+            "left": -362.1,
+            "right": -223.6,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -23750,8 +23727,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -364.2,
-            "right": -334.8,
+            "left": -362.1,
+            "right": -332.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23760,8 +23737,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -630,
-            "right": -428.2,
+            "left": -627.9,
+            "right": -426.1,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -23770,8 +23747,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -630,
-            "right": -600.6,
+            "left": -627.9,
+            "right": -598.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23780,8 +23757,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -825.8,
-            "right": -694,
+            "left": -823.8,
+            "right": -691.9,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -23790,8 +23767,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -825.8,
-            "right": -796.5,
+            "left": -823.8,
+            "right": -794.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23800,8 +23777,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1056.1,
-            "right": -889.8,
+            "left": -1054.1,
+            "right": -887.8,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -23810,8 +23787,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1056.1,
-            "right": -1026.8,
+            "left": -1054.1,
+            "right": -1024.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23820,8 +23797,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1258.6,
-            "right": -1120.1,
+            "left": -1256.6,
+            "right": -1118.1,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -23830,8 +23807,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1258.6,
-            "right": -1229.3,
+            "left": -1256.6,
+            "right": -1227.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23840,8 +23817,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1514.9,
-            "right": -1322.6,
+            "left": -1512.8,
+            "right": -1320.6,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -23850,8 +23827,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1514.9,
-            "right": -1485.5,
+            "left": -1512.8,
+            "right": -1483.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23860,8 +23837,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1809.9,
-            "right": -1578.9,
+            "left": -1807.9,
+            "right": -1576.8,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -23870,8 +23847,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1809.9,
-            "right": -1780.6,
+            "left": -1807.9,
+            "right": -1778.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23880,8 +23857,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2010.6,
-            "right": -1873.9,
+            "left": -2008.5,
+            "right": -1871.9,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -23890,8 +23867,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2010.6,
-            "right": -1981.2,
+            "left": -2008.5,
+            "right": -1979.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23900,8 +23877,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2217.9,
-            "right": -2074.6,
+            "left": -2215.8,
+            "right": -2072.5,
             "width": 143.3,
             "position": "static",
             "overflowX": "visible"
@@ -23910,8 +23887,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2217.9,
-            "right": -2188.5,
+            "left": -2215.8,
+            "right": -2186.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23920,8 +23897,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2487.4,
-            "right": -2281.9,
+            "left": -2485.4,
+            "right": -2279.8,
             "width": 205.6,
             "position": "static",
             "overflowX": "visible"
@@ -23930,8 +23907,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2487.4,
-            "right": -2458.1,
+            "left": -2485.4,
+            "right": -2456,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -23982,8 +23959,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -5.1,
-            "right": 1018.9,
+            "left": -14,
+            "right": 1010,
             "width": 1024,
             "position": "static",
             "overflowX": "visible"
@@ -23992,8 +23969,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -106.6,
-            "right": 31.9,
+            "left": -115.5,
+            "right": 23,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -24002,8 +23979,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -106.6,
-            "right": -77.3,
+            "left": -115.5,
+            "right": -86.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24012,8 +23989,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -372.4,
-            "right": -170.6,
+            "left": -381.3,
+            "right": -179.5,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -24022,8 +23999,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -372.4,
-            "right": -343.1,
+            "left": -381.3,
+            "right": -351.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24032,8 +24009,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -568.3,
-            "right": -436.4,
+            "left": -577.2,
+            "right": -445.3,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -24042,8 +24019,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -568.3,
-            "right": -538.9,
+            "left": -577.2,
+            "right": -547.8,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24052,8 +24029,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -798.6,
-            "right": -632.3,
+            "left": -807.5,
+            "right": -641.2,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -24062,8 +24039,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -798.6,
-            "right": -769.2,
+            "left": -807.5,
+            "right": -778.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24072,8 +24049,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1001.1,
-            "right": -862.6,
+            "left": -1010,
+            "right": -871.5,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -24082,8 +24059,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1001.1,
-            "right": -971.7,
+            "left": -1010,
+            "right": -980.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24092,8 +24069,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1257.3,
-            "right": -1065.1,
+            "left": -1266.2,
+            "right": -1074,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -24102,8 +24079,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1257.3,
-            "right": -1228,
+            "left": -1266.2,
+            "right": -1236.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24112,8 +24089,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1552.4,
-            "right": -1321.3,
+            "left": -1561.3,
+            "right": -1330.2,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -24122,8 +24099,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1552.4,
-            "right": -1523,
+            "left": -1561.3,
+            "right": -1531.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24132,8 +24109,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1753,
-            "right": -1616.4,
+            "left": -1761.9,
+            "right": -1625.3,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -24142,8 +24119,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1753,
-            "right": -1723.7,
+            "left": -1761.9,
+            "right": -1732.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24152,8 +24129,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1960.3,
-            "right": -1817,
+            "left": -1969.2,
+            "right": -1825.9,
             "width": 143.3,
             "position": "static",
             "overflowX": "visible"
@@ -24162,8 +24139,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1960.3,
-            "right": -1931,
+            "left": -1969.2,
+            "right": -1939.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24172,8 +24149,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2229.9,
-            "right": -2024.3,
+            "left": -2238.8,
+            "right": -2033.2,
             "width": 205.6,
             "position": "static",
             "overflowX": "visible"
@@ -24182,8 +24159,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2229.9,
-            "right": -2200.5,
+            "left": -2238.8,
+            "right": -2209.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24192,8 +24169,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2480.6,
-            "right": -2293.9,
+            "left": -2489.5,
+            "right": -2302.8,
             "width": 186.7,
             "position": "static",
             "overflowX": "visible"
@@ -24202,8 +24179,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2480.6,
-            "right": -2451.2,
+            "left": -2489.5,
+            "right": -2460.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24212,8 +24189,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2797.7,
-            "right": -2544.6,
+            "left": -2806.6,
+            "right": -2553.5,
             "width": 253.2,
             "position": "static",
             "overflowX": "visible"
@@ -24222,8 +24199,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2797.7,
-            "right": -2768.4,
+            "left": -2806.6,
+            "right": -2777.3,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24232,8 +24209,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -3021.4,
-            "right": -2861.7,
+            "left": -3030.2,
+            "right": -2870.6,
             "width": 159.6,
             "position": "static",
             "overflowX": "visible"
@@ -24242,8 +24219,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -3021.4,
-            "right": -2992,
+            "left": -3030.2,
+            "right": -3000.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24252,8 +24229,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -3247.1,
-            "right": -3085.4,
+            "left": -3256,
+            "right": -3094.2,
             "width": 161.8,
             "position": "static",
             "overflowX": "visible"
@@ -24262,8 +24239,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -3247.1,
-            "right": -3217.8,
+            "left": -3256,
+            "right": -3226.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24314,8 +24291,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -4.7,
-            "right": 1275.3,
+            "left": -5.1,
+            "right": 1274.9,
             "width": 1280,
             "position": "static",
             "overflowX": "visible"
@@ -24324,8 +24301,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -116,
-            "right": 85.8,
+            "left": -116.4,
+            "right": 85.4,
             "width": 201.8,
             "position": "static",
             "overflowX": "visible"
@@ -24334,8 +24311,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -116,
-            "right": -86.6,
+            "left": -116.4,
+            "right": -87.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24344,8 +24321,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -311.8,
-            "right": -180,
+            "left": -312.3,
+            "right": -180.4,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -24354,8 +24331,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -311.8,
-            "right": -282.5,
+            "left": -312.3,
+            "right": -282.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24364,8 +24341,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -542.2,
-            "right": -375.8,
+            "left": -542.6,
+            "right": -376.3,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -24374,8 +24351,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -542.2,
-            "right": -512.8,
+            "left": -542.6,
+            "right": -513.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24384,8 +24361,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -744.7,
-            "right": -606.2,
+            "left": -745.1,
+            "right": -606.6,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -24394,8 +24371,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -744.7,
-            "right": -715.3,
+            "left": -745.1,
+            "right": -715.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24404,8 +24381,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1000.9,
-            "right": -808.7,
+            "left": -1001.3,
+            "right": -809.1,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -24414,8 +24391,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1000.9,
-            "right": -971.6,
+            "left": -1001.3,
+            "right": -972,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24424,8 +24401,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1296,
-            "right": -1064.9,
+            "left": -1296.4,
+            "right": -1065.3,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -24434,8 +24411,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1296,
-            "right": -1266.6,
+            "left": -1296.4,
+            "right": -1267,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24444,8 +24421,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1496.6,
-            "right": -1360,
+            "left": -1497,
+            "right": -1360.4,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -24454,8 +24431,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1496.6,
-            "right": -1467.2,
+            "left": -1497,
+            "right": -1467.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24464,8 +24441,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1703.9,
-            "right": -1560.6,
+            "left": -1704.3,
+            "right": -1561,
             "width": 143.3,
             "position": "static",
             "overflowX": "visible"
@@ -24474,8 +24451,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1703.9,
-            "right": -1674.6,
+            "left": -1704.3,
+            "right": -1675,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24484,8 +24461,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1973.5,
-            "right": -1767.9,
+            "left": -1973.9,
+            "right": -1768.3,
             "width": 205.6,
             "position": "static",
             "overflowX": "visible"
@@ -24494,8 +24471,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1973.5,
-            "right": -1944.1,
+            "left": -1973.9,
+            "right": -1944.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24504,8 +24481,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2224.2,
-            "right": -2037.5,
+            "left": -2224.6,
+            "right": -2037.9,
             "width": 186.7,
             "position": "static",
             "overflowX": "visible"
@@ -24514,8 +24491,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2224.2,
-            "right": -2194.8,
+            "left": -2224.6,
+            "right": -2195.2,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24524,8 +24501,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2541.3,
-            "right": -2288.2,
+            "left": -2541.7,
+            "right": -2288.6,
             "width": 253.2,
             "position": "static",
             "overflowX": "visible"
@@ -24534,8 +24511,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2541.3,
-            "right": -2512,
+            "left": -2541.7,
+            "right": -2512.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24544,8 +24521,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2764.9,
-            "right": -2605.3,
+            "left": -2765.4,
+            "right": -2605.7,
             "width": 159.6,
             "position": "static",
             "overflowX": "visible"
@@ -24554,8 +24531,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2764.9,
-            "right": -2735.6,
+            "left": -2765.4,
+            "right": -2736,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24564,8 +24541,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2990.7,
-            "right": -2828.9,
+            "left": -2991.1,
+            "right": -2829.4,
             "width": 161.8,
             "position": "static",
             "overflowX": "visible"
@@ -24574,8 +24551,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2990.7,
-            "right": -2961.3,
+            "left": -2991.1,
+            "right": -2961.8,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24584,8 +24561,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -3177.7,
-            "right": -3054.7,
+            "left": -3178.1,
+            "right": -3055.1,
             "width": 123,
             "position": "static",
             "overflowX": "visible"
@@ -24594,8 +24571,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -3177.7,
-            "right": -3148.3,
+            "left": -3178.1,
+            "right": -3148.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24646,8 +24623,8 @@
             "tag": "div",
             "id": "",
             "className": "flex animate-marquee whitespace-nowrap",
-            "left": -8.2,
-            "right": 1431.8,
+            "left": -3.8,
+            "right": 1436.2,
             "width": 1440,
             "position": "static",
             "overflowX": "visible"
@@ -24656,8 +24633,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -155.3,
-            "right": -23.5,
+            "left": -151,
+            "right": -19.1,
             "width": 131.9,
             "position": "static",
             "overflowX": "visible"
@@ -24666,8 +24643,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -155.3,
-            "right": -126,
+            "left": -151,
+            "right": -121.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24676,8 +24653,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -385.6,
-            "right": -219.3,
+            "left": -381.3,
+            "right": -215,
             "width": 166.3,
             "position": "static",
             "overflowX": "visible"
@@ -24686,8 +24663,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -385.6,
-            "right": -356.3,
+            "left": -381.3,
+            "right": -352,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24696,8 +24673,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -588.1,
-            "right": -449.6,
+            "left": -583.8,
+            "right": -445.3,
             "width": 138.5,
             "position": "static",
             "overflowX": "visible"
@@ -24706,8 +24683,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -588.1,
-            "right": -558.8,
+            "left": -583.8,
+            "right": -554.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24716,8 +24693,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -844.4,
-            "right": -652.1,
+            "left": -840.1,
+            "right": -647.8,
             "width": 192.2,
             "position": "static",
             "overflowX": "visible"
@@ -24726,8 +24703,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -844.4,
-            "right": -815,
+            "left": -840.1,
+            "right": -810.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24736,8 +24713,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1139.4,
-            "right": -908.4,
+            "left": -1135.1,
+            "right": -904.1,
             "width": 231.1,
             "position": "static",
             "overflowX": "visible"
@@ -24746,8 +24723,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1139.4,
-            "right": -1110.1,
+            "left": -1135.1,
+            "right": -1105.8,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24756,8 +24733,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1340.1,
-            "right": -1203.4,
+            "left": -1335.7,
+            "right": -1199.1,
             "width": 136.6,
             "position": "static",
             "overflowX": "visible"
@@ -24766,8 +24743,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1340.1,
-            "right": -1310.7,
+            "left": -1335.7,
+            "right": -1306.4,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24776,8 +24753,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1547.4,
-            "right": -1404.1,
+            "left": -1543.1,
+            "right": -1399.7,
             "width": 143.3,
             "position": "static",
             "overflowX": "visible"
@@ -24786,8 +24763,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1547.4,
-            "right": -1518,
+            "left": -1543.1,
+            "right": -1513.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24796,8 +24773,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -1816.9,
-            "right": -1611.4,
+            "left": -1812.6,
+            "right": -1607.1,
             "width": 205.6,
             "position": "static",
             "overflowX": "visible"
@@ -24806,8 +24783,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -1816.9,
-            "right": -1787.6,
+            "left": -1812.6,
+            "right": -1783.3,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24816,8 +24793,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2067.6,
-            "right": -1880.9,
+            "left": -2063.3,
+            "right": -1876.6,
             "width": 186.7,
             "position": "static",
             "overflowX": "visible"
@@ -24826,8 +24803,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2067.6,
-            "right": -2038.3,
+            "left": -2063.3,
+            "right": -2033.9,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24836,8 +24813,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2384.8,
-            "right": -2131.6,
+            "left": -2380.5,
+            "right": -2127.3,
             "width": 253.2,
             "position": "static",
             "overflowX": "visible"
@@ -24846,8 +24823,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2384.8,
-            "right": -2355.4,
+            "left": -2380.5,
+            "right": -2351.1,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24856,8 +24833,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2608.4,
-            "right": -2448.8,
+            "left": -2604.1,
+            "right": -2444.5,
             "width": 159.6,
             "position": "static",
             "overflowX": "visible"
@@ -24866,8 +24843,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2608.4,
-            "right": -2579,
+            "left": -2604.1,
+            "right": -2574.7,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24876,8 +24853,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -2834.2,
-            "right": -2672.4,
+            "left": -2829.9,
+            "right": -2668.1,
             "width": 161.8,
             "position": "static",
             "overflowX": "visible"
@@ -24886,8 +24863,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -2834.2,
-            "right": -2804.8,
+            "left": -2829.9,
+            "right": -2800.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24896,8 +24873,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -3021.1,
-            "right": -2898.2,
+            "left": -3016.8,
+            "right": -2893.9,
             "width": 123,
             "position": "static",
             "overflowX": "visible"
@@ -24906,8 +24883,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -3021.1,
-            "right": -2991.8,
+            "left": -3016.8,
+            "right": -2987.5,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"
@@ -24916,8 +24893,8 @@
             "tag": "span",
             "id": "",
             "className": "font-display font-black text-ink text-2xl uppercase tracking-tight mx-8 inline-flex items-center gap-8",
-            "left": -3249.3,
-            "right": -3085.1,
+            "left": -3245,
+            "right": -3080.8,
             "width": 164.2,
             "position": "static",
             "overflowX": "visible"
@@ -24926,8 +24903,8 @@
             "tag": "span",
             "id": "",
             "className": "text-ink/40",
-            "left": -3249.3,
-            "right": -3219.9,
+            "left": -3245,
+            "right": -3215.6,
             "width": 29.4,
             "position": "static",
             "overflowX": "visible"

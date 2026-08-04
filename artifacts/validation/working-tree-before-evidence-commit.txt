@@ -3,12 +3,9 @@
  M artifacts/validation/check.txt
  M artifacts/validation/commits.txt
  M artifacts/validation/files-changed.txt
- M artifacts/validation/lint.txt
  M artifacts/validation/preview.txt
- M artifacts/validation/status.txt
  M artifacts/validation/tests.txt
  M artifacts/validation/toolchain.txt
- M artifacts/validation/typecheck.txt
  M artifacts/validation/working-tree-before-evidence-commit.txt
  M artifacts/visual-qa/f0-f1-visual-qa.json
 ?? artifacts/visual-qa/chrome.txt
