@@ -110,6 +110,7 @@ jobs:
             src/routes/about.tsx \
             src/styles.css \
             src/components/CartDrawer.tsx \
+            src/components/ShoeCard.tsx \
             src/components/sections/BrandWall.tsx \
             src/components/sections/Footer.tsx \
             src/components/ui/button.tsx \
