@@ -44,7 +44,10 @@ function jsxTagName(node) {
 
 function attributeValue(attributes, attributeName) {
   const attribute = attributes.properties.find(
-    (candidate) => ts.isJsxAttribute(candidate) && candidate.name.text === attributeName,
+    (candidate) =>
+      ts.isJsxAttribute(candidate) &&
+      ts.isIdentifier(candidate.name) &&
+      candidate.name.text === attributeName,
   );
   if (!attribute || !ts.isJsxAttribute(attribute) || !attribute.initializer) return null;
   if (ts.isStringLiteral(attribute.initializer)) return attribute.initializer.text;
@@ -76,58 +79,67 @@ function inspectTsxFile(absolutePath) {
   const issues = [];
   const interactiveStack = [];
 
+  function inspectOpening(node) {
+    const name = jsxTagName(node);
+    const normalizedName = name.toLowerCase();
+    const href = attributeValue(node.attributes, "href");
+    const tabIndex = attributeValue(node.attributes, "tabIndex");
+
+    if (href === "#" || (typeof href === "string" && href.trim().toLowerCase().startsWith("javascript:"))) {
+      issues.push({
+        type: "unsafe-url",
+        file: relative(absolutePath),
+        line: lineOf(sourceFile, node),
+        detail: String(href),
+      });
+    }
+
+    if (typeof tabIndex === "number" && tabIndex > 0) {
+      issues.push({
+        type: "positive-tabindex",
+        file: relative(absolutePath),
+        line: lineOf(sourceFile, node),
+        detail: String(tabIndex),
+      });
+    }
+
+    const isLink = normalizedName === "a" || name === "Link" || name.endsWith("Link");
+    const isButton = normalizedName === "button" || name === "Button" || name.endsWith("Button");
+    const ancestor = interactiveStack.at(-1);
+
+    if (ancestor?.isLink && isButton) {
+      issues.push({
+        type: "button-inside-link",
+        file: relative(absolutePath),
+        line: lineOf(sourceFile, node),
+        detail: `${ancestor.name} > ${name}`,
+      });
+    }
+    if (ancestor?.isButton && isLink) {
+      issues.push({
+        type: "link-inside-button",
+        file: relative(absolutePath),
+        line: lineOf(sourceFile, node),
+        detail: `${ancestor.name} > ${name}`,
+      });
+    }
+
+    return { name, isLink, isButton };
+  }
+
   function visit(node) {
-    if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
-      const name = jsxTagName(node);
-      const normalizedName = name.toLowerCase();
-      const href = attributeValue(node.attributes, "href");
-      const tabIndex = attributeValue(node.attributes, "tabIndex");
+    if (ts.isJsxElement(node)) {
+      const interaction = inspectOpening(node.openingElement);
+      const isInteractive = interaction.isLink || interaction.isButton;
+      if (isInteractive) interactiveStack.push(interaction);
+      for (const child of node.children) visit(child);
+      if (isInteractive) interactiveStack.pop();
+      return;
+    }
 
-      if (href === "#" || (typeof href === "string" && href.trim().toLowerCase().startsWith("javascript:"))) {
-        issues.push({
-          type: "unsafe-url",
-          file: relative(absolutePath),
-          line: lineOf(sourceFile, node),
-          detail: String(href),
-        });
-      }
-
-      if (typeof tabIndex === "number" && tabIndex > 0) {
-        issues.push({
-          type: "positive-tabindex",
-          file: relative(absolutePath),
-          line: lineOf(sourceFile, node),
-          detail: String(tabIndex),
-        });
-      }
-
-      const isLink = normalizedName === "a" || name === "Link" || name.endsWith("Link");
-      const isButton = normalizedName === "button" || name === "Button" || name.endsWith("Button");
-      const parentInteractive = interactiveStack.at(-1);
-
-      if (parentInteractive?.isLink && isButton) {
-        issues.push({
-          type: "button-inside-link",
-          file: relative(absolutePath),
-          line: lineOf(sourceFile, node),
-          detail: `${parentInteractive.name} > ${name}`,
-        });
-      }
-      if (parentInteractive?.isButton && isLink) {
-        issues.push({
-          type: "link-inside-button",
-          file: relative(absolutePath),
-          line: lineOf(sourceFile, node),
-          detail: `${parentInteractive.name} > ${name}`,
-        });
-      }
-
-      if (ts.isJsxOpeningElement(node)) {
-        interactiveStack.push({ name, isLink, isButton });
-        ts.forEachChild(node, visit);
-        interactiveStack.pop();
-        return;
-      }
+    if (ts.isJsxSelfClosingElement(node)) {
+      inspectOpening(node);
+      return;
     }
 
     ts.forEachChild(node, visit);
