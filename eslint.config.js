@@ -45,6 +45,12 @@ export default tseslint.config(
     },
   },
   {
+    files: ["src/components/ShoeViewer3D.tsx"],
+    rules: {
+      "@typescript-eslint/no-namespace": "off",
+    },
+  },
+  {
     files: ["scripts/**/*.mjs"],
     languageOptions: {
       ecmaVersion: 2022,
