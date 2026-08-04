@@ -71,6 +71,33 @@ jobs:
             return 0
           }
 
+          run_visual_qa() {
+            bun run preview -- --host 127.0.0.1 --port 4173 > "$evidence/preview.txt" 2>&1 &
+            local preview_pid=$!
+            local ready=0
+
+            for _ in $(seq 1 60); do
+              if curl -fsS http://127.0.0.1:4173/ > /dev/null; then
+                ready=1
+                break
+              fi
+              sleep 1
+            done
+
+            if [[ $ready -ne 1 ]]; then
+              kill "$preview_pid" 2>/dev/null || true
+              wait "$preview_pid" 2>/dev/null || true
+              echo "Preview server did not become ready."
+              return 1
+            fi
+
+            bun run qa:visual:f0-f1
+            local visual_code=$?
+            kill "$preview_pid" 2>/dev/null || true
+            wait "$preview_pid" 2>/dev/null || true
+            return "$visual_code"
+          }
+
           : > "$evidence/status.txt"
           if [[ "${{ steps.install.outcome }}" == "success" ]]; then
             echo "install=0" >> "$evidence/status.txt"
@@ -79,11 +106,16 @@ jobs:
             run_and_record typecheck bun run typecheck
             run_and_record lint bun run lint
             run_and_record build bun run build
+            if grep -qx 'build=0' "$evidence/status.txt"; then
+              run_and_record visual_qa run_visual_qa
+            else
+              echo "visual_qa=skipped" >> "$evidence/status.txt"
+            fi
             run_and_record format_check bun run format:check
             run_and_record check bun run check
           else
             echo "install=1" >> "$evidence/status.txt"
-            for name in audit tests typecheck lint build format_check check; do
+            for name in audit tests typecheck lint build visual_qa format_check check; do
               echo "${name}=skipped" >> "$evidence/status.txt"
             done
           fi
@@ -116,11 +148,35 @@ jobs:
             src/components/ui/button.tsx \
             src/components/ui/commerce-primitives.tsx \
             scripts/audit-f0-f1-foundation.mjs \
-            scripts/test-f0-f1-primitives.mjs
+            scripts/test-f0-f1-primitives.mjs \
+            scripts/visual-qa-f0-f1.mjs
           git add -f artifacts/validation artifacts/audits
+          if [[ -f artifacts/visual-qa/f0-f1-visual-qa.json ]]; then
+            git add -f artifacts/visual-qa/f0-f1-visual-qa.json
+          fi
+          if [[ -f artifacts/visual-qa/manifest.txt ]]; then
+            git add -f artifacts/visual-qa/manifest.txt
+          fi
           if git diff --cached --quiet; then
             echo "No validation evidence or formatting changes to commit."
             exit 0
           fi
           git commit -m "chore(audit): record F0-F1 validation evidence"
           git push origin HEAD:phase/sole-f0-f1-foundation
+
+      - name: Upload visual QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: f0-f1-visual-qa-screenshots
+          if-no-files-found: warn
+          retention-days: 14
+          path: |
+            artifacts/visual-qa/screenshots/
+            artifacts/visual-qa/f0-f1-visual-qa.json
+            artifacts/visual-qa/manifest.txt
+
+      - name: Enforce foundation gate
+        if: always()
+        shell: bash
+        run: grep -qx 'overall=0' artifacts/validation/status.txt
