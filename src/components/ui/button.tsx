@@ -52,6 +52,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       children,
       onClick,
       tabIndex,
+      "aria-label": ariaLabel,
       ...props
     },
     ref,
@@ -75,6 +76,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           {...props}
           className={classes}
           ref={ref}
+          aria-label={loading ? loadingLabel : ariaLabel}
           aria-disabled={unavailable || undefined}
           aria-busy={loading || undefined}
           data-disabled={unavailable ? "true" : undefined}
@@ -94,6 +96,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         type={type ?? "button"}
         disabled={unavailable}
+        aria-label={ariaLabel}
         aria-busy={loading || undefined}
         data-loading={loading ? "true" : undefined}
         tabIndex={tabIndex}
