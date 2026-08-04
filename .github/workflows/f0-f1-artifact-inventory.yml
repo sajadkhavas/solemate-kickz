@@ -1,0 +1,42 @@
+name: F0/F1 Artifact Inventory
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: List repository artifacts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const artifacts = await github.paginate(
+              github.rest.actions.listArtifactsForRepo,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                per_page: 100,
+              },
+            );
+
+            const rows = artifacts
+              .sort((a, b) => b.size_in_bytes - a.size_in_bytes)
+              .map((artifact) => ({
+                id: artifact.id,
+                name: artifact.name,
+                size: artifact.size_in_bytes,
+                expired: artifact.expired,
+                created_at: artifact.created_at,
+                workflow_run_id: artifact.workflow_run?.id ?? null,
+              }));
+
+            const total = rows.reduce((sum, artifact) => sum + artifact.size, 0);
+            core.info(`ARTIFACT_TOTAL_COUNT=${rows.length}`);
+            core.info(`ARTIFACT_TOTAL_BYTES=${total}`);
+            core.info(`ARTIFACT_INVENTORY_JSON=${JSON.stringify(rows)}`);
