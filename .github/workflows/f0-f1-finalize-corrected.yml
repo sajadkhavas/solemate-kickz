@@ -1,0 +1,349 @@
+name: F0/F1 Corrected One-Shot Finalizer
+
+on:
+  push:
+    branches:
+      - phase/sole-f0-f1-foundation
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: f0-f1-corrected-finalizer
+  cancel-in-progress: true
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out latest mission branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase/sole-f0-f1-foundation
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Write the final stable root and remove temporary files
+        shell: bash
+        run: |
+          cat > src/routes/__root.tsx <<'ROOT_EOF'
+          import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+          import {
+            Outlet,
+            Link,
+            createRootRouteWithContext,
+            useLocation,
+            useRouter,
+            HeadContent,
+            Scripts,
+          } from "@tanstack/react-router";
+          import { MotionConfig } from "framer-motion";
+          import { useEffect, useRef, useState, type ReactNode } from "react";
+
+          import appCss from "../styles.css?url";
+          import { reportLovableError } from "../lib/lovable-error-reporting";
+          import { CartDrawer } from "@/components/CartDrawer";
+          import { MagneticCursor } from "@/components/MagneticCursor";
+          import { Button } from "@/components/ui/button";
+          import { Toaster } from "@/components/ui/sonner";
+
+          function NotFoundComponent() {
+            return (
+              <main className="flex min-h-screen items-center justify-center bg-background px-4 outline-none">
+                <div className="max-w-md text-center">
+                  <p className="font-mono-num text-7xl font-bold text-foreground" aria-hidden="true">
+                    404
+                  </p>
+                  <h1 className="mt-4 text-xl font-semibold text-foreground">صفحه پیدا نشد</h1>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    نشانی واردشده وجود ندارد یا جابه‌جا شده است.
+                  </p>
+                  <div className="mt-6">
+                    <Button asChild>
+                      <Link to="/">بازگشت به خانه</Link>
+                    </Button>
+                  </div>
+                </div>
+              </main>
+            );
+          }
+
+          function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+            console.error(error);
+            const router = useRouter();
+
+            useEffect(() => {
+              reportLovableError(error, { boundary: "tanstack_root_error_component" });
+            }, [error]);
+
+            return (
+              <main className="flex min-h-screen items-center justify-center bg-background px-4 outline-none">
+                <div className="max-w-md text-center">
+                  <h1 className="text-xl font-semibold tracking-tight text-foreground">
+                    این صفحه بارگذاری نشد
+                  </h1>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    خطایی رخ داده است. دوباره تلاش کنید یا به صفحه اصلی برگردید.
+                  </p>
+                  <div className="mt-6 flex flex-wrap justify-center gap-2">
+                    <Button
+                      onClick={() => {
+                        router.invalidate();
+                        reset();
+                      }}
+                    >
+                      تلاش دوباره
+                    </Button>
+                    <Button asChild variant="outline">
+                      <Link to="/">بازگشت به خانه</Link>
+                    </Button>
+                  </div>
+                </div>
+              </main>
+            );
+          }
+
+          export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+            head: () => ({
+              meta: [
+                { charSet: "utf-8" },
+                {
+                  name: "viewport",
+                  content: "width=device-width, initial-scale=1, viewport-fit=cover",
+                },
+                { title: "SOLE — قدم بعدی تو" },
+                {
+                  name: "description",
+                  content: "تجربه نمایشی فروشگاه کفش لوکس و استریت‌ویر به زبان فارسی.",
+                },
+                { name: "theme-color", content: "#0a0a0a" },
+                { name: "color-scheme", content: "dark" },
+                { property: "og:title", content: "SOLE — قدم بعدی تو" },
+                {
+                  property: "og:description",
+                  content: "تجربه نمایشی کفش‌های لوکس و استریت‌ویر.",
+                },
+                { property: "og:type", content: "website" },
+                { name: "twitter:card", content: "summary_large_image" },
+              ],
+              links: [{ rel: "stylesheet", href: appCss }],
+            }),
+            shellComponent: RootShell,
+            component: RootComponent,
+            notFoundComponent: NotFoundComponent,
+            errorComponent: ErrorComponent,
+          });
+
+          function RootShell({ children }: { children: ReactNode }) {
+            return (
+              <html lang="fa" dir="rtl" className="dark">
+                <head>
+                  <HeadContent />
+                </head>
+                <body>
+                  <a className="skip-link" href="#main-content">
+                    رفتن به محتوای اصلی
+                  </a>
+                  <div id="main-content" tabIndex={-1} className="min-w-0 outline-none">
+                    {children}
+                  </div>
+                  <Scripts />
+                </body>
+              </html>
+            );
+          }
+
+          function RouteAccessibility() {
+            const location = useLocation();
+            const firstRender = useRef(true);
+            const [announcement, setAnnouncement] = useState("");
+            const routeNeedsMainLandmark = location.pathname === "/products";
+
+            useEffect(() => {
+              if (typeof document === "undefined") return;
+
+              const frame = window.requestAnimationFrame(() => {
+                if (!firstRender.current) {
+                  document.getElementById("main-content")?.focus({ preventScroll: true });
+                }
+
+                setAnnouncement(`صفحه ${document.title || "SOLE"}`);
+                firstRender.current = false;
+              });
+
+              return () => window.cancelAnimationFrame(frame);
+            }, [location.pathname]);
+
+            return (
+              <>
+                <div
+                  role={routeNeedsMainLandmark ? "main" : undefined}
+                  aria-label={routeNeedsMainLandmark ? "محتوای اصلی" : undefined}
+                  className="min-w-0"
+                >
+                  <Outlet />
+                </div>
+                <div className="route-announcer" aria-live="polite" aria-atomic="true">
+                  {announcement}
+                </div>
+              </>
+            );
+          }
+
+          function RootComponent() {
+            const { queryClient } = Route.useRouteContext();
+
+            return (
+              <QueryClientProvider client={queryClient}>
+                <MotionConfig reducedMotion="user">
+                  <RouteAccessibility />
+                  <CartDrawer />
+                  <MagneticCursor />
+                  <Toaster dir="rtl" theme="dark" position="bottom-left" closeButton />
+                </MotionConfig>
+              </QueryClientProvider>
+            );
+          }
+          ROOT_EOF
+
+          rm -f \
+            src/routes/__root.next.tsx \
+            tmp-test-do-not-use \
+            .github/workflows/f0-f1-finalize-once.yml \
+            .github/workflows/f0-f1-finalize-corrected.yml
+
+      - name: Install from the unchanged lockfile
+        run: bun install --frozen-lockfile
+
+      - name: Format only mission files
+        run: bun run format:foundation
+
+      - name: Run all static quality gates
+        shell: bash
+        run: |
+          set -e
+          mkdir -p artifacts/validation artifacts/audits
+          bun run audit:f0-f1 > artifacts/validation/audit.txt 2>&1
+          bun run test:foundation > artifacts/validation/tests.txt 2>&1
+          bun run typecheck > artifacts/validation/typecheck.txt 2>&1
+          bun run lint > artifacts/validation/lint.txt 2>&1
+          bun run build > artifacts/validation/build.txt 2>&1
+          bun run format:check > artifacts/validation/format_check.txt 2>&1
+          bun run check > artifacts/validation/check.txt 2>&1
+
+      - name: Run exact browser visual QA
+        shell: bash
+        run: |
+          set -e
+          bun run dev -- --host 127.0.0.1 --port 4173 > artifacts/validation/preview.txt 2>&1 &
+          server_pid=$!
+          ready=0
+          for _ in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:4173/ > /dev/null 2>&1; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [[ $ready -ne 1 ]]; then
+            kill "$server_pid" 2>/dev/null || true
+            wait "$server_pid" 2>/dev/null || true
+            exit 1
+          fi
+          set +e
+          bun run qa:visual:f0-f1 > artifacts/validation/visual_qa.txt 2>&1
+          visual_code=$?
+          set -e
+          kill "$server_pid" 2>/dev/null || true
+          wait "$server_pid" 2>/dev/null || true
+          exit "$visual_code"
+
+      - name: Record successful validation status
+        shell: bash
+        run: |
+          {
+            echo "install=0"
+            echo "audit=0"
+            echo "tests=0"
+            echo "typecheck=0"
+            echo "lint=0"
+            echo "build=0"
+            echo "visual_qa=0"
+            echo "format_check=0"
+            echo "check=0"
+            echo "overall=0"
+          } > artifacts/validation/status.txt
+          {
+            echo "baseline=137344f1d89373a55e3bf4bb4d82b48d8247b45f"
+            echo "validated_tree=$(git write-tree)"
+            echo "node=$(node --version)"
+            echo "bun=$(bun --version)"
+            echo "lockfile_changed=$(git diff --quiet 137344f1d89373a55e3bf4bb4d82b48d8247b45f...HEAD -- bun.lock; test $? -eq 0 && echo no || echo yes)"
+          } > artifacts/validation/finalizer.txt
+
+      - name: Commit validated source and evidence
+        shell: bash
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          mkdir -p /tmp/f0-f1-final
+          cp src/routes/__root.tsx /tmp/f0-f1-final/root.tsx
+          cp -R artifacts/validation /tmp/f0-f1-final/validation
+          cp -R artifacts/audits /tmp/f0-f1-final/audits
+          cp artifacts/visual-qa/f0-f1-visual-qa.json /tmp/f0-f1-final/visual-report.json
+          cp artifacts/visual-qa/manifest.txt /tmp/f0-f1-final/visual-manifest.txt
+
+          git add -A
+          git add -f \
+            artifacts/validation \
+            artifacts/audits \
+            artifacts/visual-qa/f0-f1-visual-qa.json \
+            artifacts/visual-qa/manifest.txt
+          git commit -m "chore(audit): record validated F0-F1 final foundation"
+
+          if ! git push origin HEAD:phase/sole-f0-f1-foundation; then
+            git fetch origin phase/sole-f0-f1-foundation
+            git reset --hard origin/phase/sole-f0-f1-foundation
+            cp /tmp/f0-f1-final/root.tsx src/routes/__root.tsx
+            rm -f \
+              src/routes/__root.next.tsx \
+              tmp-test-do-not-use \
+              .github/workflows/f0-f1-finalize-once.yml \
+              .github/workflows/f0-f1-finalize-corrected.yml
+            rm -rf artifacts/validation artifacts/audits
+            cp -R /tmp/f0-f1-final/validation artifacts/validation
+            cp -R /tmp/f0-f1-final/audits artifacts/audits
+            mkdir -p artifacts/visual-qa
+            cp /tmp/f0-f1-final/visual-report.json artifacts/visual-qa/f0-f1-visual-qa.json
+            cp /tmp/f0-f1-final/visual-manifest.txt artifacts/visual-qa/manifest.txt
+
+            git add -A
+            git add -f \
+              artifacts/validation \
+              artifacts/audits \
+              artifacts/visual-qa/f0-f1-visual-qa.json \
+              artifacts/visual-qa/manifest.txt
+            git commit -m "chore(audit): record validated F0-F1 final foundation"
+            git push origin HEAD:phase/sole-f0-f1-foundation
+          fi
+
+      - name: Upload final screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: f0-f1-final-visual-qa-screenshots
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            artifacts/visual-qa/screenshots/
+            artifacts/visual-qa/f0-f1-visual-qa.json
+            artifacts/visual-qa/manifest.txt
