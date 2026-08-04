@@ -52,29 +52,29 @@ Remove an effect when it delays input, obscures content, causes contrast failure
 
 Colors are selected by semantic role. Components must consume semantic tokens rather than raw palette names.
 
-| Role | Default intent | Minimum requirement |
-| --- | --- | --- |
-| `background` | page canvas | readable with primary and muted text |
-| `surface` | standard card/panel | visibly separated from background |
-| `surface-elevated` | overlay or raised panel | clear border/shadow boundary |
-| `interactive` | neutral interactive surface | visible hover, pressed, selected states |
-| `primary` | principal conversion action | text contrast suitable for normal text |
-| `secondary` | lower-emphasis action | distinct from disabled state |
-| `text` | primary content | WCAG AA against used surface |
-| `text-muted` | secondary content | WCAG AA for essential text |
-| `border` | structural divider | visible without becoming dominant |
-| `border-strong` | interactive/selected divider | visually distinct from default border |
-| `success` | completed/available | paired with text or icon, not color alone |
-| `warning` | caution/low-stock | paired with explicit label |
-| `danger` | destructive/error | paired with clear language |
-| `stock-in` | available | truthful data only |
-| `stock-low` | low availability | requires a real threshold/source |
-| `stock-out` | unavailable | disables invalid purchase action |
-| `sale` | verified price reduction | requires original and current price |
-| `focus` | keyboard focus indicator | minimum 2px visible outline/ring |
-| `selection` | text/control selection | legible foreground/background pair |
-| `disabled` | unavailable interaction | state remains readable and identifiable |
-| `overlay` | modal backdrop | content beneath is visually de-emphasized |
+| Role               | Default intent               | Minimum requirement                       |
+| ------------------ | ---------------------------- | ----------------------------------------- |
+| `background`       | page canvas                  | readable with primary and muted text      |
+| `surface`          | standard card/panel          | visibly separated from background         |
+| `surface-elevated` | overlay or raised panel      | clear border/shadow boundary              |
+| `interactive`      | neutral interactive surface  | visible hover, pressed, selected states   |
+| `primary`          | principal conversion action  | text contrast suitable for normal text    |
+| `secondary`        | lower-emphasis action        | distinct from disabled state              |
+| `text`             | primary content              | WCAG AA against used surface              |
+| `text-muted`       | secondary content            | WCAG AA for essential text                |
+| `border`           | structural divider           | visible without becoming dominant         |
+| `border-strong`    | interactive/selected divider | visually distinct from default border     |
+| `success`          | completed/available          | paired with text or icon, not color alone |
+| `warning`          | caution/low-stock            | paired with explicit label                |
+| `danger`           | destructive/error            | paired with clear language                |
+| `stock-in`         | available                    | truthful data only                        |
+| `stock-low`        | low availability             | requires a real threshold/source          |
+| `stock-out`        | unavailable                  | disables invalid purchase action          |
+| `sale`             | verified price reduction     | requires original and current price       |
+| `focus`            | keyboard focus indicator     | minimum 2px visible outline/ring          |
+| `selection`        | text/control selection       | legible foreground/background pair        |
+| `disabled`         | unavailable interaction      | state remains readable and identifiable   |
+| `overlay`          | modal backdrop               | content beneath is visually de-emphasized |
 
 Contrast targets:
 
@@ -97,17 +97,17 @@ Remote render-blocking font stylesheets are prohibited. Fonts must be self-hoste
 
 ### Roles
 
-| Role | Use |
-| --- | --- |
-| Display | editorial moments only |
-| Heading | page and section structure |
-| Body | descriptions and guidance |
-| Label | controls and form fields |
-| Price | current selling price |
-| Numeric | size, quantity, SKU, metrics |
-| Caption | supporting metadata |
-| Button | concise actions |
-| Technical metadata | SKU, model code, dimensions |
+| Role               | Use                          |
+| ------------------ | ---------------------------- |
+| Display            | editorial moments only       |
+| Heading            | page and section structure   |
+| Body               | descriptions and guidance    |
+| Label              | controls and form fields     |
+| Price              | current selling price        |
+| Numeric            | size, quantity, SKU, metrics |
+| Caption            | supporting metadata          |
+| Button             | concise actions              |
+| Technical metadata | SKU, model code, dimensions  |
 
 Typography uses controlled fluid sizing with `clamp()` between documented minimum and maximum values. Line height must grow enough for Persian diacritics and stacked glyphs. Latin model names, prices, and mixed-direction strings must be tested with long unbroken values and explicit direction isolation where needed.
 
@@ -176,16 +176,16 @@ Hover, pressed, and selected states must each be visually distinct. Pressed stat
 
 ## 7. Motion grammar
 
-| Purpose | Duration | Easing | Distance/scale | Reduced motion |
-| --- | --- | --- | --- | --- |
-| feedback | 100–180ms | standard-out | 0–2px | color/state only |
-| navigation transition | 180–260ms | standard | max 12px | instant or short dissolve |
-| content reveal | 240–480ms | emphasized-out | max 24px | content visible immediately |
-| product transition | 240–420ms | emphasized | max 16px or 0.98–1 | no spatial travel |
-| cart feedback | 160–260ms | standard-out | max 12px | immediate state update |
-| dialog/drawer | 180–300ms | emphasized-out | edge-relative | no spring/large travel |
-| storytelling | 400–800ms | bespoke documented curve | section-specific | static composition |
-| 3D interaction | direct manipulation | critically damped | user-driven | static poster/media fallback |
+| Purpose               | Duration            | Easing                   | Distance/scale     | Reduced motion               |
+| --------------------- | ------------------- | ------------------------ | ------------------ | ---------------------------- |
+| feedback              | 100–180ms           | standard-out             | 0–2px              | color/state only             |
+| navigation transition | 180–260ms           | standard                 | max 12px           | instant or short dissolve    |
+| content reveal        | 240–480ms           | emphasized-out           | max 24px           | content visible immediately  |
+| product transition    | 240–420ms           | emphasized               | max 16px or 0.98–1 | no spatial travel            |
+| cart feedback         | 160–260ms           | standard-out             | max 12px           | immediate state update       |
+| dialog/drawer         | 180–300ms           | emphasized-out           | edge-relative      | no spring/large travel       |
+| storytelling          | 400–800ms           | bespoke documented curve | section-specific   | static composition           |
+| 3D interaction        | direct manipulation | critically damped        | user-driven        | static poster/media fallback |
 
 Shared easing tokens:
 
@@ -235,20 +235,20 @@ Required rules:
 
 Initial budgets are guardrails and must be refined with measured production data.
 
-| Budget | Target |
-| --- | --- |
-| initial route JS, compressed | ≤ 220KB preferred; 300KB hard review threshold |
-| lazy route JS, compressed | ≤ 120KB per route preferred |
-| CSS, compressed | ≤ 60KB |
-| initial fonts, compressed | ≤ 120KB total |
-| hero media | ≤ 350KB mobile, ≤ 700KB desktop |
-| product-list image | ≤ 160KB each at delivered size |
-| PDP primary image | ≤ 450KB each at delivered size |
-| 3D model | ≤ 3MB preferred, 5MB hard threshold; never initial-route blocking |
-| animation main-thread cost | ≤ 4ms average work per frame during active motion |
-| LCP | ≤ 2.5s at p75 |
-| INP | ≤ 200ms at p75 |
-| CLS | ≤ 0.1 at p75 |
+| Budget                       | Target                                                            |
+| ---------------------------- | ----------------------------------------------------------------- |
+| initial route JS, compressed | ≤ 220KB preferred; 300KB hard review threshold                    |
+| lazy route JS, compressed    | ≤ 120KB per route preferred                                       |
+| CSS, compressed              | ≤ 60KB                                                            |
+| initial fonts, compressed    | ≤ 120KB total                                                     |
+| hero media                   | ≤ 350KB mobile, ≤ 700KB desktop                                   |
+| product-list image           | ≤ 160KB each at delivered size                                    |
+| PDP primary image            | ≤ 450KB each at delivered size                                    |
+| 3D model                     | ≤ 3MB preferred, 5MB hard threshold; never initial-route blocking |
+| animation main-thread cost   | ≤ 4ms average work per frame during active motion                 |
+| LCP                          | ≤ 2.5s at p75                                                     |
+| INP                          | ≤ 200ms at p75                                                    |
+| CLS                          | ≤ 0.1 at p75                                                      |
 
 The current multi-megabyte 3D asset must remain optional and lazy. Product media requires dimensions/aspect ratio to prevent layout shifts. Client listeners, observers, and animation frames require cleanup.
 

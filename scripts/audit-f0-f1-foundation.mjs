@@ -30,7 +30,12 @@ function gitLines(args) {
 function walk(directory, files = []) {
   if (!fs.existsSync(directory)) return files;
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
-    if ([".git", "node_modules", "dist", ".output", ".vinxi", ".nitro", "artifacts"].includes(entry.name)) continue;
+    if (
+      [".git", "node_modules", "dist", ".output", ".vinxi", ".nitro", "artifacts"].includes(
+        entry.name,
+      )
+    )
+      continue;
     const absolutePath = path.join(directory, entry.name);
     if (entry.isDirectory()) walk(absolutePath, files);
     else files.push(absolutePath);
@@ -99,21 +104,45 @@ function inspectTsxFile(absolutePath) {
     const tabIndex = attributeValue(node.attributes, "tabIndex");
     const asChild = Boolean(findJsxAttribute(node.attributes, "asChild"));
 
-    if (href === "#" || (typeof href === "string" && href.toLowerCase().startsWith("javascript:"))) {
-      issues.push({ type: "unsafe-url", file: filePath, line: lineOf(sourceFile, node), detail: href });
+    if (
+      href === "#" ||
+      (typeof href === "string" && href.toLowerCase().startsWith("javascript:"))
+    ) {
+      issues.push({
+        type: "unsafe-url",
+        file: filePath,
+        line: lineOf(sourceFile, node),
+        detail: href,
+      });
     }
     if (typeof tabIndex === "number" && tabIndex > 0) {
-      issues.push({ type: "positive-tabindex", file: filePath, line: lineOf(sourceFile, node), detail: tabIndex });
+      issues.push({
+        type: "positive-tabindex",
+        file: filePath,
+        line: lineOf(sourceFile, node),
+        detail: tabIndex,
+      });
     }
 
     const isLink = normalized === "a" || name === "Link" || name.endsWith("Link");
-    const isButton = !asChild && (normalized === "button" || name === "Button" || name.endsWith("Button"));
+    const isButton =
+      !asChild && (normalized === "button" || name === "Button" || name.endsWith("Button"));
     const ancestor = interactiveStack.at(-1);
     if (ancestor?.isLink && isButton) {
-      issues.push({ type: "button-inside-link", file: filePath, line: lineOf(sourceFile, node), detail: `${ancestor.name} > ${name}` });
+      issues.push({
+        type: "button-inside-link",
+        file: filePath,
+        line: lineOf(sourceFile, node),
+        detail: `${ancestor.name} > ${name}`,
+      });
     }
     if (ancestor?.isButton && isLink) {
-      issues.push({ type: "link-inside-button", file: filePath, line: lineOf(sourceFile, node), detail: `${ancestor.name} > ${name}` });
+      issues.push({
+        type: "link-inside-button",
+        file: filePath,
+        line: lineOf(sourceFile, node),
+        detail: `${ancestor.name} > ${name}`,
+      });
     }
     return { name, isLink, isButton };
   }
@@ -145,13 +174,24 @@ const commercePath = "src/components/ui/commerce-primitives.tsx";
 const behaviorPath = "scripts/test-f0-f1-behavior.mjs";
 const sourceContractPath = "scripts/test-f0-f1-primitives.mjs";
 
-for (const requiredPath of [constitutionPath, designSystemPath, handoffPath, workflowPath, rootPath, foundationCssPath, commercePath, behaviorPath, sourceContractPath]) {
+for (const requiredPath of [
+  constitutionPath,
+  designSystemPath,
+  handoffPath,
+  workflowPath,
+  rootPath,
+  foundationCssPath,
+  commercePath,
+  behaviorPath,
+  sourceContractPath,
+]) {
   addCheck(`file.exists:${requiredPath}`, exists(requiredPath), requiredPath);
 }
 
 const trackedFiles = gitLines(["ls-files"]);
 const forbiddenExact = ["src/routes/__root.next.tsx", "tmp-test-do-not-use"];
-const forbiddenPattern = /(?:^|\/)(?:[^/]*(?:\.tmp|\.bak|\.orig|\.rej)|[^/]*(?:replacement|probe|scratch|one[-_.]?shot|finalize[-_.]?once|handoff[-_.]?once|connector[-_.]?capability)[^/]*)$/i;
+const forbiddenPattern =
+  /(?:^|\/)(?:[^/]*(?:\.tmp|\.bak|\.orig|\.rej)|[^/]*(?:replacement|probe|scratch|one[-_.]?shot|finalize[-_.]?once|handoff[-_.]?once|connector[-_.]?capability)[^/]*)$/i;
 const forbiddenTracked = trackedFiles.filter(
   (file) => forbiddenExact.includes(file) || forbiddenPattern.test(file),
 );
@@ -164,13 +204,21 @@ const workflowFiles = trackedFiles.filter((file) => /^\.github\/workflows\/.*\.y
 const workflowViolations = [];
 for (const file of workflowFiles) {
   const source = read(file);
-  if (/permissions:\s*[\s\S]*?contents:\s*write/i.test(source)) workflowViolations.push({ file, type: "contents-write" });
-  if (/bun-version:\s*(?:latest|["']latest["'])/i.test(source)) workflowViolations.push({ file, type: "bun-latest" });
-  if (/\bgit\s+(?:commit|push)\b/i.test(source)) workflowViolations.push({ file, type: "git-write" });
-  if (/continue-on-error:\s*true/i.test(source)) workflowViolations.push({ file, type: "continue-on-error" });
+  if (/permissions:\s*[\s\S]*?contents:\s*write/i.test(source))
+    workflowViolations.push({ file, type: "contents-write" });
+  if (/bun-version:\s*(?:latest|["']latest["'])/i.test(source))
+    workflowViolations.push({ file, type: "bun-latest" });
+  if (/\bgit\s+(?:commit|push)\b/i.test(source))
+    workflowViolations.push({ file, type: "git-write" });
+  if (/continue-on-error:\s*true/i.test(source))
+    workflowViolations.push({ file, type: "continue-on-error" });
 }
 addCheck("workflow.read-only", workflowViolations.length === 0, workflowViolations);
-addCheck("workflow.single-quality-gate", workflowFiles.length === 1 && workflowFiles[0] === workflowPath, workflowFiles);
+addCheck(
+  "workflow.single-quality-gate",
+  workflowFiles.length === 1 && workflowFiles[0] === workflowPath,
+  workflowFiles,
+);
 
 const workflow = exists(workflowPath) ? read(workflowPath) : "";
 const requiredWorkflowPatterns = [
@@ -194,34 +242,87 @@ const requiredWorkflowPatterns = [
 const missingWorkflowRequirements = requiredWorkflowPatterns
   .filter(([, pattern]) => !pattern.test(workflow))
   .map(([name]) => name);
-addCheck("workflow.complete-gate", missingWorkflowRequirements.length === 0, missingWorkflowRequirements);
+addCheck(
+  "workflow.complete-gate",
+  missingWorkflowRequirements.length === 0,
+  missingWorkflowRequirements,
+);
 
 const packageJson = JSON.parse(read("package.json"));
-addCheck("toolchain.package-manager", packageJson.packageManager === "bun@1.3.14", packageJson.packageManager);
-addCheck("scripts.behavior-test", packageJson.scripts?.["test:foundation"] === "node scripts/run-browser-check.mjs behavior", packageJson.scripts?.["test:foundation"]);
-addCheck("scripts.visual-test", packageJson.scripts?.["qa:visual:f0-f1"] === "node scripts/run-browser-check.mjs visual", packageJson.scripts?.["qa:visual:f0-f1"]);
-addCheck("scripts.source-contract-audit", Boolean(packageJson.scripts?.["audit:source-contracts"]), packageJson.scripts?.["audit:source-contracts"]);
-addCheck("scripts.check-has-format", /bun run format:check/.test(packageJson.scripts?.check ?? ""), packageJson.scripts?.check);
-addCheck("scripts.check-has-behavior", /bun run test:foundation/.test(packageJson.scripts?.check ?? ""), packageJson.scripts?.check);
-addCheck("scripts.check-has-visual", /bun run qa:visual:f0-f1/.test(packageJson.scripts?.check ?? ""), packageJson.scripts?.check);
+addCheck(
+  "toolchain.package-manager",
+  packageJson.packageManager === "bun@1.3.14",
+  packageJson.packageManager,
+);
+addCheck(
+  "scripts.behavior-test",
+  packageJson.scripts?.["test:foundation"] === "node scripts/run-browser-check.mjs behavior",
+  packageJson.scripts?.["test:foundation"],
+);
+addCheck(
+  "scripts.visual-test",
+  packageJson.scripts?.["qa:visual:f0-f1"] === "node scripts/run-browser-check.mjs visual",
+  packageJson.scripts?.["qa:visual:f0-f1"],
+);
+addCheck(
+  "scripts.source-contract-audit",
+  Boolean(packageJson.scripts?.["audit:source-contracts"]),
+  packageJson.scripts?.["audit:source-contracts"],
+);
+addCheck(
+  "scripts.check-has-format",
+  /bun run format:check/.test(packageJson.scripts?.check ?? ""),
+  packageJson.scripts?.check,
+);
+addCheck(
+  "scripts.check-has-behavior",
+  /bun run test:foundation/.test(packageJson.scripts?.check ?? ""),
+  packageJson.scripts?.check,
+);
+addCheck(
+  "scripts.check-has-visual",
+  /bun run qa:visual:f0-f1/.test(packageJson.scripts?.check ?? ""),
+  packageJson.scripts?.check,
+);
 
 const rootSource = exists(rootPath) ? read(rootPath) : "";
 const foundationCss = exists(foundationCssPath) ? read(foundationCssPath) : "";
 const commerceSource = exists(commercePath) ? read(commercePath) : "";
 addCheck("document.lang-fa", /<html[^>]*lang=["']fa["']/.test(rootSource), rootPath);
 addCheck("document.dir-rtl", /<html[^>]*dir=["']rtl["']/.test(rootSource), rootPath);
-addCheck("document.skip-link", /href=["']#main-content["']/.test(rootSource) && /id=["']main-content["']/.test(rootSource), rootPath);
+addCheck(
+  "document.skip-link",
+  /href=["']#main-content["']/.test(rootSource) && /id=["']main-content["']/.test(rootSource),
+  rootPath,
+);
 addCheck("document.foundation-css", /foundation\.css\?url/.test(rootSource), rootPath);
 addCheck("focus.visible", /:focus-visible/.test(foundationCss), foundationCssPath);
-addCheck("motion.reduced", /prefers-reduced-motion:\s*reduce/.test(foundationCss), foundationCssPath);
-addCheck("layout.document-overflow-guard", /#main-content[\s\S]*overflow-x:\s*clip/.test(foundationCss), foundationCssPath);
-addCheck("touch.shared-minimum", /--size-touch/.test(foundationCss) && /min-block-size:\s*var\(--size-touch\)/.test(foundationCss), foundationCssPath);
+addCheck(
+  "motion.reduced",
+  /prefers-reduced-motion:\s*reduce/.test(foundationCss),
+  foundationCssPath,
+);
+addCheck(
+  "layout.document-overflow-guard",
+  /#main-content[\s\S]*overflow-x:\s*clip/.test(foundationCss),
+  foundationCssPath,
+);
+addCheck(
+  "touch.shared-minimum",
+  /--size-touch/.test(foundationCss) && /min-block-size:\s*var\(--size-touch\)/.test(foundationCss),
+  foundationCssPath,
+);
 
 const sourceFiles = walk(path.join(ROOT, "src")).filter(
   (file) => /\.(?:ts|tsx)$/.test(file) && !file.endsWith("routeTree.gen.ts"),
 );
 const interactionIssues = sourceFiles.flatMap(inspectTsxFile);
-for (const type of ["unsafe-url", "positive-tabindex", "button-inside-link", "link-inside-button"]) {
+for (const type of [
+  "unsafe-url",
+  "positive-tabindex",
+  "button-inside-link",
+  "link-inside-button",
+]) {
   const issues = interactionIssues.filter((issue) => issue.type === type);
   addCheck(`interaction.no-${type}`, issues.length === 0, issues);
 }
@@ -247,16 +348,39 @@ addCheck("primitives.commerce", missingCommerceExports.length === 0, missingComm
 const handoff = exists(handoffPath) ? read(handoffPath) : "";
 addCheck("handoff.no-pending", !/\bPending\b/i.test(handoff), handoffPath);
 addCheck("handoff.ready", /Ready for supervisor review:\s*Yes/i.test(handoff), handoffPath);
-const validatedSha = handoff.match(/Validated implementation SHA:\s*`?([a-f0-9]{40})`?/i)?.[1] ?? null;
+const validatedSha =
+  handoff.match(/Validated implementation SHA:\s*`?([a-f0-9]{40})`?/i)?.[1] ?? null;
 addCheck("handoff.validated-sha", Boolean(validatedSha), validatedSha);
-addCheck("handoff.command-results", /bun install --frozen-lockfile[\s\S]*Exit code:\s*0/i.test(handoff) && /bun run check[\s\S]*Exit code:\s*0/i.test(handoff), handoffPath);
-addCheck("handoff.visual-result", /Visual QA[\s\S]*foundationCriticalFindings:\s*0/i.test(handoff), handoffPath);
-addCheck("handoff.behavior-result", /Browser behavior tests[\s\S]*failed:\s*0/i.test(handoff), handoffPath);
-addCheck("handoff.phase-map", /F2 — Global Shell, Navigation and Search/.test(handoff) && /F12 — Accessibility and Final QA/.test(handoff), handoffPath);
+addCheck(
+  "handoff.command-results",
+  /bun install --frozen-lockfile[\s\S]*Exit code:\s*0/i.test(handoff) &&
+    /bun run check[\s\S]*Exit code:\s*0/i.test(handoff),
+  handoffPath,
+);
+addCheck(
+  "handoff.visual-result",
+  /Visual QA[\s\S]*foundationCriticalFindings:\s*0/i.test(handoff),
+  handoffPath,
+);
+addCheck(
+  "handoff.behavior-result",
+  /Browser behavior tests[\s\S]*failed:\s*0/i.test(handoff),
+  handoffPath,
+);
+addCheck(
+  "handoff.phase-map",
+  /F2 — Global Shell, Navigation and Search/.test(handoff) &&
+    /F12 — Accessibility and Final QA/.test(handoff),
+  handoffPath,
+);
 
 const sourceContract = exists(sourceContractPath) ? read(sourceContractPath) : "";
 const behaviorSource = exists(behaviorPath) ? read(behaviorPath) : "";
-addCheck("tests.source-contract-labelled", /source-contract/i.test(sourceContract), sourceContractPath);
+addCheck(
+  "tests.source-contract-labelled",
+  /source-contract/i.test(sourceContract),
+  sourceContractPath,
+);
 const requiredBehaviorNames = [
   "Button default type",
   "Button loading and disabled behavior",
@@ -276,9 +400,23 @@ addCheck("tests.behavior-coverage", missingBehaviorTests.length === 0, missingBe
 
 const constitution = exists(constitutionPath) ? read(constitutionPath) : "";
 const designSystem = exists(designSystemPath) ? read(designSystemPath) : "";
-addCheck("constitution.performance-budget", /initial route JS/i.test(constitution) && /LCP/.test(constitution) && /3D model/.test(constitution), constitutionPath);
-addCheck("constitution.truthfulness", /Truthfulness policy/i.test(constitution) && /fabricated reviews/i.test(constitution), constitutionPath);
-addCheck("design-system.overlay-contract", /Overlay contract/i.test(designSystem) && /focus is trapped/i.test(designSystem), designSystemPath);
+addCheck(
+  "constitution.performance-budget",
+  /initial route JS/i.test(constitution) &&
+    /LCP/.test(constitution) &&
+    /3D model/.test(constitution),
+  constitutionPath,
+);
+addCheck(
+  "constitution.truthfulness",
+  /Truthfulness policy/i.test(constitution) && /fabricated reviews/i.test(constitution),
+  constitutionPath,
+);
+addCheck(
+  "design-system.overlay-contract",
+  /Overlay contract/i.test(designSystem) && /focus is trapped/i.test(designSystem),
+  designSystemPath,
+);
 
 const failures = checks.filter((check) => check.severity === "error" && check.status === "fail");
 const report = {
@@ -300,6 +438,7 @@ fs.writeFileSync(OUTPUT_PATH, `${JSON.stringify(report, null, 2)}\n`);
 console.log(JSON.stringify(report.summary));
 console.log(`Foundation audit report: ${relative(OUTPUT_PATH)}`);
 if (!report.pass) {
-  for (const failure of failures) console.error(`FAIL ${failure.id}: ${JSON.stringify(failure.evidence)}`);
+  for (const failure of failures)
+    console.error(`FAIL ${failure.id}: ${JSON.stringify(failure.evidence)}`);
   process.exitCode = 1;
 }

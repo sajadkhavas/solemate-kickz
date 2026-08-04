@@ -8,13 +8,13 @@ import { SHOES, formatPrice } from "@/data/shoes";
 import { useStore } from "@/store";
 
 function restoreCartTriggerFocus() {
-  const triggers = Array.from(
-    document.querySelectorAll<HTMLElement>('button[aria-label="Cart"]'),
-  );
+  const triggers = Array.from(document.querySelectorAll<HTMLElement>('button[aria-label="Cart"]'));
   const visibleTrigger = triggers.find((element) => {
     const style = window.getComputedStyle(element);
     const rect = element.getBoundingClientRect();
-    return style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
+    return (
+      style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0
+    );
   });
   (visibleTrigger ?? triggers[0])?.focus({ preventScroll: true });
 }

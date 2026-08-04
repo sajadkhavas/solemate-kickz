@@ -360,7 +360,11 @@ async function main() {
         ),
       );
     }
-    record("Cart Drawer focus trap", focusTrail.every((item) => item.inside), focusTrail);
+    record(
+      "Cart Drawer focus trap",
+      focusTrail.every((item) => item.inside),
+      focusTrail,
+    );
 
     await client.send("Input.dispatchKeyEvent", {
       type: "keyDown",
@@ -454,9 +458,7 @@ async function main() {
     );
     record(
       "Reduced-motion behavior",
-      reduced.matches &&
-        reduced.motionAnimations === 0 &&
-        [null, "none"].includes(reduced.cursor),
+      reduced.matches && reduced.motionAnimations === 0 && [null, "none"].includes(reduced.cursor),
       reduced,
     );
 
@@ -500,12 +502,12 @@ main().catch((error) => {
         suite: "f0-f1-browser-behavior",
         generatedAt: new Date().toISOString(),
         pass: false,
-        fatalError: error instanceof Error ? error.stack ?? error.message : String(error),
+        fatalError: error instanceof Error ? (error.stack ?? error.message) : String(error),
       },
       null,
       2,
     )}\n`,
   );
-  console.error(error instanceof Error ? error.stack ?? error.message : String(error));
+  console.error(error instanceof Error ? (error.stack ?? error.message) : String(error));
   process.exitCode = 1;
 });

@@ -3,8 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-export const sleep = (milliseconds) =>
-  new Promise((resolve) => setTimeout(resolve, milliseconds));
+export const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 export function findChrome() {
   const candidates = [
@@ -147,7 +146,8 @@ export async function openBrowser({ debugPort, logPath, width = 1280, height = 8
     `http://127.0.0.1:${debugPort}/json/new?${encodeURIComponent("about:blank")}`,
     { method: "PUT" },
   );
-  if (!targetResponse.ok) throw new Error(`Could not create Chrome target: ${targetResponse.status}`);
+  if (!targetResponse.ok)
+    throw new Error(`Could not create Chrome target: ${targetResponse.status}`);
   const target = await targetResponse.json();
   const client = new CdpClient(target.webSocketDebuggerUrl);
   await client.connect();

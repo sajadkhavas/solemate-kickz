@@ -472,12 +472,12 @@ main().catch((error) => {
         baseline: BASELINE,
         generatedAt: new Date().toISOString(),
         pass: false,
-        fatalError: error instanceof Error ? error.stack ?? error.message : String(error),
+        fatalError: error instanceof Error ? (error.stack ?? error.message) : String(error),
       },
       null,
       2,
     )}\n`,
   );
-  console.error(error instanceof Error ? error.stack ?? error.message : String(error));
+  console.error(error instanceof Error ? (error.stack ?? error.message) : String(error));
   process.exitCode = 1;
 });

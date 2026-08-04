@@ -59,15 +59,15 @@ Spacing follows a 4px-derived scale with semantic aliases:
 
 ### Z-index contract
 
-| Layer | Token |
-| --- | --- |
-| base content | `--z-base` |
-| sticky page controls | `--z-sticky` |
-| dropdown/popover | `--z-popover` |
-| backdrop | `--z-overlay` |
-| dialog/drawer panel | `--z-modal` |
-| toast | `--z-toast` |
-| accessibility emergency layer | `--z-a11y` |
+| Layer                         | Token         |
+| ----------------------------- | ------------- |
+| base content                  | `--z-base`    |
+| sticky page controls          | `--z-sticky`  |
+| dropdown/popover              | `--z-popover` |
+| backdrop                      | `--z-overlay` |
+| dialog/drawer panel           | `--z-modal`   |
+| toast                         | `--z-toast`   |
+| accessibility emergency layer | `--z-a11y`    |
 
 No shared component may introduce arbitrary values above the toast layer.
 
