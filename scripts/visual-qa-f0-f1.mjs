@@ -99,7 +99,8 @@ class CdpClient {
       }
 
       if (!message.method) return;
-      for (const listener of this.listeners.get(message.method) ?? []) listener(message.params ?? {});
+      for (const listener of this.listeners.get(message.method) ?? [])
+        listener(message.params ?? {});
       const waiter = this.waiters.get(message.method)?.shift();
       if (waiter) waiter.resolve(message.params ?? {});
     });
@@ -208,7 +209,8 @@ async function main() {
       `http://127.0.0.1:${DEBUG_PORT}/json/new?${encodeURIComponent("about:blank")}`,
       { method: "PUT" },
     );
-    if (!targetResponse.ok) throw new Error(`Could not create Chrome target: ${targetResponse.status}`);
+    if (!targetResponse.ok)
+      throw new Error(`Could not create Chrome target: ${targetResponse.status}`);
     const target = await targetResponse.json();
     const client = new CdpClient(target.webSocketDebuggerUrl);
     await client.connect();
@@ -225,7 +227,10 @@ async function main() {
       consoleEvents.push({
         source: "exception",
         level: "error",
-        text: event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception",
+        text:
+          event.exceptionDetails?.exception?.description ??
+          event.exceptionDetails?.text ??
+          "Runtime exception",
       });
     });
     client.on("Log.entryAdded", (event) => {
@@ -505,10 +510,13 @@ async function main() {
     screenshots: report.results.length,
     routes: ROUTES.length,
     viewports: VIEWPORTS.length,
-    horizontalOverflowCases: report.results.filter((result) => result.inspection?.horizontalOverflow)
+    horizontalOverflowCases: report.results.filter(
+      (result) => result.inspection?.horizontalOverflow,
+    ).length,
+    hydrationWarningCases: report.results.filter((result) => result.hydrationWarnings.length > 0)
       .length,
-    hydrationWarningCases: report.results.filter((result) => result.hydrationWarnings.length > 0).length,
-    runtimeErrorCases: report.results.filter((result) => result.runtimeExceptions.length > 0).length,
+    runtimeErrorCases: report.results.filter((result) => result.runtimeExceptions.length > 0)
+      .length,
     targetsBelow24: report.results.reduce(
       (total, result) => total + (result.inspection?.targetsBelow24?.length ?? 0),
       0,
@@ -537,7 +545,7 @@ main().catch((error) => {
     audit: "f0-f1-visual-qa",
     generatedAt: new Date().toISOString(),
     pass: false,
-    fatalError: error instanceof Error ? error.stack ?? error.message : String(error),
+    fatalError: error instanceof Error ? (error.stack ?? error.message) : String(error),
   };
   fs.writeFileSync(REPORT_PATH, `${JSON.stringify(failure, null, 2)}\n`);
   console.error(failure.fatalError);

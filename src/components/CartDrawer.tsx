@@ -74,7 +74,9 @@ export function CartDrawer() {
               </div>
               <div>
                 <div className="mb-1 font-display text-xl font-bold">سبدت خالیه!</div>
-                <div className="text-sm text-muted-foreground">برای شروع، محصولات نمونه را ببین.</div>
+                <div className="text-sm text-muted-foreground">
+                  برای شروع، محصولات نمونه را ببین.
+                </div>
               </div>
               <Link to="/products" onClick={() => setOpen(false)} className="btn-hype mt-2">
                 مشاهده محصولات نمونه

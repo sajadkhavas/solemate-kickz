@@ -56,8 +56,8 @@ function BrandsPage() {
               برندهای <span className="text-neon">نمونه</span>
             </h1>
             <p className="mt-3 max-w-xl font-fa text-muted-foreground">
-              این فهرست فقط برندهای موجود در Dataset نمایشی پروژه را نشان می‌دهد و موجودی یا
-              همکاری تجاری واقعی را اثبات نمی‌کند.
+              این فهرست فقط برندهای موجود در Dataset نمایشی پروژه را نشان می‌دهد و موجودی یا همکاری
+              تجاری واقعی را اثبات نمی‌کند.
             </p>
 
             <label className="mt-6 flex min-h-11 max-w-md items-center gap-2 rounded-full border border-border bg-surface px-4 py-2.5 focus-within:border-neon">
