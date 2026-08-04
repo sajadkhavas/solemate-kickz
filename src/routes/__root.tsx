@@ -21,7 +21,7 @@ import { Toaster } from "@/components/ui/sonner";
 function NotFoundComponent() {
   return (
     <main
-      id="main-content"
+      id="route-focus-target"
       tabIndex={-1}
       className="flex min-h-screen items-center justify-center bg-background px-4 outline-none"
     >
@@ -53,7 +53,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
   return (
     <main
-      id="main-content"
+      id="route-focus-target"
       tabIndex={-1}
       className="flex min-h-screen items-center justify-center bg-background px-4 outline-none"
     >
@@ -120,7 +120,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <a className="skip-link" href="#main-content">
+        <a className="skip-link" href="#route-focus-target">
           رفتن به محتوای اصلی
         </a>
         {children}
@@ -132,21 +132,17 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RouteAccessibility() {
   const location = useLocation();
+  const focusTargetRef = useRef<HTMLDivElement>(null);
   const firstRender = useRef(true);
   const [announcement, setAnnouncement] = useState("");
+  const routeNeedsMainLandmark = location.pathname === "/products";
 
   useEffect(() => {
     if (typeof document === "undefined") return;
 
     const frame = window.requestAnimationFrame(() => {
-      const main = document.querySelector<HTMLElement>("main");
-      if (main) {
-        if (!main.id) main.id = "main-content";
-        if (!main.hasAttribute("tabindex")) main.tabIndex = -1;
-
-        if (!firstRender.current) {
-          main.focus({ preventScroll: true });
-        }
+      if (!firstRender.current) {
+        focusTargetRef.current?.focus({ preventScroll: true });
       }
 
       setAnnouncement(`صفحه ${document.title || "SOLE"}`);
@@ -157,9 +153,21 @@ function RouteAccessibility() {
   }, [location.pathname]);
 
   return (
-    <div className="route-announcer" aria-live="polite" aria-atomic="true">
-      {announcement}
-    </div>
+    <>
+      <div
+        id="route-focus-target"
+        ref={focusTargetRef}
+        tabIndex={-1}
+        role={routeNeedsMainLandmark ? "main" : undefined}
+        aria-label={routeNeedsMainLandmark ? "محتوای اصلی" : undefined}
+        className="min-w-0 outline-none"
+      >
+        <Outlet />
+      </div>
+      <div className="route-announcer" aria-live="polite" aria-atomic="true">
+        {announcement}
+      </div>
+    </>
   );
 }
 
@@ -170,7 +178,6 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <MotionConfig reducedMotion="user">
         <RouteAccessibility />
-        <Outlet />
         <CartDrawer />
         <MagneticCursor />
         <Toaster dir="rtl" theme="dark" position="bottom-left" closeButton />
