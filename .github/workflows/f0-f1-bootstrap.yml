@@ -1,0 +1,90 @@
+name: F0/F1 Baseline Bootstrap
+
+on:
+  push:
+    branches:
+      - phase/sole-f0-f1-foundation
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact baseline
+        uses: actions/checkout@v4
+        with:
+          ref: 137344f1d89373a55e3bf4bb4d82b48d8247b45f
+          fetch-depth: 1
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Record toolchain
+        shell: bash
+        run: |
+          mkdir -p artifacts/baseline
+          {
+            echo "baseline=137344f1d89373a55e3bf4bb4d82b48d8247b45f"
+            echo "node=$(node --version)"
+            echo "bun=$(bun --version)"
+            echo "lockfile=$(test -f bun.lock && echo bun.lock || echo missing)"
+          } | tee artifacts/baseline/toolchain.txt
+
+      - name: Archive baseline source
+        shell: bash
+        run: |
+          tar \
+            --exclude=.git \
+            --exclude=node_modules \
+            --exclude=artifacts \
+            -czf /tmp/solemate-kickz-baseline.tar.gz .
+
+      - name: Install from lockfile
+        id: install
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          bun install --frozen-lockfile 2>&1 | tee artifacts/baseline/install.log
+
+      - name: Run baseline commands
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          run_and_record() {
+            local name="$1"
+            shift
+            "$@" >"artifacts/baseline/${name}.log" 2>&1
+            local code=$?
+            echo "${name}=${code}" | tee -a artifacts/baseline/status.txt
+            return 0
+          }
+
+          if [[ "${{ steps.install.outcome }}" == "success" ]]; then
+            run_and_record lint bun run lint
+            run_and_record typecheck bunx tsc --noEmit
+            run_and_record build bun run build
+          else
+            echo "install=1" > artifacts/baseline/status.txt
+            echo "lint=skipped" >> artifacts/baseline/status.txt
+            echo "typecheck=skipped" >> artifacts/baseline/status.txt
+            echo "build=skipped" >> artifacts/baseline/status.txt
+          fi
+
+      - name: Upload baseline evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: f0-f1-baseline-evidence
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            /tmp/solemate-kickz-baseline.tar.gz
+            artifacts/baseline/
