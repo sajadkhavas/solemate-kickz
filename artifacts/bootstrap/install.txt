@@ -74,4 +74,4 @@ bun install v1.3.14 (0d9b296a)
 + zod@3.25.76
 + zustand@5.0.14
 
-475 packages installed [2.34s]
+475 packages installed [3.94s]
