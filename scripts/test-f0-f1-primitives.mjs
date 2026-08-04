@@ -13,13 +13,19 @@ const root = source("src/routes/__root.tsx");
 const styles = source("src/styles.css");
 
 test("Button defaults to non-submitting behavior", () => {
-  assert.match(button, /type=\{asChild \? undefined : \(type \?\? "button"\)\}/);
+  assert.match(button, /type=\{type \?\? "button"\}/);
 });
 
 test("Button exposes loading and disabled semantics", () => {
   assert.match(button, /aria-busy=\{loading \|\| undefined\}/);
-  assert.match(button, /disabled=\{asChild \? undefined : unavailable\}/);
+  assert.match(button, /disabled=\{unavailable\}/);
   assert.match(button, /loadingLabel/);
+});
+
+test("Button asChild preserves the Radix single-child contract", () => {
+  assert.match(button, /if \(asChild\)/);
+  assert.match(button, /React\.Children\.only\(children\)/);
+  assert.doesNotMatch(button, /<Slot[\s\S]*absolute size-4[\s\S]*<\/Slot>/);
 });
 
 test("IconButton requires an accessible label", () => {
@@ -46,11 +52,15 @@ test("Cart drawer uses a modal primitive with an accessible name", () => {
   assert.match(cartDrawer, /DialogPrimitive\.Close/);
 });
 
-test("Root document owns RTL, skip navigation, and route announcements", () => {
+test("Root document owns stable RTL skip navigation and route focus", () => {
   assert.match(root, /<html lang="fa" dir="rtl"/);
   assert.match(root, /href="#main-content"/);
+  assert.match(root, /id="main-content"/);
+  assert.match(root, /ref=\{focusTargetRef\}/);
+  assert.match(root, /focusTargetRef\.current\?\.focus\(\{ preventScroll: true \}\)/);
   assert.match(root, /aria-live="polite"/);
-  assert.match(root, /main\.focus\(\{ preventScroll: true \}\)/);
+  assert.doesNotMatch(root, /\.id = "main-content"/);
+  assert.doesNotMatch(root, /\.tabIndex = -1/);
 });
 
 test("Global CSS preserves focus and reduced-motion behavior", () => {
