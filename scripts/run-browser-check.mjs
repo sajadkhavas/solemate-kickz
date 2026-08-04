@@ -11,12 +11,14 @@ const MODES = {
     script: "scripts/test-f0-f1-behavior.mjs",
     baseEnv: "FOUNDATION_BASE_URL",
     log: "artifacts/runtime/behavior-server.txt",
+    report: "artifacts/reports/f0-f1-behavior.json",
   },
   visual: {
     port: 4173,
     script: "scripts/visual-qa-f0-f1.mjs",
     baseEnv: "VISUAL_QA_BASE_URL",
     log: "artifacts/runtime/visual-server.txt",
+    report: "artifacts/visual-qa/f0-f1-visual-qa.json",
   },
 };
 
@@ -27,6 +29,7 @@ if (!MODES[mode]) {
 
 const config = MODES[mode];
 const existingBaseUrl = process.env[config.baseEnv];
+const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 function spawnChild(command, args, options = {}) {
   return spawn(command, args, {
@@ -38,11 +41,25 @@ function spawnChild(command, args, options = {}) {
 }
 
 function waitForExit(child) {
+  if (child.exitCode !== null) {
+    return Promise.resolve({ code: child.exitCode, signal: child.signalCode });
+  }
   return new Promise((resolve) => {
     child.once("exit", (code, signal) => {
       resolve({ code: code ?? (signal ? 1 : 0), signal });
     });
   });
+}
+
+async function stopProcess(child) {
+  if (!child || child.exitCode !== null) return;
+  const exited = waitForExit(child);
+  child.kill("SIGTERM");
+  const graceful = await Promise.race([exited.then(() => true), sleep(3_000).then(() => false)]);
+  if (!graceful && child.exitCode === null) {
+    child.kill("SIGKILL");
+    await Promise.race([exited, sleep(1_000)]);
+  }
 }
 
 async function waitForHttp(url, timeoutMs = 60_000) {
@@ -57,30 +74,51 @@ async function waitForHttp(url, timeoutMs = 60_000) {
     } catch (error) {
       lastError = error instanceof Error ? error.message : String(error);
     }
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await sleep(250);
   }
 
   throw new Error(`Timed out waiting for ${url}: ${lastError}`);
 }
 
-async function stopServer(server) {
-  if (!server || server.exitCode !== null) return;
-  server.kill("SIGTERM");
-  await Promise.race([
-    waitForExit(server),
-    new Promise((resolve) =>
-      setTimeout(() => {
-        if (server.exitCode === null) server.kill("SIGKILL");
-        resolve();
-      }, 5_000),
-    ),
-  ]);
+function readReport(reportPath) {
+  try {
+    const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
+    return typeof report.pass === "boolean" ? report : null;
+  } catch {
+    return null;
+  }
+}
+
+async function waitForBrowserResult(child, reportPath, timeoutMs = 12 * 60_000) {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    const report = readReport(reportPath);
+    if (report) {
+      await stopProcess(child);
+      return { code: report.pass ? 0 : 1, report };
+    }
+    if (child.exitCode !== null) {
+      return { code: child.exitCode, report: readReport(reportPath) };
+    }
+    await sleep(200);
+  }
+
+  await stopProcess(child);
+  return { code: 124, report: readReport(reportPath) };
+}
+
+async function runBrowserScript(baseUrl) {
+  const reportPath = path.join(ROOT, config.report);
+  fs.rmSync(reportPath, { force: true });
+  const child = spawnChild(process.execPath, [config.script], {
+    env: { ...process.env, [config.baseEnv]: baseUrl },
+  });
+  return waitForBrowserResult(child, reportPath);
 }
 
 async function main() {
   if (existingBaseUrl) {
-    const child = spawnChild(process.execPath, [config.script]);
-    const result = await waitForExit(child);
+    const result = await runBrowserScript(existingBaseUrl);
     process.exitCode = result.code;
     return;
   }
@@ -101,7 +139,7 @@ async function main() {
   );
 
   const cleanup = async () => {
-    await stopServer(server);
+    await stopProcess(server);
     fs.closeSync(log);
   };
 
@@ -114,10 +152,7 @@ async function main() {
 
   try {
     await waitForHttp(baseUrl);
-    const child = spawnChild(process.execPath, [config.script], {
-      env: { ...process.env, [config.baseEnv]: baseUrl },
-    });
-    const result = await waitForExit(child);
+    const result = await runBrowserScript(baseUrl);
     process.exitCode = result.code;
   } finally {
     await cleanup();
