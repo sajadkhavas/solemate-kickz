@@ -6,6 +6,7 @@ import process from "node:process";
 
 const ROOT = process.cwd();
 const BASE_URL = process.env.VISUAL_QA_BASE_URL ?? "http://127.0.0.1:4173";
+const BASE_ORIGIN = new URL(BASE_URL).origin;
 const DEBUG_PORT = Number(process.env.CHROME_DEBUG_PORT ?? 9222);
 const OUTPUT_DIR = path.join(ROOT, "artifacts/visual-qa");
 const SCREENSHOT_DIR = path.join(OUTPUT_DIR, "screenshots");
@@ -36,6 +37,7 @@ const ROUTES = [
   { name: "not-found", path: "/route-that-does-not-exist" },
 ];
 
+const HYDRATION_PATTERN = /hydration|hydrated|server rendered html|did not match/i;
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 function findChrome() {
@@ -64,7 +66,7 @@ async function waitForEndpoint(url, timeout = 20_000) {
       const response = await fetch(url);
       if (response.ok) return response;
     } catch {
-      // Chrome or preview server is still starting.
+      // Chrome or the SSR server is still starting.
     }
     await sleep(250);
   }
@@ -99,8 +101,9 @@ class CdpClient {
       }
 
       if (!message.method) return;
-      for (const listener of this.listeners.get(message.method) ?? [])
+      for (const listener of this.listeners.get(message.method) ?? []) {
         listener(message.params ?? {});
+      }
       const waiter = this.waiters.get(message.method)?.shift();
       if (waiter) waiter.resolve(message.params ?? {});
     });
@@ -159,6 +162,15 @@ function safeFilename(value) {
   return value.replaceAll(/[^a-zA-Z0-9._-]/g, "-");
 }
 
+function isSameOriginNetworkError(entry) {
+  if (!entry.url) return true;
+  try {
+    return new URL(entry.url).origin === BASE_ORIGIN;
+  } catch {
+    return true;
+  }
+}
+
 async function main() {
   fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
   fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
@@ -186,7 +198,7 @@ async function main() {
   );
 
   const report = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     audit: "f0-f1-visual-qa",
     generatedAt: new Date().toISOString(),
     baseUrl: BASE_URL,
@@ -196,10 +208,12 @@ async function main() {
     results: [],
     reducedMotion: null,
     zoom200: [],
+    externalNetworkFindings: [],
     criticalFindings: [],
     limitations: [
       "Screenshots require human visual review for Persian line quality and aesthetic regressions.",
       "This automated pass does not replace testing with a physical screen reader or real touch device.",
+      "External CDN failures are recorded separately because CI network policy can differ from production.",
     ],
   };
 
@@ -209,8 +223,9 @@ async function main() {
       `http://127.0.0.1:${DEBUG_PORT}/json/new?${encodeURIComponent("about:blank")}`,
       { method: "PUT" },
     );
-    if (!targetResponse.ok)
+    if (!targetResponse.ok) {
       throw new Error(`Could not create Chrome target: ${targetResponse.status}`);
+    }
     const target = await targetResponse.json();
     const client = new CdpClient(target.webSocketDebuggerUrl);
     await client.connect();
@@ -231,6 +246,7 @@ async function main() {
           event.exceptionDetails?.exception?.description ??
           event.exceptionDetails?.text ??
           "Runtime exception",
+        url: event.exceptionDetails?.url,
       });
     });
     client.on("Log.entryAdded", (event) => {
@@ -238,6 +254,7 @@ async function main() {
         source: event.entry?.source ?? "log",
         level: event.entry?.level ?? "info",
         text: event.entry?.text ?? "",
+        url: event.entry?.url,
       });
     });
 
@@ -251,7 +268,7 @@ async function main() {
     const inspectExpression = `(() => {
       const html = document.documentElement;
       const body = document.body;
-      const main = document.querySelector('main');
+      const main = document.querySelector('main, [role="main"]');
       const isVisible = (element) => {
         const style = getComputedStyle(element);
         const rect = element.getBoundingClientRect();
@@ -283,6 +300,24 @@ async function main() {
           textOverflow: getComputedStyle(element).textOverflow,
         }));
       const documentWidth = Math.max(html.scrollWidth, body?.scrollWidth || 0);
+      const overflowOffenders = [...document.querySelectorAll('body *')]
+        .filter(isVisible)
+        .map((element) => {
+          const rect = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          return {
+            tag: element.tagName.toLowerCase(),
+            id: element.id || '',
+            className: typeof element.className === 'string' ? element.className.slice(0, 180) : '',
+            left: Math.round(rect.left * 10) / 10,
+            right: Math.round(rect.right * 10) / 10,
+            width: Math.round(rect.width * 10) / 10,
+            position: style.position,
+            overflowX: style.overflowX,
+          };
+        })
+        .filter((element) => element.left < -1 || element.right > innerWidth + 1)
+        .slice(0, 30);
       return {
         url: location.href,
         title: document.title,
@@ -291,7 +326,14 @@ async function main() {
         viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
         documentWidth,
         horizontalOverflow: documentWidth > innerWidth + 1,
-        main: main ? { id: main.id, tabIndex: main.tabIndex } : null,
+        overflowOffenders,
+        main: main ? {
+          tag: main.tagName.toLowerCase(),
+          id: main.id,
+          role: main.getAttribute('role'),
+          tabIndex: main.tabIndex,
+        } : null,
+        focusTargetCount: document.querySelectorAll('#main-content').length,
         interactiveCount: targets.length,
         targetsBelow24: targets.filter((target) => target.width < 24 || target.height < 24).slice(0, 30),
         targetsBelow44: targets.filter((target) => target.width < 44 || target.height < 44).slice(0, 30),
@@ -306,7 +348,7 @@ async function main() {
         width: viewport.width,
         height: viewport.height,
         deviceScaleFactor: 1,
-        mobile: viewport.width < 768,
+        mobile: false,
         screenWidth: viewport.width,
         screenHeight: viewport.height,
       });
@@ -382,13 +424,19 @@ async function main() {
         fs.writeFileSync(screenshotPath, Buffer.from(screenshot.data, "base64"));
 
         const routeConsole = consoleEvents.slice(consoleStart);
-        const hydrationWarnings = routeConsole.filter((entry) =>
-          /hydration|hydrated|server rendered html|did not match/i.test(entry.text),
+        const hydrationWarnings = routeConsole.filter((entry) => HYDRATION_PATTERN.test(entry.text));
+        const networkErrors = routeConsole.filter(
+          (entry) => entry.source === "network" && entry.level === "error",
         );
+        const criticalNetworkErrors = networkErrors.filter(isSameOriginNetworkError);
+        const externalNetworkErrors = networkErrors.filter((entry) => !isSameOriginNetworkError(entry));
         const runtimeExceptions = routeConsole.filter(
-          (entry) => entry.source === "exception" || entry.level === "error",
+          (entry) =>
+            entry.source === "exception" ||
+            (entry.source !== "network" && entry.level === "error" && !HYDRATION_PATTERN.test(entry.text)),
         );
         const result = {
+          requestedViewport: viewport,
           viewport: viewport.name,
           route: route.path,
           screenshot: screenshotRelativePath.replaceAll(path.sep, "/"),
@@ -397,9 +445,18 @@ async function main() {
           console: routeConsole.slice(0, 50),
           hydrationWarnings,
           runtimeExceptions,
+          criticalNetworkErrors,
+          externalNetworkErrors,
         };
         report.results.push(result);
 
+        if (externalNetworkErrors.length > 0) {
+          report.externalNetworkFindings.push({
+            viewport: viewport.name,
+            route: route.path,
+            detail: externalNetworkErrors,
+          });
+        }
         if (result.inspection?.lang !== "fa" || result.inspection?.dir !== "rtl") {
           report.criticalFindings.push({
             type: "document-language-direction",
@@ -408,11 +465,33 @@ async function main() {
             detail: { lang: result.inspection?.lang, dir: result.inspection?.dir },
           });
         }
+        if (
+          result.inspection?.viewport?.width !== viewport.width ||
+          result.inspection?.viewport?.height !== viewport.height
+        ) {
+          report.criticalFindings.push({
+            type: "viewport-mismatch",
+            viewport: viewport.name,
+            route: route.path,
+            detail: {
+              requested: viewport,
+              actual: result.inspection?.viewport,
+            },
+          });
+        }
         if (!result.inspection?.main) {
           report.criticalFindings.push({
             type: "missing-main",
             viewport: viewport.name,
             route: route.path,
+          });
+        }
+        if (result.inspection?.focusTargetCount !== 1) {
+          report.criticalFindings.push({
+            type: "invalid-focus-target-count",
+            viewport: viewport.name,
+            route: route.path,
+            detail: { count: result.inspection?.focusTargetCount },
           });
         }
         if (result.inspection?.horizontalOverflow) {
@@ -423,6 +502,7 @@ async function main() {
             detail: {
               viewportWidth: result.inspection.viewport?.width,
               documentWidth: result.inspection.documentWidth,
+              offenders: result.inspection.overflowOffenders,
             },
           });
         }
@@ -442,6 +522,14 @@ async function main() {
             detail: runtimeExceptions,
           });
         }
+        if (criticalNetworkErrors.length > 0) {
+          report.criticalFindings.push({
+            type: "same-origin-network-error",
+            viewport: viewport.name,
+            route: route.path,
+            detail: criticalNetworkErrors,
+          });
+        }
       }
     }
 
@@ -449,7 +537,7 @@ async function main() {
       width: 390,
       height: 844,
       deviceScaleFactor: 1,
-      mobile: true,
+      mobile: false,
       screenWidth: 390,
       screenHeight: 844,
     });
@@ -489,7 +577,7 @@ async function main() {
             viewportWidth: innerWidth,
             documentWidth: Math.max(document.documentElement.scrollWidth, document.body?.scrollWidth || 0),
             horizontalOverflow: Math.max(document.documentElement.scrollWidth, document.body?.scrollWidth || 0) > innerWidth + 1,
-            mainPresent: Boolean(document.querySelector('main')),
+            mainPresent: Boolean(document.querySelector('main, [role="main"]')),
           }))()`,
           returnByValue: true,
         });
@@ -510,6 +598,11 @@ async function main() {
     screenshots: report.results.length,
     routes: ROUTES.length,
     viewports: VIEWPORTS.length,
+    viewportMismatchCases: report.results.filter(
+      (result) =>
+        result.inspection?.viewport?.width !== result.requestedViewport.width ||
+        result.inspection?.viewport?.height !== result.requestedViewport.height,
+    ).length,
     horizontalOverflowCases: report.results.filter(
       (result) => result.inspection?.horizontalOverflow,
     ).length,
@@ -517,6 +610,12 @@ async function main() {
       .length,
     runtimeErrorCases: report.results.filter((result) => result.runtimeExceptions.length > 0)
       .length,
+    sameOriginNetworkErrorCases: report.results.filter(
+      (result) => result.criticalNetworkErrors.length > 0,
+    ).length,
+    externalNetworkErrorCases: report.results.filter(
+      (result) => result.externalNetworkErrors.length > 0,
+    ).length,
     targetsBelow24: report.results.reduce(
       (total, result) => total + (result.inspection?.targetsBelow24?.length ?? 0),
       0,
@@ -541,7 +640,7 @@ async function main() {
 main().catch((error) => {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   const failure = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     audit: "f0-f1-visual-qa",
     generatedAt: new Date().toISOString(),
     pass: false,
