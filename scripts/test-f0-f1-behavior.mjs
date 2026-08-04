@@ -28,6 +28,28 @@ async function click(client, selector) {
   await evaluate(client, `document.querySelector(${JSON.stringify(selector)})?.click()`);
 }
 
+async function mountPrimitiveFixture(client) {
+  await navigate(client, `${BASE_URL}/`);
+  await evaluate(
+    client,
+    `(async () => {
+      document.getElementById('app')?.remove();
+      const mount = document.createElement('div');
+      mount.id = 'app';
+      mount.setAttribute('data-foundation-test-mount', 'true');
+      mount.style.position = 'fixed';
+      mount.style.inset = '0';
+      mount.style.zIndex = '2147483647';
+      mount.style.overflow = 'auto';
+      mount.style.background = '#0a0a0a';
+      document.body.append(mount);
+      await import('/scripts/fixtures/foundation-behavior-entry.tsx?acceptance=1');
+      return true;
+    })()`,
+  );
+  await waitForExpression(client, `document.querySelector('[data-testid="foundation-harness"]')`);
+}
+
 async function main() {
   fs.mkdirSync(path.dirname(REPORT_PATH), { recursive: true });
   await waitForHttp(BASE_URL);
@@ -57,8 +79,7 @@ async function main() {
       screenHeight: 800,
     });
 
-    await navigate(client, `${BASE_URL}/foundation-behavior.html`);
-    await waitForExpression(client, `document.querySelector('[data-testid="foundation-harness"]')`);
+    await mountPrimitiveFixture(client);
 
     const defaultButton = await evaluate(
       client,
@@ -136,7 +157,11 @@ async function main() {
         return { wrapperDir: wrapper?.getAttribute('dir'), numericDir: numeric?.getAttribute('dir'), text: numeric?.textContent?.trim() };
       })()`,
     );
-    record("Price direction rendering", price.wrapperDir === "rtl" && price.numericDir === "ltr" && Boolean(price.text), price);
+    record(
+      "Price direction rendering",
+      price.wrapperDir === "rtl" && price.numericDir === "ltr" && Boolean(price.text),
+      price,
+    );
 
     await navigate(client, `${BASE_URL}/`);
     await waitForExpression(client, `document.querySelector('[aria-label="Cart"]')`);
@@ -172,8 +197,18 @@ async function main() {
 
     const focusTrail = [];
     for (let index = 0; index < 12; index += 1) {
-      await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
-      await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+      await client.send("Input.dispatchKeyEvent", {
+        type: "keyDown",
+        key: "Tab",
+        code: "Tab",
+        windowsVirtualKeyCode: 9,
+      });
+      await client.send("Input.dispatchKeyEvent", {
+        type: "keyUp",
+        key: "Tab",
+        code: "Tab",
+        windowsVirtualKeyCode: 9,
+      });
       focusTrail.push(
         await evaluate(
           client,
@@ -186,14 +221,28 @@ async function main() {
     }
     record("Cart Drawer focus trap", focusTrail.every((item) => item.inside), focusTrail);
 
-    await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
-    await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+    await client.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: "Escape",
+      code: "Escape",
+      windowsVirtualKeyCode: 27,
+    });
+    await client.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: "Escape",
+      code: "Escape",
+      windowsVirtualKeyCode: 27,
+    });
     await waitForExpression(client, `!document.querySelector('[role="dialog"]')`);
     const escaped = await evaluate(
       client,
       `({ closed: !document.querySelector('[role="dialog"]'), restored: document.activeElement?.getAttribute('aria-label'), overflow: getComputedStyle(document.body).overflow })`,
     );
-    record("Cart Drawer Escape close and focus restoration", escaped.closed && escaped.restored === "Cart" && escaped.overflow !== "hidden", escaped);
+    record(
+      "Cart Drawer Escape close and focus restoration",
+      escaped.closed && escaped.restored === "Cart" && escaped.overflow !== "hidden",
+      escaped,
+    );
 
     await click(client, `[aria-label="Cart"]`);
     await waitForExpression(client, `document.querySelector('[data-foundation-dialog="cart"]')`);
@@ -204,14 +253,30 @@ async function main() {
         return { x: rect.left > 20 ? 10 : innerWidth - 10, y: Math.round(innerHeight / 2) };
       })()`,
     );
-    await client.send("Input.dispatchMouseEvent", { type: "mousePressed", x: point.x, y: point.y, button: "left", clickCount: 1 });
-    await client.send("Input.dispatchMouseEvent", { type: "mouseReleased", x: point.x, y: point.y, button: "left", clickCount: 1 });
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mousePressed",
+      x: point.x,
+      y: point.y,
+      button: "left",
+      clickCount: 1,
+    });
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mouseReleased",
+      x: point.x,
+      y: point.y,
+      button: "left",
+      clickCount: 1,
+    });
     await waitForExpression(client, `!document.querySelector('[role="dialog"]')`);
     const dismissed = await evaluate(
       client,
       `({ closed: !document.querySelector('[role="dialog"]'), restored: document.activeElement?.getAttribute('aria-label') })`,
     );
-    record("Cart Drawer overlay dismissal policy", dismissed.closed && dismissed.restored === "Cart", { point, dismissed });
+    record(
+      "Cart Drawer overlay dismissal policy",
+      dismissed.closed && dismissed.restored === "Cart",
+      { point, dismissed },
+    );
 
     await click(client, `a[href="/products"]`);
     await waitForExpression(client, `location.pathname === '/products'`);
@@ -220,9 +285,15 @@ async function main() {
       client,
       `({ path: location.pathname, activeId: document.activeElement?.id, count: document.querySelectorAll('#main-content').length })`,
     );
-    record("Route-change focus", routeFocus.path === "/products" && routeFocus.activeId === "main-content" && routeFocus.count === 1, routeFocus);
+    record(
+      "Route-change focus",
+      routeFocus.path === "/products" && routeFocus.activeId === "main-content" && routeFocus.count === 1,
+      routeFocus,
+    );
 
-    await client.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
+    await client.send("Emulation.setEmulatedMedia", {
+      features: [{ name: "prefers-reduced-motion", value: "reduce" }],
+    });
     await navigate(client, `${BASE_URL}/`);
     await sleep(300);
     const reduced = await evaluate(
@@ -238,7 +309,11 @@ async function main() {
         return { matches: matchMedia('(prefers-reduced-motion: reduce)').matches, motionAnimations: motionAnimations.length, cursor: cursor ? getComputedStyle(cursor).display : null };
       })()`,
     );
-    record("Reduced-motion behavior", reduced.matches && reduced.motionAnimations === 0 && [null, "none"].includes(reduced.cursor), reduced);
+    record(
+      "Reduced-motion behavior",
+      reduced.matches && reduced.motionAnimations === 0 && [null, "none"].includes(reduced.cursor),
+      reduced,
+    );
 
     const meaningfulErrors = browserErrors.filter((text) =>
       /hydration|hydrated|server rendered html|did not match|uncaught|typeerror|referenceerror|syntaxerror/i.test(text),
@@ -254,7 +329,11 @@ async function main() {
     suite: "f0-f1-browser-behavior",
     generatedAt: new Date().toISOString(),
     baseUrl: BASE_URL,
-    summary: { total: results.length, passed: results.length - failed.length, failed: failed.length },
+    summary: {
+      total: results.length,
+      passed: results.length - failed.length,
+      failed: failed.length,
+    },
     results,
     pass: failed.length === 0,
   };
@@ -268,7 +347,17 @@ main().catch((error) => {
   fs.mkdirSync(path.dirname(REPORT_PATH), { recursive: true });
   fs.writeFileSync(
     REPORT_PATH,
-    `${JSON.stringify({ schemaVersion: 1, suite: "f0-f1-browser-behavior", generatedAt: new Date().toISOString(), pass: false, fatalError: error instanceof Error ? error.stack ?? error.message : String(error) }, null, 2)}\n`,
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        suite: "f0-f1-browser-behavior",
+        generatedAt: new Date().toISOString(),
+        pass: false,
+        fatalError: error instanceof Error ? error.stack ?? error.message : String(error),
+      },
+      null,
+      2,
+    )}\n`,
   );
   console.error(error instanceof Error ? error.stack ?? error.message : String(error));
   process.exitCode = 1;
