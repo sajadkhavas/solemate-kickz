@@ -10,61 +10,45 @@ const button = source("src/components/ui/button.tsx");
 const commerce = source("src/components/ui/commerce-primitives.tsx");
 const cartDrawer = source("src/components/CartDrawer.tsx");
 const root = source("src/routes/__root.tsx");
-const styles = source("src/styles.css");
+const foundationCss = source("src/foundation.css");
 
-test("Button defaults to non-submitting behavior", () => {
+// These are source-contract audits. Interactive behavior is verified by
+// scripts/test-f0-f1-behavior.mjs in a real browser session.
+test("source-contract: Button keeps non-submitting and loading semantics", () => {
   assert.match(button, /type=\{type \?\? "button"\}/);
-});
-
-test("Button exposes loading and disabled semantics", () => {
-  assert.match(button, /aria-busy=\{loading \|\| undefined\}/);
   assert.match(button, /disabled=\{unavailable\}/);
-  assert.match(button, /loadingLabel/);
-});
-
-test("Button asChild preserves the Radix single-child contract", () => {
-  assert.match(button, /if \(asChild\)/);
+  assert.match(button, /aria-busy=\{loading \|\| undefined\}/);
   assert.match(button, /React\.Children\.only\(children\)/);
-  assert.doesNotMatch(button, /<Slot[\s\S]*absolute size-4[\s\S]*<\/Slot>/);
 });
 
-test("IconButton requires an accessible label", () => {
+test("source-contract: commerce primitives expose required semantics", () => {
   assert.match(commerce, /type IconButtonProps[\s\S]*label: string/);
   assert.match(commerce, /aria-label=\{label\}/);
-});
-
-test("QuantityStepper clamps values and disables boundaries", () => {
   assert.match(commerce, /Math\.min\(max, Math\.max\(min, value\)\)/);
-  assert.match(commerce, /disabled=\{!canDecrease\}/);
-  assert.match(commerce, /disabled=\{!canIncrease\}/);
-  assert.match(commerce, /aria-live="polite"/);
-});
-
-test("Price content isolates mixed-direction numeric values", () => {
   assert.match(commerce, /<bdi dir="ltr">\{formattedValue\}<\/bdi>/);
-  assert.match(commerce, /Intl\.NumberFormat/);
 });
 
-test("Cart drawer uses a modal primitive with an accessible name", () => {
+test("source-contract: Cart Drawer uses a modal primitive and testable overlay policy", () => {
   assert.match(cartDrawer, /DialogPrimitive\.Root/);
-  assert.match(cartDrawer, /DialogPrimitive\.Title/);
-  assert.match(cartDrawer, /DialogPrimitive\.Description/);
-  assert.match(cartDrawer, /DialogPrimitive\.Close/);
+  assert.match(cartDrawer, /DialogPrimitive\.Overlay/);
+  assert.match(cartDrawer, /DialogPrimitive\.Content/);
+  assert.match(cartDrawer, /data-foundation-overlay="cart"/);
+  assert.match(cartDrawer, /data-foundation-dialog="cart"/);
 });
 
-test("Root document owns stable RTL skip navigation and route focus", () => {
+test("source-contract: root owns stable RTL focus and skip-link targets", () => {
   assert.match(root, /<html lang="fa" dir="rtl"/);
   assert.match(root, /href="#main-content"/);
   assert.match(root, /id="main-content"/);
-  assert.match(root, /ref=\{focusTargetRef\}/);
-  assert.match(root, /focusTargetRef\.current\?\.focus\(\{ preventScroll: true \}\)/);
-  assert.match(root, /aria-live="polite"/);
+  assert.match(root, /document\.getElementById\("main-content"\)\?\.focus/);
+  assert.match(root, /foundation\.css\?url/);
   assert.doesNotMatch(root, /\.id = "main-content"/);
   assert.doesNotMatch(root, /\.tabIndex = -1/);
 });
 
-test("Global CSS preserves focus and reduced-motion behavior", () => {
-  assert.match(styles, /:focus-visible/);
-  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
-  assert.match(styles, /animation-duration: 0\.01ms !important/);
+test("source-contract: foundation CSS defines global overflow, focus, touch and motion rules", () => {
+  assert.match(foundationCss, /#main-content[\s\S]*overflow-x:\s*clip/);
+  assert.match(foundationCss, /:focus-visible/);
+  assert.match(foundationCss, /min-block-size:\s*var\(--size-touch\)/);
+  assert.match(foundationCss, /@media \(prefers-reduced-motion: reduce\)/);
 });
