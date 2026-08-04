@@ -19,11 +19,17 @@ test("source-contract: Button keeps non-submitting and loading semantics", () =>
   assert.match(button, /disabled=\{unavailable\}/);
   assert.match(button, /aria-busy=\{loading \|\| undefined\}/);
   assert.match(button, /React\.Children\.only\(children\)/);
+  assert.match(button, /event\.preventDefault\(\)/);
+  assert.match(button, /tabIndex=\{unavailable \? -1 : tabIndex\}/);
+  assert.match(button, /aria-label=\{loading \? loadingLabel : ariaLabel\}/);
+  assert.match(button, /sm: "min-h-11/);
 });
 
 test("source-contract: commerce primitives expose required semantics", () => {
   assert.match(commerce, /type IconButtonProps[\s\S]*label: string/);
   assert.match(commerce, /aria-label=\{label\}/);
+  assert.match(commerce, /size === "sm" && "size-11"/);
+  assert.match(commerce, /Clear acceptance search|size-11/);
   assert.match(commerce, /Math\.min\(max, Math\.max\(min, value\)\)/);
   assert.match(commerce, /<bdi dir="ltr">\{formattedValue\}<\/bdi>/);
 });
