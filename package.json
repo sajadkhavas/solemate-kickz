@@ -12,10 +12,11 @@
     "typecheck": "tsc --noEmit",
     "audit:f0-f1": "node scripts/audit-f0-f1-foundation.mjs",
     "test:foundation": "node --test scripts/test-f0-f1-primitives.mjs",
+    "qa:visual:f0-f1": "node scripts/visual-qa-f0-f1.mjs",
     "check": "bun run audit:f0-f1 && bun run test:foundation && bun run typecheck && bun run lint && bun run build",
     "format": "prettier --write .",
-    "format:foundation": "prettier --write .github/workflows/f0-f1-bootstrap.yml eslint.config.js package.json src/routes/__root.tsx src/routes/about.tsx src/styles.css src/components/CartDrawer.tsx src/components/ShoeCard.tsx src/components/sections/BrandWall.tsx src/components/sections/Footer.tsx src/components/ui/button.tsx src/components/ui/commerce-primitives.tsx scripts/audit-f0-f1-foundation.mjs scripts/test-f0-f1-primitives.mjs",
-    "format:check": "prettier --check .github/workflows/f0-f1-bootstrap.yml eslint.config.js package.json src/routes/__root.tsx src/routes/about.tsx src/styles.css src/components/CartDrawer.tsx src/components/ShoeCard.tsx src/components/sections/BrandWall.tsx src/components/sections/Footer.tsx src/components/ui/button.tsx src/components/ui/commerce-primitives.tsx scripts/audit-f0-f1-foundation.mjs scripts/test-f0-f1-primitives.mjs"
+    "format:foundation": "prettier --write .github/workflows/f0-f1-bootstrap.yml eslint.config.js package.json src/routes/__root.tsx src/routes/about.tsx src/styles.css src/components/CartDrawer.tsx src/components/ShoeCard.tsx src/components/sections/BrandWall.tsx src/components/sections/Footer.tsx src/components/ui/button.tsx src/components/ui/commerce-primitives.tsx scripts/audit-f0-f1-foundation.mjs scripts/test-f0-f1-primitives.mjs scripts/visual-qa-f0-f1.mjs",
+    "format:check": "prettier --check .github/workflows/f0-f1-bootstrap.yml eslint.config.js package.json src/routes/__root.tsx src/routes/about.tsx src/styles.css src/components/CartDrawer.tsx src/components/ShoeCard.tsx src/components/sections/BrandWall.tsx src/components/sections/Footer.tsx src/components/ui/button.tsx src/components/ui/commerce-primitives.tsx scripts/audit-f0-f1-foundation.mjs scripts/test-f0-f1-primitives.mjs scripts/visual-qa-f0-f1.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^3.5.0",
