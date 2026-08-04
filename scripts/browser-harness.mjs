@@ -189,6 +189,7 @@ export async function navigate(client, url) {
   const result = await client.send("Page.navigate", { url });
   if (result.errorText) throw new Error(`${url}: ${result.errorText}`);
   await loaded;
+  await sleep(750);
 }
 
 export async function waitForExpression(client, expression, timeout = 10_000) {
