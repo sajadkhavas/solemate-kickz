@@ -36,16 +36,15 @@ jobs:
                 workflow_run_id: artifact.workflow_run?.id ?? null,
               }));
 
-            const caches = await github.paginate(
-              github.rest.actions.getActionsCacheList,
+            const cacheResponse = await github.request(
+              'GET /repos/{owner}/{repo}/actions/caches',
               {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 per_page: 100,
               },
-              (response) => response.data.actions_caches,
             );
-
+            const caches = cacheResponse.data.actions_caches ?? [];
             const cacheRows = caches
               .sort((a, b) => b.size_in_bytes - a.size_in_bytes)
               .map((cache) => ({
