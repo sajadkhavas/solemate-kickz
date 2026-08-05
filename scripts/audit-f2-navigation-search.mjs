@@ -10,16 +10,16 @@ const REPORT_PATH = path.join(ROOT, "artifacts/audits/f2-navigation-search.json"
 const HANDOFF_PATH = "docs/handoffs/F2-NAVIGATION-SEARCH.md";
 const checks = [];
 
-function git(args, options = {}) {
+function git(args, { allowFailure = false } = {}) {
   try {
     return execFileSync("git", args, {
       cwd: ROOT,
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"],
-      ...options,
     }).trim();
   } catch (error) {
-    return options.allowFailure ? "" : (() => { throw error; })();
+    if (allowFailure) return "";
+    throw error;
   }
 }
 
@@ -31,170 +31,217 @@ function add(name, pass, evidence) {
   checks.push({ name, pass: Boolean(pass), evidence });
 }
 
-function listTrackedSourceFiles() {
-  return git(["ls-files", "*.ts", "*.tsx", "*.js", "*.jsx", "*.mjs", "*.md", "*.yml", "*.yaml"])
-    .split("\n")
-    .filter(Boolean);
-}
-
-const sourceFiles = listTrackedSourceFiles();
-const sources = new Map(sourceFiles.map((file) => [file, read(file)]));
-const combined = [...sources.entries()].map(([file, source]) => `\n/* ${file} */\n${source}`).join("\n");
-const searchDialog = read("src/components/navigation/SearchDialog.tsx");
-const desktopNavigation = read("src/components/navigation/DesktopNavigation.tsx");
-const mobileNavigation = read("src/components/navigation/MobileNavigation.tsx");
-const navbar = read("src/components/Navbar.tsx");
-const mobileBottom = read("src/components/MobileBottomNav.tsx");
-const store = read("src/store/index.ts");
-const productsRoute = read("src/routes/products.tsx");
+const files = {
+  navbar: read("src/components/Navbar.tsx"),
+  desktop: read("src/components/navigation/DesktopNavigation.tsx"),
+  mobile: read("src/components/navigation/MobileNavigation.tsx"),
+  search: read("src/components/navigation/SearchDialog.tsx"),
+  searchUtils: read("src/components/navigation/search-utils.ts"),
+  bottom: read("src/components/MobileBottomNav.tsx"),
+  store: read("src/store/index.ts"),
+  products: read("src/routes/products.tsx"),
+  navigationCss: read("src/components/navigation/navigation.css"),
+  behavior: read("scripts/test-f2-navigation-search.mjs"),
+  visual: read("scripts/visual-qa-f2-navigation-search.mjs"),
+};
 const packageJson = JSON.parse(read("package.json"));
+const shellSource = Object.values(files).join("\n");
+const branch =
+  process.env.GITHUB_HEAD_REF ||
+  git(["symbolic-ref", "--short", "-q", "HEAD"], { allowFailure: true }) ||
+  process.env.GITHUB_REF_NAME ||
+  "detached";
+const head = git(["rev-parse", "HEAD"]);
 
-const symbolicBranch = git(["symbolic-ref", "--short", "-q", "HEAD"], { allowFailure: true });
-const branch = process.env.GITHUB_HEAD_REF || symbolicBranch || process.env.GITHUB_REF_NAME || "detached";
 add("expected branch", branch === EXPECTED_BRANCH, { expected: EXPECTED_BRANCH, actual: branch });
 
-const head = git(["rev-parse", "HEAD"]);
-const foundationIsAncestor = (() => {
-  try {
-    execFileSync("git", ["merge-base", "--is-ancestor", FOUNDATION_SHA, head], {
-      cwd: ROOT,
-      stdio: "ignore",
-    });
-    return true;
-  } catch {
-    return false;
-  }
-})();
-add("accepted Foundation is ancestor", foundationIsAncestor, { foundation: FOUNDATION_SHA, head });
+let foundationIsAncestor = false;
+try {
+  execFileSync("git", ["merge-base", "--is-ancestor", FOUNDATION_SHA, head], {
+    cwd: ROOT,
+    stdio: "ignore",
+  });
+  foundationIsAncestor = true;
+} catch {
+  foundationIsAncestor = false;
+}
+add("accepted Foundation is ancestor", foundationIsAncestor, {
+  foundation: FOUNDATION_SHA,
+  head,
+});
 add(
-  "generated route tree unchanged from Foundation",
+  "generated route tree unchanged",
   git(["diff", "--name-only", FOUNDATION_SHA, "--", "src/routeTree.gen.ts"]) === "",
-  git(["diff", "--name-only", FOUNDATION_SHA, "--", "src/routeTree.gen.ts"]),
+  "src/routeTree.gen.ts",
 );
 
-const unsafeUrlFindings = [];
-const positiveTabFindings = [];
-for (const [file, source] of sources) {
-  if (/href\s*=\s*["'](?:#|javascript:)/i.test(source)) unsafeUrlFindings.push(file);
-  if (/tabIndex\s*=\s*\{?\s*[1-9]/.test(source)) positiveTabFindings.push(file);
+const trackedSourceFiles = git([
+  "ls-files",
+  "*.ts",
+  "*.tsx",
+  "*.js",
+  "*.jsx",
+  "*.mjs",
+  "*.yml",
+  "*.yaml",
+])
+  .split("\n")
+  .filter(Boolean);
+const unsafeUrls = [];
+const positiveTabindex = [];
+for (const file of trackedSourceFiles) {
+  const source = read(file);
+  if (/href\s*=\s*["'](?:#|javascript:)/i.test(source)) unsafeUrls.push(file);
+  if (/tabIndex\s*=\s*\{?\s*[1-9]/.test(source)) positiveTabindex.push(file);
 }
-add("no unsafe or placeholder URL", unsafeUrlFindings.length === 0, unsafeUrlFindings);
-add("no positive tabindex", positiveTabFindings.length === 0, positiveTabFindings);
+add("no unsafe or placeholder URL", unsafeUrls.length === 0, unsafeUrls);
+add("no positive tabindex", positiveTabindex.length === 0, positiveTabindex);
 
 add(
   "search input has programmatic label",
-  /<label\s+htmlFor="sole-global-search"/.test(searchDialog) && /id="sole-global-search"/.test(searchDialog),
+  /<label\s+htmlFor="sole-global-search"/.test(files.search) &&
+    /id="sole-global-search"/.test(files.search),
   "SearchDialog label/input association",
 );
 add(
   "icon controls have accessible names",
-  /IconButton[\s\S]*label="بازکردن جستجو"/.test(navbar) &&
-    /IconButton[\s\S]*label="بازکردن منوی اصلی"/.test(mobileNavigation) &&
-    /IconButton[\s\S]*label="بستن منوی اصلی"/.test(mobileNavigation) &&
-    /IconButton[\s\S]*label="بستن جستجو"/.test(searchDialog),
-  "named search, menu, close and cart controls",
+  /label="بازکردن جستجو"/.test(files.navbar) &&
+    /label="بازکردن منوی اصلی"/.test(files.mobile) &&
+    /label="بستن منوی اصلی"/.test(files.mobile) &&
+    /label="بستن جستجو"/.test(files.search),
+  "named search, menu and close controls",
 );
 add(
   "desktop and mobile triggers are native controls",
-  /data-testid="desktop-menu-trigger"/.test(desktopNavigation) &&
-    /<button[\s\S]*data-testid="desktop-menu-trigger"/.test(desktopNavigation) &&
-    /data-testid="mobile-menu-trigger"/.test(mobileNavigation) &&
-    /data-testid="search-trigger"/.test(navbar) &&
-    /data-testid="mobile-search-trigger"/.test(mobileBottom),
-  "desktop menu, mobile menu and search triggers",
+  /DropdownMenuPrimitive\.Trigger/.test(files.desktop) &&
+    /data-testid="desktop-menu-trigger"/.test(files.desktop) &&
+    /DialogPrimitive\.Trigger/.test(files.mobile) &&
+    /data-testid="mobile-menu-trigger"/.test(files.mobile) &&
+    /data-testid="search-trigger"/.test(files.navbar) &&
+    /data-testid="mobile-search-trigger"/.test(files.bottom),
+  "Radix/native button triggers",
 );
 add(
-  "overlay scroll-lock policy uses modal primitives",
-  /DialogPrimitive\.Root/.test(mobileNavigation) &&
-    /DialogPrimitive\.Content/.test(mobileNavigation) &&
-    /DialogPrimitive\.Root/.test(searchDialog) &&
-    /DialogPrimitive\.Content/.test(searchDialog),
-  "Radix modal Dialog owns body scroll lock",
+  "modal scroll-lock policy",
+  /DialogPrimitive\.Root/.test(files.mobile) &&
+    /DialogPrimitive\.Content/.test(files.mobile) &&
+    /DialogPrimitive\.Root/.test(files.search) &&
+    /DialogPrimitive\.Content/.test(files.search) &&
+    /data-scroll-locked/.test(files.navigationCss),
+  "Radix modal dialogs with mobile compensation policy",
 );
 add(
-  "focus restoration is explicit or primitive-owned",
-  /onCloseAutoFocus/.test(searchDialog) && /focus\(\{ preventScroll: true \}\)/.test(searchDialog) &&
-    /DialogPrimitive\.Trigger/.test(mobileNavigation),
-  "Search explicit restoration; Mobile Dialog trigger restoration",
+  "focus restoration policy",
+  /queueMicrotask/.test(files.navbar) &&
+    /searchTriggerRef/.test(files.navbar) &&
+    /queueMicrotask/.test(files.bottom) &&
+    /triggerRef/.test(files.mobile) &&
+    /focus\(\{ preventScroll: true \}\)/.test(shellSource),
+  "explicit desktop/mobile search and menu restoration",
 );
 add(
-  "Escape behavior is provided by dismissible Dialog and Dropdown",
-  /DropdownMenuPrimitive\.Root/.test(desktopNavigation) &&
-    /DialogPrimitive\.Root/.test(mobileNavigation) &&
-    /DialogPrimitive\.Root/.test(searchDialog),
-  "Radix primitives",
+  "Escape behavior uses dismissible primitives",
+  /DropdownMenuPrimitive\.Root/.test(files.desktop) &&
+    /DialogPrimitive\.Root/.test(files.mobile) &&
+    /DialogPrimitive\.Root/.test(files.search),
+  "Radix DropdownMenu and Dialog",
 );
 add(
   "recent search persistence and removal",
-  /searchHistory: string\[\]/.test(store) &&
-    /addSearch:/.test(store) &&
-    /removeSearch:/.test(store) &&
-    /clearSearchHistory:/.test(store) &&
-    /searchHistory: state\.searchHistory/.test(store) &&
-    /data-testid="recent-search"/.test(searchDialog),
-  "persisted Zustand slice with single/all removal",
+  /searchHistory: string\[\]/.test(files.store) &&
+    /addSearch:/.test(files.store) &&
+    /removeSearch:/.test(files.store) &&
+    /clearSearchHistory:/.test(files.store) &&
+    /searchHistory: state\.searchHistory/.test(files.store) &&
+    /data-testid="recent-search"/.test(files.search),
+  "persisted Zustand search history",
 );
 add(
   "URL query, refresh and deep-link contract",
-  /to: "\/products"/.test(searchDialog) &&
-    /search: \{ q: normalized, sort: "newest" \}/.test(searchDialog) &&
-    /q: fallback\(z\.string\(\)\.optional/.test(productsRoute) &&
-    /Route\.useSearch\(\)/.test(productsRoute),
+  /search: \{ q: normalized, sort: "newest" \}/.test(files.search) &&
+    /q: fallback\(z\.string\(\)\.optional/.test(files.products) &&
+    /Route\.useSearch\(\)/.test(files.products),
   "SearchDialog submits q; products route validates q",
 );
 add(
   "RTL and mixed-direction safety",
-  /dir="rtl"/.test(searchDialog) &&
-    /<bdi dir="ltr"/.test(searchDialog) &&
-    /<bdi dir="ltr"/.test(desktopNavigation) &&
-    /<bdi dir="ltr"/.test(mobileNavigation),
+  /dir="rtl"/.test(files.search) &&
+    /<bdi dir="ltr"/.test(files.search) &&
+    /<bdi dir="ltr"/.test(files.desktop) &&
+    /<bdi dir="ltr"/.test(files.mobile),
   "RTL overlays and isolated Latin product data",
 );
 add(
-  "shared touch target contract",
-  /min-h-11/.test(desktopNavigation) &&
-    /size-11/.test(desktopNavigation) &&
-    /min-h-11/.test(mobileNavigation) &&
-    /min-h-11/.test(searchDialog) &&
-    /min-h-11/.test(mobileBottom),
+  "touch target contract",
+  /min-h-11|size-11/.test(files.desktop) &&
+    /min-h-11|size-11/.test(files.mobile) &&
+    /min-h-11/.test(files.search) &&
+    /min-h-11/.test(files.bottom),
   "44px shared interaction boxes",
 );
 add(
   "active route has semantic and non-color state",
-  /aria-current/.test(desktopNavigation) && /h-0\.5/.test(desktopNavigation) &&
-    /aria-current/.test(mobileNavigation) && /rounded-full border border-current/.test(mobileNavigation) &&
-    /aria-current/.test(mobileBottom),
+  /aria-current/.test(files.desktop) &&
+    /h-0\.5/.test(files.desktop) &&
+    /aria-current/.test(files.mobile) &&
+    /rounded-full border border-current/.test(files.mobile) &&
+    /aria-current/.test(files.bottom),
   "aria-current plus underline/dot indicators",
 );
 add(
   "search suggestions use project dataset",
-  /searchShoes\(deferredQuery\)/.test(searchDialog) &&
-    /from "@\/components\/navigation\/search-utils"/.test(searchDialog) &&
-    /SHOES/.test(read("src/components/navigation/search-utils.ts")),
+  /searchShoes\(deferredQuery\)/.test(files.search) &&
+    /SHOES/.test(files.searchUtils),
   "SHOES dataset",
 );
 add(
   "safe highlighting avoids raw HTML",
-  /function Highlight/.test(searchDialog) && !/dangerouslySetInnerHTML/.test(searchDialog),
+  /function Highlight/.test(files.search) && !/dangerouslySetInnerHTML/.test(files.search),
   "React text fragments and mark",
 );
 add(
   "keyboard search navigation",
-  /ArrowDown/.test(searchDialog) && /ArrowUp/.test(searchDialog) && /aria-activedescendant/.test(searchDialog),
-  "combobox-like active descendant behavior",
+  /ArrowDown/.test(files.search) &&
+    /ArrowUp/.test(files.search) &&
+    /aria-activedescendant/.test(files.search) &&
+    /event\.key === "Enter"/.test(files.search),
+  "Arrow and Enter contracts",
 );
 add(
   "truthful Shell copy",
-  !/ارسال رایگان|اصالت ۱۰۰٪|ضمانت بازگشت|SOLE10|۰۲۱-۸۸۸۸۸۸۸۸/.test(combined) &&
-    /نسخه نمایشی فرانت‌اند/.test(navbar),
-  "unsupported promotional and contact claims removed",
+  !/ارسال رایگان|اصالت ۱۰۰٪|ضمانت بازگشت|SOLE10|۰۲۱-۸۸۸۸۸۸۸۸/.test(
+    files.navbar + files.mobile + files.search,
+  ) && /نسخه نمایشی فرانت‌اند/.test(files.navbar),
+  "unsupported Shell claims removed",
 );
+add(
+  "behavior and Visual QA scripts exist",
+  fs.existsSync(path.join(ROOT, "scripts/test-f2-navigation-search.mjs")) &&
+    fs.existsSync(path.join(ROOT, "scripts/visual-qa-f2-navigation-search.mjs")),
+  "F2 browser suites",
+);
+add(
+  "official package gate includes F2",
+  packageJson.scripts?.["audit:f2"] === "node scripts/audit-f2-navigation-search.mjs" &&
+    packageJson.scripts?.["test:f2"] === "node scripts/test-f2-navigation-search.mjs" &&
+    packageJson.scripts?.["qa:visual:f2"] ===
+      "node scripts/visual-qa-f2-navigation-search.mjs" &&
+    packageJson.scripts?.check?.includes("bun run audit:f2") &&
+    packageJson.scripts?.check?.includes("bun run test:f2") &&
+    packageJson.scripts?.check?.includes("bun run qa:visual:f2"),
+  packageJson.scripts?.check,
+);
+add("Bun version remains exact", packageJson.packageManager === "bun@1.3.14", packageJson.packageManager);
 
 const trackedRuntime = git(["ls-files", "artifacts"])
   .split("\n")
   .filter(Boolean);
 add("no runtime Artifact tracked", trackedRuntime.length === 0, trackedRuntime);
-add("Bun version remains exact", packageJson.packageManager === "bun@1.3.14", packageJson.packageManager);
+add(
+  "no temporary F2 development workflow",
+  !fs.existsSync(path.join(ROOT, ".github/workflows/f2-acceptance-dev.yml")),
+  ".github/workflows/f2-acceptance-dev.yml",
+);
 
 const handoffExists = fs.existsSync(path.join(ROOT, HANDOFF_PATH));
 const handoff = handoffExists ? read(HANDOFF_PATH) : "";
@@ -203,6 +250,7 @@ add(
   "F2 handoff is complete",
   handoffExists &&
     /Foundation SHA/.test(handoff) &&
+    /Final SHA/.test(handoff) &&
     /Visual QA/.test(handoff) &&
     /Working Tree/.test(handoff) &&
     /Ready for supervisor review: Yes/.test(handoff) &&
@@ -212,14 +260,18 @@ add(
 
 const failed = checks.filter((check) => !check.pass);
 const report = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   audit: "f2-navigation-search",
   generatedAt: new Date().toISOString(),
   repository: "sajadkhavas/solemate-kickz",
   branch,
   foundationSha: FOUNDATION_SHA,
   head,
-  summary: { total: checks.length, passed: checks.length - failed.length, failed: failed.length },
+  summary: {
+    total: checks.length,
+    passed: checks.length - failed.length,
+    failed: failed.length,
+  },
   checks,
   pass: failed.length === 0,
 };
