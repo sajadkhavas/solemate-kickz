@@ -5,7 +5,12 @@ import { useEffect } from "react";
 
 import { CATEGORIES } from "@/data/shoes";
 import { useStore } from "@/store";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { IconButton } from "@/components/ui/commerce-primitives";
 import { SoleLogo } from "@/components/navigation/SoleLogo";
 
@@ -17,6 +22,11 @@ const MOBILE_LINKS = [
   { to: "/cart", label: "سبد خرید" },
   { to: "/auth", label: "ورود یا حساب کاربری" },
 ] as const;
+
+function restoreMobileMenuTriggerFocus() {
+  const trigger = document.querySelector<HTMLElement>('[data-testid="mobile-menu-trigger"]');
+  trigger?.focus({ preventScroll: true });
+}
 
 export function MobileNavigation() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
@@ -47,12 +57,20 @@ export function MobileNavigation() {
         <DialogPrimitive.Content
           data-testid="mobile-menu-content"
           dir="rtl"
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            restoreMobileMenuTriggerFocus();
+          }}
           className="fixed inset-y-0 right-0 z-[var(--z-modal)] flex w-[min(90vw,24rem)] flex-col border-l border-border-strong bg-surface-elevated shadow-[var(--shadow-overlay)] outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right motion-reduce:animate-none md:hidden"
         >
           <div className="flex min-h-16 items-center justify-between border-b border-border px-4 pt-[env(safe-area-inset-top)]">
             <SoleLogo />
             <DialogPrimitive.Close asChild>
-              <IconButton label="بستن منوی اصلی" variant="ghost" data-testid="mobile-menu-close">
+              <IconButton
+                label="بستن منوی اصلی"
+                variant="ghost"
+                data-testid="mobile-menu-close"
+              >
                 <X aria-hidden="true" className="size-5" />
               </IconButton>
             </DialogPrimitive.Close>
@@ -74,13 +92,16 @@ export function MobileNavigation() {
                     key={item.to}
                     to={item.to}
                     aria-current={active ? "page" : undefined}
-                    onClick={() => setOpen(false)}
                     className="relative flex min-h-11 items-center justify-between rounded-lg px-3 font-fa text-sm font-semibold text-foreground transition-colors hover:bg-interactive focus-visible:outline-none"
                   >
                     {item.label}
                     <span
                       aria-hidden="true"
-                      className={`size-2 rounded-full border border-current ${active ? "bg-primary text-primary" : "bg-transparent text-muted-foreground"}`}
+                      className={`size-2 rounded-full border border-current ${
+                        active
+                          ? "bg-primary text-primary"
+                          : "bg-transparent text-muted-foreground"
+                      }`}
                     />
                   </Link>
                 );
@@ -98,7 +119,6 @@ export function MobileNavigation() {
                       key={category.id}
                       to="/products"
                       search={{ category: category.id, sort: "newest" } as never}
-                      onClick={() => setOpen(false)}
                       className="flex min-h-11 items-center gap-3 rounded-lg border border-border bg-background px-3 py-2 font-fa text-sm transition-colors hover:border-border-strong hover:bg-interactive focus-visible:outline-none"
                     >
                       <span aria-hidden="true">{category.icon}</span>
@@ -115,7 +135,8 @@ export function MobileNavigation() {
             </Accordion>
 
             <p className="mt-5 rounded-lg border border-border bg-background p-3 font-fa text-xs leading-6 text-muted-foreground">
-              این نسخه فقط رابط فرانت‌اند است و وضعیت واقعی حساب، ارسال یا موجودی تجاری را تأیید نمی‌کند.
+              این نسخه فقط رابط فرانت‌اند است و وضعیت واقعی حساب، ارسال یا موجودی تجاری را
+              تأیید نمی‌کند.
             </p>
           </div>
         </DialogPrimitive.Content>
