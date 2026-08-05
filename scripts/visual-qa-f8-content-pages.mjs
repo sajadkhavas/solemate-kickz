@@ -78,17 +78,19 @@ async function screenshot(client, name) {
 }
 
 async function setValue(client, selector, value) {
-  await evaluate(
+  const selected = await evaluate(
     client,
     `(() => {
-    const input = document.querySelector(${JSON.stringify(selector)});
-    if (!(input instanceof HTMLInputElement)) return false;
-    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set?.call(input, ${JSON.stringify(value)});
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-    input.dispatchEvent(new Event('change', { bubbles: true }));
-    return true;
-  })()`,
+      const input = document.querySelector(${JSON.stringify(selector)});
+      if (!(input instanceof HTMLInputElement)) return false;
+      input.focus();
+      input.select();
+      return true;
+    })()`,
   );
+  if (!selected) throw new Error(`Input not found: ${selector}`);
+  await client.send("Input.insertText", { text: value });
+  await sleep(100);
 }
 
 function critical(report, type, route, viewport, evidence) {
