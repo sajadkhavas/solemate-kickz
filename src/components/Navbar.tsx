@@ -49,6 +49,7 @@ export function Navbar() {
       <DemoDisclosure />
       <header
         data-testid="global-header"
+        data-hydrated={mounted ? "true" : "false"}
         data-scrolled={scrolled ? "true" : "false"}
         className={`sticky top-0 z-[var(--z-sticky)] border-b transition-colors duration-[var(--motion-normal)] motion-reduce:transition-none ${
           scrolled
