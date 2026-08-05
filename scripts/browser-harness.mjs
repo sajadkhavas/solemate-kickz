@@ -226,12 +226,29 @@ export async function evaluate(client, expression) {
   return true;
 }
 
+async function waitForHydratedShell(client, timeout = 15_000) {
+  const started = Date.now();
+  while (Date.now() - started < timeout) {
+    const ready = await evaluateRaw(
+      client,
+      `(() => {
+        const header = document.querySelector('[data-testid="global-header"]');
+        return !header || header.getAttribute('data-hydrated') === 'true';
+      })()`,
+    );
+    if (ready) return;
+    await sleep(100);
+  }
+  throw new Error("Timed out waiting for the global shell to hydrate.");
+}
+
 export async function navigate(client, url) {
   const ready = client.waitFor("Page.domContentEventFired");
   const result = await client.send("Page.navigate", { url });
   if (result.errorText) throw new Error(`${url}: ${result.errorText}`);
   await ready;
-  await sleep(300);
+  await waitForHydratedShell(client);
+  await sleep(100);
 }
 
 export async function waitForExpression(client, expression, timeout = 10_000) {
