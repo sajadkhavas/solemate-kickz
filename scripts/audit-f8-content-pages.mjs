@@ -20,6 +20,7 @@ function headings(source) {
   return {
     levels,
     h1: levels.filter((level) => level === 1).length,
+    startsWithH1: levels[0] === 1,
     skips: levels.filter((level, index) => index > 0 && level > levels[index - 1] + 1),
   };
 }
@@ -49,7 +50,8 @@ function routeInventory() {
     .sort((a, b) => a.route.localeCompare(b.route));
 }
 
-const branch = git("branch", "--show-current").stdout.trim();
+const localBranch = git("branch", "--show-current").stdout.trim();
+const branch = localBranch || process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || "";
 const head = git("rev-parse", "HEAD").stdout.trim();
 const inventory = routeInventory();
 const sources = Object.fromEntries(ROUTES.map((route) => [route, read(`src/routes/${route}.tsx`)]));
@@ -59,7 +61,11 @@ record("Foundation SHA", git("merge-base", "--is-ancestor", FOUNDATION, "HEAD").
   foundation: FOUNDATION,
   head,
 });
-record("Expected branch", branch === BRANCH, { expected: BRANCH, actual: branch });
+record("Expected branch", branch === BRANCH, {
+  expected: BRANCH,
+  actual: branch,
+  source: localBranch ? "git" : "ci-environment",
+});
 record(
   "Route inventory",
   ROUTES.every((route) => inventory.some((entry) => entry.file === `src/routes/${route}.tsx`)),
@@ -69,7 +75,11 @@ record(
 for (const route of ROUTES) {
   const structure = headings(sources[route]);
   record(`${route}: one H1`, structure.h1 === 1, structure);
-  record(`${route}: heading hierarchy`, structure.skips.length === 0, structure);
+  record(
+    `${route}: heading hierarchy`,
+    structure.startsWithH1 && structure.skips.length === 0,
+    structure,
+  );
   const images = [...sources[route].matchAll(/<img\b[\s\S]*?>/g)].map((match) => match[0]);
   record(
     `${route}: image alt policy`,
