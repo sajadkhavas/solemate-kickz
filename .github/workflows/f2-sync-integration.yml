@@ -1,0 +1,35 @@
+name: Temporary F2 Integration Sync
+
+on:
+  push:
+    branches:
+      - "phase/sole-f2-navigation-search"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-f2-integration-sync
+  cancel-in-progress: true
+
+jobs:
+  sync-and-push:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out F2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase/sole-f2-navigation-search
+          fetch-depth: 0
+
+      - name: Merge approved integration baseline
+        shell: bash
+        run: |
+          git fetch origin integration/sole-frontend-v2
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git merge --no-ff --no-edit origin/integration/sole-frontend-v2
+          git push origin HEAD:phase/sole-f2-navigation-search
