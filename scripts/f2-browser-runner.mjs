@@ -47,11 +47,17 @@ async function waitForResult(child, reportPath, timeout = 25 * 60_000) {
   return 124;
 }
 
+function defaultReportPath(envName) {
+  return envName.includes("BEHAVIOR")
+    ? "artifacts/reports/f2-navigation-search-behavior.json"
+    : "artifacts/visual-qa/f2-navigation-search/f2-navigation-search.json";
+}
+
 export async function delegateToDevServer({ envName, port, entryPath, logName, reportPath }) {
   if (process.env[envName]) return null;
 
   const baseUrl = `http://127.0.0.1:${port}`;
-  const absoluteReportPath = path.join(ROOT, reportPath);
+  const absoluteReportPath = path.join(ROOT, reportPath ?? defaultReportPath(envName));
   const logPath = path.join(ROOT, "artifacts/runtime", logName);
   fs.rmSync(absoluteReportPath, { force: true });
   fs.mkdirSync(path.dirname(logPath), { recursive: true });
