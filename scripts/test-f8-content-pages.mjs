@@ -23,18 +23,25 @@ function record(name, pass, evidence) {
 }
 
 async function setValue(client, selector, value) {
-  const selected = await evaluate(
+  const changed = await evaluate(
     client,
     `(() => {
       const input = document.querySelector(${JSON.stringify(selector)});
       if (!(input instanceof HTMLInputElement)) return false;
-      input.focus();
-      input.select();
+      const previous = input.value;
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+      setter?.call(input, ${JSON.stringify(value)});
+      input._valueTracker?.setValue(previous);
+      input.dispatchEvent(new InputEvent('input', {
+        bubbles: true,
+        composed: true,
+        inputType: 'insertText',
+        data: ${JSON.stringify(value)},
+      }));
       return true;
     })()`,
   );
-  if (!selected) throw new Error(`Input not found: ${selector}`);
-  await client.send("Input.insertText", { text: value });
+  if (!changed) throw new Error(`Input not found: ${selector}`);
   await sleep(100);
 }
 
@@ -95,6 +102,7 @@ async function run(baseUrl) {
     record("Brands real-data rendering", brandData.exact, brandData);
 
     await setValue(client, "#brand-search", "Nike");
+    await waitForExpression(client, `document.querySelector('#brand-search')?.value === 'Nike'`);
     await waitForExpression(client, `document.querySelectorAll('[data-brand-name]').length === 1`);
     const searchResult = await evaluate(
       client,
