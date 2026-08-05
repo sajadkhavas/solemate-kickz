@@ -47,3 +47,6 @@ jobs:
         run: |
           echo '## F2 development acceptance' >> "$GITHUB_STEP_SUMMARY"
           find artifacts -type f -maxdepth 5 -printf '%p\n' 2>/dev/null | sort | sed 's/^/- `/' | sed 's/$/`/' >> "$GITHUB_STEP_SUMMARY" || true
+          if [[ -f artifacts/visual-qa/f2-navigation-search/f2-navigation-search.json ]]; then
+            node -e "const fs=require('fs'); const report=JSON.parse(fs.readFileSync('artifacts/visual-qa/f2-navigation-search/f2-navigation-search.json','utf8')); console.log('F2_VISUAL_SUMMARY='+JSON.stringify(report.summary)); console.log('F2_CRITICAL_FINDINGS='+JSON.stringify(report.criticalFindings));"
+          fi
