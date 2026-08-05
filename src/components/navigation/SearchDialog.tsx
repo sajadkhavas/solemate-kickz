@@ -1,9 +1,22 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { useNavigate } from "@tanstack/react-router";
 import { Clock3, Search, Trash2, X } from "lucide-react";
-import { useDeferredValue, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
+import {
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 
-import { getDatasetSuggestions, normalizeSearchText, searchShoes } from "@/components/navigation/search-utils";
+import {
+  getDatasetSuggestions,
+  normalizeSearchText,
+  searchShoes,
+} from "@/components/navigation/search-utils";
 import { IconButton, Price, SearchInput } from "@/components/ui/commerce-primitives";
 import { useStore } from "@/store";
 import type { Shoe } from "@/data/shoes";
@@ -19,7 +32,9 @@ function Highlight({ text, query }: { text: string; query: string }) {
   return (
     <>
       {text.slice(0, index)}
-      <mark className="rounded-sm bg-primary/20 px-0.5 text-foreground">{text.slice(index, index + normalizedQuery.length)}</mark>
+      <mark className="rounded-sm bg-primary/20 px-0.5 text-foreground">
+        {text.slice(index, index + normalizedQuery.length)}
+      </mark>
       {text.slice(index + normalizedQuery.length)}
     </>
   );
@@ -85,6 +100,11 @@ export function SearchDialog() {
   };
 
   const handleInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && activeIndex >= 0 && results[activeIndex]) {
+      event.preventDefault();
+      chooseResult(results[activeIndex]);
+      return;
+    }
     if (!results.length) return;
     if (event.key === "ArrowDown") {
       event.preventDefault();
@@ -107,7 +127,8 @@ export function SearchDialog() {
           dir="rtl"
           onOpenAutoFocus={(event) => {
             event.preventDefault();
-            openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+            openerRef.current =
+              document.activeElement instanceof HTMLElement ? document.activeElement : null;
             inputRef.current?.focus();
           }}
           onCloseAutoFocus={(event) => {
@@ -118,7 +139,9 @@ export function SearchDialog() {
         >
           <div className="flex items-start justify-between gap-3 border-b border-border px-4 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] sm:p-5">
             <div>
-              <DialogPrimitive.Title className="font-fa text-lg font-bold">جستجو در داده‌های محصولات</DialogPrimitive.Title>
+              <DialogPrimitive.Title className="font-fa text-lg font-bold">
+                جستجو در داده‌های محصولات
+              </DialogPrimitive.Title>
               <DialogPrimitive.Description className="mt-1 font-fa text-xs leading-5 text-muted-foreground">
                 نتایج فقط از Dataset داخلی فعلی پروژه ساخته می‌شوند.
               </DialogPrimitive.Description>
@@ -152,7 +175,9 @@ export function SearchDialog() {
               placeholder="مثلاً Nike، Air Max یا Silver Bullet"
               autoComplete="off"
               aria-controls={results.length ? "sole-search-results" : undefined}
-              aria-activedescendant={activeIndex >= 0 ? `sole-search-result-${results[activeIndex]?.id}` : undefined}
+              aria-activedescendant={
+                activeIndex >= 0 ? `sole-search-result-${results[activeIndex]?.id}` : undefined
+              }
               className="h-12 bg-background font-fa"
             />
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
@@ -180,12 +205,21 @@ export function SearchDialog() {
             </p>
 
             {searching ? (
-              <div data-testid="search-loading" role="status" className="py-12 text-center font-fa text-sm text-muted-foreground">
+              <div
+                data-testid="search-loading"
+                role="status"
+                className="py-12 text-center font-fa text-sm text-muted-foreground"
+              >
                 در حال بررسی Dataset داخلی…
               </div>
             ) : normalizedQuery.length >= 2 ? (
               results.length ? (
-                <div id="sole-search-results" role="listbox" aria-label="پیشنهادهای جستجو" className="space-y-2">
+                <div
+                  id="sole-search-results"
+                  role="listbox"
+                  aria-label="پیشنهادهای جستجو"
+                  className="space-y-2"
+                >
                   {results.map((shoe, index) => (
                     <button
                       key={shoe.id}
@@ -210,10 +244,16 @@ export function SearchDialog() {
                         className="size-14 shrink-0 rounded-lg bg-surface object-cover"
                       />
                       <span className="min-w-0 flex-1">
-                        <bdi dir="ltr" className="block truncate font-display text-xs text-muted-foreground">
+                        <bdi
+                          dir="ltr"
+                          className="block truncate font-display text-xs text-muted-foreground"
+                        >
                           <Highlight text={shoe.brand} query={query} />
                         </bdi>
-                        <bdi dir="ltr" className="block truncate font-display text-sm font-bold text-foreground">
+                        <bdi
+                          dir="ltr"
+                          className="block truncate font-display text-sm font-bold text-foreground"
+                        >
                           <Highlight text={shoe.name} query={query} />
                         </bdi>
                         <bdi dir="ltr" className="block truncate text-xs text-muted-foreground">
@@ -225,8 +265,13 @@ export function SearchDialog() {
                   ))}
                 </div>
               ) : (
-                <div data-testid="search-no-results" className="rounded-xl border border-dashed border-border p-8 text-center">
-                  <p className="font-fa text-base font-bold text-foreground">نتیجه‌ای در Dataset پیدا نشد</p>
+                <div
+                  data-testid="search-no-results"
+                  className="rounded-xl border border-dashed border-border p-8 text-center"
+                >
+                  <p className="font-fa text-base font-bold text-foreground">
+                    نتیجه‌ای در Dataset پیدا نشد
+                  </p>
                   <p className="mt-2 font-fa text-sm text-muted-foreground">
                     عبارت دیگری امتحان کنید یا همین عبارت را در صفحه فروشگاه باز کنید.
                   </p>
@@ -245,7 +290,10 @@ export function SearchDialog() {
                   <SearchSection title="جستجوهای اخیر">
                     <div className="space-y-2">
                       {searchHistory.map((term) => (
-                        <div key={term} className="flex items-center gap-2 rounded-lg border border-border bg-background p-1">
+                        <div
+                          key={term}
+                          className="flex items-center gap-2 rounded-lg border border-border bg-background p-1"
+                        >
                           <button
                             type="button"
                             data-testid="recent-search"
@@ -255,7 +303,10 @@ export function SearchDialog() {
                             }}
                             className="flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-md px-3 text-right font-fa text-sm hover:bg-interactive"
                           >
-                            <Clock3 aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+                            <Clock3
+                              aria-hidden="true"
+                              className="size-4 shrink-0 text-muted-foreground"
+                            />
                             <bdi dir="auto" className="truncate">
                               {term}
                             </bdi>
