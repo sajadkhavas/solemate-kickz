@@ -1,0 +1,4 @@
+[data-testid="search-overlay"][data-state="closed"],
+[data-testid="mobile-menu-overlay"][data-state="closed"] {
+  pointer-events: none;
+}
