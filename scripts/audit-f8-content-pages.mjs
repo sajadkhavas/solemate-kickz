@@ -151,8 +151,10 @@ record(
   null,
 );
 record(
-  "Brand logo fallback",
-  /BRAND_LOGO_SLUGS/.test(brands) && /نشان متنی/.test(brands) && /onError=\{onFail\}/.test(brands),
+  "Stable local brand mark",
+  /data-brand-mark="text"/.test(brands) &&
+    /نشان متنی/.test(brands) &&
+    !/cdn\.simpleicons\.org|BRAND_LOGO_SLUGS/.test(brands),
   null,
 );
 record("Brand no-result state", /برندی با این عبارت پیدا نشد/.test(brands), null);

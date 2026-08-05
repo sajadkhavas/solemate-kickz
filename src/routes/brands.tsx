@@ -7,7 +7,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/sections/Footer";
 import { Button } from "@/components/ui/button";
 import { EmptyState, SearchInput } from "@/components/ui/commerce-primitives";
-import { BRANDS, BRAND_LOGO_SLUGS, SHOES } from "@/data/shoes";
+import { BRANDS, SHOES } from "@/data/shoes";
 
 export const Route = createFileRoute("/brands")({
   head: () => ({
@@ -35,7 +35,6 @@ const BRAND_RECORDS = [...new Set(BRANDS)]
       name,
       count: products.length,
       sample: products[0]?.image,
-      logoSlug: BRAND_LOGO_SLUGS[name],
     };
   })
   .sort((first, second) => second.count - first.count || first.name.localeCompare(second.name));
@@ -152,8 +151,6 @@ function BrandsPage() {
 type BrandRecord = (typeof BRAND_RECORDS)[number];
 
 function BrandCard({ brand }: { brand: BrandRecord }) {
-  const [logoFailed, setLogoFailed] = useState(false);
-
   return (
     <Link
       to="/products"
@@ -177,12 +174,7 @@ function BrandCard({ brand }: { brand: BrandRecord }) {
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-background/80 to-transparent" />
 
       <div className="flex w-full flex-col justify-between gap-8">
-        <BrandMark
-          name={brand.name}
-          logoSlug={brand.logoSlug}
-          failed={logoFailed}
-          onFail={() => setLogoFailed(true)}
-        />
+        <BrandMark name={brand.name} />
         <div>
           <h3 dir="ltr" className="text-left font-display text-2xl font-black leading-tight">
             {brand.name}
@@ -202,45 +194,21 @@ function BrandCard({ brand }: { brand: BrandRecord }) {
   );
 }
 
-function BrandMark({
-  name,
-  logoSlug,
-  failed,
-  onFail,
-}: {
-  name: string;
-  logoSlug?: string;
-  failed: boolean;
-  onFail: () => void;
-}) {
-  if (logoSlug && !failed) {
-    return (
-      <div className="flex size-14 items-center justify-center rounded-[var(--radius-lg)] border border-border bg-background/80 p-3">
-        <img
-          src={`https://cdn.simpleicons.org/${logoSlug}/c8f135`}
-          alt=""
-          width={40}
-          height={40}
-          loading="lazy"
-          onError={onFail}
-          className="h-full w-full object-contain"
-        />
-        <span className="sr-only">نشان {name}</span>
-      </div>
-    );
-  }
+function BrandMark({ name }: { name: string }) {
+  const initials = name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 3);
 
   return (
     <div
       dir="ltr"
       aria-label={`نشان متنی ${name}`}
+      data-brand-mark="text"
       className="flex min-h-14 w-fit min-w-14 items-center justify-center rounded-[var(--radius-lg)] border border-border bg-background/80 px-3 font-display text-lg font-black text-primary"
     >
-      {name
-        .split(" ")
-        .map((part) => part[0])
-        .join("")
-        .slice(0, 3)}
+      {initials}
     </div>
   );
 }

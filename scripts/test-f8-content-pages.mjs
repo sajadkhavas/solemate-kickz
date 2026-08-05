@@ -233,9 +233,17 @@ async function run(baseUrl) {
     );
 
     await navigate(client, `${baseUrl}/about`);
-    await evaluate(client, `document.querySelector('main a[href="/brands"]')?.click()`);
+    await evaluate(
+      client,
+      `(() => {
+        const link = document.querySelector('main a[href="/brands"]');
+        link?.focus();
+        return document.activeElement === link;
+      })()`,
+    );
+    await press(client, "Enter");
     await waitForExpression(client, `location.pathname === '/brands'`);
-    await sleep(120);
+    await waitForExpression(client, `document.activeElement?.id === 'main-content'`, 5_000);
     const routeFocus = await evaluate(client, `document.activeElement?.id`);
     record("Route focus", routeFocus === "main-content", routeFocus);
 

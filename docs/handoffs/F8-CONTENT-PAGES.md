@@ -238,6 +238,11 @@ The Repository contains no authoritative business identity, verified contact rec
 
 Clean after the complete quality gate. Runtime reports, logs, and screenshots are ignored and no tracked runtime artifact was introduced.
 
+## Supervisor corrections
+
+- Removed the Simple Icons CDN dependency from the Brands route. Brand identity now uses deterministic local text marks, so the page remains truthful and usable offline or on restricted networks.
+- Stabilized the route-focus browser check by activating the route with keyboard semantics and waiting for the shared `#main-content` focus contract instead of relying on a fixed delay.
+
 ## Ready for supervisor review
 
 **Yes.** F8 is ready for supervisor review. No merge was performed.
