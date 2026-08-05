@@ -56,7 +56,7 @@ export function DesktopNavigation() {
 
       <div className="inline-flex items-center">
         <NavigationLink to="/products" label="فروشگاه" />
-        <DropdownMenuPrimitive.Root>
+        <DropdownMenuPrimitive.Root dir="rtl">
           <DropdownMenuPrimitive.Trigger asChild>
             <button
               type="button"
@@ -70,7 +70,6 @@ export function DesktopNavigation() {
           <DropdownMenuPrimitive.Portal>
             <DropdownMenuPrimitive.Content
               data-testid="desktop-menu-content"
-              dir="rtl"
               align="center"
               sideOffset={8}
               collisionPadding={16}
