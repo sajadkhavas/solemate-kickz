@@ -62,7 +62,14 @@ const INSPECT = `(() => {
     controls,
     targetsBelow44: controls.filter((item) => item.width < 44 || item.height < 44),
     missingNames: controls.filter((item) => !item.name),
-    activeFocus: active ? { id: active.id || null, name: name(active), inMain: Boolean(active.closest('main')), outline: activeStyle?.outlineStyle, outlineWidth: activeStyle?.outlineWidth } : null,
+    activeFocus: active ? {
+      id: active.id || null,
+      name: name(active),
+      inMain: Boolean(active.closest('main')),
+      outline: activeStyle?.outlineStyle,
+      outlineWidth: activeStyle?.outlineWidth,
+      boxShadow: activeStyle?.boxShadow,
+    } : null,
     fakeSuccess: /ورود موفق|ثبت‌نام موفق|خوش آمد/.test(document.body.textContent || ''),
     textLength: document.body.textContent?.trim().length || 0,
   };
@@ -77,15 +84,19 @@ async function screenshot(client, name) {
   fs.writeFileSync(path.join(OUTPUT, `${name}.png`), Buffer.from(image.data, "base64"));
 }
 
-async function setValue(client, selector, value) {
+async function waitForHydration(client, selector) {
   await waitForExpression(
     client,
     `(() => {
-      const input = document.querySelector(${JSON.stringify(selector)});
-      return input instanceof HTMLInputElement && Object.keys(input).some((key) => key.startsWith('__reactProps$'));
+      const element = document.querySelector(${JSON.stringify(selector)});
+      return Boolean(element && Object.keys(element).some((key) => key.startsWith('__reactProps$')));
     })()`,
     15_000,
   );
+}
+
+async function setValue(client, selector, value) {
+  await waitForHydration(client, selector);
   const selected = await evaluate(
     client,
     `(() => {
@@ -130,16 +141,27 @@ function critical(report, type, route, viewport, evidence) {
 }
 
 function assess(report, route, viewport, inspection) {
-  if (inspection.horizontalOverflow)
+  if (inspection.horizontalOverflow) {
     critical(report, "horizontal-overflow", route, viewport, inspection);
+  }
   if (!inspection.mainVisible) critical(report, "missing-main", route, viewport, inspection);
-  if (inspection.h1Count !== 1)
+  if (inspection.h1Count !== 1) {
     critical(report, "duplicate-or-missing-h1", route, viewport, inspection);
-  if (inspection.targetsBelow44.length)
+  }
+  if (inspection.targetsBelow44.length) {
     critical(report, "touch-target-failure", route, viewport, inspection.targetsBelow44);
-  if (inspection.missingNames.length)
+  }
+  if (inspection.missingNames.length) {
     critical(report, "missing-accessible-name", route, viewport, inspection.missingNames);
+  }
   if (inspection.fakeSuccess) critical(report, "fake-success-state", route, viewport, inspection);
+}
+
+function focusIsVisible(focus) {
+  if (!focus) return false;
+  const hasOutline = focus.outline !== "none" && focus.outlineWidth !== "0px";
+  const hasShadow = focus.boxShadow && focus.boxShadow !== "none";
+  return hasOutline || hasShadow;
 }
 
 async function run(baseUrl) {
@@ -148,13 +170,14 @@ async function run(baseUrl) {
   const browser = await openBrowser({ debugPort: 9239, logPath: LOG });
   const { client } = browser;
   const browserEvents = [];
-  client.on("Runtime.exceptionThrown", (event) =>
+
+  client.on("Runtime.exceptionThrown", (event) => {
     browserEvents.push(
       event.exceptionDetails?.exception?.description ??
         event.exceptionDetails?.text ??
         "Runtime exception",
-    ),
-  );
+    );
+  });
   client.on("Runtime.consoleAPICalled", (event) => {
     if (event.type === "error") browserEvents.push(event.args.map(serialiseArgument).join(" "));
   });
@@ -242,6 +265,7 @@ async function run(baseUrl) {
     await screenshot(client, "brands-no-result");
 
     await navigate(client, `${baseUrl}/auth`);
+    await waitForHydration(client, `[data-testid="auth-form"]`);
     await evaluate(client, `document.querySelector('[data-testid="auth-form"]')?.requestSubmit()`);
     await waitForExpression(client, `document.querySelectorAll('[role="alert"]').length >= 2`);
     const authError = await evaluate(client, INSPECT);
@@ -259,12 +283,7 @@ async function run(baseUrl) {
       const reachedMain = await focusFirstMainControl(client);
       const focus = await evaluate(client, INSPECT);
       report.keyboardFocus.push({ route, reachedMain, inspection: focus });
-      if (
-        !reachedMain ||
-        !focus.activeFocus?.inMain ||
-        focus.activeFocus.outline === "none" ||
-        focus.activeFocus.outlineWidth === "0px"
-      ) {
+      if (!reachedMain || !focus.activeFocus?.inMain || !focusIsVisible(focus.activeFocus)) {
         critical(report, "invisible-focus", route, "keyboard-focus", focus.activeFocus);
       }
       await screenshot(client, `${route.slice(1)}-focus`);
@@ -275,9 +294,9 @@ async function run(baseUrl) {
       await evaluate(
         client,
         `(() => {
-        const paragraph = document.querySelector('main p');
-        if (paragraph) paragraph.textContent = 'متن فارسی طولانی برای بررسی شکست سطر و خوانایی در عرض باریک '.repeat(18);
-      })()`,
+          const paragraph = document.querySelector('main p');
+          if (paragraph) paragraph.textContent = 'متن فارسی طولانی برای بررسی شکست سطر و خوانایی در عرض باریک '.repeat(18);
+        })()`,
       );
       const longText = await evaluate(client, INSPECT);
       report.longText.push({ route, inspection: longText });
@@ -294,8 +313,9 @@ async function run(baseUrl) {
         `({ matches: matchMedia('(prefers-reduced-motion: reduce)').matches, animations: document.getAnimations().filter((animation) => animation.playState === 'running').length })`,
       );
       report.reducedMotion.push({ route, ...reduced });
-      if (!reduced.matches)
+      if (!reduced.matches) {
         critical(report, "reduced-motion-not-applied", route, "reduced-motion", reduced);
+      }
     }
 
     const runtime = browserEvents.filter((error) =>
