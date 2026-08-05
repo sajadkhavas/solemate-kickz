@@ -23,11 +23,37 @@ async function stop(child) {
   }
 }
 
-export async function delegateToDevServer({ envName, port, entryPath, logName }) {
+function readReport(reportPath) {
+  try {
+    const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
+    return typeof report.pass === "boolean" ? report : null;
+  } catch {
+    return null;
+  }
+}
+
+async function waitForResult(child, reportPath, timeout = 25 * 60_000) {
+  const started = Date.now();
+  while (Date.now() - started < timeout) {
+    const report = readReport(reportPath);
+    if (report) {
+      await stop(child);
+      return report.pass ? 0 : 1;
+    }
+    if (child.exitCode !== null) return child.exitCode;
+    await sleep(200);
+  }
+  await stop(child);
+  return 124;
+}
+
+export async function delegateToDevServer({ envName, port, entryPath, logName, reportPath }) {
   if (process.env[envName]) return null;
 
   const baseUrl = `http://127.0.0.1:${port}`;
+  const absoluteReportPath = path.join(ROOT, reportPath);
   const logPath = path.join(ROOT, "artifacts/runtime", logName);
+  fs.rmSync(absoluteReportPath, { force: true });
   fs.mkdirSync(path.dirname(logPath), { recursive: true });
   const log = fs.openSync(logPath, "w");
   const server = spawn(
@@ -43,7 +69,7 @@ export async function delegateToDevServer({ envName, port, entryPath, logName })
       stdio: "inherit",
       env: { ...process.env, [envName]: baseUrl },
     });
-    return await waitForExit(child);
+    return await waitForResult(child, absoluteReportPath);
   } finally {
     await stop(server);
     fs.closeSync(log);
