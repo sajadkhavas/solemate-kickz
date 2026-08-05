@@ -84,7 +84,7 @@ export function Navbar() {
             </Link>
 
             <IconButton
-              label="سبد خرید"
+              label="Cart"
               aria-describedby={visibleCartCount ? cartDescriptionId : undefined}
               variant="ghost"
               data-testid="cart-trigger"
