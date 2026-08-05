@@ -17,8 +17,15 @@ const OUTPUT = path.join(ROOT, "artifacts/visual-qa/f8-content-pages/screenshots
 const LOG = path.join(ROOT, "artifacts/runtime/f8-visual-chrome.txt");
 const ROUTES = ["/about", "/brands", "/auth"];
 const VIEWPORTS = [
-  [320, 568], [375, 812], [390, 844], [430, 932], [768, 1024],
-  [1024, 768], [1280, 800], [1440, 900], [1920, 1080],
+  [320, 568],
+  [375, 812],
+  [390, 844],
+  [430, 932],
+  [768, 1024],
+  [1024, 768],
+  [1280, 800],
+  [1440, 900],
+  [1920, 1080],
 ].map(([width, height]) => ({ name: `${width}x${height}`, width, height }));
 
 const INSPECT = `(() => {
@@ -62,20 +69,26 @@ const INSPECT = `(() => {
 })()`;
 
 async function screenshot(client, name) {
-  const image = await client.send("Page.captureScreenshot", { format: "png", captureBeyondViewport: false });
+  const image = await client.send("Page.captureScreenshot", {
+    format: "png",
+    captureBeyondViewport: false,
+  });
   fs.mkdirSync(OUTPUT, { recursive: true });
   fs.writeFileSync(path.join(OUTPUT, `${name}.png`), Buffer.from(image.data, "base64"));
 }
 
 async function setValue(client, selector, value) {
-  await evaluate(client, `(() => {
+  await evaluate(
+    client,
+    `(() => {
     const input = document.querySelector(${JSON.stringify(selector)});
     if (!(input instanceof HTMLInputElement)) return false;
     Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set?.call(input, ${JSON.stringify(value)});
     input.dispatchEvent(new Event('input', { bubbles: true }));
     input.dispatchEvent(new Event('change', { bubbles: true }));
     return true;
-  })()`);
+  })()`,
+  );
 }
 
 function critical(report, type, route, viewport, evidence) {
@@ -83,11 +96,15 @@ function critical(report, type, route, viewport, evidence) {
 }
 
 function assess(report, route, viewport, inspection) {
-  if (inspection.horizontalOverflow) critical(report, "horizontal-overflow", route, viewport, inspection);
+  if (inspection.horizontalOverflow)
+    critical(report, "horizontal-overflow", route, viewport, inspection);
   if (!inspection.mainVisible) critical(report, "missing-main", route, viewport, inspection);
-  if (inspection.h1Count !== 1) critical(report, "duplicate-or-missing-h1", route, viewport, inspection);
-  if (inspection.targetsBelow44.length) critical(report, "touch-target-failure", route, viewport, inspection.targetsBelow44);
-  if (inspection.missingNames.length) critical(report, "missing-accessible-name", route, viewport, inspection.missingNames);
+  if (inspection.h1Count !== 1)
+    critical(report, "duplicate-or-missing-h1", route, viewport, inspection);
+  if (inspection.targetsBelow44.length)
+    critical(report, "touch-target-failure", route, viewport, inspection.targetsBelow44);
+  if (inspection.missingNames.length)
+    critical(report, "missing-accessible-name", route, viewport, inspection.missingNames);
   if (inspection.fakeSuccess) critical(report, "fake-success-state", route, viewport, inspection);
 }
 
@@ -96,7 +113,13 @@ async function run(baseUrl) {
   const browser = await openBrowser({ debugPort: 9239, logPath: LOG });
   const { client } = browser;
   const browserEvents = [];
-  client.on("Runtime.exceptionThrown", (event) => browserEvents.push(event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception"));
+  client.on("Runtime.exceptionThrown", (event) =>
+    browserEvents.push(
+      event.exceptionDetails?.exception?.description ??
+        event.exceptionDetails?.text ??
+        "Runtime exception",
+    ),
+  );
   client.on("Runtime.consoleAPICalled", (event) => {
     if (event.type === "error") browserEvents.push(event.args.map(serialiseArgument).join(" "));
   });
@@ -170,9 +193,16 @@ async function run(baseUrl) {
 
     await navigate(client, `${baseUrl}/brands`);
     await setValue(client, "#brand-search", "__no_result__");
-    await waitForExpression(client, `document.body.textContent.includes('برندی با این عبارت پیدا نشد')`);
+    await waitForExpression(
+      client,
+      `document.body.textContent.includes('برندی با این عبارت پیدا نشد')`,
+    );
     const brandEmpty = await evaluate(client, INSPECT);
-    report.emptyAndErrorStates.push({ route: "/brands", state: "no-result", inspection: brandEmpty });
+    report.emptyAndErrorStates.push({
+      route: "/brands",
+      state: "no-result",
+      inspection: brandEmpty,
+    });
     assess(report, "/brands", "no-result", brandEmpty);
     await screenshot(client, "brands-no-result");
 
@@ -180,17 +210,28 @@ async function run(baseUrl) {
     await evaluate(client, `document.querySelector('[data-testid="auth-form"]')?.requestSubmit()`);
     await waitForExpression(client, `document.querySelectorAll('[role="alert"]').length >= 2`);
     const authError = await evaluate(client, INSPECT);
-    report.emptyAndErrorStates.push({ route: "/auth", state: "validation-error", inspection: authError });
+    report.emptyAndErrorStates.push({
+      route: "/auth",
+      state: "validation-error",
+      inspection: authError,
+    });
     assess(report, "/auth", "validation-error", authError);
     await screenshot(client, "auth-validation-error");
 
     for (const route of ROUTES) {
       await navigate(client, `${baseUrl}${route}`);
       await waitForExpression(client, `document.querySelector('main h1')`);
-      await evaluate(client, `document.querySelector('main a[href],main button,main input')?.focus()`);
+      await evaluate(
+        client,
+        `document.querySelector('main a[href],main button,main input')?.focus()`,
+      );
       const focus = await evaluate(client, INSPECT);
       report.keyboardFocus.push({ route, inspection: focus });
-      if (!focus.activeFocus || focus.activeFocus.outline === "none" || focus.activeFocus.outlineWidth === "0px") {
+      if (
+        !focus.activeFocus ||
+        focus.activeFocus.outline === "none" ||
+        focus.activeFocus.outlineWidth === "0px"
+      ) {
         critical(report, "invisible-focus", route, "keyboard-focus", focus.activeFocus);
       }
       await screenshot(client, `${route.slice(1)}-focus`);
@@ -198,10 +239,13 @@ async function run(baseUrl) {
 
     for (const route of ROUTES) {
       await navigate(client, `${baseUrl}${route}`);
-      await evaluate(client, `(() => {
+      await evaluate(
+        client,
+        `(() => {
         const paragraph = document.querySelector('main p');
         if (paragraph) paragraph.textContent = 'متن فارسی طولانی برای بررسی شکست سطر و خوانایی در عرض باریک '.repeat(18);
-      })()`);
+      })()`,
+      );
       const longText = await evaluate(client, INSPECT);
       report.longText.push({ route, inspection: longText });
       assess(report, route, "long-text", longText);
@@ -212,19 +256,28 @@ async function run(baseUrl) {
     });
     for (const route of ROUTES) {
       await navigate(client, `${baseUrl}${route}`);
-      const reduced = await evaluate(client, `({ matches: matchMedia('(prefers-reduced-motion: reduce)').matches, animations: document.getAnimations().filter((animation) => animation.playState === 'running').length })`);
+      const reduced = await evaluate(
+        client,
+        `({ matches: matchMedia('(prefers-reduced-motion: reduce)').matches, animations: document.getAnimations().filter((animation) => animation.playState === 'running').length })`,
+      );
       report.reducedMotion.push({ route, ...reduced });
-      if (!reduced.matches) critical(report, "reduced-motion-not-applied", route, "reduced-motion", reduced);
+      if (!reduced.matches)
+        critical(report, "reduced-motion-not-applied", route, "reduced-motion", reduced);
     }
 
-    const runtime = browserEvents.filter((error) => /uncaught|hydration|typeerror|referenceerror|syntaxerror|did not match/i.test(error));
+    const runtime = browserEvents.filter((error) =>
+      /uncaught|hydration|typeerror|referenceerror|syntaxerror|did not match/i.test(error),
+    );
     if (runtime.length) critical(report, "runtime-or-hydration-error", "all", "all", runtime);
   } finally {
     await browser.close();
   }
 
   report.pass = report.criticalFindings.length === 0;
-  report.summary = { critical: report.criticalFindings.length, defaultCaptures: report.defaultStates.length };
+  report.summary = {
+    critical: report.criticalFindings.length,
+    defaultCaptures: report.defaultStates.length,
+  };
   fs.mkdirSync(path.dirname(REPORT), { recursive: true });
   fs.writeFileSync(REPORT, `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify(report.summary));
@@ -235,6 +288,6 @@ withF8Server(
   { envName: "F8_VISUAL_BASE_URL", port: 4176, logPath: "artifacts/runtime/f8-visual-server.txt" },
   run,
 ).catch((error) => {
-  console.error(error instanceof Error ? error.stack ?? error.message : String(error));
+  console.error(error instanceof Error ? (error.stack ?? error.message) : String(error));
   process.exitCode = 1;
 });

@@ -15,7 +15,8 @@ export const Route = createFileRoute("/brands")({
       { title: "برندهای Dataset — SOLE" },
       {
         name: "description",
-        content: "فهرست یکتای برندهای موجود در داده نمایشی SOLE همراه با تعداد رکوردهای واقعی Dataset.",
+        content:
+          "فهرست یکتای برندهای موجود در داده نمایشی SOLE همراه با تعداد رکوردهای واقعی Dataset.",
       },
       { property: "og:title", content: "برندهای Dataset — SOLE" },
       {
@@ -60,9 +61,9 @@ function BrandsPage() {
                 برندهای موجود در داده نمونه
               </h1>
               <p className="mt-5 max-w-2xl font-fa leading-8 text-muted-foreground">
-                این صفحه فقط نام‌هایی را نمایش می‌دهد که در Dataset فعلی Repository وجود دارند.
-                حضور یک نام در این فهرست به معنای همکاری، نمایندگی، موجودی تجاری یا اصالت‌سنجی
-                فروشگاه نیست.
+                این صفحه فقط نام‌هایی را نمایش می‌دهد که در Dataset فعلی Repository وجود دارند. حضور
+                یک نام در این فهرست به معنای همکاری، نمایندگی، موجودی تجاری یا اصالت‌سنجی فروشگاه
+                نیست.
               </p>
             </div>
 
@@ -87,7 +88,8 @@ function BrandsPage() {
                 className="mt-2 text-sm text-muted-foreground"
                 aria-live="polite"
               >
-                {filteredBrands.length} برند از {BRAND_RECORDS.length} برند Dataset نمایش داده می‌شود.
+                {filteredBrands.length} برند از {BRAND_RECORDS.length} برند Dataset نمایش داده
+                می‌شود.
               </p>
             </div>
           </div>
@@ -175,7 +177,12 @@ function BrandCard({ brand }: { brand: BrandRecord }) {
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-background/80 to-transparent" />
 
       <div className="flex w-full flex-col justify-between gap-8">
-        <BrandMark name={brand.name} logoSlug={brand.logoSlug} failed={logoFailed} onFail={() => setLogoFailed(true)} />
+        <BrandMark
+          name={brand.name}
+          logoSlug={brand.logoSlug}
+          failed={logoFailed}
+          onFail={() => setLogoFailed(true)}
+        />
         <div>
           <h3 dir="ltr" className="text-left font-display text-2xl font-black leading-tight">
             {brand.name}

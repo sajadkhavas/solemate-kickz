@@ -234,7 +234,11 @@ async function run(baseUrl) {
     generatedAt: new Date().toISOString(),
     results,
     browserErrors,
-    summary: { total: results.length, passed: results.length - failed.length, failed: failed.length },
+    summary: {
+      total: results.length,
+      passed: results.length - failed.length,
+      failed: failed.length,
+    },
     pass: failed.length === 0,
   };
   fs.mkdirSync(path.dirname(REPORT), { recursive: true });
