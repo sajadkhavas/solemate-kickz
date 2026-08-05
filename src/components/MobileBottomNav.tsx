@@ -53,7 +53,7 @@ export function MobileBottomNav() {
 
           <button
             type="button"
-            aria-label="سبد خرید"
+            aria-label="Cart"
             aria-describedby={visibleCartCount ? cartDescriptionId : undefined}
             data-testid="mobile-cart-trigger"
             data-cart-trigger="true"
