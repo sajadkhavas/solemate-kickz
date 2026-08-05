@@ -1,20 +1,29 @@
-name: F2 Format Export
+name: Temporary F2 Formatter
 
 on:
-  pull_request:
+  push:
+    branches:
+      - "phase/sole-f2-navigation-search"
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: temporary-f2-formatter
+  cancel-in-progress: true
 
 jobs:
-  export:
+  format-and-push:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+
     steps:
-      - name: Check out exact PR head
+      - name: Check out F2 branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: phase/sole-f2-navigation-search
+          fetch-depth: 0
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
@@ -25,8 +34,7 @@ jobs:
       - name: Install from lockfile
         run: bun install --frozen-lockfile
 
-      - name: Format and export changed F2 files
-        shell: bash
+      - name: Apply exact F2 formatting
         run: |
           bunx prettier --write \
             docs/handoffs/F2-NAVIGATION-SEARCH.md \
@@ -38,8 +46,17 @@ jobs:
             src/components/navigation/DesktopNavigation.tsx \
             src/components/navigation/MobileNavigation.tsx
 
-          archive="$(mktemp)"
-          tar -czf "$archive" \
+      - name: Commit formatting only
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes required."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
             docs/handoffs/F2-NAVIGATION-SEARCH.md \
             scripts/audit-f2-navigation-search.mjs \
             scripts/f2-browser-runner.mjs \
@@ -48,7 +65,5 @@ jobs:
             src/components/MobileBottomNav.tsx \
             src/components/navigation/DesktopNavigation.tsx \
             src/components/navigation/MobileNavigation.tsx
-
-          printf 'F2_FORMAT_TAR_GZ_BASE64='
-          base64 -w0 "$archive"
-          printf '\n'
+          git commit -m "chore(format): apply exact F2 formatting"
+          git push origin HEAD:phase/sole-f2-navigation-search
