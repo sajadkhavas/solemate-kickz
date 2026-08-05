@@ -91,7 +91,8 @@ const unsafeUrls = [];
 const positiveTabindex = [];
 for (const file of trackedSourceFiles) {
   const source = read(file);
-  if (/href\s*=\s*["'](?:#|javascript:)/i.test(source)) unsafeUrls.push(file);
+  if (/href\s*=\s*["']#["']/i.test(source) || /href\s*=\s*["']javascript:/i.test(source))
+    unsafeUrls.push(file);
   if (/tabIndex\s*=\s*\{?\s*[1-9]/.test(source)) positiveTabindex.push(file);
 }
 add("no unsafe or placeholder URL", unsafeUrls.length === 0, unsafeUrls);
