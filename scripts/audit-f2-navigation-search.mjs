@@ -132,12 +132,13 @@ add(
 );
 add(
   "focus restoration policy",
-  /queueMicrotask/.test(files.navbar) &&
-    /searchTriggerRef/.test(files.navbar) &&
-    /queueMicrotask/.test(files.bottom) &&
+  /openerRef = useRef<HTMLElement \| null>/.test(files.search) &&
+    /document\.activeElement instanceof HTMLElement/.test(files.search) &&
+    /onCloseAutoFocus/.test(files.search) &&
+    /openerRef\.current\?\.focus\(\{ preventScroll: true \}\)/.test(files.search) &&
     /triggerRef/.test(files.mobile) &&
-    /focus\(\{ preventScroll: true \}\)/.test(shellSource),
-  "explicit desktop/mobile search and menu restoration",
+    /actual desktop and mobile opener/.test(files.behavior),
+  "Search Dialog restores the actual opener; Mobile Dialog restores its trigger",
 );
 add(
   "Escape behavior uses dismissible primitives",
@@ -279,5 +280,10 @@ const report = {
 fs.mkdirSync(path.dirname(REPORT_PATH), { recursive: true });
 fs.writeFileSync(REPORT_PATH, `${JSON.stringify(report, null, 2)}\n`);
 console.log(JSON.stringify(report.summary));
+if (failed.length) {
+  for (const check of failed) {
+    console.error(`FAILED: ${check.name}`, check.evidence);
+  }
+}
 console.log(`F2 audit report: ${path.relative(ROOT, REPORT_PATH)}`);
 if (!report.pass) process.exitCode = 1;
