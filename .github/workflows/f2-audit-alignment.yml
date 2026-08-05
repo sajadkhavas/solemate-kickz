@@ -1,4 +1,4 @@
-name: Temporary F2 Audit Diagnostic
+name: Temporary F2 Audit Correction
 
 on:
   push:
@@ -6,22 +6,23 @@ on:
       - "phase/sole-f2-navigation-search"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: temporary-f2-audit-diagnostic
+  group: temporary-f2-audit-correction
   cancel-in-progress: true
 
 jobs:
-  audit:
+  patch-and-push:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
-      - name: Check out exact head
+      - name: Check out F2 branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: phase/sole-f2-navigation-search
           fetch-depth: 0
 
       - name: Set up Bun
@@ -33,5 +34,27 @@ jobs:
       - name: Install from lockfile
         run: bun install --frozen-lockfile
 
-      - name: Run F2 audit with failed-check output
-        run: bun run audit:f2
+      - name: Correct unsafe-URL detection
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/audit-f2-navigation-search.mjs")
+          text = path.read_text()
+          old = '''  if (/href\\s*=\\s*["'](?:#|javascript:)/i.test(source)) unsafeUrls.push(file);'''
+          new = '''  if (\n    /href\\s*=\\s*["']#["']/i.test(source) ||\n    /href\\s*=\\s*["']javascript:/i.test(source)\n  )\n    unsafeUrls.push(file);'''
+          if old not in text:
+              raise SystemExit("Legacy unsafe URL regex not found")
+          path.write_text(text.replace(old, new))
+          PY
+          bunx prettier --write scripts/audit-f2-navigation-search.mjs
+
+      - name: Commit audit correction
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/audit-f2-navigation-search.mjs
+          git commit -m "fix(audit): distinguish fragments from placeholder URLs"
+          git push origin HEAD:phase/sole-f2-navigation-search
