@@ -23,18 +23,19 @@ function record(name, pass, evidence) {
 }
 
 async function setValue(client, selector, value) {
-  return evaluate(
+  const selected = await evaluate(
     client,
     `(() => {
       const input = document.querySelector(${JSON.stringify(selector)});
       if (!(input instanceof HTMLInputElement)) return false;
-      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
-      setter?.call(input, ${JSON.stringify(value)});
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
+      input.focus();
+      input.select();
       return true;
     })()`,
   );
+  if (!selected) throw new Error(`Input not found: ${selector}`);
+  await client.send("Input.insertText", { text: value });
+  await sleep(100);
 }
 
 async function press(client, key) {
