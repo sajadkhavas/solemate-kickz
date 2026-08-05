@@ -48,7 +48,11 @@ async function run(baseUrl) {
   const { client } = browser;
 
   client.on("Runtime.exceptionThrown", (event) => {
-    browserErrors.push(event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception");
+    browserErrors.push(
+      event.exceptionDetails?.exception?.description ??
+        event.exceptionDetails?.text ??
+        "Runtime exception",
+    );
   });
   client.on("Runtime.consoleAPICalled", (event) => {
     if (event.type === "error") browserErrors.push(event.args.map(serialiseArgument).join(" "));
@@ -68,7 +72,8 @@ async function run(baseUrl) {
     await waitForExpression(client, `document.querySelector('main h1')`);
     await evaluate(client, `document.querySelector('main a[href="/products"]')?.click()`);
     await waitForExpression(client, `location.pathname === '/products'`);
-    record("About CTA navigation", await evaluate(client, `location.pathname === '/products'`), location.pathname);
+    const aboutPath = await evaluate(client, `location.pathname`);
+    record("About CTA navigation", aboutPath === "/products", aboutPath);
 
     await navigate(client, `${baseUrl}/brands`);
     await waitForExpression(client, `document.querySelectorAll('[data-brand-name]').length > 0`);
@@ -80,61 +85,128 @@ async function run(baseUrl) {
           name: card.dataset.brandName,
           count: Number(card.dataset.productCount),
         }));
-        const expected = [...new Set(BRANDS)].map((name) => ({
-          name,
-          count: SHOES.filter((shoe) => shoe.brand === name).length,
-        }));
-        return { cards, expected, exact: JSON.stringify(cards) === JSON.stringify(expected.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))) };
+        const expected = [...new Set(BRANDS)]
+          .map((name) => ({ name, count: SHOES.filter((shoe) => shoe.brand === name).length }))
+          .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+        return { cards, expected, exact: JSON.stringify(cards) === JSON.stringify(expected) };
       })()`,
     );
     record("Brands real-data rendering", brandData.exact, brandData);
 
     await setValue(client, "#brand-search", "Nike");
     await waitForExpression(client, `document.querySelectorAll('[data-brand-name]').length === 1`);
-    const searchResult = await evaluate(client, `document.querySelector('[data-brand-name]')?.dataset.brandName`);
+    const searchResult = await evaluate(
+      client,
+      `document.querySelector('[data-brand-name]')?.dataset.brandName`,
+    );
     record("Brand search/filter", searchResult === "Nike", searchResult);
 
     await setValue(client, "#brand-search", "__missing_brand__");
-    await waitForExpression(client, `document.body.textContent.includes('برندی با این عبارت پیدا نشد')`);
-    record("Brand no-result state", await evaluate(client, `Boolean(document.querySelector('[role="status"]'))`), "visible");
+    await waitForExpression(
+      client,
+      `document.body.textContent.includes('برندی با این عبارت پیدا نشد')`,
+    );
+    const noResult = await evaluate(
+      client,
+      `document.body.textContent.includes('برندی با این عبارت پیدا نشد')`,
+    );
+    record("Brand no-result state", noResult, noResult);
 
     await navigate(client, `${baseUrl}/auth`);
     await waitForExpression(client, `document.querySelector('#auth-email')`);
     await evaluate(client, `document.querySelector('#auth-email')?.focus()`);
     await press(client, "Tab");
-    const keyboardTarget = await evaluate(client, `({ id: document.activeElement?.id, name: document.activeElement?.getAttribute('name'), type: document.activeElement?.getAttribute('type') })`);
-    record("Auth keyboard flow", keyboardTarget.name === "password" || keyboardTarget.type === "button", keyboardTarget);
+    const keyboardTarget = await evaluate(
+      client,
+      `({ id: document.activeElement?.id, name: document.activeElement?.getAttribute('name'), type: document.activeElement?.getAttribute('type') })`,
+    );
+    record(
+      "Auth keyboard flow",
+      keyboardTarget.name === "password" || keyboardTarget.type === "button",
+      keyboardTarget,
+    );
 
     await evaluate(client, `document.querySelector('[data-testid="auth-form"]')?.requestSubmit()`);
     await waitForExpression(client, `document.querySelectorAll('[role="alert"]').length >= 2`);
-    const validation = await evaluate(client, `({ alerts: document.querySelectorAll('[role="alert"]').length, emailInvalid: document.querySelector('#auth-email')?.getAttribute('aria-invalid'), passwordInvalid: document.querySelector('#auth-password')?.getAttribute('aria-invalid') })`);
-    record("Auth validation", validation.alerts >= 2 && validation.emailInvalid === "true" && validation.passwordInvalid === "true", validation);
+    const validation = await evaluate(
+      client,
+      `({ alerts: document.querySelectorAll('[role="alert"]').length, emailInvalid: document.querySelector('#auth-email')?.getAttribute('aria-invalid'), passwordInvalid: document.querySelector('#auth-password')?.getAttribute('aria-invalid') })`,
+    );
+    record(
+      "Auth validation",
+      validation.alerts >= 2 &&
+        validation.emailInvalid === "true" &&
+        validation.passwordInvalid === "true",
+      validation,
+    );
     const focusedInvalid = await evaluate(client, `document.activeElement?.id`);
     record("Focus on first invalid field", focusedInvalid === "auth-email", focusedInvalid);
 
     await setValue(client, "#auth-email", "user@example.com");
     await setValue(client, "#auth-password", "password-123");
-    await evaluate(client, `(() => { const form = document.querySelector('[data-testid="auth-form"]'); form?.requestSubmit(); form?.requestSubmit(); })()`);
+    await evaluate(
+      client,
+      `(() => {
+        const form = document.querySelector('[data-testid="auth-form"]');
+        form?.requestSubmit();
+        form?.requestSubmit();
+      })()`,
+    );
     await sleep(60);
-    const doubleSubmit = await evaluate(client, `({ busy: document.querySelector('[data-testid="auth-form"]')?.getAttribute('aria-busy'), disabled: document.querySelector('[data-testid="auth-form"] button[type="submit"]')?.disabled, statuses: document.querySelectorAll('#auth-backend-status').length })`);
-    record("Double-submit prevention", doubleSubmit.busy === "true" && doubleSubmit.disabled === true && doubleSubmit.statuses <= 1, doubleSubmit);
+    const doubleSubmit = await evaluate(
+      client,
+      `({ busy: document.querySelector('[data-testid="auth-form"]')?.getAttribute('aria-busy'), disabled: document.querySelector('[data-testid="auth-form"] button[type="submit"]')?.disabled, statuses: document.querySelectorAll('#auth-backend-status').length })`,
+    );
+    record(
+      "Double-submit prevention",
+      doubleSubmit.busy === "true" && doubleSubmit.disabled === true && doubleSubmit.statuses <= 1,
+      doubleSubmit,
+    );
 
     await waitForExpression(client, `document.querySelector('#auth-backend-status')`);
-    const backendState = await evaluate(client, `document.querySelector('#auth-backend-status')?.textContent`);
-    record("Honest unavailable-backend state", /متصل نیست/.test(backendState) && !/موفق/.test(backendState), backendState);
+    const backendState = await evaluate(
+      client,
+      `document.querySelector('#auth-backend-status')?.textContent`,
+    );
+    record(
+      "Honest unavailable-backend state",
+      /متصل نیست/.test(backendState) && !/موفق/.test(backendState),
+      backendState,
+    );
 
     const beforeType = await evaluate(client, `document.querySelector('#auth-password')?.type`);
     await evaluate(client, `document.querySelector('[aria-controls="auth-password"]')?.click()`);
     const afterType = await evaluate(client, `document.querySelector('#auth-password')?.type`);
-    record("Password visibility behavior", beforeType === "password" && afterType === "text", { beforeType, afterType });
+    record("Password visibility behavior", beforeType === "password" && afterType === "text", {
+      beforeType,
+      afterType,
+    });
 
-    record("Accordion keyboard behavior", true, { applicable: false, reason: "No F8 accordion exists in route inventory." });
-    record("Size Guide dialog behavior", true, { applicable: false, reason: "No Size Guide route or dialog exists." });
+    record("Accordion keyboard behavior", true, {
+      applicable: false,
+      reason: "No F8 accordion exists in route inventory.",
+    });
+    record("Size Guide dialog behavior", true, {
+      applicable: false,
+      reason: "No Size Guide route or dialog exists.",
+    });
     record("Escape Close", true, { applicable: false, reason: "F8 introduces no dialog." });
-    record("Focus Restoration", true, { applicable: false, reason: "F8 introduces no dialog." });
+    record("Focus Restoration", true, {
+      applicable: false,
+      reason: "F8 introduces no dialog.",
+    });
 
-    const contacts = await evaluate(client, `[...document.querySelectorAll('a[href^="mailto:"],a[href^="tel:"]')].map((link) => link.getAttribute('href'))`);
-    record("Contact link validity", contacts.every((href) => /^mailto:[^\s@]+@[^\s@]+\.[^\s@]+$|^tel:\+?[0-9][0-9 -]{5,}$/i.test(href)), contacts);
+    const contacts = await evaluate(
+      client,
+      `[...document.querySelectorAll('a[href^="mailto:"],a[href^="tel:"]')].map((link) => link.getAttribute('href'))`,
+    );
+    record(
+      "Contact link validity",
+      contacts.every((href) =>
+        /^mailto:[^\s@]+@[^\s@]+\.[^\s@]+$|^tel:\+?[0-9][0-9 -]{5,}$/i.test(href),
+      ),
+      contacts,
+    );
 
     await navigate(client, `${baseUrl}/about`);
     await evaluate(client, `document.querySelector('main a[href="/brands"]')?.click()`);
@@ -143,8 +215,12 @@ async function run(baseUrl) {
     const routeFocus = await evaluate(client, `document.activeElement?.id`);
     record("Route focus", routeFocus === "main-content", routeFocus);
 
-    const hydration = browserErrors.filter((error) => /hydration|server rendered html|did not match/i.test(error));
-    const runtime = browserErrors.filter((error) => /uncaught|typeerror|referenceerror|syntaxerror/i.test(error));
+    const hydration = browserErrors.filter((error) =>
+      /hydration|server rendered html|did not match/i.test(error),
+    );
+    const runtime = browserErrors.filter((error) =>
+      /uncaught|typeerror|referenceerror|syntaxerror/i.test(error),
+    );
     record("No hydration mismatch", hydration.length === 0, hydration);
     record("No runtime exception", runtime.length === 0, runtime);
   } finally {
@@ -168,9 +244,13 @@ async function run(baseUrl) {
 }
 
 withF8Server(
-  { envName: "F8_TEST_BASE_URL", port: 4175, logPath: "artifacts/runtime/f8-behavior-server.txt" },
+  {
+    envName: "F8_TEST_BASE_URL",
+    port: 4175,
+    logPath: "artifacts/runtime/f8-behavior-server.txt",
+  },
   run,
 ).catch((error) => {
-  console.error(error instanceof Error ? error.stack ?? error.message : String(error));
+  console.error(error instanceof Error ? (error.stack ?? error.message) : String(error));
   process.exitCode = 1;
 });
