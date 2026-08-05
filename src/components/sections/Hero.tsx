@@ -72,7 +72,10 @@ export function Hero() {
         </div>
 
         <div className="relative min-w-0" data-testid="hero-media">
-          <div className="absolute inset-x-[12%] bottom-[8%] h-16 rounded-[50%] bg-black/70 blur-2xl" aria-hidden="true" />
+          <div
+            className="absolute inset-x-[12%] bottom-[8%] h-16 rounded-[50%] bg-black/70 blur-2xl"
+            aria-hidden="true"
+          />
           <div className="relative overflow-hidden rounded-[2rem] border border-border bg-gradient-to-br from-surface via-ink to-surface-elevated p-3 sm:p-5">
             <ShoeViewer3D
               fallbackImage={heroShoe}

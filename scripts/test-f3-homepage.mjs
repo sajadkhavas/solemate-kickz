@@ -44,11 +44,11 @@ async function startServer() {
   if (process.env.F3_BEHAVIOR_BASE_URL) return { child: null, log: null };
   fs.mkdirSync(path.dirname(SERVER_LOG), { recursive: true });
   const log = fs.openSync(SERVER_LOG, "w");
-  const child = spawn(
-    "bun",
-    ["run", "dev", "--", "--host", "127.0.0.1", "--port", String(PORT)],
-    { cwd: ROOT, stdio: ["ignore", log, log], env: process.env },
-  );
+  const child = spawn("bun", ["run", "dev", "--", "--host", "127.0.0.1", "--port", String(PORT)], {
+    cwd: ROOT,
+    stdio: ["ignore", log, log],
+    env: process.env,
+  });
   await waitForHttp(BASE_URL, 60_000);
   return { child, log };
 }
@@ -72,7 +72,9 @@ async function click(client, selector) {
 }
 
 function relevantErrors() {
-  return browserErrors.filter((error) => !/favicon|ResizeObserver loop limit exceeded/i.test(error));
+  return browserErrors.filter(
+    (error) => !/favicon|ResizeObserver loop limit exceeded/i.test(error),
+  );
 }
 
 async function main() {
@@ -95,7 +97,8 @@ async function main() {
       if (event.type === "error") browserErrors.push(event.args.map(serialiseArgument).join(" "));
     });
     client.on("Log.entryAdded", (event) => {
-      if (event.entry?.level === "error") browserErrors.push(event.entry.text ?? "Browser log error");
+      if (event.entry?.level === "error")
+        browserErrors.push(event.entry.text ?? "Browser log error");
     });
     client.on("Network.requestWillBeSent", (event) => {
       requestUrls.set(event.requestId, event.request?.url);
@@ -104,7 +107,8 @@ async function main() {
       const url = requestUrls.get(event.requestId);
       if (!url || event.canceled) return;
       try {
-        if (new URL(url).origin === BASE_ORIGIN) failedRequests.push({ url, error: event.errorText });
+        if (new URL(url).origin === BASE_ORIGIN)
+          failedRequests.push({ url, error: event.errorText });
       } catch {
         // Ignore browser-internal URLs.
       }
@@ -123,7 +127,10 @@ async function main() {
     await openHome(client);
     await click(client, '[data-testid="hero-primary-cta"]');
     await waitForExpression(client, `location.pathname === '/products'`);
-    const primary = await evaluate(client, `({ pathname: location.pathname, search: location.search })`);
+    const primary = await evaluate(
+      client,
+      `({ pathname: location.pathname, search: location.search })`,
+    );
     record("Hero CTA navigation", primary.pathname === "/products", primary);
 
     await sleep(600);
@@ -140,9 +147,13 @@ async function main() {
     await openHome(client);
     await click(client, '[data-testid="hero-secondary-cta"]');
     await waitForExpression(client, `location.pathname === '/brands'`);
-    record("Secondary CTA navigation", (await evaluate(client, `location.pathname`)) === "/brands", {
-      pathname: await evaluate(client, `location.pathname`),
-    });
+    record(
+      "Secondary CTA navigation",
+      (await evaluate(client, `location.pathname`)) === "/brands",
+      {
+        pathname: await evaluate(client, `location.pathname`),
+      },
+    );
 
     await openHome(client);
     const railBefore = await evaluate(
@@ -154,10 +165,15 @@ async function main() {
       `document.querySelector('[data-testid="home-product-rail"]')?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }))`,
     );
     await sleep(500);
-    const railAfter = await evaluate(client, `document.querySelector('[data-testid="home-product-rail"]')?.scrollLeft`);
+    const railAfter = await evaluate(
+      client,
+      `document.querySelector('[data-testid="home-product-rail"]')?.scrollLeft`,
+    );
     record(
       "Product rail keyboard behavior",
-      railBefore.active && railBefore.scrollWidth > railBefore.clientWidth && railAfter !== railBefore.left,
+      railBefore.active &&
+        railBefore.scrollWidth > railBefore.clientWidth &&
+        railAfter !== railBefore.left,
       { ...railBefore, after: railAfter },
     );
     record(
@@ -176,7 +192,11 @@ async function main() {
       client,
       `({ pathname: location.pathname, value: new URLSearchParams(location.search).get('category') })`,
     );
-    record("Category CTA", category.pathname === "/products" && category.value === "running", category);
+    record(
+      "Category CTA",
+      category.pathname === "/products" && category.value === "running",
+      category,
+    );
 
     await openHome(client);
     await click(client, '[data-testid="home-brand-link-first"]');
@@ -227,8 +247,12 @@ async function main() {
     );
 
     const errors = relevantErrors();
-    const hydration = errors.filter((error) => /hydration|hydrated|server rendered html|did not match/i.test(error));
-    const runtime = errors.filter((error) => /uncaught|typeerror|referenceerror|syntaxerror/i.test(error));
+    const hydration = errors.filter((error) =>
+      /hydration|hydrated|server rendered html|did not match/i.test(error),
+    );
+    const runtime = errors.filter((error) =>
+      /uncaught|typeerror|referenceerror|syntaxerror/i.test(error),
+    );
     record("No hydration mismatch", hydration.length === 0, { hydration });
     record("No runtime exception", runtime.length === 0, { runtime, errors });
     record("No same-origin network failure", failedRequests.length === 0, { failedRequests });

@@ -224,10 +224,7 @@ export function ShoeViewer3D({ fallbackImage, alt, priority = false }: Props) {
       </motion.div>
 
       {canRenderModel && loaded && !interacted ? (
-        <p
-          aria-hidden="true"
-          className="mt-3 text-center font-fa text-xs text-muted-foreground"
-        >
+        <p aria-hidden="true" className="mt-3 text-center font-fa text-xs text-muted-foreground">
           برای مشاهده زاویه‌ها، مدل را بکشید.
         </p>
       ) : null}

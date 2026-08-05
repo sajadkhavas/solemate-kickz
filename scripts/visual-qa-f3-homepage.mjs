@@ -54,11 +54,11 @@ async function startServer() {
   if (process.env.F3_VISUAL_BASE_URL) return { child: null, log: null };
   fs.mkdirSync(path.dirname(SERVER_LOG), { recursive: true });
   const log = fs.openSync(SERVER_LOG, "w");
-  const child = spawn(
-    "bun",
-    ["run", "dev", "--", "--host", "127.0.0.1", "--port", String(PORT)],
-    { cwd: ROOT, stdio: ["ignore", log, log], env: process.env },
-  );
+  const child = spawn("bun", ["run", "dev", "--", "--host", "127.0.0.1", "--port", String(PORT)], {
+    cwd: ROOT,
+    stdio: ["ignore", log, log],
+    env: process.env,
+  });
   await waitForHttp(BASE_URL, 60_000);
   return { child, log };
 }
@@ -149,7 +149,11 @@ async function main() {
     browser = await openBrowser({ debugPort: 9226, logPath: CHROME_LOG, width: 1280, height: 800 });
     const { client } = browser;
     client.on("Runtime.exceptionThrown", (event) => {
-      events.push(event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception");
+      events.push(
+        event.exceptionDetails?.exception?.description ??
+          event.exceptionDetails?.text ??
+          "Runtime exception",
+      );
     });
     client.on("Runtime.consoleAPICalled", (event) => {
       if (event.type === "error") events.push(event.args.map(serialiseArgument).join(" "));
@@ -166,17 +170,55 @@ async function main() {
       report.results.push({ viewport: viewport.name, inspection, screenshots: [] });
       const current = report.results.at(-1);
 
-      if (inspection.dir !== "rtl") report.criticalFindings.push({ viewport: viewport.name, type: "direction", detail: inspection.dir });
-      if (inspection.h1 !== 1) report.criticalFindings.push({ viewport: viewport.name, type: "h1", detail: inspection.h1 });
-      if (inspection.horizontalOverflow) report.criticalFindings.push({ viewport: viewport.name, type: "horizontal-overflow", detail: inspection.documentWidth });
-      if (inspection.undersized.length) report.criticalFindings.push({ viewport: viewport.name, type: "touch-target", detail: inspection.undersized });
-      if (!inspection.heroCtaVisible || inspection.fixedOverlap) report.criticalFindings.push({ viewport: viewport.name, type: "hero-cta", detail: inspection });
-      if (Object.values(inspection.sectionPresence).some((present) => !present)) report.criticalFindings.push({ viewport: viewport.name, type: "missing-section", detail: inspection.sectionPresence });
-      if (!inspection.heroPoster) report.criticalFindings.push({ viewport: viewport.name, type: "hero-poster", detail: false });
+      if (inspection.dir !== "rtl")
+        report.criticalFindings.push({
+          viewport: viewport.name,
+          type: "direction",
+          detail: inspection.dir,
+        });
+      if (inspection.h1 !== 1)
+        report.criticalFindings.push({
+          viewport: viewport.name,
+          type: "h1",
+          detail: inspection.h1,
+        });
+      if (inspection.horizontalOverflow)
+        report.criticalFindings.push({
+          viewport: viewport.name,
+          type: "horizontal-overflow",
+          detail: inspection.documentWidth,
+        });
+      if (inspection.undersized.length)
+        report.criticalFindings.push({
+          viewport: viewport.name,
+          type: "touch-target",
+          detail: inspection.undersized,
+        });
+      if (!inspection.heroCtaVisible || inspection.fixedOverlap)
+        report.criticalFindings.push({
+          viewport: viewport.name,
+          type: "hero-cta",
+          detail: inspection,
+        });
+      if (Object.values(inspection.sectionPresence).some((present) => !present))
+        report.criticalFindings.push({
+          viewport: viewport.name,
+          type: "missing-section",
+          detail: inspection.sectionPresence,
+        });
+      if (!inspection.heroPoster)
+        report.criticalFindings.push({
+          viewport: viewport.name,
+          type: "hero-poster",
+          detail: false,
+        });
 
       for (const [name, selector] of CHECKPOINTS) {
         if (selector) {
-          await evaluate(client, `document.querySelector(${JSON.stringify(selector)})?.scrollIntoView({ block: 'start' }); true`);
+          await evaluate(
+            client,
+            `document.querySelector(${JSON.stringify(selector)})?.scrollIntoView({ block: 'start' }); true`,
+          );
         } else {
           await evaluate(client, `scrollTo(0, 0); true`);
         }
@@ -215,15 +257,28 @@ async function main() {
       report.criticalFindings.push({ type: "reduced-motion", detail: report.reducedMotion });
     }
 
-    const relevantEvents = events.filter((event) => !/favicon|ResizeObserver loop limit exceeded/i.test(event));
-    if (relevantEvents.some((event) => /uncaught|typeerror|referenceerror|syntaxerror|hydration|did not match/i.test(event))) {
+    const relevantEvents = events.filter(
+      (event) => !/favicon|ResizeObserver loop limit exceeded/i.test(event),
+    );
+    if (
+      relevantEvents.some((event) =>
+        /uncaught|typeerror|referenceerror|syntaxerror|hydration|did not match/i.test(event),
+      )
+    ) {
       report.criticalFindings.push({ type: "runtime", detail: relevantEvents });
     }
     report.events = relevantEvents;
-    report.screenshotCount = report.results.reduce((sum, result) => sum + result.screenshots.length, 0) + 2;
+    report.screenshotCount =
+      report.results.reduce((sum, result) => sum + result.screenshots.length, 0) + 2;
     report.pass = report.criticalFindings.length === 0;
     fs.writeFileSync(REPORT_PATH, `${JSON.stringify(report, null, 2)}\n`);
-    console.log(JSON.stringify({ pass: report.pass, screenshots: report.screenshotCount, critical: report.criticalFindings.length }));
+    console.log(
+      JSON.stringify({
+        pass: report.pass,
+        screenshots: report.screenshotCount,
+        critical: report.criticalFindings.length,
+      }),
+    );
     process.exitCode = report.pass ? 0 : 1;
   } finally {
     if (browser) await browser.close();

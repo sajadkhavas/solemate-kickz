@@ -1,7 +1,9 @@
 import { useState, type ImgHTMLAttributes } from "react";
 
-interface HomeImageProps
-  extends Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "alt" | "onError"> {
+interface HomeImageProps extends Omit<
+  ImgHTMLAttributes<HTMLImageElement>,
+  "src" | "alt" | "onError"
+> {
   src: string;
   alt: string;
   fallbackLabel?: string;

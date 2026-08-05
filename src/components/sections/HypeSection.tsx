@@ -30,7 +30,10 @@ export function HypeSection() {
             className="absolute inset-0 h-full w-full object-cover"
             fallbackClassName="absolute inset-0 flex items-center justify-center bg-surface-elevated p-8 text-center font-fa text-sm text-muted-foreground"
           />
-          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-transparent" />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-transparent"
+          />
           {highlighted ? (
             <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-ink/80 p-4 backdrop-blur sm:inset-x-6 sm:bottom-6 sm:p-5">
               <p className="eyebrow text-neon">نمونه منتخب از داده پروژه</p>
@@ -65,9 +68,9 @@ export function HypeSection() {
             از عملکرد تا استایل روزمره
           </h2>
           <p className="mt-6 font-fa text-lg leading-9 text-muted-foreground">
-            یک انتخاب خوب از نیاز واقعی شروع می‌شود: دویدن، بسکتبال، خیابان یا استفاده روزمره.
-            SOLE این مسیرها را بدون شلوغی بصری کنار هم قرار می‌دهد تا محصول، نه افکت، نقطه شروع
-            تصمیم باشد.
+            یک انتخاب خوب از نیاز واقعی شروع می‌شود: دویدن، بسکتبال، خیابان یا استفاده روزمره. SOLE
+            این مسیرها را بدون شلوغی بصری کنار هم قرار می‌دهد تا محصول، نه افکت، نقطه شروع تصمیم
+            باشد.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Link

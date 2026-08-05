@@ -40,7 +40,9 @@ function count(source, pattern) {
 }
 
 function main() {
-  const missing = HOME_FILES.filter((relativePath) => !fs.existsSync(path.join(ROOT, relativePath)));
+  const missing = HOME_FILES.filter(
+    (relativePath) => !fs.existsSync(path.join(ROOT, relativePath)),
+  );
   record("F3 source files exist", missing.length === 0, { missing });
 
   const sources = Object.fromEntries(
@@ -140,7 +142,9 @@ function main() {
   record("Alt policy", imagesWithoutAlt.length === 0, {
     imageTagCount: imageTags.length,
     imagesWithoutAlt,
-    HomeImageRequiresAlt: /alt:\s*string/.test(sources["src/components/sections/HomeImage.tsx"] ?? ""),
+    HomeImageRequiresAlt: /alt:\s*string/.test(
+      sources["src/components/sections/HomeImage.tsx"] ?? "",
+    ),
   });
 
   record(
@@ -225,12 +229,13 @@ function main() {
   record("Handoff presence", fs.existsSync(path.join(ROOT, handoffPath)), { handoffPath });
 
   const trackedArtifacts = runGit(["ls-files", "artifacts"]);
-  const tracked = trackedArtifacts.status === 0
-    ? trackedArtifacts.stdout
-        .split("\n")
-        .map((line) => line.trim())
-        .filter(Boolean)
-    : [];
+  const tracked =
+    trackedArtifacts.status === 0
+      ? trackedArtifacts.stdout
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean)
+      : [];
   record("Runtime artifacts are not committed", tracked.length === 0, { tracked });
 
   const report = {
