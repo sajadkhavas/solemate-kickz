@@ -14,7 +14,9 @@
 
 ## Final SHA
 
-The exact documentation head is reported in the supervisor delivery after the immutable exact-head CI run. The validated implementation SHA and exact command evidence are recorded below after CI completion.
+Validated implementation SHA: `2e1be0684a12318797df39a559ddb2ec4818a178`
+
+The documentation commit cannot contain its own SHA. The exact final branch head and its immutable CI run are reported in the supervisor delivery after this handoff is committed.
 
 ## Homepage findings
 
@@ -148,7 +150,17 @@ Visual QA viewports:
 
 ## Accessibility results
 
-Pending immutable exact-head CI evidence. The implemented contract includes one `h1`, ordered `h2`/`h3` headings, semantic links/buttons/regions, visible focus inherited from Foundation, 44×44 declared F3 controls, keyboard-operable product rail, meaningful image alt text, decorative hiding, reduced-motion behavior, and 200% zoom checks.
+Passed on validated implementation SHA `2e1be0684a12318797df39a559ddb2ec4818a178` in CI run `31002728771`:
+
+- exactly one `h1` and complete section heading hierarchy;
+- semantic links, buttons, landmarks, and named regions;
+- route focus restoration after SPA navigation;
+- keyboard-operable RTL product rail;
+- visible 44×44 minimum F3 touch targets on mobile;
+- meaningful image alternatives and resilient image-failure labels;
+- reduced-motion poster fallback with the optional 3D viewer absent;
+- 200% zoom retained hero and final CTA content;
+- no hydration mismatch, runtime exception, fixed-navigation overlap, or horizontal document overflow.
 
 ## Performance observations
 
@@ -160,19 +172,37 @@ Pending immutable exact-head CI evidence. The implemented contract includes one 
 
 ## Audit results
 
-Pending immutable exact-head CI evidence from `scripts/audit-f3-homepage.mjs`.
+`scripts/audit-f3-homepage.mjs`: **17/17 checks passed, 0 failed** on validated implementation SHA `2e1be0684a12318797df39a559ddb2ec4818a178`.
+
+Evidence includes Foundation ancestry, one `h1`, heading hierarchy, valid CTA destinations, truthfulness and sale guards, alt policy, dimensioned non-lazy LCP media, reduced-motion hooks, touch-target contract, resilient states, product-first IA, stable homepage media, handoff presence, and absence of committed runtime artifacts.
 
 ## Behavior test results
 
-Pending immutable exact-head CI evidence from `scripts/test-f3-homepage.mjs`.
+`scripts/test-f3-homepage.mjs`: **13/13 tests passed, 0 failed** on validated implementation SHA `2e1be0684a12318797df39a559ddb2ec4818a178`.
+
+Covered hero and secondary CTA navigation, route focus, product-rail keyboard behavior, RTL horizontal scrolling, category and brand links, image fallback, reduced motion, mobile touch targets, hydration, runtime exceptions, and same-origin network failures.
 
 ## Build results
 
-Pending immutable exact-head CI evidence for install, typecheck, lint, format, build, and aggregate Foundation gate.
+CI run `31002728771`, job `92295236319`, completed successfully on the validated implementation SHA:
+
+- `bun install --frozen-lockfile`: passed;
+- Foundation source-contract and browser behavior gates: passed;
+- `bun run typecheck`: passed;
+- `bun run lint`: passed with zero errors; the stale F3 suppression warning was removed in the subsequent cleanup commit;
+- Foundation and F3 Prettier checks: passed;
+- `bun run build`: passed for client and SSR bundles;
+- Foundation completion audit: 19/19 passed;
+- aggregate `bun run check`: passed;
+- exact-head working-tree verification: clean.
+
+The build reports an existing large-chunk advisory and the current `shoe.glb` remains approximately 8 MB; both are deferred to F11 rather than hidden or weakened in F3.
 
 ## Visual QA summary
 
-Pending immutable exact-head CI evidence from `scripts/visual-qa-f3-homepage.mjs`.
+`scripts/visual-qa-f3-homepage.mjs`: **passed with 56 screenshots and 0 critical findings** on validated implementation SHA `2e1be0684a12318797df39a559ddb2ec4818a178`.
+
+All nine required viewports were captured at fold, hero, products, brands, editorial, and page end, plus dedicated 200% zoom and reduced-motion captures. Automated checks found no RTL direction failure, missing section, multiple `h1`, horizontal overflow, undersized declared F3 target, hidden/overlapped hero CTA, missing hero poster, hydration/runtime error, or reduced-motion regression.
 
 ## Limitations
 
@@ -192,8 +222,8 @@ Pending immutable exact-head CI evidence from `scripts/visual-qa-f3-homepage.mjs
 
 ## Working tree
 
-Expected clean after connector commits and exact-head CI verification; final evidence is reported in supervisor delivery.
+Clean on validated implementation SHA `2e1be0684a12318797df39a559ddb2ec4818a178`; runtime reports and screenshots were generated only inside CI and were not committed.
 
 ## Ready for supervisor review
 
-Pending immutable exact-head CI completion.
+Yes, subject to the final immutable exact-head CI run triggered by this documentation commit. The exact final SHA and run result are reported in the supervisor delivery.
