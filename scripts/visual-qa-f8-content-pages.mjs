@@ -62,7 +62,7 @@ const INSPECT = `(() => {
     controls,
     targetsBelow44: controls.filter((item) => item.width < 44 || item.height < 44),
     missingNames: controls.filter((item) => !item.name),
-    activeFocus: active ? { id: active.id || null, name: name(active), outline: activeStyle?.outlineStyle, outlineWidth: activeStyle?.outlineWidth } : null,
+    activeFocus: active ? { id: active.id || null, name: name(active), inMain: Boolean(active.closest('main')), outline: activeStyle?.outlineStyle, outlineWidth: activeStyle?.outlineWidth } : null,
     fakeSuccess: /ورود موفق|ثبت‌نام موفق|خوش آمد/.test(document.body.textContent || ''),
     textLength: document.body.textContent?.trim().length || 0,
   };
@@ -78,19 +78,41 @@ async function screenshot(client, name) {
 }
 
 async function setValue(client, selector, value) {
-  const selected = await evaluate(
+  const changed = await evaluate(
     client,
     `(() => {
       const input = document.querySelector(${JSON.stringify(selector)});
       if (!(input instanceof HTMLInputElement)) return false;
-      input.focus();
-      input.select();
+      const previous = input.value;
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+      setter?.call(input, ${JSON.stringify(value)});
+      input._valueTracker?.setValue(previous);
+      input.dispatchEvent(new InputEvent('input', {
+        bubbles: true,
+        composed: true,
+        inputType: 'insertText',
+        data: ${JSON.stringify(value)},
+      }));
       return true;
     })()`,
   );
-  if (!selected) throw new Error(`Input not found: ${selector}`);
-  await client.send("Input.insertText", { text: value });
+  if (!changed) throw new Error(`Input not found: ${selector}`);
   await sleep(100);
+}
+
+async function press(client, key) {
+  await client.send("Input.dispatchKeyEvent", { type: "keyDown", key, code: key });
+  await client.send("Input.dispatchKeyEvent", { type: "keyUp", key, code: key });
+  await sleep(60);
+}
+
+async function focusFirstMainControl(client) {
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    await press(client, "Tab");
+    const inMain = await evaluate(client, `Boolean(document.activeElement?.closest('main'))`);
+    if (inMain) return true;
+  }
+  return false;
 }
 
 function critical(report, type, route, viewport, evidence) {
@@ -111,7 +133,8 @@ function assess(report, route, viewport, inspection) {
 }
 
 async function run(baseUrl) {
-  fs.rmSync(path.dirname(REPORT), { recursive: true, force: true });
+  fs.rmSync(OUTPUT, { recursive: true, force: true });
+  fs.rmSync(REPORT, { force: true });
   const browser = await openBrowser({ debugPort: 9239, logPath: LOG });
   const { client } = browser;
   const browserEvents = [];
@@ -223,14 +246,12 @@ async function run(baseUrl) {
     for (const route of ROUTES) {
       await navigate(client, `${baseUrl}${route}`);
       await waitForExpression(client, `document.querySelector('main h1')`);
-      await evaluate(
-        client,
-        `document.querySelector('main a[href],main button,main input')?.focus()`,
-      );
+      const reachedMain = await focusFirstMainControl(client);
       const focus = await evaluate(client, INSPECT);
-      report.keyboardFocus.push({ route, inspection: focus });
+      report.keyboardFocus.push({ route, reachedMain, inspection: focus });
       if (
-        !focus.activeFocus ||
+        !reachedMain ||
+        !focus.activeFocus?.inMain ||
         focus.activeFocus.outline === "none" ||
         focus.activeFocus.outlineWidth === "0px"
       ) {
