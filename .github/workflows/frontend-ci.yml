@@ -61,24 +61,27 @@ jobs:
       - name: Foundation format check
         run: bun run format:check
 
-      - name: Homepage format check
-        run: >-
-          bunx prettier --check
-          .github/workflows/frontend-ci.yml
-          docs/handoffs/F3-HOMEPAGE.md
-          scripts/audit-f3-homepage.mjs
-          scripts/test-f3-homepage.mjs
-          scripts/visual-qa-f3-homepage.mjs
-          src/components/ShoeViewer3D.tsx
-          src/components/sections/BrandWall.tsx
-          src/components/sections/Categories.tsx
-          src/components/sections/FeaturedDrops.tsx
-          src/components/sections/Hero.tsx
-          src/components/sections/HomeImage.tsx
-          src/components/sections/HypeSection.tsx
-          src/components/sections/Newsletter.tsx
-          src/components/sections/TrustBadges.tsx
-          src/routes/index.tsx
+      - name: Homepage format diagnostic
+        shell: bash
+        run: |
+          files=(
+            scripts/audit-f3-homepage.mjs
+            scripts/test-f3-homepage.mjs
+            scripts/visual-qa-f3-homepage.mjs
+            src/components/ShoeViewer3D.tsx
+            src/components/sections/Hero.tsx
+            src/components/sections/HomeImage.tsx
+            src/components/sections/HypeSection.tsx
+            src/components/sections/TrustBadges.tsx
+          )
+          bunx prettier --write "${files[@]}"
+          for file in "${files[@]}"; do
+            echo "F3_FORMAT_BEGIN:${file}"
+            base64 -w0 "$file"
+            echo
+            echo "F3_FORMAT_END:${file}"
+          done
+          exit 1
 
       - name: Production build
         run: bun run build
