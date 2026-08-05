@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Search, ShoppingBag, User } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { DesktopNavigation } from "@/components/navigation/DesktopNavigation";
 import { MobileNavigation } from "@/components/navigation/MobileNavigation";
@@ -24,7 +24,10 @@ function DemoDisclosure() {
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const searchTriggerRef = useRef<HTMLButtonElement>(null);
+  const wasSearchOpen = useRef(false);
   const setCartOpen = useStore((state) => state.setCartOpen);
+  const isSearchOpen = useStore((state) => state.isSearchOpen);
   const setSearchOpen = useStore((state) => state.setSearchOpen);
   const cartCount = useCartCount();
 
@@ -42,6 +45,13 @@ export function Navbar() {
       window.cancelAnimationFrame(frame);
     };
   }, []);
+
+  useEffect(() => {
+    if (wasSearchOpen.current && !isSearchOpen && searchTriggerRef.current) {
+      queueMicrotask(() => searchTriggerRef.current?.focus({ preventScroll: true }));
+    }
+    wasSearchOpen.current = isSearchOpen;
+  }, [isSearchOpen]);
 
   const visibleCartCount = mounted ? cartCount : 0;
   const cartDescriptionId = "desktop-cart-count-description";
@@ -66,6 +76,7 @@ export function Navbar() {
 
           <div className="ms-auto flex shrink-0 items-center gap-1">
             <IconButton
+              ref={searchTriggerRef}
               label="بازکردن جستجو"
               variant="ghost"
               data-testid="search-trigger"
