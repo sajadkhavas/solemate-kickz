@@ -33,7 +33,7 @@ export function MobileBottomNav() {
         <div className="mx-auto grid h-[4.5rem] max-w-md grid-cols-5 items-stretch px-1">
           {LINKS.map((item) => {
             const Icon = item.icon;
-            const isActive = active(item.to, item.exact);
+            const isActive = active(item.to, "exact" in item ? item.exact : false);
             return (
               <Link
                 key={item.to}
