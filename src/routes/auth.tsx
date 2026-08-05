@@ -82,7 +82,7 @@ function AuthPage() {
           <div className="mx-auto grid max-w-[80rem] gap-8 lg:grid-cols-[0.8fr_1.2fr]">
             <aside className="rounded-[var(--radius-xl)] border border-border bg-surface p-6 lg:p-10">
               <div className="eyebrow text-primary">Authentication boundary</div>
-              <h2 className="mt-4 text-2xl font-bold">حساب واقعی هنوز فعال نیست</h2>
+              <p className="mt-4 text-2xl font-bold">حساب واقعی هنوز فعال نیست</p>
               <p className="mt-4 font-fa leading-8 text-muted-foreground">
                 این صفحه فقط رفتار فرم، اعتبارسنجی و دسترسی‌پذیری را نمایش می‌دهد. هیچ حساب، نشست،
                 OTP یا بازیابی رمزی ساخته نمی‌شود.
