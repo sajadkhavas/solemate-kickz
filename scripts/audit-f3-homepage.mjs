@@ -79,18 +79,18 @@ function main() {
     "home-trust-title",
     "home-final-cta-title",
   ];
-  const missingHeadings = sectionIds.filter((id) => !combined.includes(`id=\"${id}\"`));
+  const missingHeadings = sectionIds.filter((id) => !combined.includes(`id="${id}"`));
   record("Heading hierarchy contract", missingHeadings.length === 0, {
     sectionH2Count: count(combined, /<h2\b/g),
     sectionH3Count: count(combined, /<h3\b/g),
     missingHeadings,
   });
 
-  const unsafeUrls = [...combined.matchAll(/(?:href|to)=\{?['\"](javascript:|#)['\"]/gi)].map(
+  const unsafeUrls = [...combined.matchAll(/(?:href|to)=\{?['"](javascript:|#)['"]/gi)].map(
     (match) => match[0],
   );
   const allowedRoutes = new Set(["/products", "/brands", "/about", "/product/$id"]);
-  const routeTargets = [...combined.matchAll(/\bto=\"([^\"]+)\"/g)].map((match) => match[1]);
+  const routeTargets = [...combined.matchAll(/\bto="([^"]+)"/g)].map((match) => match[1]);
   const invalidTargets = routeTargets.filter((target) => !allowedRoutes.has(target));
   record("CTA destinations", unsafeUrls.length === 0 && invalidTargets.length === 0, {
     routeTargets: [...new Set(routeTargets)],
@@ -147,8 +147,8 @@ function main() {
     "Hero image dimensions and LCP policy",
     /width=\{900\}/.test(viewerSource) &&
       /height=\{900\}/.test(viewerSource) &&
-      /loading=\{priority \? \"eager\" : \"lazy\"\}/.test(viewerSource) &&
-      /fetchPriority=\{priority \? \"high\" : \"auto\"\}/.test(viewerSource) &&
+      /loading=\{priority \? "eager" : "lazy"\}/.test(viewerSource) &&
+      /fetchPriority=\{priority \? "high" : "auto"\}/.test(viewerSource) &&
       /priority/.test(heroSource),
     {
       width: 900,
@@ -169,7 +169,7 @@ function main() {
     },
   );
 
-  const touchContractCount = count(combined, /data-f3-touch-target=\"true\"/g);
+  const touchContractCount = count(combined, /data-f3-touch-target="true"/g);
   record("Touch target contract", touchContractCount >= 12, {
     declaredTargets: touchContractCount,
     minimumClassPresent: /min-h-11|size-11/.test(combined),
