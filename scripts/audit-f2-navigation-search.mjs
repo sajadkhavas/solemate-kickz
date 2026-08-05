@@ -190,8 +190,7 @@ add(
 );
 add(
   "search suggestions use project dataset",
-  /searchShoes\(deferredQuery\)/.test(files.search) &&
-    /SHOES/.test(files.searchUtils),
+  /searchShoes\(deferredQuery\)/.test(files.search) && /SHOES/.test(files.searchUtils),
   "SHOES dataset",
 );
 add(
@@ -224,18 +223,19 @@ add(
   "official package gate includes F2",
   packageJson.scripts?.["audit:f2"] === "node scripts/audit-f2-navigation-search.mjs" &&
     packageJson.scripts?.["test:f2"] === "node scripts/test-f2-navigation-search.mjs" &&
-    packageJson.scripts?.["qa:visual:f2"] ===
-      "node scripts/visual-qa-f2-navigation-search.mjs" &&
+    packageJson.scripts?.["qa:visual:f2"] === "node scripts/visual-qa-f2-navigation-search.mjs" &&
     packageJson.scripts?.check?.includes("bun run audit:f2") &&
     packageJson.scripts?.check?.includes("bun run test:f2") &&
     packageJson.scripts?.check?.includes("bun run qa:visual:f2"),
   packageJson.scripts?.check,
 );
-add("Bun version remains exact", packageJson.packageManager === "bun@1.3.14", packageJson.packageManager);
+add(
+  "Bun version remains exact",
+  packageJson.packageManager === "bun@1.3.14",
+  packageJson.packageManager,
+);
 
-const trackedRuntime = git(["ls-files", "artifacts"])
-  .split("\n")
-  .filter(Boolean);
+const trackedRuntime = git(["ls-files", "artifacts"]).split("\n").filter(Boolean);
 add("no runtime Artifact tracked", trackedRuntime.length === 0, trackedRuntime);
 add(
   "no temporary F2 development workflow",

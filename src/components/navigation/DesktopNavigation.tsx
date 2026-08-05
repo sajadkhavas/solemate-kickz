@@ -51,7 +51,10 @@ function NavigationLink({
 
 export function DesktopNavigation() {
   return (
-    <nav aria-label="ناوبری اصلی" className="hidden flex-1 items-center justify-center gap-1 md:flex">
+    <nav
+      aria-label="ناوبری اصلی"
+      className="hidden flex-1 items-center justify-center gap-1 md:flex"
+    >
       <NavigationLink to="/" label="خانه" exact />
 
       <div className="inline-flex items-center">
@@ -76,7 +79,9 @@ export function DesktopNavigation() {
               className="z-[var(--z-popover)] w-[min(42rem,calc(100vw-2rem))] rounded-xl border border-border-strong bg-surface-elevated p-3 shadow-[var(--shadow-overlay)] outline-none data-[state=open]:animate-in data-[state=closed]:animate-out motion-reduce:animate-none"
             >
               <div className="mb-2 px-2 py-1">
-                <p className="font-fa text-sm font-semibold text-foreground">دسته‌بندی‌های داده‌های نمونه</p>
+                <p className="font-fa text-sm font-semibold text-foreground">
+                  دسته‌بندی‌های داده‌های نمونه
+                </p>
                 <p className="mt-1 font-fa text-xs text-muted-foreground">
                   انتخاب هر مورد، فیلتر واقعی صفحه فروشگاه را باز می‌کند.
                 </p>

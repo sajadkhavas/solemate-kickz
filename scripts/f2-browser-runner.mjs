@@ -9,7 +9,9 @@ const ROOT = process.cwd();
 
 function waitForExit(child) {
   if (child.exitCode !== null) return Promise.resolve(child.exitCode);
-  return new Promise((resolve) => child.once("exit", (code, signal) => resolve(code ?? (signal ? 1 : 0))));
+  return new Promise((resolve) =>
+    child.once("exit", (code, signal) => resolve(code ?? (signal ? 1 : 0))),
+  );
 }
 
 async function stop(child) {
@@ -62,11 +64,11 @@ export async function delegateToDevServer({ envName, port, entryPath, logName, r
   fs.rmSync(absoluteReportPath, { force: true });
   fs.mkdirSync(path.dirname(logPath), { recursive: true });
   const log = fs.openSync(logPath, "w");
-  const server = spawn(
-    "bun",
-    ["run", "dev", "--", "--host", "127.0.0.1", "--port", String(port)],
-    { cwd: ROOT, stdio: ["ignore", log, log], env: process.env },
-  );
+  const server = spawn("bun", ["run", "dev", "--", "--host", "127.0.0.1", "--port", String(port)], {
+    cwd: ROOT,
+    stdio: ["ignore", log, log],
+    env: process.env,
+  });
 
   try {
     await waitForHttp(baseUrl, 60_000);

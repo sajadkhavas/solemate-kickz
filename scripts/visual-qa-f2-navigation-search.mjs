@@ -134,24 +134,53 @@ async function capture(client, { route, viewport, state, eventStart }) {
   fs.writeFileSync(absolute, Buffer.from(shot.data, "base64"));
 
   const events = browserEvents.slice(eventStart);
-  const hydration = events.filter((entry) => /hydration|server rendered html|did not match/i.test(entry.text));
-  const runtime = events.filter((entry) => /uncaught|typeerror|referenceerror|syntaxerror/i.test(entry.text));
-  const result = { route, viewport: viewport.name, state, screenshot: relative, inspection, hydration, runtime };
+  const hydration = events.filter((entry) =>
+    /hydration|server rendered html|did not match/i.test(entry.text),
+  );
+  const runtime = events.filter((entry) =>
+    /uncaught|typeerror|referenceerror|syntaxerror/i.test(entry.text),
+  );
+  const result = {
+    route,
+    viewport: viewport.name,
+    state,
+    screenshot: relative,
+    inspection,
+    hydration,
+    runtime,
+  };
   results.push(result);
 
-  const critical = (type, detail) => criticalFindings.push({ type, route, viewport: viewport.name, state, detail });
-  if (inspection.lang !== "fa" || inspection.dir !== "rtl") critical("document-direction", { lang: inspection.lang, dir: inspection.dir });
-  if (inspection.viewport.width !== viewport.width || inspection.viewport.height !== viewport.height) critical("viewport-mismatch", inspection.viewport);
+  const critical = (type, detail) =>
+    criticalFindings.push({ type, route, viewport: viewport.name, state, detail });
+  if (inspection.lang !== "fa" || inspection.dir !== "rtl")
+    critical("document-direction", { lang: inspection.lang, dir: inspection.dir });
+  if (
+    inspection.viewport.width !== viewport.width ||
+    inspection.viewport.height !== viewport.height
+  )
+    critical("viewport-mismatch", inspection.viewport);
   if (!inspection.header) critical("missing-header", null);
-  if (inspection.horizontalOverflow) critical("horizontal-overflow", { documentWidth: inspection.documentWidth, viewportWidth: viewport.width });
-  if (inspection.controlsBelow44.length) critical("shared-touch-target", inspection.controlsBelow44);
+  if (inspection.horizontalOverflow)
+    critical("horizontal-overflow", {
+      documentWidth: inspection.documentWidth,
+      viewportWidth: viewport.width,
+    });
+  if (inspection.controlsBelow44.length)
+    critical("shared-touch-target", inspection.controlsBelow44);
   if (hydration.length) critical("hydration-warning", hydration);
   if (runtime.length) critical("runtime-error", runtime);
   if (inspection.dialog) {
-    if (inspection.dialog.left < -1 || inspection.dialog.right > viewport.width + 1 || inspection.dialog.top < -1 || inspection.dialog.bottom > viewport.height + 1) {
+    if (
+      inspection.dialog.left < -1 ||
+      inspection.dialog.right > viewport.width + 1 ||
+      inspection.dialog.top < -1 ||
+      inspection.dialog.bottom > viewport.height + 1
+    ) {
       critical("dialog-outside-viewport", inspection.dialog);
     }
-    if (inspection.bodyOverflow !== "hidden") critical("overlay-scroll-lock", inspection.bodyOverflow);
+    if (inspection.bodyOverflow !== "hidden")
+      critical("overlay-scroll-lock", inspection.bodyOverflow);
   }
 }
 
@@ -165,11 +194,15 @@ async function main() {
   client.on("Runtime.exceptionThrown", (event) => {
     browserEvents.push({
       source: "exception",
-      text: event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception",
+      text:
+        event.exceptionDetails?.exception?.description ??
+        event.exceptionDetails?.text ??
+        "Runtime exception",
     });
   });
   client.on("Runtime.consoleAPICalled", (event) => {
-    if (event.type === "error") browserEvents.push({ source: "console", text: event.args.map(serialiseArgument).join(" ") });
+    if (event.type === "error")
+      browserEvents.push({ source: "console", text: event.args.map(serialiseArgument).join(" ") });
   });
 
   try {
@@ -184,26 +217,48 @@ async function main() {
       let eventStart = browserEvents.length;
       await navigate(client, `${BASE_URL}/`);
       await evaluate(client, `window.scrollTo(0, 900); true`);
-      await waitForExpression(client, `document.querySelector('[data-testid="global-header"]')?.dataset.scrolled === 'true'`);
+      await waitForExpression(
+        client,
+        `document.querySelector('[data-testid="global-header"]')?.dataset.scrolled === 'true'`,
+      );
       await capture(client, { route: "/", viewport, state: "header-scrolled", eventStart });
 
       if (viewport.width < 768) {
         eventStart = browserEvents.length;
         await navigate(client, `${BASE_URL}/`);
         await visibleClick(client, '[data-testid="mobile-menu-trigger"]');
-        await waitForExpression(client, `document.querySelector('[data-testid="mobile-menu-content"]')`);
+        await waitForExpression(
+          client,
+          `document.querySelector('[data-testid="mobile-menu-content"]')`,
+        );
         await capture(client, { route: "/", viewport, state: "mobile-menu-open", eventStart });
-        await evaluate(client, `document.querySelector('[data-testid="mobile-menu-close"]')?.click(); true`);
+        await evaluate(
+          client,
+          `document.querySelector('[data-testid="mobile-menu-close"]')?.click(); true`,
+        );
       }
 
       if (viewport.width >= 1024) {
         eventStart = browserEvents.length;
         await navigate(client, `${BASE_URL}/`);
         await visibleClick(client, '[data-testid="desktop-menu-trigger"]');
-        await waitForExpression(client, `document.querySelector('[data-testid="desktop-menu-content"]')`);
+        await waitForExpression(
+          client,
+          `document.querySelector('[data-testid="desktop-menu-content"]')`,
+        );
         await capture(client, { route: "/", viewport, state: "desktop-menu-open", eventStart });
-        await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
-        await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+        await client.send("Input.dispatchKeyEvent", {
+          type: "keyDown",
+          key: "Escape",
+          code: "Escape",
+          windowsVirtualKeyCode: 27,
+        });
+        await client.send("Input.dispatchKeyEvent", {
+          type: "keyUp",
+          key: "Escape",
+          code: "Escape",
+          windowsVirtualKeyCode: 27,
+        });
       }
 
       for (const searchState of ["search-empty", "search-result", "search-no-result"]) {
@@ -213,18 +268,29 @@ async function main() {
         await waitForExpression(client, `document.querySelector('[data-testid="search-dialog"]')`);
         if (searchState === "search-result") {
           await setInput(client, "Air Max");
-          await waitForExpression(client, `document.querySelector('[data-testid="search-result"]')`);
+          await waitForExpression(
+            client,
+            `document.querySelector('[data-testid="search-result"]')`,
+          );
         } else if (searchState === "search-no-result") {
           await setInput(client, "NoSuchSoleModelXYZ");
-          await waitForExpression(client, `document.querySelector('[data-testid="search-no-results"]')`);
+          await waitForExpression(
+            client,
+            `document.querySelector('[data-testid="search-no-results"]')`,
+          );
         }
         await capture(client, { route: "/", viewport, state: searchState, eventStart });
-        await evaluate(client, `document.querySelector('[data-testid="search-close"]')?.click(); true`);
+        await evaluate(
+          client,
+          `document.querySelector('[data-testid="search-close"]')?.click(); true`,
+        );
       }
     }
 
     await configureViewport(client, { width: 390, height: 844 });
-    await client.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
+    await client.send("Emulation.setEmulatedMedia", {
+      features: [{ name: "prefers-reduced-motion", value: "reduce" }],
+    });
     await navigate(client, `${BASE_URL}/`);
     await visibleClick(client, '[data-testid="mobile-menu-trigger"]');
     await sleep(250);
@@ -232,7 +298,8 @@ async function main() {
       client,
       `({ matches: matchMedia('(prefers-reduced-motion: reduce)').matches, longTransformAnimations: document.getAnimations().filter((animation) => { const timing = animation.effect?.getComputedTiming(); const frames = animation.effect?.getKeyframes?.() || []; return frames.some((frame) => frame.transform && frame.transform !== 'none') && Number(timing?.duration || 0) > 20; }).length })`,
     );
-    if (!reducedMotion.matches || reducedMotion.longTransformAnimations > 0) criticalFindings.push({ type: "reduced-motion", detail: reducedMotion });
+    if (!reducedMotion.matches || reducedMotion.longTransformAnimations > 0)
+      criticalFindings.push({ type: "reduced-motion", detail: reducedMotion });
     await client.send("Emulation.setEmulatedMedia", { features: [] });
 
     await client.send("Emulation.setPageScaleFactor", { pageScaleFactor: 2 });
@@ -244,7 +311,8 @@ async function main() {
         `({ route: location.pathname, documentWidth: Math.max(document.documentElement.scrollWidth, document.body?.scrollWidth || 0), viewportWidth: innerWidth, overflow: Math.max(document.documentElement.scrollWidth, document.body?.scrollWidth || 0) > innerWidth + 1, header: Boolean(document.querySelector('[data-testid="global-header"]')) })`,
       );
       zoom200.push(zoom);
-      if (zoom.overflow || !zoom.header) criticalFindings.push({ type: "zoom-200", route, detail: zoom });
+      if (zoom.overflow || !zoom.header)
+        criticalFindings.push({ type: "zoom-200", route, detail: zoom });
     }
     await client.send("Emulation.setPageScaleFactor", { pageScaleFactor: 1 });
 
@@ -258,10 +326,12 @@ async function main() {
         screenshots: results.length,
         routes: ROUTES.length,
         viewports: VIEWPORTS.length,
-        horizontalOverflowCases: results.filter((result) => result.inspection.horizontalOverflow).length,
+        horizontalOverflowCases: results.filter((result) => result.inspection.horizontalOverflow)
+          .length,
         hydrationWarningCases: results.filter((result) => result.hydration.length).length,
         runtimeErrorCases: results.filter((result) => result.runtime.length).length,
-        touchTargetCases: results.filter((result) => result.inspection.controlsBelow44.length).length,
+        touchTargetCases: results.filter((result) => result.inspection.controlsBelow44.length)
+          .length,
         criticalFindings: criticalFindings.length,
       },
       zoom200,
@@ -293,9 +363,9 @@ if (delegated !== null) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
     fs.writeFileSync(
       REPORT_PATH,
-      `${JSON.stringify({ schemaVersion: 1, audit: "f2-navigation-search-visual-qa", generatedAt: new Date().toISOString(), pass: false, fatalError: error instanceof Error ? error.stack ?? error.message : String(error) }, null, 2)}\n`,
+      `${JSON.stringify({ schemaVersion: 1, audit: "f2-navigation-search-visual-qa", generatedAt: new Date().toISOString(), pass: false, fatalError: error instanceof Error ? (error.stack ?? error.message) : String(error) }, null, 2)}\n`,
     );
-    console.error(error instanceof Error ? error.stack ?? error.message : String(error));
+    console.error(error instanceof Error ? (error.stack ?? error.message) : String(error));
     process.exitCode = 1;
   });
 }

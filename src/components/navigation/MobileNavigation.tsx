@@ -68,11 +68,7 @@ export function MobileNavigation() {
           <div className="flex min-h-16 items-center justify-between border-b border-border px-4 pt-[env(safe-area-inset-top)]">
             <SoleLogo />
             <DialogPrimitive.Close asChild>
-              <IconButton
-                label="بستن منوی اصلی"
-                variant="ghost"
-                data-testid="mobile-menu-close"
-              >
+              <IconButton label="بستن منوی اصلی" variant="ghost" data-testid="mobile-menu-close">
                 <X aria-hidden="true" className="size-5" />
               </IconButton>
             </DialogPrimitive.Close>
@@ -100,9 +96,7 @@ export function MobileNavigation() {
                     <span
                       aria-hidden="true"
                       className={`size-2 rounded-full border border-current ${
-                        active
-                          ? "bg-primary text-primary"
-                          : "bg-transparent text-muted-foreground"
+                        active ? "bg-primary text-primary" : "bg-transparent text-muted-foreground"
                       }`}
                     />
                   </Link>
@@ -137,8 +131,8 @@ export function MobileNavigation() {
             </Accordion>
 
             <p className="mt-5 rounded-lg border border-border bg-background p-3 font-fa text-xs leading-6 text-muted-foreground">
-              این نسخه فقط رابط فرانت‌اند است و وضعیت واقعی حساب، ارسال یا موجودی تجاری را
-              تأیید نمی‌کند.
+              این نسخه فقط رابط فرانت‌اند است و وضعیت واقعی حساب، ارسال یا موجودی تجاری را تأیید
+              نمی‌کند.
             </p>
           </div>
         </DialogPrimitive.Content>

@@ -110,7 +110,10 @@ export function MobileBottomNav() {
               aria-hidden="true"
               className={`absolute top-1 h-0.5 w-5 rounded-full bg-primary ${active("/auth") ? "opacity-100" : "opacity-0"}`}
             />
-            <User aria-hidden="true" className={`size-5 ${active("/auth") ? "text-primary" : ""}`} />
+            <User
+              aria-hidden="true"
+              className={`size-5 ${active("/auth") ? "text-primary" : ""}`}
+            />
             <span className={active("/auth") ? "font-bold text-foreground" : ""}>حساب</span>
           </Link>
         </div>

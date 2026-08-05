@@ -148,7 +148,10 @@ async function main() {
     await navigate(client, `${BASE_URL}/`);
 
     await visibleClick(client, '[data-testid="desktop-menu-trigger"]');
-    await waitForExpression(client, `document.querySelector('[data-testid="desktop-menu-content"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="desktop-menu-content"]')`,
+    );
     const desktopOpen = await evaluate(
       client,
       `({
@@ -173,7 +176,10 @@ async function main() {
     record("Desktop menu keyboard navigation", desktopKeyboard.inside, desktopKeyboard);
 
     await key(client, "Escape", { code: "Escape", keyCode: 27 });
-    await waitForExpression(client, `!document.querySelector('[data-testid="desktop-menu-content"]')`);
+    await waitForExpression(
+      client,
+      `!document.querySelector('[data-testid="desktop-menu-content"]')`,
+    );
     const desktopClosed = await evaluate(
       client,
       `({
@@ -190,7 +196,10 @@ async function main() {
     await configureViewport(client, 390, 844);
     await navigate(client, `${BASE_URL}/`);
     await visibleClick(client, '[data-testid="mobile-menu-trigger"]');
-    await waitForExpression(client, `document.querySelector('[data-testid="mobile-menu-content"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="mobile-menu-content"]')`,
+    );
     const mobileOpen = await evaluate(
       client,
       `(() => {
@@ -218,7 +227,10 @@ async function main() {
     record("Mobile menu focus trap", focusTrail.every(Boolean), focusTrail);
 
     await key(client, "Escape", { code: "Escape", keyCode: 27 });
-    await waitForExpression(client, `!document.querySelector('[data-testid="mobile-menu-content"]')`);
+    await waitForExpression(
+      client,
+      `!document.querySelector('[data-testid="mobile-menu-content"]')`,
+    );
     await waitForExpression(client, `!${bodyLockedExpression}`);
     const mobileClosed = await evaluate(
       client,
@@ -230,7 +242,9 @@ async function main() {
     );
     record(
       "Mobile Escape close and focus restoration",
-      mobileClosed.closed && mobileClosed.restored === "mobile-menu-trigger" && mobileClosed.unlocked,
+      mobileClosed.closed &&
+        mobileClosed.restored === "mobile-menu-trigger" &&
+        mobileClosed.unlocked,
       mobileClosed,
     );
 
@@ -256,7 +270,10 @@ async function main() {
     );
 
     await setSearchInput(client, "Air Max");
-    await waitForExpression(client, `document.querySelectorAll('[data-testid="search-result"]').length > 0`);
+    await waitForExpression(
+      client,
+      `document.querySelectorAll('[data-testid="search-result"]').length > 0`,
+    );
     const suggestions = await evaluate(
       client,
       `({
@@ -282,7 +299,11 @@ async function main() {
         selected: document.querySelector('[data-testid="search-result"][aria-selected="true"]')?.id
       })`,
     );
-    record("Search Arrow navigation", Boolean(arrow.active) && arrow.active === arrow.selected, arrow);
+    record(
+      "Search Arrow navigation",
+      Boolean(arrow.active) && arrow.active === arrow.selected,
+      arrow,
+    );
 
     await key(client, "Enter", { code: "Enter", keyCode: 13 });
     await waitForExpression(client, `location.pathname.startsWith('/product/')`);
@@ -426,7 +447,10 @@ async function main() {
     await configureViewport(client, 390, 844);
     await navigate(client, `${BASE_URL}/`);
     await visibleClick(client, '[data-testid="mobile-menu-trigger"]');
-    await waitForExpression(client, `document.querySelector('[data-testid="mobile-menu-content"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="mobile-menu-content"]')`,
+    );
     await evaluate(
       client,
       `(() => {
@@ -437,7 +461,10 @@ async function main() {
     );
     await key(client, "Enter", { code: "Enter", keyCode: 13 });
     await waitForExpression(client, `location.pathname === '/products'`);
-    await waitForExpression(client, `!document.querySelector('[data-testid="mobile-menu-content"]')`);
+    await waitForExpression(
+      client,
+      `!document.querySelector('[data-testid="mobile-menu-content"]')`,
+    );
     await waitForExpression(client, `!${bodyLockedExpression}`);
     const routeClose = await evaluate(
       client,
@@ -504,13 +531,13 @@ if (delegated !== null) {
           suite: "f2-navigation-search-browser-behavior",
           generatedAt: new Date().toISOString(),
           pass: false,
-          fatalError: error instanceof Error ? error.stack ?? error.message : String(error),
+          fatalError: error instanceof Error ? (error.stack ?? error.message) : String(error),
         },
         null,
         2,
       )}\n`,
     );
-    console.error(error instanceof Error ? error.stack ?? error.message : String(error));
+    console.error(error instanceof Error ? (error.stack ?? error.message) : String(error));
     process.exitCode = 1;
   });
 }

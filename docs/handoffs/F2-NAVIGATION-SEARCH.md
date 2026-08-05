@@ -190,17 +190,17 @@ The test runs against the real Vite/TanStack application origin in headless Chro
 
 Validated implementation results:
 
-| Command | Result |
-| --- | --- |
-| `bun install --frozen-lockfile` | Exit code 0 — 475 packages installed from the unchanged lockfile |
-| `node scripts/test-f2-navigation-search.mjs` | Exit code 0 — 21 passed, 0 failed |
-| `bun run typecheck` | Exit code 0 |
-| `bun run lint` | Exit code 0 — 0 errors and 8 non-blocking warnings |
-| `bun run build` | Exit code 0 — client, SSR, and Nitro Cloudflare-module builds completed |
-| `node scripts/visual-qa-f2-navigation-search.mjs` | Exit code 0 — 89 screenshots and 0 critical findings |
-| Foundation source-contract tests | Exit code 0 — 5 passed, 0 failed |
-| Foundation browser behavior tests | Exit code 0 — 16 passed, 0 failed |
-| Foundation Visual QA | Exit code 0 — 72 screenshots and 0 Foundation-critical findings |
+| Command                                           | Result                                                                  |
+| ------------------------------------------------- | ----------------------------------------------------------------------- |
+| `bun install --frozen-lockfile`                   | Exit code 0 — 475 packages installed from the unchanged lockfile        |
+| `node scripts/test-f2-navigation-search.mjs`      | Exit code 0 — 21 passed, 0 failed                                       |
+| `bun run typecheck`                               | Exit code 0                                                             |
+| `bun run lint`                                    | Exit code 0 — 0 errors and 8 non-blocking warnings                      |
+| `bun run build`                                   | Exit code 0 — client, SSR, and Nitro Cloudflare-module builds completed |
+| `node scripts/visual-qa-f2-navigation-search.mjs` | Exit code 0 — 89 screenshots and 0 critical findings                    |
+| Foundation source-contract tests                  | Exit code 0 — 5 passed, 0 failed                                        |
+| Foundation browser behavior tests                 | Exit code 0 — 16 passed, 0 failed                                       |
+| Foundation Visual QA                              | Exit code 0 — 72 screenshots and 0 Foundation-critical findings         |
 
 The final exact-head workflow additionally executes:
 
