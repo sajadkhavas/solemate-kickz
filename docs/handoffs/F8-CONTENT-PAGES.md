@@ -22,16 +22,16 @@ The final branch head also includes this handoff commit and is reported in the s
 
 ## Route inventory
 
-| Route          | Source file                  | Owner | F8 decision              |
-| -------------- | ---------------------------- | ----- | ------------------------ |
-| `/`            | `src/routes/index.tsx`       | F3    | Existing; unchanged      |
-| `/products`    | `src/routes/products.tsx`    | F4/F5 | Existing; unchanged      |
-| `/product/:id` | `src/routes/product.$id.tsx` | F6    | Existing; unchanged      |
-| `/cart`        | `src/routes/cart.tsx`        | F7    | Existing; unchanged      |
-| `/about`       | `src/routes/about.tsx`       | F8    | Retained and redesigned  |
-| `/brands`      | `src/routes/brands.tsx`      | F8    | Retained and redesigned  |
-| `/auth`        | `src/routes/auth.tsx`        | F8    | Retained and rebuilt     |
-| Not found      | `src/routes/__root.tsx`      | F12   | Existing; unchanged      |
+| Route          | Source file                  | Owner | F8 decision             |
+| -------------- | ---------------------------- | ----- | ----------------------- |
+| `/`            | `src/routes/index.tsx`       | F3    | Existing; unchanged     |
+| `/products`    | `src/routes/products.tsx`    | F4/F5 | Existing; unchanged     |
+| `/product/:id` | `src/routes/product.$id.tsx` | F6    | Existing; unchanged     |
+| `/cart`        | `src/routes/cart.tsx`        | F7    | Existing; unchanged     |
+| `/about`       | `src/routes/about.tsx`       | F8    | Retained and redesigned |
+| `/brands`      | `src/routes/brands.tsx`      | F8    | Retained and redesigned |
+| `/auth`        | `src/routes/auth.tsx`        | F8    | Retained and rebuilt    |
+| Not found      | `src/routes/__root.tsx`      | F12   | Existing; unchanged     |
 
 ## Pages retained
 
