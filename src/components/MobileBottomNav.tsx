@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, Search, ShoppingBag, Store, User } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useCartCount, useStore } from "@/store";
 
@@ -11,12 +11,22 @@ const LINKS = [
 
 export function MobileBottomNav() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const searchTriggerRef = useRef<HTMLButtonElement>(null);
+  const wasSearchOpen = useRef(false);
   const setCartOpen = useStore((state) => state.setCartOpen);
+  const isSearchOpen = useStore((state) => state.isSearchOpen);
   const setSearchOpen = useStore((state) => state.setSearchOpen);
   const cartCount = useCartCount();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (wasSearchOpen.current && !isSearchOpen && searchTriggerRef.current) {
+      queueMicrotask(() => searchTriggerRef.current?.focus({ preventScroll: true }));
+    }
+    wasSearchOpen.current = isSearchOpen;
+  }, [isSearchOpen]);
 
   const active = (to: string, exact = false) =>
     exact ? pathname === to : pathname === to || pathname.startsWith(`${to}/`);
@@ -79,6 +89,7 @@ export function MobileBottomNav() {
           </button>
 
           <button
+            ref={searchTriggerRef}
             type="button"
             aria-label="بازکردن جستجو"
             data-testid="mobile-search-trigger"
