@@ -1,7 +1,6 @@
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
 
 import { CATEGORIES } from "@/data/shoes";
 import { cn } from "@/lib/utils";
@@ -51,35 +50,22 @@ function NavigationLink({
 }
 
 export function DesktopNavigation() {
-  const [categoriesOpen, setCategoriesOpen] = useState(false);
-
   return (
     <nav aria-label="ناوبری اصلی" className="hidden flex-1 items-center justify-center gap-1 md:flex">
       <NavigationLink to="/" label="خانه" exact />
 
       <div className="inline-flex items-center">
         <NavigationLink to="/products" label="فروشگاه" />
-        <DropdownMenuPrimitive.Root dir="rtl" open={categoriesOpen} onOpenChange={setCategoriesOpen}>
-          <DropdownMenuPrimitive.Trigger asChild>
-            <button
-              type="button"
-              data-testid="desktop-menu-trigger"
-              aria-label="بازکردن دسته‌بندی‌های فروشگاه"
-              onClick={(event) => {
-                if (event.detail === 0) {
-                  window.setTimeout(() => setCategoriesOpen((current) => !current), 0);
-                }
-              }}
-              className="inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-interactive hover:text-foreground focus-visible:outline-none data-[state=open]:bg-interactive data-[state=open]:text-primary"
-            >
-              <ChevronDown
-                aria-hidden="true"
-                className={cn(
-                  "size-4 transition-transform motion-reduce:transition-none",
-                  categoriesOpen && "rotate-180",
-                )}
-              />
-            </button>
+        <DropdownMenuPrimitive.Root dir="rtl">
+          <DropdownMenuPrimitive.Trigger
+            data-testid="desktop-menu-trigger"
+            aria-label="بازکردن دسته‌بندی‌های فروشگاه"
+            className="group inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-interactive hover:text-foreground focus-visible:outline-none data-[state=open]:bg-interactive data-[state=open]:text-primary"
+          >
+            <ChevronDown
+              aria-hidden="true"
+              className="size-4 transition-transform motion-reduce:transition-none group-data-[state=open]:rotate-180"
+            />
           </DropdownMenuPrimitive.Trigger>
           <DropdownMenuPrimitive.Portal>
             <DropdownMenuPrimitive.Content
