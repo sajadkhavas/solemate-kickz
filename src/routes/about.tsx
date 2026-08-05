@@ -1,24 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import { Accessibility, Database, Gauge, Info, Languages, Users } from "lucide-react";
+import { ArrowLeft, Database, Layers3, ShieldCheck, Sparkles } from "lucide-react";
 
+import heroShoe from "@/assets/hero-shoe.jpg";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/sections/Footer";
-import { MobileBottomNav } from "@/components/MobileBottomNav";
-import { BRANDS, SHOES } from "@/data/shoes";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "درباره نمونه SOLE" },
+      { title: "درباره SOLE — نمونه فرانت‌اند فروشگاه کفش" },
       {
         name: "description",
-        content: "معرفی وضعیت نمونه فرانت‌اند SOLE و اصول تجربه کاربری آن.",
+        content: "معرفی صادقانه نمونه فرانت‌اند SOLE، محدوده فعلی پروژه و اصول تجربه کاربری آن.",
       },
-      { property: "og:title", content: "درباره نمونه SOLE" },
+      { property: "og:title", content: "درباره SOLE" },
       {
         property: "og:description",
-        content: "این نسخه یک نمونه فرانت‌اند است و اطلاعات تجاری آن تأیید نشده است.",
+        content: "SOLE در وضعیت فعلی یک نمونه فرانت‌اند است و هنوز به زیرساخت تجاری متصل نیست.",
       },
     ],
   }),
@@ -28,149 +28,154 @@ export const Route = createFileRoute("/about")({
 const PRINCIPLES = [
   {
     icon: Database,
-    title: "داده شفاف",
-    text: "محصول، موجودی، قیمت، امتیاز و ادعاهای تجاری باید از منبع معتبر دریافت شوند.",
+    title: "داده قابل ردیابی",
+    text: "محصول، قیمت، موجودی، امتیاز و هر ادعای تجاری باید از یک منبع معتبر و قابل جایگزینی دریافت شود.",
   },
   {
-    icon: Languages,
-    title: "فارسی و RTL",
-    text: "فارسی و راست‌به‌چپ از ریشه سند و کامپوننت‌ها پشتیبانی می‌شوند.",
+    icon: ShieldCheck,
+    title: "اعتماد بدون ادعا",
+    text: "تا زمانی که کسب‌وکار، سیاست‌ها و سرویس‌های واقعی تأیید نشده‌اند، رابط کاربری آن‌ها را واقعی نمایش نمی‌دهد.",
   },
   {
-    icon: Accessibility,
-    title: "دسترسی‌پذیری",
-    text: "کیبورد، Focus، Reduced Motion و ساختار معنایی بخشی از تعریف محصول هستند.",
+    icon: Layers3,
+    title: "تجربه محصول‌محور",
+    text: "هویت بصری پرانرژی است، اما خوانایی، دسترسی‌پذیری و مسیر کشف محصول همیشه اولویت دارند.",
   },
-  {
-    icon: Gauge,
-    title: "عملکرد کنترل‌شده",
-    text: "رسانه، انیمیشن و مدل سه‌بعدی نباید مسیر خرید یا محتوای اصلی را مسدود کنند.",
-  },
-];
+] as const;
 
 function AboutPage() {
   return (
-    <div className="min-h-screen bg-ink text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
       <main className="outline-none">
-        <section className="relative overflow-hidden border-b border-border px-6 pb-24 pt-16">
-          <div className="absolute inset-0 opacity-[0.08] [background-image:radial-gradient(circle_at_1px_1px,#c8f135_1px,transparent_0)] [background-size:32px_32px]" />
-          <div className="absolute -left-20 -top-20 size-96 rounded-full bg-neon/20 blur-3xl" />
-          <div className="absolute -bottom-20 -right-20 size-96 rounded-full bg-purple-hype/20 blur-3xl" />
-
-          <div className="relative mx-auto max-w-[1400px]">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="motion-reduce:transform-none"
-            >
-              <div className="eyebrow mb-4 text-neon">About the prototype</div>
-              <h1 className="font-display text-5xl font-black uppercase leading-[0.9] tracking-tight md:text-8xl">
-                درباره <span className="text-neon">SOLE</span>
+        <section className="border-b border-border px-[var(--space-page-gutter)] py-12 md:py-20">
+          <div className="mx-auto grid max-w-[96rem] items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.8fr)]">
+            <div className="max-w-3xl">
+              <div className="eyebrow mb-4 inline-flex items-center gap-2 text-primary">
+                <Sparkles aria-hidden="true" className="size-4" />
+                Frontend prototype
+              </div>
+              <h1 className="font-display text-[length:var(--text-h1)] font-black leading-[1.05] tracking-tight">
+                SOLE؛ یک تجربه نمایشی برای کشف کفش
               </h1>
-              <p className="mt-6 max-w-2xl font-fa text-lg leading-relaxed text-muted-foreground md:text-xl">
-                نسخه فعلی SOLE یک نمونه فرانت‌اند برای تجربه فروشگاه کفش است. هویت تجاری، اطلاعات
-                تماس، سیاست‌های فروش، موجودی، پرداخت و ادعاهای اعتماد هنوز به منبع رسمی متصل
-                نشده‌اند و نباید واقعی تلقی شوند.
+              <p className="mt-6 max-w-2xl font-fa text-lg leading-8 text-muted-foreground">
+                نسخه فعلی SOLE یک نمونه فرانت‌اند فارسی و راست‌به‌چپ است. این Repository هنوز به
+                سرویس واقعی فروش، حساب کاربری، پرداخت، ارسال یا پشتیبانی متصل نشده و نباید به‌عنوان
+                یک فروشگاه فعال تلقی شود.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link to="/products" className="btn-hype">
-                  مشاهده محصولات نمونه
-                </Link>
-                <Link to="/brands" className="btn-ghost-neon">
-                  مشاهده برندهای نمونه
-                </Link>
+                <Button asChild size="lg">
+                  <Link to="/products">
+                    مشاهده کاتالوگ نمونه
+                    <ArrowLeft aria-hidden="true" />
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link to="/brands">مرور برندهای Dataset</Link>
+                </Button>
               </div>
-            </motion.div>
+            </div>
+
+            <figure className="overflow-hidden rounded-[var(--radius-xl)] border border-border bg-surface shadow-[var(--shadow-elevated)]">
+              <div className="aspect-[4/3] overflow-hidden bg-interactive">
+                <img
+                  src={heroShoe}
+                  alt="نمای نزدیک یک کفش در فضای تصویری نمونه SOLE"
+                  width={1200}
+                  height={900}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <figcaption className="border-t border-border px-5 py-4 font-fa text-sm leading-6 text-muted-foreground">
+                تصویر بخشی از رسانه محلی Repository است و صرفاً جهت معرفی زبان بصری نمونه استفاده
+                می‌شود.
+              </figcaption>
+            </figure>
           </div>
         </section>
 
-        <section aria-labelledby="demo-data-heading" className="border-b border-border px-6 py-14">
-          <div className="mx-auto max-w-[1400px]">
-            <div className="mb-8 flex max-w-3xl items-start gap-3 rounded-xl border border-warning/40 bg-warning/5 p-4 text-sm text-muted-foreground">
-              <Info aria-hidden="true" className="mt-0.5 shrink-0 text-warning" size={20} />
+        <section
+          aria-labelledby="about-status-heading"
+          className="px-[var(--space-page-gutter)] py-[var(--space-section)]"
+        >
+          <div className="mx-auto max-w-[80rem]">
+            <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
               <div>
-                <h2 id="demo-data-heading" className="font-semibold text-foreground">
-                  داده‌های این صفحه نمایشی‌اند
+                <div className="eyebrow mb-3 text-primary">Current status</div>
+                <h2
+                  id="about-status-heading"
+                  className="font-display text-[length:var(--text-h2)] font-black leading-tight"
+                >
+                  این نسخه چه چیزی را اثبات می‌کند؟
                 </h2>
-                <p className="mt-1">
-                  شمارنده‌های زیر فقط اندازه Dataset فعلی پروژه را نشان می‌دهند و آمار فروشگاه،
-                  مشتری یا بازار نیستند.
-                </p>
               </div>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-border bg-surface p-6 text-center">
-                <div className="font-mono-num text-4xl font-black text-neon md:text-5xl">
-                  {SHOES.length}
-                </div>
-                <div className="mt-1 font-fa text-sm text-muted-foreground">رکورد محصول نمونه</div>
-              </div>
-              <div className="rounded-2xl border border-border bg-surface p-6 text-center">
-                <div className="font-mono-num text-4xl font-black text-neon md:text-5xl">
-                  {BRANDS.length}
-                </div>
-                <div className="mt-1 font-fa text-sm text-muted-foreground">برند در داده نمونه</div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <article className="rounded-[var(--radius-xl)] border border-border bg-surface p-[var(--space-card)]">
+                  <h3 className="text-lg font-bold">آنچه موجود است</h3>
+                  <ul className="mt-4 space-y-3 font-fa text-sm leading-7 text-muted-foreground">
+                    <li>رابط کاربری فروشگاه کفش با داده نمایشی Repository</li>
+                    <li>زبان فارسی، جهت RTL و پشتیبانی از محتوای ترکیبی</li>
+                    <li>مسیرهای کشف محصول، برندها و صفحات پشتیبان فرانت‌اند</li>
+                  </ul>
+                </article>
+                <article className="rounded-[var(--radius-xl)] border border-border bg-surface p-[var(--space-card)]">
+                  <h3 className="text-lg font-bold">آنچه هنوز موجود نیست</h3>
+                  <ul className="mt-4 space-y-3 font-fa text-sm leading-7 text-muted-foreground">
+                    <li>هویت تجاری و اطلاعات تماس تأییدشده</li>
+                    <li>Backend احراز هویت، سفارش، پرداخت یا پشتیبانی</li>
+                    <li>سیاست قطعی ارسال، بازگشت، حریم خصوصی یا شرایط استفاده</li>
+                  </ul>
+                </article>
               </div>
             </div>
           </div>
         </section>
 
-        <section aria-labelledby="principles-heading" className="px-6 py-20">
-          <div className="mx-auto max-w-[1400px]">
-            <div className="eyebrow mb-3 text-neon">Frontend principles</div>
-            <h2
-              id="principles-heading"
-              className="mb-10 font-display text-4xl font-black uppercase md:text-5xl"
-            >
-              اصول این نسخه
-            </h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {PRINCIPLES.map((principle, index) => {
-                const Icon = principle.icon;
-                return (
-                  <motion.article
-                    key={principle.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.45, delay: index * 0.06 }}
-                    className="group rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-neon motion-reduce:transform-none"
-                  >
-                    <div className="mb-4 grid size-12 place-items-center rounded-xl bg-neon/10 text-neon transition-colors group-hover:bg-neon group-hover:text-ink">
-                      <Icon aria-hidden="true" size={22} />
-                    </div>
-                    <h3 className="font-display text-lg font-bold">{principle.title}</h3>
-                    <p className="mt-2 font-fa text-sm leading-relaxed text-muted-foreground">
-                      {principle.text}
-                    </p>
-                  </motion.article>
-                );
-              })}
+        <section
+          aria-labelledby="about-principles-heading"
+          className="border-y border-border bg-surface/40 px-[var(--space-page-gutter)] py-[var(--space-section)]"
+        >
+          <div className="mx-auto max-w-[80rem]">
+            <div className="max-w-2xl">
+              <div className="eyebrow mb-3 text-primary">Design principles</div>
+              <h2
+                id="about-principles-heading"
+                className="font-display text-[length:var(--text-h2)] font-black leading-tight"
+              >
+                سه اصل برای ادامه توسعه
+              </h2>
+            </div>
+            <div className="mt-10 grid gap-4 md:grid-cols-3">
+              {PRINCIPLES.map(({ icon: Icon, title, text }) => (
+                <article
+                  key={title}
+                  className="rounded-[var(--radius-xl)] border border-border bg-background p-[var(--space-card)]"
+                >
+                  <div className="mb-5 grid size-12 place-items-center rounded-[var(--radius-lg)] bg-primary/10 text-primary">
+                    <Icon aria-hidden="true" className="size-5" />
+                  </div>
+                  <h3 className="text-xl font-bold">{title}</h3>
+                  <p className="mt-3 font-fa text-sm leading-7 text-muted-foreground">{text}</p>
+                </article>
+              ))}
             </div>
           </div>
         </section>
 
         <section
           id="contact"
-          aria-labelledby="contact-heading"
-          className="border-t border-border bg-gradient-to-b from-surface to-ink px-6 py-16"
+          aria-labelledby="about-contact-heading"
+          className="px-[var(--space-page-gutter)] py-[var(--space-section)]"
         >
-          <div className="mx-auto max-w-[900px] rounded-2xl border border-border bg-surface p-6 text-center md:p-10">
-            <Users aria-hidden="true" size={36} className="mx-auto mb-4 text-neon" />
-            <h2
-              id="contact-heading"
-              className="font-display text-3xl font-black uppercase md:text-4xl"
-            >
-              اطلاعات رسمی کسب‌وکار
+          <div className="mx-auto max-w-[40rem] rounded-[var(--radius-xl)] border border-warning/40 bg-warning/5 p-6 text-center md:p-10">
+            <h2 id="about-contact-heading" className="text-2xl font-bold">
+              راه ارتباط رسمی هنوز ثبت نشده است
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl font-fa leading-relaxed text-muted-foreground">
-              تیم، نشانی، شماره تماس، شبکه‌های اجتماعی و فرم تماس هنوز تأیید یا به سرویس واقعی متصل
-              نشده‌اند؛ بنابراین در این نسخه قابلیت نمایشی یا اطلاعات آزمایشی به کاربر ارائه
-              نمی‌شود.
+            <p className="mt-4 font-fa leading-7 text-muted-foreground">
+              Repository در حال حاضر نشانی، ایمیل، شماره تماس یا شبکه اجتماعی تأییدشده‌ای ارائه
+              نمی‌کند. به همین دلیل هیچ اطلاعات آزمایشی یا فرم ارسال نمایشی در این صفحه قرار نگرفته
+              است.
             </p>
           </div>
         </section>
