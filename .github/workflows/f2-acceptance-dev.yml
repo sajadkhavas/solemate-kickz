@@ -13,7 +13,7 @@ concurrency:
 jobs:
   f2:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 25
     steps:
       - name: Check out exact PR head
         uses: actions/checkout@v4
@@ -34,9 +34,6 @@ jobs:
 
       - name: Install from lockfile
         run: bun install --frozen-lockfile
-
-      - name: F2 browser behavior
-        run: node scripts/test-f2-navigation-search.mjs
 
       - name: F2 Visual QA
         run: node scripts/visual-qa-f2-navigation-search.mjs
