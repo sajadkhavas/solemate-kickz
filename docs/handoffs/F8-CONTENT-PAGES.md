@@ -12,24 +12,26 @@
 
 `a908b2723322dde27699fa4c92fa9c0de95e0c75`
 
-The branch was verified as identical to the Foundation SHA before implementation.
+The branch was verified as identical to the Foundation SHA before implementation. No merge, force push, history rewrite, or secondary branch was used.
 
 ## Final SHA
 
-The validated implementation SHA is recorded after the complete quality gate. The exact final branch head is also reported in the supervisor handoff output because a commit cannot embed its own SHA.
+Validated implementation SHA: `1fc65c72edbb830d9e88235a9670fb0970e4e065`.
+
+The final branch head also includes this handoff commit and is reported in the supervisor output because a commit cannot embed its own SHA.
 
 ## Route inventory
 
-| Route          | Source file                  | Ownership | Decision                |
-| -------------- | ---------------------------- | --------- | ----------------------- |
-| `/`            | `src/routes/index.tsx`       | F3        | Existing; unchanged     |
-| `/products`    | `src/routes/products.tsx`    | F4/F5     | Existing; unchanged     |
-| `/product/:id` | `src/routes/product.$id.tsx` | F6        | Existing; unchanged     |
-| `/cart`        | `src/routes/cart.tsx`        | F7        | Existing; unchanged     |
-| `/about`       | `src/routes/about.tsx`       | F8        | Retained and redesigned |
-| `/brands`      | `src/routes/brands.tsx`      | F8        | Retained and redesigned |
-| `/auth`        | `src/routes/auth.tsx`        | F8        | Retained and rebuilt    |
-| Not found      | `src/routes/__root.tsx`      | F12       | Existing; unchanged     |
+| Route          | Source file                  | Owner | F8 decision              |
+| -------------- | ---------------------------- | ----- | ------------------------ |
+| `/`            | `src/routes/index.tsx`       | F3    | Existing; unchanged      |
+| `/products`    | `src/routes/products.tsx`    | F4/F5 | Existing; unchanged      |
+| `/product/:id` | `src/routes/product.$id.tsx` | F6    | Existing; unchanged      |
+| `/cart`        | `src/routes/cart.tsx`        | F7    | Existing; unchanged      |
+| `/about`       | `src/routes/about.tsx`       | F8    | Retained and redesigned  |
+| `/brands`      | `src/routes/brands.tsx`      | F8    | Retained and redesigned  |
+| `/auth`        | `src/routes/auth.tsx`        | F8    | Retained and rebuilt     |
+| Not found      | `src/routes/__root.tsx`      | F12   | Existing; unchanged      |
 
 ## Pages retained
 
@@ -41,33 +43,33 @@ The validated implementation SHA is recorded after the complete quality gate. Th
 
 ### About
 
-- Reframed SOLE as a frontend prototype without fabricated history, team, customer, sales, or trust claims.
-- Added a bundled Repository image with explicit context and stable dimensions.
-- Added concise editorial storytelling, current-state boundaries, development principles, and valid catalog/brand CTAs.
-- Published an honest unavailable-contact state instead of invented contact details.
+- Presents SOLE truthfully as a frontend prototype rather than an operating retailer.
+- Uses concise Persian editorial copy, a bundled Repository image with stable dimensions, and valid CTAs to `/products` and `/brands`.
+- Contains no fabricated founding date, team, customer, sales, review, certification, authenticity, support, shipping, or return claim.
+- Communicates that official contact information is unavailable instead of inventing it.
 
 ### Brands
 
-- Uses the unique values of `BRANDS` and calculates counts directly from `SHOES`.
-- Adds search, clear behavior, result count, no-result state, no-data state, keyboard-safe cards, and mixed-direction isolation.
-- Uses `BRAND_LOGO_SLUGS` where available and falls back to a text mark on missing or failed logos.
-- Links every brand to the existing `/products?brand=...` destination; no fake brand-detail route was added.
+- Extracts unique brands from `BRANDS` and calculates each count directly from `SHOES`.
+- Provides search, clear action, live result count, no-result state, no-dataset state, mixed-direction isolation, keyboard access, and responsive cards.
+- Uses `BRAND_LOGO_SLUGS` where available and a textual fallback when a logo is missing or fails.
+- Sends each brand only to the existing `/products?brand=...` destination; no fictional brand-detail route was added.
 
 ### Auth
 
-- Removed fake `signIn`, fake success Toasts, fake navigation after login, social-login placeholder behavior, and unsupported password recovery.
-- Rebuilt the page as an explicitly frontend-only login/register form.
-- Added associated labels, correct input types, mode-aware autocomplete, LTR isolation, inline validation, error association, first-error focus, password visibility, local-check loading state, and synchronous duplicate-submit protection.
-- Valid form submission ends in an honest Backend-unavailable status and creates no account or session.
-- No password or auth state is persisted in local or session storage.
+- Removes fake sign-in state, success Toasts, authenticated navigation, placeholder social login, unsupported recovery, and OTP simulation.
+- Declares the form frontend-only and states that no account, session, OTP, or password recovery is created.
+- Adds labels, correct input types, mode-aware autocomplete, LTR isolation, local validation, associated errors, first-invalid-field focus, password visibility, loading state, and synchronous double-submit prevention.
+- A valid submission ends only in an honest Backend-unavailable status.
+- Credentials and auth state are not written to local or session storage.
 
 ## Pages created
 
-No new customer route was created.
+No customer-facing route was created.
 
 ## Pages intentionally not created
 
-The following routes were not created because the Repository does not provide authoritative business content, a working Backend, or an existing navigation requirement:
+The following were not created because the Repository contains no authoritative business/legal content, working Backend, or existing navigation requirement:
 
 - Contact or Support
 - FAQ or Help
@@ -81,26 +83,26 @@ The following routes were not created because the Repository does not provide au
 - Account placeholder
 - Brand detail
 
-Creating these routes would either duplicate another phase, imply unavailable functionality, or require fabricated legal/commercial content. The unavailable-contact boundary is communicated inside `/about`; the unavailable-auth boundary is communicated inside `/auth`.
+Creating them would fabricate policy or functionality, duplicate another phase, or add unsupported navigation. Honest unavailable-contact and unavailable-auth boundaries are instead communicated inside `/about` and `/auth`.
 
 ## Truthfulness decisions
 
-- Dataset counts are described only as Dataset records, never customers, stock, sales, popularity, or partnerships.
-- Brand presence does not imply representation, authenticity verification, or commercial cooperation.
-- No review, customer, history, certification, shipping, return, refund, support, or legal-policy claim was introduced.
-- Auth never reports success and never generates OTP or user state.
-- Contact details are omitted because none are verified in the Repository.
+- Dataset records are never described as customers, stock, sales, popularity, partnerships, or commercial availability.
+- Brand presence never implies representation, cooperation, authenticity verification, or authorization.
+- No fake review, metric, history, certificate, legal policy, support promise, shipping promise, refund promise, or contact method was introduced.
+- Auth never reports success, generates OTP, persists credentials, or creates user state.
 
 ## Auth/backend boundary
 
-`/auth` owns only frontend form behavior. It performs local validation, exposes a short truthful local-check loading state, prevents duplicate activation, and then reports that the Backend is unavailable. It does not call an API, write credentials, create a session, navigate as an authenticated user, or claim account creation.
+`/auth` owns frontend form behavior only. It validates locally, exposes a short local-check loading state, prevents repeated activation, and then reports that the Backend is unavailable. It does not call an API, create a session, navigate as an authenticated user, or claim account creation.
 
 ## Content decisions
 
-- Persian-first copy is concise and uses explicit English technical terms only where they describe Repository boundaries.
-- Latin brand names, email, password, storage names, and dataset identifiers are direction-isolated.
-- Legal and commercial policy pages remain absent until authoritative text is supplied.
-- Contact links remain absent until verified addresses are supplied.
+- Persian-first copy is concise and editorial.
+- English technical terms and Latin brand names are direction-isolated where needed.
+- Legal and commercial pages remain absent until authoritative content is supplied.
+- Contact links remain absent until verified details are supplied.
+- Accordion and Size Guide behavior tests are explicitly recorded as not applicable because those routes/components do not exist in the inventory.
 
 ## Files changed
 
@@ -116,78 +118,126 @@ Creating these routes would either duplicate another phase, imply unavailable fu
 
 ## Components changed
 
-No shared Foundation component was changed. Existing `Button`, `SearchInput`, `EmptyState`, `Navbar`, `Footer`, and `MobileBottomNav` primitives are reused.
+No shared Foundation component was modified. Existing `Button`, `SearchInput`, `EmptyState`, `Navbar`, `Footer`, and `MobileBottomNav` primitives are reused.
 
 ## Dependencies
 
-No dependency was added or upgraded.
+No dependency was added, removed, or upgraded.
 
 ## Audit results
 
-Permanent command: `node scripts/audit-f8-content-pages.mjs`  
+Command: `node scripts/audit-f8-content-pages.mjs`  
 Report: `artifacts/audits/f8-content-pages.json`
 
-Final result is recorded after validation.
+Result: **31/31 checks passed**. This covers the Foundation SHA, branch identity, route inventory, one H1 and heading order per F8 route, placeholder/fabrication scans, auth truthfulness, storage prevention, form semantics, real brand-data integrity, contact-link validity, image-alt policy, table applicability, touch-target contracts, ignored runtime artifacts, and handoff presence.
+
+Foundation audit also passed **46/46** checks.
 
 ## Behavior tests
 
-Permanent command: `node scripts/test-f8-content-pages.mjs`  
+Command: `node scripts/test-f8-content-pages.mjs`  
 Report: `artifacts/reports/f8-content-pages-behavior.json`
 
-Coverage includes About CTA navigation, real brand rendering, filtering, no-result behavior, auth keyboard flow, validation, first-error focus, duplicate-submit prevention, honest Backend state, password visibility, contact-link validity, route focus, hydration, and runtime errors. Accordion and Size Guide checks explicitly record not-applicable because no such route or component exists in the inventory.
+Result: **18/18 passed**:
+
+1. About CTA navigation
+2. Brands real-data rendering
+3. Brand search/filter
+4. Brand no-result state
+5. Auth keyboard flow
+6. Auth validation
+7. Focus on first invalid field
+8. Double-submit prevention
+9. Honest unavailable-Backend state
+10. Password visibility behavior
+11. Accordion keyboard behavior — not applicable, recorded explicitly
+12. Size Guide dialog behavior — not applicable, recorded explicitly
+13. Escape close — not applicable, recorded explicitly
+14. Focus restoration — not applicable, recorded explicitly
+15. Contact-link validity
+16. Route focus
+17. No hydration mismatch
+18. No runtime exception
 
 ## Typecheck, lint, format and build
 
-Final command results are recorded after validation.
+- `bun install --frozen-lockfile`: passed.
+- `bun run typecheck`: passed.
+- `bun run lint`: passed with **0 errors** and **8 pre-existing warnings** outside the F8 change set.
+- `bun run format:check`: passed.
+- `bun run build`: passed. Existing Vite chunk-size and tsconfig-paths notices remain informational and are not introduced by F8.
+- `bun run check`: passed, including Foundation and F8 audits, browser suites, typecheck, lint, format, build, and both visual suites.
 
 ## Visual QA
 
-Permanent command: `node scripts/visual-qa-f8-content-pages.mjs`  
+Command: `node scripts/visual-qa-f8-content-pages.mjs`  
 Report: `artifacts/visual-qa/f8-content-pages.json`
 
-The script covers all required viewports for `/about`, `/brands`, and `/auth`, captures generated screenshots outside Git tracking, and evaluates default, 200% zoom, empty/error, keyboard focus, long text, and reduced-motion states.
+Result: **0 Critical Findings** with **27 default route/viewport captures**, plus:
+
+- 200% effective zoom checks for all three F8 routes
+- Brands no-result state
+- Auth validation-error state
+- Real keyboard focus traversal and visible focus evaluation
+- Long Persian text stress state
+- Reduced Motion state
+- Runtime and hydration monitoring
+
+Generated screenshots, logs, and reports remain ignored and were not committed.
 
 ## Accessibility results
 
-Implemented contracts:
-
-- One `h1` and ordered headings per F8 route.
-- Native `main` landmark and compatibility with root skip-link/focus management.
+- One H1 and ordered heading hierarchy per F8 route.
+- Native `main` landmarks and compatibility with the root skip link and route-focus management.
 - Programmatic labels, `aria-invalid`, `aria-describedby`, live status, and alert semantics.
 - First invalid field receives focus after submit.
-- Icon controls have accessible names.
-- Main F8 controls target at least `44×44px`.
-- No positive `tabIndex`, keyboard trap, hover-only essential action, or color-only error state.
-- Reduced-motion classes are retained on transitions.
+- Icon-only controls have accessible names.
+- F8 interactive targets meet the 44×44 contract in automated checks.
+- No positive `tabIndex`, keyboard trap, hover-only essential action, or color-only error state was introduced.
+- Focus is checked through actual Tab traversal and accepts visible outline or focus-ring box shadow.
+- Reduced-motion behavior is exercised.
 
 ## Responsive results
 
-The layouts use Foundation gutters and capped compact, standard, and wide containers. Brand cards reflow from one column at 320px, forms remain single-column and bottom-navigation-safe, long mixed-direction values remain contained, and no intentional document-level horizontal scroller is introduced.
+Passed at:
+
+- 320×568
+- 375×812
+- 390×844
+- 430×932
+- 768×1024
+- 1024×768
+- 1280×800
+- 1440×900
+- 1920×1080
+- 200% effective zoom
+
+No F8 horizontal document overflow, hidden main content, duplicate H1, broken form, missing accessible name, fake success state, or F8 touch-target failure was found. Forms remain bottom-navigation and safe-area aware.
 
 ## Known limitations
 
-- Brand logos are requested from the Simple Icons CDN only for slugs already declared by the Dataset; a text mark is the functional fallback.
-- The image dataset itself contains remote Unsplash media owned by earlier phases; F8 provides graceful card text when media fails but does not replace the product media system.
-- Physical screen-reader, real mobile virtual-keyboard, forced-colors, and touch-device certification remain F12 responsibilities.
-- Final legal, support, contact, shipping, returns, privacy, and terms content requires authoritative business input.
+- Brand logos use the Simple Icons CDN only for slugs already declared by the Dataset; a text mark is the functional fallback.
+- Product images are remote Dataset media owned by earlier phases; F8 does not replace the product media delivery system.
+- Physical screen-reader, forced-colors, real touch-device, and mobile virtual-keyboard certification remain F12 work.
+- Legal, support, contact, shipping, return, privacy, and terms content requires authoritative business-owner input.
 
 ## Legal/content gaps
 
-No authoritative business identity, contact record, shipping policy, returns policy, privacy policy, terms, or support SLA exists in the Repository. None was invented.
+The Repository contains no authoritative business identity, verified contact record, shipping policy, return policy, privacy policy, terms, support SLA, editorial collection, or commercial launch status. None was invented.
 
 ## Deferred findings and owners
 
 - Product media source and delivery optimization: F4/F5 and F11.
 - Product size-selection behavior and any future Size Guide trigger: F6.
-- Header/search navigation changes: F2.
+- Header and global search changes: F2.
 - Technical SEO completion and canonical/indexing policy: F10.
-- Release-candidate accessibility certification and real assistive-technology testing: F12.
-- Authoritative legal and commercial copy: business owner/product owner.
+- Release-candidate accessibility certification and physical assistive-technology testing: F12.
+- Authoritative legal, support, contact, and commercial copy: business owner/product owner.
 
 ## Working tree
 
-The final working-tree result is recorded after the complete gate. Generated reports, logs, and screenshots remain ignored under `/artifacts/`.
+Clean after the complete quality gate. Runtime reports, logs, and screenshots are ignored and no tracked runtime artifact was introduced.
 
 ## Ready for supervisor review
 
-Pending the complete quality gate and final SHA recording.
+**Yes.** F8 is ready for supervisor review. No merge was performed.
