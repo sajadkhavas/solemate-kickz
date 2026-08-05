@@ -64,8 +64,9 @@ export function SearchDialog() {
   const deferredQuery = useDeferredValue(query);
   const suggestions = useMemo(() => getDatasetSuggestions(), []);
   const results = useMemo(() => searchShoes(deferredQuery), [deferredQuery]);
-  const searching = normalizeSearchText(query) !== normalizeSearchText(deferredQuery);
   const normalizedQuery = normalizeSearchText(query);
+  const searching =
+    normalizedQuery.length > 0 && normalizedQuery !== normalizeSearchText(deferredQuery);
 
   useEffect(() => {
     if (!open) {
@@ -100,9 +101,13 @@ export function SearchDialog() {
   };
 
   const handleInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter" && activeIndex >= 0 && results[activeIndex]) {
+    if (event.key === "Enter") {
       event.preventDefault();
-      chooseResult(results[activeIndex]);
+      if (activeIndex >= 0 && results[activeIndex]) {
+        chooseResult(results[activeIndex]);
+      } else {
+        rememberAndNavigateToProducts(event.currentTarget.value);
+      }
       return;
     }
     if (!results.length) return;
