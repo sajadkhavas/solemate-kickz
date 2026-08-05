@@ -1,7 +1,7 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { CATEGORIES } from "@/data/shoes";
 import { useStore } from "@/store";
@@ -23,13 +23,10 @@ const MOBILE_LINKS = [
   { to: "/auth", label: "ورود یا حساب کاربری" },
 ] as const;
 
-function restoreMobileMenuTriggerFocus() {
-  const trigger = document.querySelector<HTMLElement>('[data-testid="mobile-menu-trigger"]');
-  trigger?.focus({ preventScroll: true });
-}
-
 export function MobileNavigation() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
   const open = useStore((state) => state.isMobileNavOpen);
   const setOpen = useStore((state) => state.setMobileNavOpen);
 
@@ -37,10 +34,18 @@ export function MobileNavigation() {
     setOpen(false);
   }, [pathname, setOpen]);
 
+  useEffect(() => {
+    if (wasOpen.current && !open && triggerRef.current) {
+      queueMicrotask(() => triggerRef.current?.focus({ preventScroll: true }));
+    }
+    wasOpen.current = open;
+  }, [open]);
+
   return (
     <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
       <DialogPrimitive.Trigger asChild>
         <IconButton
+          ref={triggerRef}
           label="بازکردن منوی اصلی"
           variant="ghost"
           data-testid="mobile-menu-trigger"
@@ -57,10 +62,7 @@ export function MobileNavigation() {
         <DialogPrimitive.Content
           data-testid="mobile-menu-content"
           dir="rtl"
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            restoreMobileMenuTriggerFocus();
-          }}
+          onCloseAutoFocus={(event) => event.preventDefault()}
           className="fixed inset-y-0 right-0 z-[var(--z-modal)] flex w-[min(90vw,24rem)] flex-col border-l border-border-strong bg-surface-elevated shadow-[var(--shadow-overlay)] outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right motion-reduce:animate-none md:hidden"
         >
           <div className="flex min-h-16 items-center justify-between border-b border-border px-4 pt-[env(safe-area-inset-top)]">
