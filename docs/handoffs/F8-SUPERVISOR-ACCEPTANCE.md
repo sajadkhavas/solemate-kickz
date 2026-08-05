@@ -33,6 +33,7 @@ The exact final branch-head SHA and final CI run are recorded in Pull Request #4
 - Merged the approved F3 and F2 Integration baseline non-destructively, without force push or history rewrite.
 - Resolved the `package.json` integration conflict cumulatively: F0/F1, F2 and F8 audits, browser tests, format paths and Visual QA commands are all retained.
 - Preserved the read-only shared CI workflow from Integration and removed every temporary write-enabled F8 workflow from the final tree.
+- Corrected inherited F2 and F8 audit branch policies so the same immutable checks remain valid on the owner phase branch, controlled later phase branches, Integration, and the release branch.
 - Kept the frontend-only Auth boundary honest: no fake login success, OTP, session, account creation or credential persistence.
 - Kept unsupported legal, contact, shipping, return and support pages absent rather than inventing authoritative business content.
 

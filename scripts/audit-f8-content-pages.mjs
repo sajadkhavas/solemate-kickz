@@ -4,7 +4,10 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const FOUNDATION = "a908b2723322dde27699fa4c92fa9c0de95e0c75";
-const BRANCH = "phase/sole-f8-content-pages";
+const OWNER_BRANCH = "phase/sole-f8-content-pages";
+const INTEGRATION_BRANCH = "integration/sole-frontend-v2";
+const CONTROLLED_PHASE = /^phase\/sole-f(?:\d+)(?:-f\d+)?-[a-z0-9-]+$/;
+const CONTROLLED_RELEASE = /^release\/sole-frontend-v2(?:-|$)/;
 const ROUTES = ["about", "brands", "auth"];
 const REPORT = path.join(ROOT, "artifacts/audits/f8-content-pages.json");
 const read = (file) => fs.readFileSync(path.join(ROOT, file), "utf8");
@@ -61,8 +64,14 @@ record("Foundation SHA", git("merge-base", "--is-ancestor", FOUNDATION, "HEAD").
   foundation: FOUNDATION,
   head,
 });
-record("Expected branch", branch === BRANCH, {
-  expected: BRANCH,
+const controlledBranch =
+  branch === OWNER_BRANCH ||
+  branch === INTEGRATION_BRANCH ||
+  CONTROLLED_PHASE.test(branch) ||
+  CONTROLLED_RELEASE.test(branch);
+record("Controlled phase or integration branch", controlledBranch, {
+  owner: OWNER_BRANCH,
+  integration: INTEGRATION_BRANCH,
   actual: branch,
   source: localBranch ? "git" : "ci-environment",
 });
