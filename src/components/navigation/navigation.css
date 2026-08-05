@@ -1,4 +1,7 @@
 [data-testid="search-overlay"][data-state="closed"],
-[data-testid="mobile-menu-overlay"][data-state="closed"] {
+[data-testid="search-dialog"][data-state="closed"],
+[data-testid="mobile-menu-overlay"][data-state="closed"],
+[data-testid="mobile-menu-content"][data-state="closed"] {
   pointer-events: none;
+  animation: none !important;
 }
