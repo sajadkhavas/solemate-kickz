@@ -12,7 +12,7 @@
 
 `a908b2723322dde27699fa4c92fa9c0de95e0c75`
 
-The branch was verified as identical to the Foundation SHA before implementation. No merge, force push, history rewrite, or secondary branch was used.
+The implementation started from the accepted Foundation SHA. During supervisor integration review, the approved F3 and F2 Integration baseline was merged non-destructively without force push or history rewrite.
 
 ## Final SHA
 
@@ -52,7 +52,7 @@ The final branch head also includes this handoff commit and is reported in the s
 
 - Extracts unique brands from `BRANDS` and calculates each count directly from `SHOES`.
 - Provides search, clear action, live result count, no-result state, no-dataset state, mixed-direction isolation, keyboard access, and responsive cards.
-- Uses `BRAND_LOGO_SLUGS` where available and a textual fallback when a logo is missing or fails.
+- Uses deterministic local text marks derived from each real brand name; no external logo CDN or remote fallback is required.
 - Sends each brand only to the existing `/products?brand=...` destination; no fictional brand-detail route was added.
 
 ### Auth
