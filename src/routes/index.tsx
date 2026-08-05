@@ -29,7 +29,7 @@ function Home() {
   return (
     <div className="min-h-screen bg-ink text-foreground">
       <Navbar />
-      <main id="main-content" tabIndex={-1} data-testid="home-main">
+      <main data-testid="home-main">
         <Hero />
         <FeaturedDrops />
         <Categories />
