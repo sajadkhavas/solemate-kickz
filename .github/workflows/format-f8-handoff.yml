@@ -1,0 +1,46 @@
+name: Format F8 Handoff
+
+on:
+  push:
+    branches:
+      - "phase/sole-f8-content-pages"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: format-f8-handoff-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out branch head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+          no-cache: true
+
+      - name: Install from lockfile
+        run: bun install --frozen-lockfile
+
+      - name: Format and commit handoff
+        shell: bash
+        run: |
+          bun x prettier --write docs/handoffs/F8-CONTENT-PAGES.md
+          git add docs/handoffs/F8-CONTENT-PAGES.md
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "style(handoff): format final F8 evidence"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
