@@ -216,7 +216,7 @@ No F8 horizontal document overflow, hidden main content, duplicate H1, broken fo
 
 ## Known limitations
 
-- Brand logos use the Simple Icons CDN only for slugs already declared by the Dataset; a text mark is the functional fallback.
+- Brand identity uses deterministic local text marks; no external brand-logo CDN is required.
 - Product images are remote Dataset media owned by earlier phases; F8 does not replace the product media delivery system.
 - Physical screen-reader, forced-colors, real touch-device, and mobile virtual-keyboard certification remain F12 work.
 - Legal, support, contact, shipping, return, privacy, and terms content requires authoritative business-owner input.

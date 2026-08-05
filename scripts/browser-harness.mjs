@@ -168,7 +168,7 @@ export async function openBrowser({ debugPort, logPath, width = 1280, height = 8
   };
 }
 
-export async function evaluate(client, expression) {
+async function evaluateRaw(client, expression) {
   const response = await client.send("Runtime.evaluate", {
     expression,
     awaitPromise: true,
@@ -184,12 +184,71 @@ export async function evaluate(client, expression) {
   return response.result?.value;
 }
 
+async function dispatchPointerActivation(client, point) {
+  await client.send("Input.dispatchMouseEvent", {
+    type: "mouseMoved",
+    x: point.x,
+    y: point.y,
+    button: "none",
+  });
+  await client.send("Input.dispatchMouseEvent", {
+    type: "mousePressed",
+    x: point.x,
+    y: point.y,
+    button: "left",
+    clickCount: 1,
+  });
+  await client.send("Input.dispatchMouseEvent", {
+    type: "mouseReleased",
+    x: point.x,
+    y: point.y,
+    button: "left",
+    clickCount: 1,
+  });
+}
+
+export async function evaluate(client, expression) {
+  const visibleActivation = /target\?\.click\(\);\s*return Boolean\(target\);/.test(expression);
+  if (!visibleActivation) return evaluateRaw(client, expression);
+
+  const coordinateExpression = expression.replace(
+    /target\?\.click\(\);\s*return Boolean\(target\);/,
+    `if (!target) return null;
+      const activationRect = target.getBoundingClientRect();
+      return {
+        x: Math.max(0, Math.min(innerWidth - 1, activationRect.left + activationRect.width / 2)),
+        y: Math.max(0, Math.min(innerHeight - 1, activationRect.top + activationRect.height / 2)),
+      };`,
+  );
+  const point = await evaluateRaw(client, coordinateExpression);
+  if (!point) return false;
+  await dispatchPointerActivation(client, point);
+  return true;
+}
+
+async function waitForHydratedShell(client, timeout = 15_000) {
+  const started = Date.now();
+  while (Date.now() - started < timeout) {
+    const ready = await evaluateRaw(
+      client,
+      `(() => {
+        const header = document.querySelector('[data-testid="global-header"]');
+        return !header || header.getAttribute('data-hydrated') === 'true';
+      })()`,
+    );
+    if (ready) return;
+    await sleep(100);
+  }
+  throw new Error("Timed out waiting for the global shell to hydrate.");
+}
+
 export async function navigate(client, url) {
   const ready = client.waitFor("Page.domContentEventFired");
   const result = await client.send("Page.navigate", { url });
   if (result.errorText) throw new Error(`${url}: ${result.errorText}`);
   await ready;
-  await sleep(300);
+  await waitForHydratedShell(client);
+  await sleep(100);
 }
 
 export async function waitForExpression(client, expression, timeout = 10_000) {

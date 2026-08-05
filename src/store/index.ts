@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 export interface CartItem {
   id: number;
@@ -13,46 +13,47 @@ interface AuthUser {
 }
 
 interface Store {
-  // Cart
   cart: CartItem[];
   addToCart: (id: number, size: number, qty?: number) => void;
   removeFromCart: (id: number, size: number) => void;
   updateQty: (id: number, size: number, qty: number) => void;
   clearCart: () => void;
 
-  // Wishlist
   wishlist: number[];
   toggleWishlist: (id: number) => void;
 
-  // Recently viewed
   recentlyViewed: number[];
   addRecentlyViewed: (id: number) => void;
 
-  // Search
   searchHistory: string[];
-  addSearch: (q: string) => void;
+  addSearch: (query: string) => void;
+  removeSearch: (query: string) => void;
   clearSearchHistory: () => void;
 
-  // UI
   isCartOpen: boolean;
-  setCartOpen: (v: boolean) => void;
+  setCartOpen: (value: boolean) => void;
+  isMobileNavOpen: boolean;
+  setMobileNavOpen: (value: boolean) => void;
+  isSearchOpen: boolean;
+  setSearchOpen: (value: boolean) => void;
 
-  // Mock auth
   user: AuthUser | null;
-  signIn: (u: AuthUser) => void;
+  signIn: (user: AuthUser) => void;
   signOut: () => void;
 }
+
+const normalizeHistoryTerm = (value: string) => value.trim().replace(/\s+/g, " ");
 
 export const useStore = create<Store>()(
   persist(
     (set, get) => ({
       cart: [],
       addToCart: (id, size, qty = 1) => {
-        const existing = get().cart.find((i) => i.id === id && i.size === size);
+        const existing = get().cart.find((item) => item.id === id && item.size === size);
         if (existing) {
           set({
-            cart: get().cart.map((i) =>
-              i.id === id && i.size === size ? { ...i, qty: i.qty + qty } : i,
+            cart: get().cart.map((item) =>
+              item.id === id && item.size === size ? { ...item, qty: item.qty + qty } : item,
             ),
           });
         } else {
@@ -60,11 +61,11 @@ export const useStore = create<Store>()(
         }
       },
       removeFromCart: (id, size) =>
-        set({ cart: get().cart.filter((i) => !(i.id === id && i.size === size)) }),
+        set({ cart: get().cart.filter((item) => !(item.id === id && item.size === size)) }),
       updateQty: (id, size, qty) =>
         set({
-          cart: get().cart.map((i) =>
-            i.id === id && i.size === size ? { ...i, qty: Math.max(1, qty) } : i,
+          cart: get().cart.map((item) =>
+            item.id === id && item.size === size ? { ...item, qty: Math.max(1, qty) } : item,
           ),
         }),
       clearCart: () => set({ cart: [] }),
@@ -73,28 +74,44 @@ export const useStore = create<Store>()(
       toggleWishlist: (id) =>
         set({
           wishlist: get().wishlist.includes(id)
-            ? get().wishlist.filter((x) => x !== id)
+            ? get().wishlist.filter((item) => item !== id)
             : [id, ...get().wishlist],
         }),
 
       recentlyViewed: [],
       addRecentlyViewed: (id) =>
         set({
-          recentlyViewed: [id, ...get().recentlyViewed.filter((x) => x !== id)].slice(0, 8),
+          recentlyViewed: [id, ...get().recentlyViewed.filter((item) => item !== id)].slice(0, 8),
         }),
 
       searchHistory: [],
-      addSearch: (q) =>
+      addSearch: (query) => {
+        const value = normalizeHistoryTerm(query);
+        if (!value) return;
         set({
-          searchHistory: [q, ...get().searchHistory.filter((x) => x !== q)].slice(0, 6),
+          searchHistory: [
+            value,
+            ...get().searchHistory.filter(
+              (item) => item.toLocaleLowerCase("fa") !== value.toLocaleLowerCase("fa"),
+            ),
+          ].slice(0, 6),
+        });
+      },
+      removeSearch: (query) =>
+        set({
+          searchHistory: get().searchHistory.filter((item) => item !== query),
         }),
       clearSearchHistory: () => set({ searchHistory: [] }),
 
       isCartOpen: false,
-      setCartOpen: (v) => set({ isCartOpen: v }),
+      setCartOpen: (value) => set({ isCartOpen: value }),
+      isMobileNavOpen: false,
+      setMobileNavOpen: (value) => set({ isMobileNavOpen: value }),
+      isSearchOpen: false,
+      setSearchOpen: (value) => set({ isSearchOpen: value }),
 
       user: null,
-      signIn: (u) => set({ user: u }),
+      signIn: (user) => set({ user }),
       signOut: () => set({ user: null }),
     }),
     {
@@ -104,17 +121,16 @@ export const useStore = create<Store>()(
           ? window.localStorage
           : (undefined as unknown as Storage),
       ),
-      partialize: (s) => ({
-        cart: s.cart,
-        wishlist: s.wishlist,
-        recentlyViewed: s.recentlyViewed,
-        searchHistory: s.searchHistory,
-        user: s.user,
+      partialize: (state) => ({
+        cart: state.cart,
+        wishlist: state.wishlist,
+        recentlyViewed: state.recentlyViewed,
+        searchHistory: state.searchHistory,
+        user: state.user,
       }),
     },
   ),
 );
 
-// Helpers
 export const useCartCount = () =>
-  useStore((s) => s.cart.reduce((acc, i) => acc + i.qty, 0));
+  useStore((state) => state.cart.reduce((total, item) => total + item.qty, 0));
