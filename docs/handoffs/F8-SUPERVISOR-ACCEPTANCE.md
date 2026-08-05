@@ -20,7 +20,7 @@ This Integration baseline contains the accepted F3 Homepage and F2 Global Shell,
 
 ## Validated implementation tree before this record
 
-`60011a8fcb34db090b92c295307c0837e59de343`
+`bc6cf150169d32846a476940f9737da799ff680f`
 
 The exact final branch-head SHA and final CI run are recorded in Pull Request #4 after the immutable exact-head gate completes.
 
@@ -34,6 +34,7 @@ The exact final branch-head SHA and final CI run are recorded in Pull Request #4
 - Resolved the `package.json` integration conflict cumulatively: F0/F1, F2 and F8 audits, browser tests, format paths and Visual QA commands are all retained.
 - Preserved the read-only shared CI workflow from Integration and removed every temporary write-enabled F8 workflow from the final tree.
 - Corrected inherited F2 and F8 audit branch policies so the same immutable checks remain valid on the owner phase branch, controlled later phase branches, Integration, and the release branch.
+- Stabilized the inherited F2 browser search test by focusing the real input explicitly, using real browser text entry, waiting for Hydration and the completed deferred search state, and verifying the suite twice consecutively before Commit.
 - Kept the frontend-only Auth boundary honest: no fake login success, OTP, session, account creation or credential persistence.
 - Kept unsupported legal, contact, shipping, return and support pages absent rather than inventing authoritative business content.
 
