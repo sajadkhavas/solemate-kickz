@@ -63,8 +63,13 @@ export function ShoeViewer3D({ fallbackImage, alt, priority = false }: Props) {
   const [errored, setErrored] = useState(false);
   const [posterFailed, setPosterFailed] = useState(false);
   const [interacted, setInteracted] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const modelRef = useRef<HTMLElement | null>(null);
   const parallax = useMouseParallax(12, 18);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined" || reduceMotion) return;
@@ -130,16 +135,19 @@ export function ShoeViewer3D({ fallbackImage, alt, priority = false }: Props) {
   }, [ready]);
 
   const canRenderModel = ready && supported && !errored && !reduceMotion;
-  const rotateX = reduceMotion ? 0 : parallax.rotateX;
-  const rotateY = reduceMotion ? 0 : parallax.rotateY;
+  const interactive = hydrated && !reduceMotion;
+  const rotateX = interactive ? parallax.rotateX : 0;
+  const rotateY = interactive ? parallax.rotateY : 0;
+  const lightX = interactive ? parallax.lightX : 50;
+  const lightY = interactive ? parallax.lightY : 50;
 
   return (
     <div className="relative w-full" data-testid="shoe-viewer">
       <div
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
-          background: `radial-gradient(circle at ${reduceMotion ? 50 : parallax.lightX}% ${
-            reduceMotion ? 60 : parallax.lightY + 20
+          background: `radial-gradient(circle at ${lightX}% ${
+            lightY + 20
           }%, rgba(200,241,53,0.24), transparent 58%)`,
           filter: "blur(42px)",
         }}
