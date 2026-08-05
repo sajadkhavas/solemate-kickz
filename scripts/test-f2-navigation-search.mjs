@@ -416,18 +416,43 @@ async function main() {
     await key(client, "Escape", { code: "Escape", keyCode: 27 });
     await waitForExpression(client, `!document.querySelector('[data-testid="search-dialog"]')`);
     await waitForExpression(client, `!${bodyLockedExpression}`);
-    const searchClosed = await evaluate(
+    const desktopSearchClosed = await evaluate(
       client,
       `({
         closed: !document.querySelector('[data-testid="search-dialog"]'),
-        restored: document.activeElement?.dataset.searchTrigger,
+        restored: document.activeElement?.dataset.testid,
+        unlocked: !${bodyLockedExpression}
+      })`,
+    );
+
+    await configureViewport(client, 390, 844);
+    await navigate(client, `${BASE_URL}/`);
+    await visibleClick(client, '[data-testid="mobile-search-trigger"]');
+    await waitForExpression(client, `document.querySelector('[data-testid="search-dialog"]')`);
+    await waitForExpression(
+      client,
+      `document.activeElement === document.querySelector('[data-testid="search-input"]')`,
+    );
+    await key(client, "Escape", { code: "Escape", keyCode: 27 });
+    await waitForExpression(client, `!document.querySelector('[data-testid="search-dialog"]')`);
+    await waitForExpression(client, `!${bodyLockedExpression}`);
+    const mobileSearchClosed = await evaluate(
+      client,
+      `({
+        closed: !document.querySelector('[data-testid="search-dialog"]'),
+        restored: document.activeElement?.dataset.testid,
         unlocked: !${bodyLockedExpression}
       })`,
     );
     record(
-      "Search Escape close and focus restoration",
-      searchClosed.closed && searchClosed.restored === "true" && searchClosed.unlocked,
-      searchClosed,
+      "Search Escape restores focus to the actual desktop and mobile opener",
+      desktopSearchClosed.closed &&
+        desktopSearchClosed.restored === "search-trigger" &&
+        desktopSearchClosed.unlocked &&
+        mobileSearchClosed.closed &&
+        mobileSearchClosed.restored === "mobile-search-trigger" &&
+        mobileSearchClosed.unlocked,
+      { desktop: desktopSearchClosed, mobile: mobileSearchClosed },
     );
 
     await submitQuery(client, "Nike");
