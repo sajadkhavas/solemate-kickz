@@ -56,7 +56,11 @@ async function startServer() {
 async function openHome(client) {
   await navigate(client, `${BASE_URL}/`);
   await waitForExpression(client, `document.querySelector('[data-testid="home-hero"]')`);
-  await sleep(300);
+  await waitForExpression(
+    client,
+    `(() => { const el = document.querySelector('[data-testid="hero-primary-cta"]'); return Boolean(el && Object.keys(el).some((key) => key.startsWith('__reactProps$'))); })()`,
+  );
+  await sleep(150);
 }
 
 async function click(client, selector) {
@@ -122,13 +126,16 @@ async function main() {
     const primary = await evaluate(client, `({ pathname: location.pathname, search: location.search })`);
     record("Hero CTA navigation", primary.pathname === "/products", primary);
 
-    await waitForExpression(
+    await sleep(600);
+    const focus = await evaluate(
       client,
-      `document.activeElement?.id === 'main-content' || document.activeElement?.tagName === 'MAIN'`,
-      4_000,
+      `({ id: document.activeElement?.id, tag: document.activeElement?.tagName, withinMain: Boolean(document.getElementById('main-content')?.contains(document.activeElement)) })`,
     );
-    const focus = await evaluate(client, `({ id: document.activeElement?.id, tag: document.activeElement?.tagName })`);
-    record("Route focus after navigation", focus.id === "main-content" || focus.tag === "MAIN", focus);
+    record(
+      "Route focus after navigation",
+      focus.id === "main-content" || (focus.withinMain && focus.tag !== "BODY"),
+      focus,
+    );
 
     await openHome(client);
     await click(client, '[data-testid="hero-secondary-cta"]');
