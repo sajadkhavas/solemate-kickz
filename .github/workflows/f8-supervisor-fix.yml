@@ -1,0 +1,102 @@
+name: Temporary F8 Supervisor Fix
+
+on:
+  push:
+    branches:
+      - "phase/sole-f8-content-pages"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-f8-supervisor-fix
+  cancel-in-progress: true
+
+jobs:
+  patch-and-push:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out F8 branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase/sole-f8-content-pages
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+          no-cache: true
+
+      - name: Install from lockfile
+        run: bun install --frozen-lockfile
+
+      - name: Apply supervisor corrections
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          brands = Path("src/routes/brands.tsx")
+          text = brands.read_text()
+          text = text.replace(
+              'import { BRANDS, BRAND_LOGO_SLUGS, SHOES } from "@/data/shoes";',
+              'import { BRANDS, SHOES } from "@/data/shoes";',
+          )
+          text = text.replace('      logoSlug: BRAND_LOGO_SLUGS[name],\n', '')
+          text = text.replace('  const [logoFailed, setLogoFailed] = useState(false);\n\n', '')
+          old_call = '''        <BrandMark\n          name={brand.name}\n          logoSlug={brand.logoSlug}\n          failed={logoFailed}\n          onFail={() => setLogoFailed(true)}\n        />'''
+          if old_call not in text:
+              raise SystemExit("BrandMark remote invocation not found")
+          text = text.replace(old_call, '<BrandMark name={brand.name} />')
+          marker = 'function BrandMark({' 
+          index = text.find(marker)
+          if index < 0:
+              raise SystemExit("BrandMark function not found")
+          replacement = '''function BrandMark({ name }: { name: string }) {\n  const initials = name\n    .split(" ")\n    .map((part) => part[0])\n    .join("")\n    .slice(0, 3);\n\n  return (\n    <div\n      dir="ltr"\n      aria-label={`نشان متنی ${name}`}\n      data-brand-mark="text"\n      className="flex min-h-14 w-fit min-w-14 items-center justify-center rounded-[var(--radius-lg)] border border-border bg-background/80 px-3 font-display text-lg font-black text-primary"\n    >\n      {initials}\n    </div>\n  );\n}\n'''
+          brands.write_text(text[:index] + replacement)
+
+          audit = Path("scripts/audit-f8-content-pages.mjs")
+          text = audit.read_text()
+          old = '''record(\n  "Brand logo fallback",\n  /BRAND_LOGO_SLUGS/.test(brands) && /نشان متنی/.test(brands) && /onError=\\{onFail\\}/.test(brands),\n  null,\n);'''
+          new = '''record(\n  "Stable local brand mark",\n  /data-brand-mark="text"/.test(brands) &&\n    /نشان متنی/.test(brands) &&\n    !/cdn\\.simpleicons\\.org|BRAND_LOGO_SLUGS/.test(brands),\n  null,\n);'''
+          if old not in text:
+              raise SystemExit("F8 brand-logo audit block not found")
+          audit.write_text(text.replace(old, new))
+
+          test = Path("scripts/test-f8-content-pages.mjs")
+          text = test.read_text()
+          old = '''    await navigate(client, `${baseUrl}/about`);\n    await evaluate(client, `document.querySelector('main a[href="/brands"]')?.click()`);\n    await waitForExpression(client, `location.pathname === '/brands'`);\n    await sleep(120);\n    const routeFocus = await evaluate(client, `document.activeElement?.id`);\n    record("Route focus", routeFocus === "main-content", routeFocus);'''
+          new = '''    await navigate(client, `${baseUrl}/about`);\n    await evaluate(\n      client,\n      `(() => {\n        const link = document.querySelector('main a[href="/brands"]');\n        link?.focus();\n        return document.activeElement === link;\n      })()`,\n    );\n    await press(client, "Enter");\n    await waitForExpression(client, `location.pathname === '/brands'`);\n    await waitForExpression(client, `document.activeElement?.id === 'main-content'`, 5_000);\n    const routeFocus = await evaluate(client, `document.activeElement?.id`);\n    record("Route focus", routeFocus === "main-content", routeFocus);'''
+          if old not in text:
+              raise SystemExit("F8 route-focus test block not found")
+          test.write_text(text.replace(old, new))
+
+          handoff = Path("docs/handoffs/F8-CONTENT-PAGES.md")
+          text = handoff.read_text()
+          note = '''## Supervisor corrections\n\n- Removed the Simple Icons CDN dependency from the Brands route. Brand identity now uses deterministic local text marks, so the page remains truthful and usable offline or on restricted networks.\n- Stabilized the route-focus browser check by activating the route with keyboard semantics and waiting for the shared `#main-content` focus contract instead of relying on a fixed delay.\n\n'''
+          marker = '## Ready for supervisor review'
+          if marker not in text:
+              raise SystemExit("F8 handoff readiness marker not found")
+          if '## Supervisor corrections' not in text:
+              text = text.replace(marker, note + marker)
+          handoff.write_text(text)
+          PY
+
+          bun run format:f8
+
+      - name: Commit corrected F8 delivery
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            src/routes/brands.tsx \
+            scripts/audit-f8-content-pages.mjs \
+            scripts/test-f8-content-pages.mjs \
+            docs/handoffs/F8-CONTENT-PAGES.md
+          git commit -m "fix(content): remove remote brand-logo dependency"
+          git push origin HEAD:phase/sole-f8-content-pages
