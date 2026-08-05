@@ -42,6 +42,7 @@ export function Navbar() {
   }, []);
 
   const visibleCartCount = mounted ? cartCount : 0;
+  const cartDescriptionId = "desktop-cart-count-description";
 
   return (
     <>
@@ -80,20 +81,27 @@ export function Navbar() {
             </Link>
 
             <IconButton
-              label={visibleCartCount ? `سبد خرید، ${visibleCartCount} کالا` : "سبد خرید"}
+              label="Cart"
+              aria-describedby={visibleCartCount ? cartDescriptionId : undefined}
               variant="ghost"
               data-testid="cart-trigger"
+              data-cart-trigger="true"
               className="relative"
               onClick={() => setCartOpen(true)}
             >
               <ShoppingBag aria-hidden="true" className="size-5" />
               {visibleCartCount > 0 ? (
-                <span
-                  aria-hidden="true"
-                  className="absolute -end-0.5 -top-0.5 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 font-mono-num text-[10px] font-bold text-primary-foreground"
-                >
-                  {visibleCartCount}
-                </span>
+                <>
+                  <span id={cartDescriptionId} className="sr-only">
+                    تعداد کالاهای سبد: {visibleCartCount}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="absolute -end-0.5 -top-0.5 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 font-mono-num text-[10px] font-bold text-primary-foreground"
+                  >
+                    {visibleCartCount}
+                  </span>
+                </>
               ) : null}
             </IconButton>
           </div>
