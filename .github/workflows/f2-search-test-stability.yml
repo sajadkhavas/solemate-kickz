@@ -1,0 +1,75 @@
+name: Temporary F2 Search Test Stability
+
+on:
+  push:
+    branches:
+      - "phase/sole-f8-content-pages"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-f2-search-test-stability
+  cancel-in-progress: true
+
+jobs:
+  patch-test-and-push:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out F8 branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase/sole-f8-content-pages
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+          no-cache: true
+
+      - name: Install from lockfile
+        run: bun install --frozen-lockfile
+
+      - name: Stabilize real browser text entry
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/test-f2-navigation-search.mjs")
+          text = path.read_text()
+
+          old_helper = '''async function setSearchInput(client, value) {\n  await evaluate(\n    client,\n    `(() => {\n      const input = document.querySelector('[data-testid="search-input"]');\n      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;\n      setter?.call(input, ${JSON.stringify(value)});\n      input?.dispatchEvent(new Event('input', { bubbles: true }));\n      return input?.value;\n    })()`,\n  );\n  await waitForExpression(\n    client,\n    `document.querySelector('[data-testid="search-input"]')?.value === ${JSON.stringify(value)}`,\n  );\n}\n\nasync function openSearch(client) {\n  await waitForExpression(client, `!${bodyLockedExpression}`);\n  await visibleClick(client, '[data-search-trigger="true"]');\n  await waitForExpression(client, `document.querySelector('[data-testid="search-dialog"]')`);\n}\n'''
+          new_helper = '''async function setSearchInput(client, value) {\n  await waitForExpression(\n    client,\n    `document.activeElement === document.querySelector('[data-testid="search-input"]')`,\n  );\n  await evaluate(\n    client,\n    `(() => {\n      const input = document.querySelector('[data-testid="search-input"]');\n      input?.focus();\n      input?.select();\n      return Boolean(input);\n    })()`,\n  );\n  await key(client, "Backspace", { code: "Backspace", keyCode: 8 });\n  await client.send("Input.insertText", { text: value });\n  await waitForExpression(\n    client,\n    `document.querySelector('[data-testid="search-input"]')?.value === ${JSON.stringify(value)}`,\n    10_000,\n  );\n  await waitForExpression(\n    client,\n    `!document.querySelector('[data-testid="search-loading"]')`,\n    10_000,\n  );\n}\n\nasync function openSearch(client) {\n  await waitForExpression(\n    client,\n    `document.querySelector('[data-testid="global-header"]')?.dataset.hydrated === "true"`,\n    10_000,\n  );\n  await waitForExpression(client, `!${bodyLockedExpression}`);\n  await visibleClick(client, '[data-search-trigger="true"]');\n  await waitForExpression(client, `document.querySelector('[data-testid="search-dialog"]')`);\n  await waitForExpression(\n    client,\n    `document.activeElement === document.querySelector('[data-testid="search-input"]')`,\n    10_000,\n  );\n}\n'''
+          if old_helper not in text:
+              raise SystemExit("Legacy F2 input/openSearch helpers not found")
+          text = text.replace(old_helper, new_helper)
+
+          old_wait = '''    await setSearchInput(client, "Air Max");\n    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="search-result"]').length > 0`,\n    );'''
+          new_wait = '''    await setSearchInput(client, "Air Max");\n    await waitForExpression(\n      client,\n      `(() => {\n        const input = document.querySelector('[data-testid="search-input"]');\n        const results = document.querySelectorAll('[data-testid="search-result"]');\n        return input?.value === "Air Max" && results.length > 0;\n      })()`,\n      15_000,\n    );'''
+          if old_wait not in text:
+              raise SystemExit("Legacy F2 search result wait not found")
+          text = text.replace(old_wait, new_wait)
+
+          path.write_text(text)
+          PY
+
+          bunx prettier --write scripts/test-f2-navigation-search.mjs
+
+      - name: Verify F2 browser test twice
+        run: |
+          bun run test:f2
+          bun run test:f2
+
+      - name: Commit stable repeated-run test
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/test-f2-navigation-search.mjs
+          git commit -m "test(search): stabilize repeated F2 browser input"
+          git push origin HEAD:phase/sole-f8-content-pages
