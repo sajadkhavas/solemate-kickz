@@ -22,15 +22,19 @@ function record(name, pass, evidence) {
   if (!pass) console.error(`FAIL ${name}: ${JSON.stringify(evidence)}`);
 }
 
-async function setValue(client, selector, value) {
+async function waitForHydration(client, selector) {
   await waitForExpression(
     client,
     `(() => {
-      const input = document.querySelector(${JSON.stringify(selector)});
-      return input instanceof HTMLInputElement && Object.keys(input).some((key) => key.startsWith('__reactProps$'));
+      const element = document.querySelector(${JSON.stringify(selector)});
+      return Boolean(element && Object.keys(element).some((key) => key.startsWith('__reactProps$')));
     })()`,
     15_000,
   );
+}
+
+async function setValue(client, selector, value) {
+  await waitForHydration(client, selector);
   const selected = await evaluate(
     client,
     `(() => {
@@ -133,6 +137,7 @@ async function run(baseUrl) {
 
     await navigate(client, `${baseUrl}/auth`);
     await waitForExpression(client, `document.querySelector('#auth-email')`);
+    await waitForHydration(client, `[data-testid="auth-form"]`);
     await evaluate(client, `document.querySelector('#auth-email')?.focus()`);
     await press(client, "Tab");
     const keyboardTarget = await evaluate(
