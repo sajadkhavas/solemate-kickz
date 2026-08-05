@@ -45,7 +45,6 @@ const files = {
   visual: read("scripts/visual-qa-f2-navigation-search.mjs"),
 };
 const packageJson = JSON.parse(read("package.json"));
-const shellSource = Object.values(files).join("\n");
 const branch =
   process.env.GITHUB_HEAD_REF ||
   git(["symbolic-ref", "--short", "-q", "HEAD"], { allowFailure: true }) ||
