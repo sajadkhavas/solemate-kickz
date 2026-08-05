@@ -1,0 +1,51 @@
+import { spawn } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
+
+import { sleep, waitForHttp } from "./browser-harness.mjs";
+
+const ROOT = process.cwd();
+
+function waitForExit(child) {
+  if (child.exitCode !== null) return Promise.resolve(child.exitCode);
+  return new Promise((resolve) => child.once("exit", (code, signal) => resolve(code ?? (signal ? 1 : 0))));
+}
+
+async function stop(child) {
+  if (!child || child.exitCode !== null) return;
+  const exited = waitForExit(child);
+  child.kill("SIGTERM");
+  const graceful = await Promise.race([exited.then(() => true), sleep(3_000).then(() => false)]);
+  if (!graceful && child.exitCode === null) {
+    child.kill("SIGKILL");
+    await Promise.race([exited, sleep(1_000)]);
+  }
+}
+
+export async function delegateToDevServer({ envName, port, entryPath, logName }) {
+  if (process.env[envName]) return null;
+
+  const baseUrl = `http://127.0.0.1:${port}`;
+  const logPath = path.join(ROOT, "artifacts/runtime", logName);
+  fs.mkdirSync(path.dirname(logPath), { recursive: true });
+  const log = fs.openSync(logPath, "w");
+  const server = spawn(
+    "bun",
+    ["run", "dev", "--", "--host", "127.0.0.1", "--port", String(port)],
+    { cwd: ROOT, stdio: ["ignore", log, log], env: process.env },
+  );
+
+  try {
+    await waitForHttp(baseUrl, 60_000);
+    const child = spawn(process.execPath, [entryPath], {
+      cwd: ROOT,
+      stdio: "inherit",
+      env: { ...process.env, [envName]: baseUrl },
+    });
+    return await waitForExit(child);
+  } finally {
+    await stop(server);
+    fs.closeSync(log);
+  }
+}
