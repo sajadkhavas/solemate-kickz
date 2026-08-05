@@ -21,6 +21,16 @@ const LOG_PATH = path.join(ROOT, "artifacts/runtime/f2-behavior-chrome.txt");
 const results = [];
 const browserErrors = [];
 
+const bodyLockedExpression = `(() => {
+  const computed = getComputedStyle(document.body);
+  return document.body.hasAttribute('data-scroll-locked') || computed.overflow === 'hidden' || computed.overflowY === 'hidden';
+})()`;
+
+const historyExpression = `(() => {
+  const persisted = JSON.parse(localStorage.getItem('sole-store') || '{}');
+  return persisted.state?.searchHistory || [];
+})()`;
+
 function record(name, pass, evidence) {
   results.push({ name, pass: Boolean(pass), evidence });
   if (!pass) console.error(`FAIL ${name}: ${JSON.stringify(evidence)}`);
@@ -43,40 +53,21 @@ async function visibleClick(client, selector) {
   if (!clicked) throw new Error(`Visible target not found: ${selector}`);
 }
 
-async function key(client, value, options = {}) {
-  const code = options.code ?? value;
-  const keyCode = options.keyCode ?? 0;
+async function key(client, value, { code = value, keyCode = 0, shift = false } = {}) {
   await client.send("Input.dispatchKeyEvent", {
     type: "keyDown",
     key: value,
     code,
     windowsVirtualKeyCode: keyCode,
-    shift: Boolean(options.shift),
+    shift,
   });
   await client.send("Input.dispatchKeyEvent", {
     type: "keyUp",
     key: value,
     code,
     windowsVirtualKeyCode: keyCode,
-    shift: Boolean(options.shift),
+    shift,
   });
-}
-
-async function setInput(client, value) {
-  await evaluate(
-    client,
-    `(() => {
-      const input = document.querySelector('[data-testid="search-input"]');
-      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
-      setter?.call(input, ${JSON.stringify(value)});
-      input?.dispatchEvent(new Event('input', { bubbles: true }));
-      return input?.value;
-    })()`,
-  );
-  await waitForExpression(
-    client,
-    `document.querySelector('[data-testid="search-input"]')?.value === ${JSON.stringify(value)}`,
-  );
 }
 
 async function configureViewport(client, width, height) {
@@ -94,14 +85,32 @@ async function configureViewport(client, width, height) {
   });
 }
 
+async function setSearchInput(client, value) {
+  await evaluate(
+    client,
+    `(() => {
+      const input = document.querySelector('[data-testid="search-input"]');
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+      setter?.call(input, ${JSON.stringify(value)});
+      input?.dispatchEvent(new Event('input', { bubbles: true }));
+      return input?.value;
+    })()`,
+  );
+  await waitForExpression(
+    client,
+    `document.querySelector('[data-testid="search-input"]')?.value === ${JSON.stringify(value)}`,
+  );
+}
+
 async function openSearch(client) {
+  await waitForExpression(client, `!${bodyLockedExpression}`);
   await visibleClick(client, '[data-search-trigger="true"]');
   await waitForExpression(client, `document.querySelector('[data-testid="search-dialog"]')`);
 }
 
 async function submitQuery(client, query) {
   await openSearch(client);
-  await setInput(client, query);
+  await setSearchInput(client, query);
   await waitForExpression(
     client,
     `!document.querySelector('[data-testid="search-dialog"] button[type="submit"]')?.disabled`,
@@ -111,12 +120,9 @@ async function submitQuery(client, query) {
     client,
     `location.pathname === '/products' && new URLSearchParams(location.search).get('q') === ${JSON.stringify(query)}`,
   );
+  await waitForExpression(client, `!document.querySelector('[data-testid="search-dialog"]')`);
+  await waitForExpression(client, `!${bodyLockedExpression}`);
 }
-
-const recentHistoryExpression = `(() => {
-  const persisted = JSON.parse(localStorage.getItem('sole-store') || '{}');
-  return persisted.state?.searchHistory || [];
-})()`;
 
 async function main() {
   fs.mkdirSync(path.dirname(REPORT_PATH), { recursive: true });
@@ -132,9 +138,7 @@ async function main() {
     );
   });
   client.on("Runtime.consoleAPICalled", (event) => {
-    if (event.type === "error") {
-      browserErrors.push(event.args.map(serialiseArgument).join(" "));
-    }
+    if (event.type === "error") browserErrors.push(event.args.map(serialiseArgument).join(" "));
   });
 
   try {
@@ -152,7 +156,7 @@ async function main() {
         expanded: document.querySelector('[data-testid="desktop-menu-trigger"]')?.getAttribute('aria-expanded')
       })`,
     );
-    record("Desktop menu opens with pointer", desktopOpen.open && desktopOpen.expanded === "true", desktopOpen);
+    record("Desktop menu opens", desktopOpen.open && desktopOpen.expanded === "true", desktopOpen);
 
     await key(client, "ArrowDown", { code: "ArrowDown", keyCode: 40 });
     await waitForExpression(
@@ -191,56 +195,49 @@ async function main() {
       client,
       `(() => {
         const dialog = document.querySelector('[data-testid="mobile-menu-content"]');
-        const body = getComputedStyle(document.body);
         return {
           open: Boolean(dialog),
           activeInside: Boolean(dialog?.contains(document.activeElement)),
-          overflow: body.overflow,
-          overflowY: body.overflowY
+          locked: ${bodyLockedExpression}
         };
       })()`,
     );
     record("Mobile menu opens", mobileOpen.open && mobileOpen.activeInside, mobileOpen);
-    record(
-      "Mobile menu locks body scroll",
-      [mobileOpen.overflow, mobileOpen.overflowY].includes("hidden"),
-      mobileOpen,
-    );
+    record("Mobile menu body scroll lock", mobileOpen.locked, mobileOpen);
 
-    const mobileTrail = [];
+    const focusTrail = [];
     for (let index = 0; index < 12; index += 1) {
       await key(client, "Tab", { code: "Tab", keyCode: 9 });
-      mobileTrail.push(
+      focusTrail.push(
         await evaluate(
           client,
           `Boolean(document.querySelector('[data-testid="mobile-menu-content"]')?.contains(document.activeElement))`,
         ),
       );
     }
-    record("Mobile menu focus trap", mobileTrail.every(Boolean), mobileTrail);
+    record("Mobile menu focus trap", focusTrail.every(Boolean), focusTrail);
 
     await key(client, "Escape", { code: "Escape", keyCode: 27 });
     await waitForExpression(client, `!document.querySelector('[data-testid="mobile-menu-content"]')`);
+    await waitForExpression(client, `!${bodyLockedExpression}`);
     const mobileClosed = await evaluate(
       client,
       `({
         closed: !document.querySelector('[data-testid="mobile-menu-content"]'),
         restored: document.activeElement?.dataset.testid,
-        overflow: getComputedStyle(document.body).overflow
+        unlocked: !${bodyLockedExpression}
       })`,
     );
     record(
       "Mobile Escape close and focus restoration",
-      mobileClosed.closed &&
-        mobileClosed.restored === "mobile-menu-trigger" &&
-        mobileClosed.overflow !== "hidden",
+      mobileClosed.closed && mobileClosed.restored === "mobile-menu-trigger" && mobileClosed.unlocked,
       mobileClosed,
     );
 
     await configureViewport(client, 1280, 800);
     await navigate(client, `${BASE_URL}/`);
     await openSearch(client);
-    const initialFocus = await evaluate(
+    const initialSearch = await evaluate(
       client,
       `(() => {
         const dialog = document.querySelector('[data-testid="search-dialog"]');
@@ -248,19 +245,19 @@ async function main() {
         return {
           focused: document.activeElement === input,
           activeInside: Boolean(dialog?.contains(document.activeElement)),
-          overflow: getComputedStyle(document.body).overflow
+          locked: ${bodyLockedExpression}
         };
       })()`,
     );
     record(
-      "Search initial focus, trap surface and scroll lock",
-      initialFocus.focused && initialFocus.activeInside && initialFocus.overflow === "hidden",
-      initialFocus,
+      "Search initial focus, focus surface and scroll lock",
+      initialSearch.focused && initialSearch.activeInside && initialSearch.locked,
+      initialSearch,
     );
 
-    await setInput(client, "Air Max");
+    await setSearchInput(client, "Air Max");
     await waitForExpression(client, `document.querySelectorAll('[data-testid="search-result"]').length > 0`);
-    const realSuggestions = await evaluate(
+    const suggestions = await evaluate(
       client,
       `({
         count: document.querySelectorAll('[data-testid="search-result"]').length,
@@ -268,9 +265,9 @@ async function main() {
       })`,
     );
     record(
-      "Typing shows real dataset suggestions",
-      realSuggestions.count > 0 && /Air Max/i.test(realSuggestions.text),
-      realSuggestions,
+      "Search displays real dataset suggestions",
+      suggestions.count > 0 && /Air Max/i.test(suggestions.text),
+      suggestions,
     );
 
     await key(client, "ArrowDown", { code: "ArrowDown", keyCode: 40 });
@@ -278,36 +275,31 @@ async function main() {
       client,
       `Boolean(document.querySelector('[data-testid="search-result"][aria-selected="true"]'))`,
     );
-    const arrowSelection = await evaluate(
+    const arrow = await evaluate(
       client,
       `({
         active: document.querySelector('[data-testid="search-input"]')?.getAttribute('aria-activedescendant'),
         selected: document.querySelector('[data-testid="search-result"][aria-selected="true"]')?.id
       })`,
     );
-    record(
-      "Search Arrow navigation",
-      Boolean(arrowSelection.active) && arrowSelection.active === arrowSelection.selected,
-      arrowSelection,
-    );
+    record("Search Arrow navigation", Boolean(arrow.active) && arrow.active === arrow.selected, arrow);
 
     await key(client, "Enter", { code: "Enter", keyCode: 13 });
     await waitForExpression(client, `location.pathname.startsWith('/product/')`);
-    const enterSelection = await evaluate(
+    await waitForExpression(client, `!document.querySelector('[data-testid="search-dialog"]')`);
+    await waitForExpression(client, `!${bodyLockedExpression}`);
+    const enterResult = await evaluate(
       client,
-      `({
-        path: location.pathname,
-        dialogClosed: !document.querySelector('[data-testid="search-dialog"]')
-      })`,
+      `({ path: location.pathname, closed: !document.querySelector('[data-testid="search-dialog"]') })`,
     );
     record(
-      "Search Enter selects active result",
-      enterSelection.path.startsWith("/product/") && enterSelection.dialogClosed,
-      enterSelection,
+      "Search Enter selects active suggestion",
+      enterResult.path.startsWith("/product/") && enterResult.closed,
+      enterResult,
     );
 
     await openSearch(client);
-    await setInput(client, "Jordan");
+    await setSearchInput(client, "Jordan");
     await waitForExpression(client, `document.querySelector('[aria-label="پاک‌کردن جستجو"]')`);
     await visibleClick(client, '[aria-label="پاک‌کردن جستجو"]');
     await waitForExpression(
@@ -323,44 +315,41 @@ async function main() {
     );
     record("Clear search returns to empty state", cleared.value === "" && cleared.empty, cleared);
 
-    await setInput(client, "Silver Bullet");
-    await waitForExpression(
-      client,
-      `!document.querySelector('[data-testid="search-dialog"] button[type="submit"]')?.disabled`,
-    );
+    await setSearchInput(client, "Silver Bullet");
     await key(client, "Enter", { code: "Enter", keyCode: 13 });
     await waitForExpression(
       client,
       `location.pathname === '/products' && new URLSearchParams(location.search).get('q') === 'Silver Bullet'`,
     );
+    await waitForExpression(client, `!${bodyLockedExpression}`);
     const submitted = await evaluate(
       client,
       `({
         path: location.pathname,
-        q: new URLSearchParams(location.search).get('q'),
-        history: ${recentHistoryExpression}
+        query: new URLSearchParams(location.search).get('q'),
+        history: ${historyExpression}
       })`,
     );
     record(
-      "Search submits URL query and persists recent term",
+      "Search query updates URL and recent history",
       submitted.path === "/products" &&
-        submitted.q === "Silver Bullet" &&
+        submitted.query === "Silver Bullet" &&
         submitted.history.includes("Silver Bullet"),
       submitted,
     );
 
     await navigate(client, `${BASE_URL}/products?q=Silver%20Bullet&sort=newest`);
-    const refreshQuery = await evaluate(
+    const deepLink = await evaluate(
       client,
       `({
-        q: new URLSearchParams(location.search).get('q'),
+        query: new URLSearchParams(location.search).get('q'),
         text: document.body.textContent.includes('Silver Bullet')
       })`,
     );
     record(
-      "URL query survives refresh and deep link",
-      refreshQuery.q === "Silver Bullet" && refreshQuery.text,
-      refreshQuery,
+      "Search URL survives refresh and deep link",
+      deepLink.query === "Silver Bullet" && deepLink.text,
+      deepLink,
     );
 
     await navigate(client, `${BASE_URL}/`);
@@ -369,54 +358,55 @@ async function main() {
       client,
       `[...document.querySelectorAll('[data-testid="recent-search"]')].some((node) => node.textContent?.includes('Silver Bullet'))`,
     );
-    const persistedRecent = await evaluate(
+    const recentVisible = await evaluate(
       client,
       `[...document.querySelectorAll('[data-testid="recent-search"]')].some((node) => node.textContent?.includes('Silver Bullet'))`,
     );
-    record("Recent search appears after navigation", persistedRecent === true, persistedRecent);
+    record("Recent search persists across routes", recentVisible, recentVisible);
 
     await visibleClick(client, '[aria-label="حذف جستجوی Silver Bullet"]');
     await waitForExpression(
       client,
-      `!${recentHistoryExpression}.includes('Silver Bullet') && !document.querySelector('[aria-label="حذف جستجوی Silver Bullet"]')`,
+      `!${historyExpression}.includes('Silver Bullet') && !document.querySelector('[aria-label="حذف جستجوی Silver Bullet"]')`,
     );
-    const removedRecent = await evaluate(
+    const removed = await evaluate(
       client,
       `({
-        removeControlPresent: Boolean(document.querySelector('[aria-label="حذف جستجوی Silver Bullet"]')),
-        history: ${recentHistoryExpression}
+        silverControl: Boolean(document.querySelector('[aria-label="حذف جستجوی Silver Bullet"]')),
+        history: ${historyExpression}
       })`,
     );
     record(
-      "Remove one recent search without clearing others",
-      !removedRecent.removeControlPresent &&
-        !removedRecent.history.includes("Silver Bullet") &&
-        removedRecent.history.includes("Air Max"),
-      removedRecent,
+      "Delete one recent search",
+      !removed.silverControl &&
+        !removed.history.includes("Silver Bullet") &&
+        removed.history.includes("Air Max"),
+      removed,
     );
 
-    await setInput(client, "NoSuchSoleModelXYZ");
+    await setSearchInput(client, "NoSuchSoleModelXYZ");
     await waitForExpression(client, `document.querySelector('[data-testid="search-no-results"]')`);
     const noResult = await evaluate(
       client,
       `Boolean(document.querySelector('[data-testid="search-no-results"]'))`,
     );
-    record("No-result state is truthful", noResult === true, noResult);
+    record("Search no-result state", noResult, noResult);
 
     await key(client, "Escape", { code: "Escape", keyCode: 27 });
     await waitForExpression(client, `!document.querySelector('[data-testid="search-dialog"]')`);
-    const searchEscape = await evaluate(
+    await waitForExpression(client, `!${bodyLockedExpression}`);
+    const searchClosed = await evaluate(
       client,
       `({
         closed: !document.querySelector('[data-testid="search-dialog"]'),
         restored: document.activeElement?.dataset.searchTrigger,
-        overflow: getComputedStyle(document.body).overflow
+        unlocked: !${bodyLockedExpression}
       })`,
     );
     record(
       "Search Escape close and focus restoration",
-      searchEscape.closed && searchEscape.restored === "true" && searchEscape.overflow !== "hidden",
-      searchEscape,
+      searchClosed.closed && searchClosed.restored === "true" && searchClosed.unlocked,
+      searchClosed,
     );
 
     await submitQuery(client, "Nike");
@@ -428,7 +418,7 @@ async function main() {
     await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Jordan'`);
     const forwardQuery = await evaluate(client, `new URLSearchParams(location.search).get('q')`);
     record(
-      "Browser Back and Forward preserve search URL",
+      "Browser Back and Forward preserve search query",
       backQuery === "Nike" && forwardQuery === "Jordan",
       { backQuery, forwardQuery },
     );
@@ -437,20 +427,30 @@ async function main() {
     await navigate(client, `${BASE_URL}/`);
     await visibleClick(client, '[data-testid="mobile-menu-trigger"]');
     await waitForExpression(client, `document.querySelector('[data-testid="mobile-menu-content"]')`);
-    await visibleClick(client, '[data-testid="mobile-menu-content"] a[href="/products"]');
+    await evaluate(
+      client,
+      `(() => {
+        const link = document.querySelector('[data-testid="mobile-menu-content"] a[href="/products"]');
+        link?.focus();
+        return document.activeElement === link;
+      })()`,
+    );
+    await key(client, "Enter", { code: "Enter", keyCode: 13 });
     await waitForExpression(client, `location.pathname === '/products'`);
     await waitForExpression(client, `!document.querySelector('[data-testid="mobile-menu-content"]')`);
-    const routeClosed = await evaluate(
+    await waitForExpression(client, `!${bodyLockedExpression}`);
+    const routeClose = await evaluate(
       client,
       `({
         path: location.pathname,
-        menuClosed: !document.querySelector('[data-testid="mobile-menu-content"]')
+        menuClosed: !document.querySelector('[data-testid="mobile-menu-content"]'),
+        unlocked: !${bodyLockedExpression}
       })`,
     );
     record(
       "Route navigation closes mobile overlay",
-      routeClosed.path === "/products" && routeClosed.menuClosed,
-      routeClosed,
+      routeClose.path === "/products" && routeClose.menuClosed && routeClose.unlocked,
+      routeClose,
     );
 
     const meaningfulErrors = browserErrors.filter((text) =>
@@ -465,7 +465,7 @@ async function main() {
 
   const failed = results.filter((result) => !result.pass);
   const report = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     suite: "f2-navigation-search-browser-behavior",
     generatedAt: new Date().toISOString(),
     baseUrl: BASE_URL,
@@ -500,7 +500,7 @@ if (delegated !== null) {
       REPORT_PATH,
       `${JSON.stringify(
         {
-          schemaVersion: 2,
+          schemaVersion: 3,
           suite: "f2-navigation-search-browser-behavior",
           generatedAt: new Date().toISOString(),
           pass: false,
