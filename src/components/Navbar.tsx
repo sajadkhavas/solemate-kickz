@@ -9,6 +9,8 @@ import { SoleLogo } from "@/components/navigation/SoleLogo";
 import { IconButton } from "@/components/ui/commerce-primitives";
 import { useCartCount, useStore } from "@/store";
 
+import "@/components/navigation/navigation.css";
+
 function DemoDisclosure() {
   return (
     <div className="border-b border-primary/30 bg-primary text-primary-foreground">
