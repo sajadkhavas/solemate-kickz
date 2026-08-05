@@ -27,7 +27,6 @@ type ModelViewerProps = React.DetailedHTMLProps<
 
 declare global {
   // React 19 reads intrinsic elements from React.JSX
-  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace React {
     namespace JSX {
       interface IntrinsicElements {
