@@ -1,0 +1,111 @@
+name: Temporary F2 Supervisor Fix
+
+on:
+  push:
+    branches:
+      - "phase/sole-f2-navigation-search"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-f2-supervisor-fix
+  cancel-in-progress: true
+
+jobs:
+  patch-and-push:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out F2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase/sole-f2-navigation-search
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+          no-cache: true
+
+      - name: Install from lockfile
+        run: bun install --frozen-lockfile
+
+      - name: Apply supervisor corrections
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          navbar = Path("src/components/Navbar.tsx")
+          text = navbar.read_text()
+          text = text.replace(
+              'import { useEffect, useRef, useState } from "react";',
+              'import { useEffect, useState } from "react";',
+          )
+          text = text.replace(
+              '  const searchTriggerRef = useRef<HTMLButtonElement>(null);\n  const wasSearchOpen = useRef(false);\n',
+              '',
+          )
+          text = text.replace(
+              '  const isSearchOpen = useStore((state) => state.isSearchOpen);\n',
+              '',
+          )
+          old_effect = '''\n  useEffect(() => {\n    if (wasSearchOpen.current && !isSearchOpen && searchTriggerRef.current) {\n      queueMicrotask(() => searchTriggerRef.current?.focus({ preventScroll: true }));\n    }\n    wasSearchOpen.current = isSearchOpen;\n  }, [isSearchOpen]);\n'''
+          if old_effect not in text:
+              raise SystemExit("Navbar duplicate focus-restoration effect not found")
+          text = text.replace(old_effect, '')
+          text = text.replace('              ref={searchTriggerRef}\n', '')
+          text = text.replace('              label="Cart"\n', '              label="سبد خرید"\n')
+          navbar.write_text(text)
+
+          mobile = Path("src/components/MobileBottomNav.tsx")
+          text = mobile.read_text()
+          text = text.replace(
+              'import { useEffect, useRef, useState } from "react";',
+              'import { useEffect, useState } from "react";',
+          )
+          text = text.replace(
+              '  const searchTriggerRef = useRef<HTMLButtonElement>(null);\n  const wasSearchOpen = useRef(false);\n',
+              '',
+          )
+          text = text.replace(
+              '  const isSearchOpen = useStore((state) => state.isSearchOpen);\n',
+              '',
+          )
+          old_effect = '''\n  useEffect(() => {\n    if (wasSearchOpen.current && !isSearchOpen && searchTriggerRef.current) {\n      queueMicrotask(() => searchTriggerRef.current?.focus({ preventScroll: true }));\n    }\n    wasSearchOpen.current = isSearchOpen;\n  }, [isSearchOpen]);\n'''
+          if old_effect not in text:
+              raise SystemExit("Mobile duplicate focus-restoration effect not found")
+          text = text.replace(old_effect, '')
+          text = text.replace('            aria-label="Cart"\n', '            aria-label="سبد خرید"\n')
+          text = text.replace('            ref={searchTriggerRef}\n', '')
+          mobile.write_text(text)
+
+          test = Path("scripts/test-f2-navigation-search.mjs")
+          text = test.read_text()
+          old = '''    await key(client, "Escape", { code: "Escape", keyCode: 27 });\n    await waitForExpression(client, `!document.querySelector('[data-testid="search-dialog"]')`);\n    await waitForExpression(client, `!${bodyLockedExpression}`);\n    const searchClosed = await evaluate(\n      client,\n      `({\n        closed: !document.querySelector('[data-testid="search-dialog"]'),\n        restored: document.activeElement?.dataset.searchTrigger,\n        unlocked: !${bodyLockedExpression}\n      })`,\n    );\n    record(\n      "Search Escape close and focus restoration",\n      searchClosed.closed && searchClosed.restored === "true" && searchClosed.unlocked,\n      searchClosed,\n    );\n'''
+          new = '''    await key(client, "Escape", { code: "Escape", keyCode: 27 });\n    await waitForExpression(client, `!document.querySelector('[data-testid="search-dialog"]')`);\n    await waitForExpression(client, `!${bodyLockedExpression}`);\n    const desktopSearchClosed = await evaluate(\n      client,\n      `({\n        closed: !document.querySelector('[data-testid="search-dialog"]'),\n        restored: document.activeElement?.dataset.testid,\n        unlocked: !${bodyLockedExpression}\n      })`,\n    );\n\n    await configureViewport(client, 390, 844);\n    await navigate(client, `${BASE_URL}/`);\n    await visibleClick(client, '[data-testid="mobile-search-trigger"]');\n    await waitForExpression(client, `document.querySelector('[data-testid="search-dialog"]')`);\n    await waitForExpression(\n      client,\n      `document.activeElement === document.querySelector('[data-testid="search-input"]')`,\n    );\n    await key(client, "Escape", { code: "Escape", keyCode: 27 });\n    await waitForExpression(client, `!document.querySelector('[data-testid="search-dialog"]')`);\n    await waitForExpression(client, `!${bodyLockedExpression}`);\n    const mobileSearchClosed = await evaluate(\n      client,\n      `({\n        closed: !document.querySelector('[data-testid="search-dialog"]'),\n        restored: document.activeElement?.dataset.testid,\n        unlocked: !${bodyLockedExpression}\n      })`,\n    );\n    record(\n      "Search Escape restores focus to the actual desktop and mobile opener",\n      desktopSearchClosed.closed &&\n        desktopSearchClosed.restored === "search-trigger" &&\n        desktopSearchClosed.unlocked &&\n        mobileSearchClosed.closed &&\n        mobileSearchClosed.restored === "mobile-search-trigger" &&\n        mobileSearchClosed.unlocked,\n      { desktop: desktopSearchClosed, mobile: mobileSearchClosed },\n    );\n'''
+          if old not in text:
+              raise SystemExit("Search focus-restoration test block not found")
+          test.write_text(text.replace(old, new))
+          PY
+
+          bunx prettier --write \
+            src/components/Navbar.tsx \
+            src/components/MobileBottomNav.tsx \
+            scripts/test-f2-navigation-search.mjs
+
+      - name: Commit corrected F2 behavior
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            src/components/Navbar.tsx \
+            src/components/MobileBottomNav.tsx \
+            scripts/test-f2-navigation-search.mjs
+          git commit -m "fix(a11y): restore search focus to actual opener"
+          git push origin HEAD:phase/sole-f2-navigation-search
