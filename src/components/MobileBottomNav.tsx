@@ -20,6 +20,8 @@ export function MobileBottomNav() {
 
   const active = (to: string, exact = false) =>
     exact ? pathname === to : pathname === to || pathname.startsWith(`${to}/`);
+  const visibleCartCount = mounted ? cartCount : 0;
+  const cartDescriptionId = "mobile-cart-count-description";
 
   return (
     <>
@@ -51,21 +53,28 @@ export function MobileBottomNav() {
 
           <button
             type="button"
-            aria-label={mounted && cartCount ? `سبد خرید، ${cartCount} کالا` : "سبد خرید"}
+            aria-label="Cart"
+            aria-describedby={visibleCartCount ? cartDescriptionId : undefined}
             data-testid="mobile-cart-trigger"
+            data-cart-trigger="true"
             onClick={() => setCartOpen(true)}
             className="relative flex min-h-11 flex-col items-center justify-center gap-1 rounded-md font-fa text-[10px] text-muted-foreground transition-colors hover:bg-interactive focus-visible:outline-none"
           >
             <span className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[var(--shadow-elevated)]">
               <ShoppingBag aria-hidden="true" className="size-5" />
             </span>
-            {mounted && cartCount > 0 ? (
-              <span
-                aria-hidden="true"
-                className="absolute end-2 top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1 font-mono-num text-[10px] font-bold text-white"
-              >
-                {cartCount}
-              </span>
+            {visibleCartCount > 0 ? (
+              <>
+                <span id={cartDescriptionId} className="sr-only">
+                  تعداد کالاهای سبد: {visibleCartCount}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="absolute end-2 top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1 font-mono-num text-[10px] font-bold text-white"
+                >
+                  {visibleCartCount}
+                </span>
+              </>
             ) : null}
           </button>
 
