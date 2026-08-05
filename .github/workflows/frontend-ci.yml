@@ -17,7 +17,7 @@ concurrency:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
 
     steps:
       - name: Check out exact head
@@ -40,11 +40,17 @@ jobs:
       - name: Install from lockfile
         run: bun install --frozen-lockfile
 
-      - name: Source-contract audit
+      - name: Foundation source-contract audit
         run: bun run audit:source-contracts
 
-      - name: Browser behavior tests
+      - name: Foundation browser behavior tests
         run: bun run test:foundation
+
+      - name: Homepage completion audit
+        run: node scripts/audit-f3-homepage.mjs
+
+      - name: Homepage browser behavior tests
+        run: node scripts/test-f3-homepage.mjs
 
       - name: Typecheck
         run: bun run typecheck
@@ -52,30 +58,55 @@ jobs:
       - name: Lint
         run: bun run lint
 
-      - name: Format check
+      - name: Foundation format check
         run: bun run format:check
+
+      - name: Homepage format check
+        run: >-
+          bunx prettier --check
+          .github/workflows/frontend-ci.yml
+          docs/handoffs/F3-HOMEPAGE.md
+          scripts/audit-f3-homepage.mjs
+          scripts/test-f3-homepage.mjs
+          scripts/visual-qa-f3-homepage.mjs
+          src/components/ShoeViewer3D.tsx
+          src/components/sections/BrandWall.tsx
+          src/components/sections/Categories.tsx
+          src/components/sections/FeaturedDrops.tsx
+          src/components/sections/Hero.tsx
+          src/components/sections/HomeImage.tsx
+          src/components/sections/HypeSection.tsx
+          src/components/sections/Newsletter.tsx
+          src/components/sections/TrustBadges.tsx
+          src/routes/index.tsx
 
       - name: Production build
         run: bun run build
 
-      - name: Visual QA
+      - name: Foundation Visual QA
         run: bun run qa:visual:f0-f1
+
+      - name: Homepage Visual QA
+        run: node scripts/visual-qa-f3-homepage.mjs
 
       - name: Foundation completion audit
         run: bun run audit:f0-f1
 
-      - name: Aggregate quality gate
+      - name: Aggregate foundation quality gate
         run: bun run check
 
-      - name: Verify tracked working tree is clean
-        run: test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Verify working tree is clean
+        shell: bash
+        run: |
+          git status --short
+          test -z "$(git status --short)"
 
       - name: Publish quality evidence summary
         if: always()
         shell: bash
         run: |
           {
-            echo "## F0/F1 quality evidence"
+            echo "## F0/F1 + F3 quality evidence"
             echo
             echo "- Exact commit: \`${GITHUB_SHA}\`"
             echo "- Node: \`22.23.1\`"
@@ -85,8 +116,8 @@ jobs:
             echo "### Generated reports"
           } >> "$GITHUB_STEP_SUMMARY"
 
-          if find artifacts -maxdepth 3 -type f -print -quit 2>/dev/null | grep -q .; then
-            find artifacts -maxdepth 3 -type f -printf '%p\n' 2>/dev/null |
+          if find artifacts -maxdepth 4 -type f -print -quit 2>/dev/null | grep -q .; then
+            find artifacts -maxdepth 4 -type f -printf '%p\n' 2>/dev/null |
               sort |
               sed 's/^/- `/' |
               sed 's/$/`/' >> "$GITHUB_STEP_SUMMARY"
@@ -98,11 +129,12 @@ jobs:
         if: ${{ always() && vars.ENABLE_QA_ARTIFACT_UPLOAD == 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: f0-f1-visual-qa-screenshots
+          name: f0-f1-f3-quality-evidence
           overwrite: true
           compression-level: 9
           if-no-files-found: error
           retention-days: 1
           path: |
+            artifacts/audits/
             artifacts/reports/
             artifacts/visual-qa/
