@@ -1,5 +1,6 @@
+import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+
 import { useMouseParallax } from "@/hooks/useMouseParallax";
 
 // TypeScript declaration for <model-viewer> web component (React 19 uses React.JSX)
@@ -38,116 +39,159 @@ declare global {
 
 const hasWebGL = () => {
   try {
-    const c = document.createElement("canvas");
-    return !!(c.getContext("webgl") || c.getContext("experimental-webgl"));
+    const canvas = document.createElement("canvas");
+    return Boolean(canvas.getContext("webgl") || canvas.getContext("experimental-webgl"));
   } catch {
     return false;
   }
 };
 
-// TODO: Replace /models/shoe.glb with an optimized model.
-// Target: under 3MB, use Draco compression.
-// Free sneaker GLBs: Sketchfab.com (search "sneaker", filter: free + downloadable).
-// Compress with: npx gltf-pipeline -i shoe.glb -o shoe-compressed.glb --draco.compressionLevel 10
+// Deep model compression remains owned by F9/F11.
 const MODEL_SRC = "/models/shoe.glb";
 
 interface Props {
   fallbackImage: string;
   alt: string;
+  priority?: boolean;
 }
 
-export function ShoeViewer3D({ fallbackImage, alt }: Props) {
+export function ShoeViewer3D({ fallbackImage, alt, priority = false }: Props) {
+  const reduceMotion = useReducedMotion() === true;
   const [ready, setReady] = useState(false);
   const [supported, setSupported] = useState(true);
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
+  const [posterFailed, setPosterFailed] = useState(false);
   const [interacted, setInteracted] = useState(false);
-  const mvRef = useRef<HTMLElement | null>(null);
+  const modelRef = useRef<HTMLElement | null>(null);
   const parallax = useMouseParallax(12, 18);
 
-  // Lazy load the model-viewer script after idle
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || reduceMotion) return;
     if (!hasWebGL()) {
       setSupported(false);
       return;
     }
+
+    let cancelled = false;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let idleId: number | undefined;
+
     const load = () => {
       import("@google/model-viewer")
-        .then(() => setReady(true))
-        .catch(() => setErrored(true));
+        .then(() => {
+          if (!cancelled) setReady(true);
+        })
+        .catch(() => {
+          if (!cancelled) setErrored(true);
+        });
     };
-    const w = window as unknown as {
-      requestIdleCallback?: (cb: () => void) => number;
+
+    const idleWindow = window as typeof window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
     };
-    if (typeof w.requestIdleCallback === "function") {
-      w.requestIdleCallback(load);
+
+    if (typeof idleWindow.requestIdleCallback === "function") {
+      idleId = idleWindow.requestIdleCallback(load, { timeout: 1800 });
     } else {
-      setTimeout(load, 200);
+      timeoutId = setTimeout(load, 350);
     }
-  }, []);
 
-  // Track first user interaction to hide the "drag to explore" hint
-  useEffect(() => {
-    const el = mvRef.current;
-    if (!el) return;
-    const handler = () => setInteracted(true);
-    const events = ["pointerdown", "wheel", "touchstart"];
-    events.forEach((e) => el.addEventListener(e, handler, { once: true }));
     return () => {
-      events.forEach((e) => el.removeEventListener(e, handler));
+      cancelled = true;
+      if (idleId !== undefined) idleWindow.cancelIdleCallback?.(idleId);
+      if (timeoutId !== undefined) clearTimeout(timeoutId);
     };
-  }, [ready]);
+  }, [reduceMotion]);
 
-  // Attach load/error listeners on the web component
   useEffect(() => {
-    const el = mvRef.current;
-    if (!el || !ready) return;
+    const element = modelRef.current;
+    if (!element || !ready) return;
+
     const onLoad = () => setLoaded(true);
     const onError = () => setErrored(true);
-    el.addEventListener("load", onLoad);
-    el.addEventListener("error", onError);
+    const onInteraction = () => setInteracted(true);
+    const interactionEvents = ["pointerdown", "wheel", "touchstart"] as const;
+
+    element.addEventListener("load", onLoad);
+    element.addEventListener("error", onError);
+    interactionEvents.forEach((eventName) =>
+      element.addEventListener(eventName, onInteraction, { once: true }),
+    );
+
     return () => {
-      el.removeEventListener("load", onLoad);
-      el.removeEventListener("error", onError);
+      element.removeEventListener("load", onLoad);
+      element.removeEventListener("error", onError);
+      interactionEvents.forEach((eventName) =>
+        element.removeEventListener(eventName, onInteraction),
+      );
     };
   }, [ready]);
 
-  const showFallback = !supported || errored;
+  const canRenderModel = ready && supported && !errored && !reduceMotion;
+  const rotateX = reduceMotion ? 0 : parallax.rotateX;
+  const rotateY = reduceMotion ? 0 : parallax.rotateY;
 
   return (
-    <div className="relative w-full">
-      {/* Neon glow shadow that shifts with mouse */}
+    <div className="relative w-full" data-testid="shoe-viewer">
       <div
-        className="pointer-events-none absolute inset-0 -z-10 transition-opacity"
+        className="pointer-events-none absolute inset-0 -z-10"
         style={{
-          background: `radial-gradient(circle at ${parallax.lightX}% ${parallax.lightY + 20}%, rgba(200,241,53,0.30), transparent 55%)`,
-          filter: "blur(40px)",
+          background: `radial-gradient(circle at ${reduceMotion ? 50 : parallax.lightX}% ${
+            reduceMotion ? 60 : parallax.lightY + 20
+          }%, rgba(200,241,53,0.24), transparent 58%)`,
+          filter: "blur(42px)",
         }}
-        aria-hidden
+        aria-hidden="true"
       />
 
       <motion.div
         className="relative w-full"
-        style={{
-          transformStyle: "preserve-3d",
-          perspective: 1200,
-        }}
-        animate={{ rotateX: parallax.rotateX, rotateY: parallax.rotateY }}
-        transition={{ type: "spring", stiffness: 150, damping: 20, mass: 0.5 }}
+        animate={{ rotateX, rotateY }}
+        transition={
+          reduceMotion
+            ? { duration: 0 }
+            : { type: "spring", stiffness: 150, damping: 22, mass: 0.5 }
+        }
+        style={{ transformStyle: "preserve-3d", perspective: 1200 }}
       >
-        <div className="relative h-[320px] md:h-[500px] w-full">
-          {/* Skeleton while loading */}
-          {!loaded && !showFallback && (
-            <div className="absolute inset-0 rounded-3xl bg-surface animate-pulse" />
+        <div className="relative aspect-square min-h-[300px] w-full overflow-hidden rounded-3xl sm:min-h-[420px] lg:min-h-[520px]">
+          {!posterFailed ? (
+            <img
+              src={fallbackImage}
+              alt={alt}
+              width={900}
+              height={900}
+              loading={priority ? "eager" : "lazy"}
+              fetchPriority={priority ? "high" : "auto"}
+              decoding="async"
+              draggable={false}
+              data-testid="hero-poster"
+              onError={() => setPosterFailed(true)}
+              className={`absolute inset-0 h-full w-full select-none object-contain transition-opacity duration-300 motion-reduce:transition-none ${
+                loaded && canRenderModel ? "opacity-0" : "opacity-100"
+              }`}
+            />
+          ) : (
+            <div
+              role="img"
+              aria-label={`تصویر در دسترس نیست: ${alt}`}
+              data-image-fallback="true"
+              className="absolute inset-0 flex items-center justify-center bg-surface-elevated p-8 text-center font-fa text-sm text-muted-foreground"
+            >
+              پیش‌نمایش تصویری محصول در دسترس نیست
+            </div>
           )}
 
-          {/* 3D model */}
-          {ready && !showFallback && (
+          {canRenderModel ? (
             <model-viewer
-              ref={mvRef as React.RefObject<HTMLElement>}
+              ref={modelRef as React.RefObject<HTMLElement>}
               src={MODEL_SRC}
-              alt={alt}
+              poster={fallbackImage}
+              alt=""
+              aria-hidden="true"
+              tabIndex={-1}
               auto-rotate
               camera-controls
               shadow-intensity="1.5"
@@ -158,6 +202,7 @@ export function ShoeViewer3D({ fallbackImage, alt }: Props) {
               min-camera-orbit="auto auto 80%"
               max-camera-orbit="auto auto 120%"
               interaction-prompt="none"
+              data-testid="hero-model-viewer"
               style={{
                 width: "100%",
                 height: "100%",
@@ -166,44 +211,18 @@ export function ShoeViewer3D({ fallbackImage, alt }: Props) {
                 touchAction: "pan-y",
               }}
             />
-          )}
-
-          {/* Static fallback (also shown while GLB is unavailable) */}
-          {showFallback && (
-            <img
-              src={fallbackImage}
-              alt={alt}
-              className="w-full h-full object-contain rounded-3xl select-none pointer-events-none"
-              draggable={false}
-            />
-          )}
+          ) : null}
         </div>
       </motion.div>
 
-      {/* Drag hint */}
-      {ready && loaded && !interacted && (
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2, duration: 0.6 }}
-          className="mt-3 flex items-center justify-center gap-3 eyebrow text-muted-foreground text-[10px]"
-          aria-hidden
+      {canRenderModel && loaded && !interacted ? (
+        <p
+          aria-hidden="true"
+          className="mt-3 text-center font-fa text-xs text-muted-foreground"
         >
-          <motion.span
-            animate={{ x: [-4, 0, -4] }}
-            transition={{ repeat: Infinity, duration: 1.6 }}
-          >
-            ←
-          </motion.span>
-          Drag to explore
-          <motion.span
-            animate={{ x: [4, 0, 4] }}
-            transition={{ repeat: Infinity, duration: 1.6 }}
-          >
-            →
-          </motion.span>
-        </motion.div>
-      )}
+          برای مشاهده زاویه‌ها، مدل را بکشید.
+        </p>
+      ) : null}
     </div>
   );
 }
