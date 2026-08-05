@@ -78,26 +78,28 @@ async function screenshot(client, name) {
 }
 
 async function setValue(client, selector, value) {
-  const changed = await evaluate(
+  const selected = await evaluate(
     client,
     `(() => {
       const input = document.querySelector(${JSON.stringify(selector)});
       if (!(input instanceof HTMLInputElement)) return false;
-      const previous = input.value;
-      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
-      setter?.call(input, ${JSON.stringify(value)});
-      input._valueTracker?.setValue(previous);
-      input.dispatchEvent(new InputEvent('input', {
-        bubbles: true,
-        composed: true,
-        inputType: 'insertText',
-        data: ${JSON.stringify(value)},
-      }));
+      input.focus();
+      input.select();
       return true;
     })()`,
   );
-  if (!changed) throw new Error(`Input not found: ${selector}`);
-  await sleep(100);
+  if (!selected) throw new Error(`Input not found: ${selector}`);
+  await sleep(150);
+  for (const character of value) {
+    await client.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: character,
+      text: character,
+      unmodifiedText: character,
+    });
+    await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: character });
+  }
+  await sleep(150);
 }
 
 async function press(client, key) {
