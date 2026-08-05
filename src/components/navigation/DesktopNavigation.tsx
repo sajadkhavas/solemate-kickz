@@ -65,7 +65,11 @@ export function DesktopNavigation() {
               type="button"
               data-testid="desktop-menu-trigger"
               aria-label="بازکردن دسته‌بندی‌های فروشگاه"
-              onClick={() => setCategoriesOpen((current) => !current)}
+              onClick={(event) => {
+                if (event.detail === 0) {
+                  window.setTimeout(() => setCategoriesOpen((current) => !current), 0);
+                }
+              }}
               className="inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-interactive hover:text-foreground focus-visible:outline-none data-[state=open]:bg-interactive data-[state=open]:text-primary"
             >
               <ChevronDown
