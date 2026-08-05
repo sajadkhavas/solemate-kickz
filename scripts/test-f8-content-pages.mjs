@@ -23,6 +23,14 @@ function record(name, pass, evidence) {
 }
 
 async function setValue(client, selector, value) {
+  await waitForExpression(
+    client,
+    `(() => {
+      const input = document.querySelector(${JSON.stringify(selector)});
+      return input instanceof HTMLInputElement && Object.keys(input).some((key) => key.startsWith('__reactProps$'));
+    })()`,
+    15_000,
+  );
   const selected = await evaluate(
     client,
     `(() => {
