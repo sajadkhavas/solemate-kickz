@@ -53,7 +53,9 @@ export function QuickViewDialog({ shoe, open, onOpenChange }: QuickViewDialogPro
               <div className="grid h-full min-h-72 place-items-center p-8 text-center">
                 <div>
                   <p className="font-display text-4xl font-black text-muted-foreground">SOLE</p>
-                  <p className="mt-2 font-fa text-sm text-muted-foreground">پیش‌نمایش تصویر در دسترس نیست</p>
+                  <p className="mt-2 font-fa text-sm text-muted-foreground">
+                    پیش‌نمایش تصویر در دسترس نیست
+                  </p>
                 </div>
               </div>
             ) : (
@@ -86,7 +88,8 @@ export function QuickViewDialog({ shoe, open, onOpenChange }: QuickViewDialogPro
                 <bdi dir="ltr">{shoe.name}</bdi>
               </DialogPrimitive.Title>
               <DialogPrimitive.Description className="mt-2 font-fa text-sm leading-6 text-muted-foreground">
-                نمایش سریع بر پایه داده نمایشی پروژه است. برای افزودن به سبد یک سایز را انتخاب کنید.
+                نمایش سریع بر پایه داده نمایشی پروژه است. برای افزودن به سبد یک سایز را
+                انتخاب کنید.
               </DialogPrimitive.Description>
               <p className="mt-1 text-sm text-muted-foreground">
                 <bdi dir="ltr">{shoe.colorway}</bdi>
@@ -123,7 +126,10 @@ export function QuickViewDialog({ shoe, open, onOpenChange }: QuickViewDialogPro
             </fieldset>
 
             {shoe.isSoldOut ? (
-              <p role="status" className="mt-4 rounded-lg border border-border bg-background p-3 font-fa text-sm text-muted-foreground">
+              <p
+                role="status"
+                className="mt-4 rounded-lg border border-border bg-background p-3 font-fa text-sm text-muted-foreground"
+              >
                 این محصول در داده نمایشی فعلاً ناموجود است.
               </p>
             ) : selectedSize === null ? (
@@ -145,11 +151,15 @@ export function QuickViewDialog({ shoe, open, onOpenChange }: QuickViewDialogPro
               </Button>
               <Button
                 type="button"
+                data-testid="quick-view-wishlist"
                 variant="outline"
                 aria-pressed={wishlisted}
                 onClick={() => toggleWishlist(shoe.id)}
               >
-                <Heart aria-hidden="true" className={wishlisted ? "size-4 fill-current" : "size-4"} />
+                <Heart
+                  aria-hidden="true"
+                  className={wishlisted ? "size-4 fill-current" : "size-4"}
+                />
                 {wishlisted ? "حذف علاقه‌مندی" : "علاقه‌مندی"}
               </Button>
             </div>
