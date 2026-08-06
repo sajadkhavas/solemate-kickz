@@ -12,11 +12,11 @@
 
 `f51bd1b110491887da6007a25ec3bfd30e3ed06b`
 
-## Current validation candidate
+## Clean validation candidate
 
-`1be219008cfef5c626ca7e037c279786efdd5ce9`
+`a786b62b41cbd4dd3af1ab5b6033d6fcaadf8f5c`
 
-This candidate contains the complete F4/F5 implementation, the supervisor correction that raises Product Card detail-link targets to the shared minimum of 44 pixels in grid and list views, and the cumulative F2 audit correction required by the extracted `catalogSearchSchema` architecture.
+This candidate contains the complete F4/F5 implementation, the Product Card 44-pixel target correction, the cumulative F2 query-schema audit correction and the F2 Reduced Motion QA correction that evaluates only active `running` or `pending` transform animations.
 
 ## Verified before this candidate
 
@@ -29,8 +29,10 @@ This candidate contains the complete F4/F5 implementation, the supervisor correc
 - Foundation and Homepage Visual QA passed.
 - F4/F5 Visual QA produced 14 captures with zero critical findings.
 - No horizontal overflow, invalid H1 count, unnamed controls, hydration failure or runtime exception remained.
-- Product Card detail links now meet the 44-pixel interaction contract.
-- F2 now verifies that SearchDialog submits `q`, `/products` uses `catalogSearchSchema`, and that schema validates `q` in the extracted catalog state module.
+- Product Card detail links meet the 44-pixel interaction contract.
+- F2 verifies that SearchDialog submits `q`, `/products` uses `catalogSearchSchema`, and that schema validates `q` in the extracted catalog state module.
+- The isolated F2 terminal diagnostic verified Reduced Motion with zero active long transform animations and Zoom 200% without overflow on `/`, `/products`, `/product/1`, `/cart` and `/auth`.
+- F2 Visual QA now ignores completed historical animations while retaining failure coverage for active transform animations and prints exact critical findings when present.
 
 ## Process integrity
 
