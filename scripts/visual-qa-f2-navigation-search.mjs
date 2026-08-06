@@ -296,7 +296,7 @@ async function main() {
     await sleep(250);
     const reducedMotion = await evaluate(
       client,
-      `({ matches: matchMedia('(prefers-reduced-motion: reduce)').matches, longTransformAnimations: document.getAnimations().filter((animation) => { const timing = animation.effect?.getComputedTiming(); const frames = animation.effect?.getKeyframes?.() || []; return frames.some((frame) => frame.transform && frame.transform !== 'none') && Number(timing?.duration || 0) > 20; }).length })`,
+      `({ matches: matchMedia('(prefers-reduced-motion: reduce)').matches, longTransformAnimations: document.getAnimations().filter((animation) => { const timing = animation.effect?.getComputedTiming(); const frames = animation.effect?.getKeyframes?.() || []; return (animation.playState === 'running' || animation.playState === 'pending') && frames.some((frame) => frame.transform && frame.transform !== 'none') && Number(timing?.duration || 0) > 20; }).length })`,
     );
     if (!reducedMotion.matches || reducedMotion.longTransformAnimations > 0)
       criticalFindings.push({ type: "reduced-motion", detail: reducedMotion });
@@ -342,6 +342,7 @@ async function main() {
     fs.writeFileSync(REPORT_PATH, `${JSON.stringify(report, null, 2)}\n`);
     console.log(JSON.stringify(report.summary));
     console.log(`F2 Visual QA report: ${path.relative(ROOT, REPORT_PATH)}`);
+    if (criticalFindings.length) console.error(JSON.stringify(criticalFindings, null, 2));
     if (!report.pass) process.exitCode = 1;
   } finally {
     await browser.close();

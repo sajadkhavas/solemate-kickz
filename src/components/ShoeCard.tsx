@@ -1,10 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Eye, Heart, ShoppingBag } from "lucide-react";
-import { useRef, useState } from "react";
+import { Eye, Heart } from "lucide-react";
+import { useEffect, useRef, useState, type MouseEvent, type RefObject } from "react";
 import { toast } from "sonner";
 
-import { type Shoe, formatPrice } from "@/data/shoes";
+import { Button } from "@/components/ui/button";
+import { Price } from "@/components/ui/commerce-primitives";
+import { type Shoe } from "@/data/shoes";
 import { useSharedTransition } from "@/hooks/useSharedTransition";
 import { useStore } from "@/store";
 
@@ -12,155 +14,172 @@ interface Props {
   shoe: Shoe;
   index?: number;
   variant?: "grid" | "list";
+  onQuickView?: (shoe: Shoe, opener: HTMLElement) => void;
 }
 
-function buildVariants(shoe: Shoe) {
-  const labels = ["Original", "Alt", "Rare", "Limited"];
+function buildPreviews(shoe: Shoe) {
   return shoe.colors.slice(0, 4).map((color, index) => ({
     color,
-    label: labels[index] ?? `V${index + 1}`,
     image: shoe.images[index] ?? shoe.image,
+    label: `پیش‌نمایش رنگ ${index + 1}`,
   }));
 }
 
-export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
+function ProductImage({
+  shoe,
+  source,
+  imageRef,
+  className,
+}: {
+  shoe: Shoe;
+  source: string;
+  imageRef: RefObject<HTMLImageElement | null>;
+  className: string;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => setFailed(false), [source]);
+
+  if (failed) {
+    return (
+      <div className={`${className} grid place-items-center bg-surface-2 p-4 text-center`}>
+        <div>
+          <span className="font-display text-2xl font-black text-muted-foreground">SOLE</span>
+          <span className="mt-1 block font-fa text-xs text-muted-foreground">
+            تصویر در دسترس نیست
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      ref={imageRef}
+      src={source}
+      alt={`${shoe.brand} ${shoe.name}`}
+      loading="lazy"
+      width={640}
+      height={640}
+      onError={() => setFailed(true)}
+      className={className}
+    />
+  );
+}
+
+export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Props) {
   const toggleWishlist = useStore((state) => state.toggleWishlist);
   const isWishlisted = useStore((state) => state.wishlist.includes(shoe.id));
-  const addToCart = useStore((state) => state.addToCart);
-  const setCartOpen = useStore((state) => state.setCartOpen);
   const { saveRect } = useSharedTransition();
-
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const variants = buildVariants(shoe);
-  const [activeVariant, setActiveVariant] = useState(0);
-  const activeImage = variants[activeVariant]?.image ?? shoe.image;
-
+  const previews = buildPreviews(shoe);
+  const [activePreview, setActivePreview] = useState(0);
+  const activeImage = previews[activePreview]?.image ?? shoe.image;
   const discount = shoe.sale_price
     ? Math.round(((shoe.price - shoe.sale_price) / shoe.price) * 100)
     : 0;
-
-  const handleWish = () => {
-    toggleWishlist(shoe.id);
-    toast(isWishlisted ? "از علاقه‌مندی حذف شد" : "به علاقه‌مندی اضافه شد ♡");
-  };
-
-  const handleAdd = () => {
-    if (shoe.isSoldOut) return;
-    const size = shoe.sizes[Math.floor(shoe.sizes.length / 2)];
-    addToCart(shoe.id, size, 1);
-    toast.success(`${shoe.name} به سبد اضافه شد 🛒`);
-    setCartOpen(true);
-  };
-
-  const handleNav = () => {
-    if (imageRef.current) saveRect(shoe.id, imageRef.current);
-  };
 
   const productTarget = {
     to: "/product/$id" as const,
     params: { id: String(shoe.id) },
   };
 
+  const rememberImage = () => {
+    if (imageRef.current) saveRect(shoe.id, imageRef.current);
+  };
+
+  const handleWishlist = () => {
+    toggleWishlist(shoe.id);
+    toast(isWishlisted ? "از علاقه‌مندی حذف شد" : "به علاقه‌مندی اضافه شد");
+  };
+
+  const openQuickView = (event: MouseEvent<HTMLButtonElement>) =>
+    onQuickView?.(shoe, event.currentTarget);
+
   if (variant === "list") {
     return (
       <motion.article
-        initial={{ opacity: 0, x: -20 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true, margin: "-40px" }}
-        transition={{ duration: 0.4, delay: (index % 6) * 0.05 }}
-        className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-3 transition-colors hover:border-neon/60 motion-reduce:transform-none sm:gap-4"
+        data-testid="product-card"
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-30px" }}
+        transition={{ duration: 0.35, delay: (index % 6) * 0.04 }}
+        className="grid gap-3 rounded-2xl border border-border bg-surface p-3 transition-colors hover:border-neon/60 sm:grid-cols-[10rem_minmax(0,1fr)_auto] sm:items-center"
       >
         <Link
           {...productTarget}
-          onClick={handleNav}
-          data-magnetic
-          className="group grid min-w-0 flex-1 grid-cols-[96px_minmax(0,1fr)] items-center gap-3 rounded-xl sm:grid-cols-[160px_minmax(0,1fr)] sm:gap-4"
-          aria-label={`مشاهده محصول نمونه ${shoe.name}`}
+          onClick={rememberImage}
+          className="relative block aspect-square overflow-hidden rounded-xl bg-surface-2"
+          aria-label={`مشاهده جزئیات ${shoe.name}`}
         >
-          <motion.div
-            layoutId={`shoe-image-${shoe.id}`}
-            className="relative aspect-square overflow-hidden rounded-xl bg-surface-2"
-          >
-            <img
-              ref={imageRef}
-              src={activeImage}
-              alt={`${shoe.brand} ${shoe.name}`}
-              loading="lazy"
-              width={320}
-              height={320}
-              className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 ${shoe.isSoldOut ? "grayscale opacity-50" : ""}`}
-            />
-            {shoe.isNew ? (
-              <span className="eyebrow absolute left-1.5 top-1.5 rounded-full bg-neon px-1.5 py-0.5 text-ink">
-                نمونه جدید
-              </span>
-            ) : null}
-          </motion.div>
-
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span className="eyebrow text-muted-foreground">{shoe.brand}</span>
-              <span className="rounded-full border border-border px-2 py-0.5 text-[0.65rem] text-muted-foreground">
-                داده نمونه
-              </span>
-            </div>
-            <h3 className="mt-1 truncate font-display text-base font-bold leading-tight transition-colors group-hover:text-neon sm:text-lg">
-              {shoe.name}
-            </h3>
-            <p className="truncate text-xs text-muted-foreground">{shoe.colorway}</p>
-            <div className="mt-2 flex gap-1" aria-label="رنگ‌های نمونه">
-              {shoe.colors.slice(0, 4).map((color, colorIndex) => (
-                <span
-                  key={`${color}-${colorIndex}`}
-                  className="size-3 rounded-full border border-border"
-                  style={{ background: color }}
-                />
-              ))}
-            </div>
-          </div>
+          <ProductImage
+            shoe={shoe}
+            source={activeImage}
+            imageRef={imageRef}
+            className={`h-full w-full object-cover transition-transform duration-500 hover:scale-105 motion-reduce:transition-none ${shoe.isSoldOut ? "grayscale opacity-60" : ""}`}
+          />
+          {shoe.isSoldOut ? (
+            <span className="absolute inset-x-2 bottom-2 rounded-full bg-ink/85 px-2 py-1 text-center font-fa text-xs text-white">
+              ناموجود در داده نمایشی
+            </span>
+          ) : null}
         </Link>
 
-        <div className="flex shrink-0 flex-col items-end gap-2">
-          <div className="text-left">
-            <div className="font-mono-num text-xs font-bold text-neon sm:text-sm">
-              {formatPrice(shoe.sale_price ?? shoe.price)}
-            </div>
+        <div className="min-w-0">
+          <p className="eyebrow text-muted-foreground">
+            <bdi dir="ltr">{shoe.brand}</bdi>
+          </p>
+          <Link
+            {...productTarget}
+            onClick={rememberImage}
+            className="mt-1 flex min-h-11 w-full items-center rounded-sm"
+          >
+            <h3 className="truncate font-display text-lg font-bold">
+              <bdi dir="ltr">{shoe.name}</bdi>
+            </h3>
+          </Link>
+          <p className="truncate text-xs text-muted-foreground">
+            <bdi dir="ltr">{shoe.colorway}</bdi>
+          </p>
+          <div className="mt-3 flex items-end gap-2">
+            <Price value={shoe.sale_price ?? shoe.price} className="font-bold" />
             {shoe.sale_price ? (
-              <div className="font-mono-num text-[10px] text-muted-foreground line-through">
-                {formatPrice(shoe.price)}
-              </div>
+              <Price value={shoe.price} className="text-xs text-muted-foreground line-through" />
             ) : null}
           </div>
-          <div className="flex gap-1">
-            <button
+        </div>
+
+        <div className="flex items-center gap-2 sm:flex-col">
+          {onQuickView ? (
+            <Button
               type="button"
-              onClick={handleWish}
-              data-magnetic
-              className="grid size-11 place-items-center rounded-full border border-border transition-colors hover:border-neon"
-              aria-label={
-                isWishlisted
-                  ? `حذف ${shoe.name} از علاقه‌مندی`
-                  : `افزودن ${shoe.name} به علاقه‌مندی`
-              }
-              aria-pressed={isWishlisted}
+              variant="outline"
+              onClick={openQuickView}
+              className="flex-1 sm:w-full"
+              data-testid="quick-view-trigger"
             >
-              <Heart
-                aria-hidden="true"
-                size={16}
-                className={isWishlisted ? "fill-neon text-neon" : ""}
-              />
-            </button>
-            <button
-              type="button"
-              onClick={handleAdd}
-              disabled={shoe.isSoldOut}
-              data-magnetic
-              className="grid size-11 place-items-center rounded-full bg-neon text-ink transition-transform hover:scale-105 disabled:opacity-30 motion-reduce:transition-none"
-              aria-label={`افزودن ${shoe.name} به سبد`}
-            >
-              <ShoppingBag aria-hidden="true" size={16} />
-            </button>
-          </div>
+              <Eye aria-hidden="true" className="size-4" />
+              نمایش سریع
+            </Button>
+          ) : (
+            <Button asChild variant="outline" className="flex-1 sm:w-full">
+              <Link {...productTarget} onClick={rememberImage}>
+                انتخاب محصول
+              </Link>
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant="ghost"
+            aria-pressed={isWishlisted}
+            aria-label={
+              isWishlisted ? `حذف ${shoe.name} از علاقه‌مندی` : `افزودن ${shoe.name} به علاقه‌مندی`
+            }
+            onClick={handleWishlist}
+          >
+            <Heart aria-hidden="true" className={isWishlisted ? "size-4 fill-current" : "size-4"} />
+            <span className="sm:sr-only">علاقه‌مندی</span>
+          </Button>
         </div>
       </motion.article>
     );
@@ -168,156 +187,141 @@ export function ShoeCard({ shoe, index = 0, variant = "grid" }: Props) {
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 24 }}
+      data-testid="product-card"
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.55, delay: (index % 4) * 0.07, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ scale: 1.03, y: -6 }}
-      whileTap={{ scale: 0.98 }}
-      data-magnetic
-      className="group relative overflow-hidden rounded-2xl border border-border bg-surface transition-colors hover:border-neon/60 hover:shadow-[0_20px_50px_-20px_rgba(200,241,53,0.25)] motion-reduce:transform-none"
-      style={{ transitionProperty: "border-color, box-shadow" }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.45, delay: (index % 4) * 0.05 }}
+      className="group overflow-hidden rounded-2xl border border-border bg-surface transition-colors hover:border-neon/60"
     >
       <div className="relative">
         <Link
           {...productTarget}
-          onClick={handleNav}
-          className="block rounded-t-2xl"
-          aria-label={`مشاهده محصول نمونه ${shoe.name}`}
+          onClick={rememberImage}
+          className="block aspect-square overflow-hidden bg-surface-2"
+          aria-label={`مشاهده جزئیات ${shoe.name}`}
         >
-          <motion.div
-            layoutId={`shoe-image-${shoe.id}`}
-            className="relative aspect-square overflow-hidden bg-gradient-to-br from-surface-2 to-ink"
-          >
-            <div className="absolute left-3 top-3 z-10 flex flex-col gap-1.5">
-              <span className="eyebrow rounded-full border border-border bg-ink/80 px-2 py-0.5 text-muted-foreground backdrop-blur">
-                نمونه
-              </span>
-              {shoe.isNew ? (
-                <span className="eyebrow rounded-full bg-neon px-2 py-0.5 text-ink">NEW</span>
-              ) : null}
-              {shoe.isLimited ? (
-                <span className="eyebrow rounded-full bg-neon-orange px-2 py-0.5 text-white">
-                  LIMITED
-                </span>
-              ) : null}
-              {shoe.sale_price ? (
-                <span className="eyebrow rounded-full bg-purple-hype px-2 py-0.5 text-white">
-                  -{discount}%
-                </span>
-              ) : null}
-            </div>
-
-            <motion.img
-              key={activeImage}
-              ref={imageRef}
-              src={activeImage}
-              alt={`${shoe.brand} ${shoe.name}`}
-              loading="lazy"
-              width={640}
-              height={640}
-              initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className={`absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 ${shoe.isSoldOut ? "grayscale opacity-60" : ""}`}
-            />
-
-            {shoe.isSoldOut ? (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="-rotate-12 border-2 border-white px-4 py-1 font-display text-2xl font-black tracking-widest text-white">
-                  SOLD OUT
-                </span>
-              </div>
-            ) : null}
-          </motion.div>
+          <ProductImage
+            shoe={shoe}
+            source={activeImage}
+            imageRef={imageRef}
+            className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none ${shoe.isSoldOut ? "grayscale opacity-60" : ""}`}
+          />
         </Link>
 
-        <button
-          type="button"
-          onClick={handleWish}
-          data-magnetic
-          className={`absolute right-3 top-3 z-20 grid size-11 place-items-center rounded-full backdrop-blur transition-colors ${
-            isWishlisted ? "bg-neon text-ink" : "bg-ink/70 hover:bg-neon hover:text-ink"
-          }`}
-          aria-label={
-            isWishlisted ? `حذف ${shoe.name} از علاقه‌مندی` : `افزودن ${shoe.name} به علاقه‌مندی`
-          }
-          aria-pressed={isWishlisted}
-        >
-          <Heart aria-hidden="true" size={16} className={isWishlisted ? "fill-current" : ""} />
-        </button>
-
-        <div className="absolute inset-x-3 bottom-3 z-20 flex translate-y-2 gap-2 opacity-0 transition-all duration-300 group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:transition-none">
-          <Link
-            {...productTarget}
-            onClick={handleNav}
-            className="eyebrow inline-flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-full bg-white py-2.5 text-center text-ink"
-          >
-            <Eye aria-hidden="true" size={14} /> مشاهده محصول
-          </Link>
+        <div className="absolute right-3 top-3 z-10 flex flex-col items-end gap-1.5">
           <button
             type="button"
-            onClick={handleAdd}
-            disabled={shoe.isSoldOut}
-            data-magnetic
-            className="grid size-11 place-items-center rounded-full bg-neon text-ink transition-transform hover:scale-105 disabled:opacity-30 motion-reduce:transition-none"
-            aria-label={`افزودن ${shoe.name} به سبد`}
+            onClick={handleWishlist}
+            aria-pressed={isWishlisted}
+            aria-label={
+              isWishlisted ? `حذف ${shoe.name} از علاقه‌مندی` : `افزودن ${shoe.name} به علاقه‌مندی`
+            }
+            className={`grid size-11 place-items-center rounded-full border backdrop-blur transition-colors ${
+              isWishlisted
+                ? "border-neon bg-neon text-ink"
+                : "border-border bg-ink/75 text-white hover:border-neon"
+            }`}
           >
-            <ShoppingBag aria-hidden="true" size={16} />
+            <Heart aria-hidden="true" className={isWishlisted ? "size-4 fill-current" : "size-4"} />
           </button>
         </div>
+
+        <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+          {shoe.isNew ? (
+            <span className="eyebrow rounded-full bg-neon px-2 py-1 text-ink">جدید</span>
+          ) : null}
+          {shoe.isLimited ? (
+            <span className="eyebrow rounded-full bg-neon-orange px-2 py-1 text-white">لیمیتد</span>
+          ) : null}
+          {discount ? (
+            <span className="eyebrow rounded-full bg-purple-hype px-2 py-1 text-white">
+              ٪{discount}-
+            </span>
+          ) : null}
+        </div>
+
+        {shoe.isSoldOut ? (
+          <div className="pointer-events-none absolute inset-0 grid place-items-center">
+            <span className="-rotate-6 border-2 border-white bg-ink/60 px-4 py-2 font-fa text-sm font-bold text-white">
+              ناموجود در داده نمایشی
+            </span>
+          </div>
+        ) : null}
       </div>
 
       <div className="p-4">
-        <div className="mb-1 flex items-center justify-between gap-2">
-          <span className="eyebrow text-muted-foreground">{shoe.brand}</span>
-          <span className="rounded-full border border-border px-2 py-0.5 text-[0.65rem] text-muted-foreground">
-            داده نمونه
+        <div className="flex items-center justify-between gap-2">
+          <p className="eyebrow text-muted-foreground">
+            <bdi dir="ltr">{shoe.brand}</bdi>
+          </p>
+          <span className="rounded-full border border-border px-2 py-0.5 font-fa text-[0.65rem] text-muted-foreground">
+            داده نمایشی
           </span>
         </div>
 
-        <Link {...productTarget} onClick={handleNav} className="block rounded-sm">
-          <h3 className="truncate font-display text-base font-bold leading-tight transition-colors group-hover:text-neon">
-            {shoe.name}
+        <Link
+          {...productTarget}
+          onClick={rememberImage}
+          className="mt-2 flex min-h-11 flex-col justify-center rounded-sm"
+        >
+          <h3 className="truncate font-display text-base font-bold">
+            <bdi dir="ltr">{shoe.name}</bdi>
           </h3>
-          <p className="mb-3 truncate text-xs text-muted-foreground">{shoe.colorway}</p>
+          <p className="truncate text-xs text-muted-foreground">
+            <bdi dir="ltr">{shoe.colorway}</bdi>
+          </p>
         </Link>
 
-        <div
-          className="mb-3 flex h-11 items-center gap-1.5 opacity-70 transition-opacity group-hover:opacity-100"
-          role="group"
-          aria-label={`انتخاب رنگ نمایشی ${shoe.name}`}
-        >
-          {variants.map((variantOption, variantIndex) => (
-            <button
-              key={`${variantOption.label}-${variantIndex}`}
-              type="button"
-              onClick={() => setActiveVariant(variantIndex)}
-              aria-label={variantOption.label}
-              aria-pressed={variantIndex === activeVariant}
-              title={variantOption.label}
-              data-magnetic
-              className={`size-8 rounded-full border-2 transition-transform motion-reduce:transition-none ${
-                variantIndex === activeVariant
-                  ? "scale-110 border-neon"
-                  : "border-border hover:border-muted-foreground"
-              }`}
-              style={{ background: variantOption.color }}
-            />
-          ))}
+        {previews.length > 1 ? (
+          <div
+            role="group"
+            aria-label={`تغییر پیش‌نمایش تصویر ${shoe.name}`}
+            className="mt-3 flex min-h-11 items-center gap-2"
+          >
+            {previews.map((preview, previewIndex) => (
+              <button
+                key={`${preview.color}-${previewIndex}`}
+                type="button"
+                aria-label={preview.label}
+                aria-pressed={previewIndex === activePreview}
+                onClick={() => setActivePreview(previewIndex)}
+                className={`size-11 rounded-full border-2 transition-transform ${
+                  previewIndex === activePreview
+                    ? "scale-105 border-neon"
+                    : "border-border hover:border-muted-foreground"
+                }`}
+                style={{ backgroundColor: preview.color }}
+              />
+            ))}
+          </div>
+        ) : null}
+
+        <div className="mt-3 flex items-end gap-2">
+          <Price value={shoe.sale_price ?? shoe.price} className="font-bold" />
+          {shoe.sale_price ? (
+            <Price value={shoe.price} className="text-xs text-muted-foreground line-through" />
+          ) : null}
         </div>
 
-        <div className="flex items-end justify-between gap-2">
-          <div className="min-w-0">
-            <div className="truncate font-mono-num text-sm font-semibold text-foreground">
-              {formatPrice(shoe.sale_price ?? shoe.price)}
-            </div>
-            {shoe.sale_price ? (
-              <div className="truncate font-mono-num text-xs text-muted-foreground line-through">
-                {formatPrice(shoe.price)}
-              </div>
-            ) : null}
-          </div>
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <Button asChild variant="outline">
+            <Link {...productTarget} onClick={rememberImage}>
+              جزئیات
+            </Link>
+          </Button>
+          {onQuickView ? (
+            <Button type="button" onClick={openQuickView} data-testid="quick-view-trigger">
+              <Eye aria-hidden="true" className="size-4" />
+              نمایش سریع
+            </Button>
+          ) : (
+            <Button asChild>
+              <Link {...productTarget} onClick={rememberImage}>
+                انتخاب سایز
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </motion.article>

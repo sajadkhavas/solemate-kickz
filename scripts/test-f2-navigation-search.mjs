@@ -445,6 +445,7 @@ async function main() {
     await key(client, "Escape", { code: "Escape", keyCode: 27 });
     await waitForExpression(client, `!document.querySelector('[data-testid="search-dialog"]')`);
     await waitForExpression(client, `!${bodyLockedExpression}`);
+    await waitForExpression(client, `document.activeElement?.dataset.testid === "search-trigger"`);
     const desktopSearchClosed = await evaluate(
       client,
       `({
@@ -465,6 +466,10 @@ async function main() {
     await key(client, "Escape", { code: "Escape", keyCode: 27 });
     await waitForExpression(client, `!document.querySelector('[data-testid="search-dialog"]')`);
     await waitForExpression(client, `!${bodyLockedExpression}`);
+    await waitForExpression(
+      client,
+      `document.activeElement?.dataset.testid === "mobile-search-trigger"`,
+    );
     const mobileSearchClosed = await evaluate(
       client,
       `({
