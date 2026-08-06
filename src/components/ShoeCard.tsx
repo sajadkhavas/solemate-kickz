@@ -129,7 +129,11 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
           <p className="eyebrow text-muted-foreground">
             <bdi dir="ltr">{shoe.brand}</bdi>
           </p>
-          <Link {...productTarget} onClick={rememberImage} className="mt-1 block rounded-sm">
+          <Link
+            {...productTarget}
+            onClick={rememberImage}
+            className="mt-1 flex min-h-11 w-full items-center rounded-sm"
+          >
             <h3 className="truncate font-display text-lg font-bold">
               <bdi dir="ltr">{shoe.name}</bdi>
             </h3>
@@ -256,7 +260,11 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
           </span>
         </div>
 
-        <Link {...productTarget} onClick={rememberImage} className="mt-2 block rounded-sm">
+        <Link
+          {...productTarget}
+          onClick={rememberImage}
+          className="mt-2 flex min-h-11 flex-col justify-center rounded-sm"
+        >
           <h3 className="truncate font-display text-base font-bold">
             <bdi dir="ltr">{shoe.name}</bdi>
           </h3>

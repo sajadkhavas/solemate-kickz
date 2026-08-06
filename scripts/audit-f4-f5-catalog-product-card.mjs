@@ -86,6 +86,11 @@ check(
   card.includes("aria-pressed={isWishlisted}") && quickView.includes("aria-pressed={wishlisted}"),
 );
 check(
+  "Product Card detail links meet the 44px target contract",
+  card.includes("mt-1 flex min-h-11 w-full items-center rounded-sm") &&
+    card.includes("mt-2 flex min-h-11 flex-col justify-center rounded-sm"),
+);
+check(
   "image failure states are present",
   card.includes("تصویر در دسترس نیست") && quickView.includes("پیش‌نمایش تصویر در دسترس نیست"),
 );
