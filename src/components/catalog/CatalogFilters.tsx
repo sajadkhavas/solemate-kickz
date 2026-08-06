@@ -118,6 +118,9 @@ export function CatalogFilters({
               <button
                 key={size}
                 type="button"
+                data-testid="catalog-size-filter"
+                data-size={size}
+                aria-label={`فیلتر سایز ${size}`}
                 aria-pressed={active}
                 onClick={() => toggleSize(size)}
                 className={`min-h-11 rounded-lg border font-mono-num text-sm transition-colors ${
