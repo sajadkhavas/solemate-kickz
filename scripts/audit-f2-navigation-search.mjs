@@ -43,6 +43,7 @@ const files = {
   bottom: read("src/components/MobileBottomNav.tsx"),
   store: read("src/store/index.ts"),
   products: read("src/routes/products.tsx"),
+  catalogState: read("src/catalog/catalog-state.ts"),
   navigationCss: read("src/components/navigation/navigation.css"),
   behavior: read("scripts/test-f2-navigation-search.mjs"),
   visual: read("scripts/visual-qa-f2-navigation-search.mjs"),
@@ -172,9 +173,10 @@ add(
 add(
   "URL query, refresh and deep-link contract",
   /search: \{ q: normalized, sort: "newest" \}/.test(files.search) &&
-    /q: fallback\(z\.string\(\)\.optional/.test(files.products) &&
-    /Route\.useSearch\(\)/.test(files.products),
-  "SearchDialog submits q; products route validates q",
+    /zodValidator\(catalogSearchSchema\)/.test(files.products) &&
+    /Route\.useSearch\(\)/.test(files.products) &&
+    /q: fallback\(z\.string\(\)\.trim\(\)\.optional/.test(files.catalogState),
+  "SearchDialog submits q; products route uses catalogSearchSchema; catalog schema validates q",
 );
 add(
   "RTL and mixed-direction safety",
