@@ -13,6 +13,7 @@ const expectedReportFragments = [
   "f3-homepage",
   "f8-content-pages",
   "f4-f5-catalog-product-card",
+  "f6-product-detail",
 ];
 
 function walk(directory) {
