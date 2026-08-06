@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Eye, Heart } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ function ProductImage({
 }: {
   shoe: Shoe;
   source: string;
-  imageRef: React.RefObject<HTMLImageElement | null>;
+  imageRef: RefObject<HTMLImageElement | null>;
   className: string;
 }) {
   const [failed, setFailed] = useState(false);
@@ -45,7 +45,9 @@ function ProductImage({
       <div className={`${className} grid place-items-center bg-surface-2 p-4 text-center`}>
         <div>
           <span className="font-display text-2xl font-black text-muted-foreground">SOLE</span>
-          <span className="mt-1 block font-fa text-xs text-muted-foreground">تصویر در دسترس نیست</span>
+          <span className="mt-1 block font-fa text-xs text-muted-foreground">
+            تصویر در دسترس نیست
+          </span>
         </div>
       </div>
     );
@@ -123,36 +125,59 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
         </Link>
 
         <div className="min-w-0">
-          <p className="eyebrow text-muted-foreground"><bdi dir="ltr">{shoe.brand}</bdi></p>
+          <p className="eyebrow text-muted-foreground">
+            <bdi dir="ltr">{shoe.brand}</bdi>
+          </p>
           <Link {...productTarget} onClick={rememberImage} className="mt-1 block rounded-sm">
-            <h3 className="truncate font-display text-lg font-bold"><bdi dir="ltr">{shoe.name}</bdi></h3>
+            <h3 className="truncate font-display text-lg font-bold">
+              <bdi dir="ltr">{shoe.name}</bdi>
+            </h3>
           </Link>
-          <p className="truncate text-xs text-muted-foreground"><bdi dir="ltr">{shoe.colorway}</bdi></p>
+          <p className="truncate text-xs text-muted-foreground">
+            <bdi dir="ltr">{shoe.colorway}</bdi>
+          </p>
           <div className="mt-3 flex items-end gap-2">
             <Price value={shoe.sale_price ?? shoe.price} className="font-bold" />
-            {shoe.sale_price ? <Price value={shoe.price} className="text-xs text-muted-foreground line-through" /> : null}
+            {shoe.sale_price ? (
+              <Price value={shoe.price} className="text-xs text-muted-foreground line-through" />
+            ) : null}
           </div>
         </div>
 
         <div className="flex items-center gap-2 sm:flex-col">
           {onQuickView ? (
-            <Button type="button" variant="outline" onClick={openQuickView} className="flex-1 sm:w-full">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={openQuickView}
+              className="flex-1 sm:w-full"
+              data-testid="quick-view-trigger"
+            >
               <Eye aria-hidden="true" className="size-4" />
               نمایش سریع
             </Button>
           ) : (
             <Button asChild variant="outline" className="flex-1 sm:w-full">
-              <Link {...productTarget} onClick={rememberImage}>انتخاب محصول</Link>
+              <Link {...productTarget} onClick={rememberImage}>
+                انتخاب محصول
+              </Link>
             </Button>
           )}
           <Button
             type="button"
             variant="ghost"
             aria-pressed={isWishlisted}
-            aria-label={isWishlisted ? `حذف ${shoe.name} از علاقه‌مندی` : `افزودن ${shoe.name} به علاقه‌مندی`}
+            aria-label={
+              isWishlisted
+                ? `حذف ${shoe.name} از علاقه‌مندی`
+                : `افزودن ${shoe.name} به علاقه‌مندی`
+            }
             onClick={handleWishlist}
           >
-            <Heart aria-hidden="true" className={isWishlisted ? "size-4 fill-current" : "size-4"} />
+            <Heart
+              aria-hidden="true"
+              className={isWishlisted ? "size-4 fill-current" : "size-4"}
+            />
             <span className="sm:sr-only">علاقه‌مندی</span>
           </Button>
         </div>
@@ -189,21 +214,38 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
             type="button"
             onClick={handleWishlist}
             aria-pressed={isWishlisted}
-            aria-label={isWishlisted ? `حذف ${shoe.name} از علاقه‌مندی` : `افزودن ${shoe.name} به علاقه‌مندی`}
+            aria-label={
+              isWishlisted
+                ? `حذف ${shoe.name} از علاقه‌مندی`
+                : `افزودن ${shoe.name} به علاقه‌مندی`
+            }
             className={`grid size-11 place-items-center rounded-full border backdrop-blur transition-colors ${
               isWishlisted
                 ? "border-neon bg-neon text-ink"
                 : "border-border bg-ink/75 text-white hover:border-neon"
             }`}
           >
-            <Heart aria-hidden="true" className={isWishlisted ? "size-4 fill-current" : "size-4"} />
+            <Heart
+              aria-hidden="true"
+              className={isWishlisted ? "size-4 fill-current" : "size-4"}
+            />
           </button>
         </div>
 
         <div className="absolute left-3 top-3 flex flex-col gap-1.5">
-          {shoe.isNew ? <span className="eyebrow rounded-full bg-neon px-2 py-1 text-ink">جدید</span> : null}
-          {shoe.isLimited ? <span className="eyebrow rounded-full bg-neon-orange px-2 py-1 text-white">لیمیتد</span> : null}
-          {discount ? <span className="eyebrow rounded-full bg-purple-hype px-2 py-1 text-white">٪{discount}-</span> : null}
+          {shoe.isNew ? (
+            <span className="eyebrow rounded-full bg-neon px-2 py-1 text-ink">جدید</span>
+          ) : null}
+          {shoe.isLimited ? (
+            <span className="eyebrow rounded-full bg-neon-orange px-2 py-1 text-white">
+              لیمیتد
+            </span>
+          ) : null}
+          {discount ? (
+            <span className="eyebrow rounded-full bg-purple-hype px-2 py-1 text-white">
+              ٪{discount}-
+            </span>
+          ) : null}
         </div>
 
         {shoe.isSoldOut ? (
@@ -217,17 +259,29 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
 
       <div className="p-4">
         <div className="flex items-center justify-between gap-2">
-          <p className="eyebrow text-muted-foreground"><bdi dir="ltr">{shoe.brand}</bdi></p>
-          <span className="rounded-full border border-border px-2 py-0.5 font-fa text-[0.65rem] text-muted-foreground">داده نمایشی</span>
+          <p className="eyebrow text-muted-foreground">
+            <bdi dir="ltr">{shoe.brand}</bdi>
+          </p>
+          <span className="rounded-full border border-border px-2 py-0.5 font-fa text-[0.65rem] text-muted-foreground">
+            داده نمایشی
+          </span>
         </div>
 
         <Link {...productTarget} onClick={rememberImage} className="mt-2 block rounded-sm">
-          <h3 className="truncate font-display text-base font-bold"><bdi dir="ltr">{shoe.name}</bdi></h3>
-          <p className="truncate text-xs text-muted-foreground"><bdi dir="ltr">{shoe.colorway}</bdi></p>
+          <h3 className="truncate font-display text-base font-bold">
+            <bdi dir="ltr">{shoe.name}</bdi>
+          </h3>
+          <p className="truncate text-xs text-muted-foreground">
+            <bdi dir="ltr">{shoe.colorway}</bdi>
+          </p>
         </Link>
 
         {previews.length > 1 ? (
-          <div role="group" aria-label={`تغییر پیش‌نمایش تصویر ${shoe.name}`} className="mt-3 flex min-h-11 items-center gap-2">
+          <div
+            role="group"
+            aria-label={`تغییر پیش‌نمایش تصویر ${shoe.name}`}
+            className="mt-3 flex min-h-11 items-center gap-2"
+          >
             {previews.map((preview, previewIndex) => (
               <button
                 key={`${preview.color}-${previewIndex}`}
@@ -235,8 +289,10 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
                 aria-label={preview.label}
                 aria-pressed={previewIndex === activePreview}
                 onClick={() => setActivePreview(previewIndex)}
-                className={`size-9 rounded-full border-2 transition-transform ${
-                  previewIndex === activePreview ? "scale-110 border-neon" : "border-border hover:border-muted-foreground"
+                className={`size-11 rounded-full border-2 transition-transform ${
+                  previewIndex === activePreview
+                    ? "scale-105 border-neon"
+                    : "border-border hover:border-muted-foreground"
                 }`}
                 style={{ backgroundColor: preview.color }}
               />
@@ -246,12 +302,16 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
 
         <div className="mt-3 flex items-end gap-2">
           <Price value={shoe.sale_price ?? shoe.price} className="font-bold" />
-          {shoe.sale_price ? <Price value={shoe.price} className="text-xs text-muted-foreground line-through" /> : null}
+          {shoe.sale_price ? (
+            <Price value={shoe.price} className="text-xs text-muted-foreground line-through" />
+          ) : null}
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
           <Button asChild variant="outline">
-            <Link {...productTarget} onClick={rememberImage}>جزئیات</Link>
+            <Link {...productTarget} onClick={rememberImage}>
+              جزئیات
+            </Link>
           </Button>
           {onQuickView ? (
             <Button type="button" onClick={openQuickView} data-testid="quick-view-trigger">
@@ -260,7 +320,9 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
             </Button>
           ) : (
             <Button asChild>
-              <Link {...productTarget} onClick={rememberImage}>انتخاب سایز</Link>
+              <Link {...productTarget} onClick={rememberImage}>
+                انتخاب سایز
+              </Link>
             </Button>
           )}
         </div>
