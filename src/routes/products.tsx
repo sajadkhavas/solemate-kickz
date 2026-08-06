@@ -1,337 +1,378 @@
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { zodValidator, fallback } from "@tanstack/zod-adapter";
-import { z } from "zod";
-import { motion } from "framer-motion";
-import { SlidersHorizontal, X, Grid3x3, LayoutList, Search, Tag, Flame, Sparkles } from "lucide-react";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/sections/Footer";
-import { MobileBottomNav } from "@/components/MobileBottomNav";
-import { ShoeCard } from "@/components/ShoeCard";
-import { SHOES, BRANDS, CATEGORIES } from "@/data/shoes";
+import { Flame, Grid3x3, LayoutList, SlidersHorizontal, Sparkles, Tag, X } from "lucide-react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 
-const searchSchema = z.object({
-  brand: fallback(z.string().optional(), undefined),
-  category: fallback(z.string().optional(), undefined),
-  q: fallback(z.string().optional(), undefined),
-  sort: fallback(z.enum(["newest", "price-asc", "price-desc", "popular"]), "newest").default("newest"),
-});
+import {
+  CATALOG_MAX_PRICE,
+  type CatalogSearch,
+  catalogSearchSchema,
+  filterCatalog,
+  hasCatalogFilters,
+  parseSizeParam,
+  serialiseSizes,
+} from "@/catalog/catalog-state";
+import { CatalogFilters } from "@/components/catalog/CatalogFilters";
+import { QuickViewDialog } from "@/components/catalog/QuickViewDialog";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { Navbar } from "@/components/Navbar";
+import { ShoeCard } from "@/components/ShoeCard";
+import { Footer } from "@/components/sections/Footer";
+import { Button } from "@/components/ui/button";
+import { EmptyState, IconButton, SearchInput } from "@/components/ui/commerce-primitives";
+import { CATEGORIES, SHOES, type Shoe } from "@/data/shoes";
 
 export const Route = createFileRoute("/products")({
-  validateSearch: zodValidator(searchSchema),
+  validateSearch: zodValidator(catalogSearchSchema),
   head: () => ({
     meta: [
-      { title: "Shop — SOLE" },
-      { name: "description", content: "تمام کفش‌ها از همه برندها. فیلتر کن، پیدا کن، بپوش." },
-      { property: "og:title", content: "Shop — SOLE" },
+      { title: "کاتالوگ کفش — SOLE" },
+      {
+        name: "description",
+        content: "مرور و فیلتر داده نمایشی محصولات SOLE بر اساس برند، دسته، سایز و قیمت.",
+      },
+      { property: "og:title", content: "کاتالوگ کفش — SOLE" },
     ],
+    links: [{ rel: "canonical", href: "/products" }],
   }),
   component: ProductsPage,
 });
 
 const QUICK_FILTERS = [
-  { id: "all", label: "همه", icon: Tag, filter: () => true },
-  { id: "new", label: "جدید", icon: Sparkles, filter: (s: typeof SHOES[number]) => s.isNew },
-  { id: "sale", label: "تخفیف‌دار", icon: Tag, filter: (s: typeof SHOES[number]) => !!s.sale_price },
-  { id: "limited", label: "لیمیتد", icon: Flame, filter: (s: typeof SHOES[number]) => s.isLimited },
+  { id: "all" as const, label: "همه", icon: Tag },
+  { id: "new" as const, label: "جدید", icon: Sparkles },
+  { id: "sale" as const, label: "تخفیف‌دار", icon: Tag },
+  { id: "limited" as const, label: "لیمیتد", icon: Flame },
 ];
 
 function ProductsPage() {
-  const { brand, category, sort, q } = Route.useSearch();
+  const search = Route.useSearch();
   const navigate = Route.useNavigate();
-  const [showFilters, setShowFilters] = useState(false);
-  const [sizes, setSizes] = useState<number[]>([]);
-  const [maxPrice, setMaxPrice] = useState(20000000);
-  const [view, setView] = useState<"grid" | "list">("grid");
-  const [quick, setQuick] = useState<string>("all");
-  const [localQ, setLocalQ] = useState(q ?? "");
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [quickViewShoe, setQuickViewShoe] = useState<Shoe | null>(null);
+  const [localQuery, setLocalQuery] = useState(search.q ?? "");
 
-  const filtered = useMemo(() => {
-    let list = [...SHOES];
-    if (brand) list = list.filter(s => s.brand === brand);
-    if (category) list = list.filter(s => s.category === category);
-    const term = (q ?? "").trim().toLowerCase();
-    if (term) list = list.filter(s => `${s.brand} ${s.name} ${s.colorway}`.toLowerCase().includes(term));
-    if (sizes.length) list = list.filter(s => sizes.some(sz => s.sizes.includes(sz)));
-    list = list.filter(s => (s.sale_price ?? s.price) <= maxPrice);
-    const qf = QUICK_FILTERS.find(x => x.id === quick);
-    if (qf) list = list.filter(qf.filter);
-    if (sort === "price-asc") list.sort((a, b) => (a.sale_price ?? a.price) - (b.sale_price ?? b.price));
-    else if (sort === "price-desc") list.sort((a, b) => (b.sale_price ?? b.price) - (a.sale_price ?? a.price));
-    else if (sort === "popular") list.sort((a, b) => b.reviews - a.reviews);
-    else list.sort((a, b) => Number(b.isNew) - Number(a.isNew));
-    return list;
-  }, [brand, category, sort, sizes, maxPrice, quick, q]);
+  useEffect(() => setLocalQuery(search.q ?? ""), [search.q]);
 
-  const ALL_SIZES = [39, 40, 41, 42, 43, 44, 45, 46];
+  const selectedSizes = useMemo(() => parseSizeParam(search.sizes), [search.sizes]);
+  const products = useMemo(() => filterCatalog(SHOES, search), [search]);
+  const activeFilters = hasCatalogFilters(search);
 
-  const setParam = (key: "brand" | "category" | "q", value?: string) => {
-    navigate({ search: (prev: Record<string, unknown>) => ({ ...prev, [key]: value }) });
+  const updateSearch = (
+    patch: Partial<CatalogSearch>,
+    options: { replace?: boolean } = {},
+  ) => {
+    navigate({
+      replace: options.replace,
+      search: (previous) => ({ ...previous, ...patch }) as never,
+    });
   };
 
-  const clearAll = () => {
-    navigate({ search: { sort: "newest" } as never });
-    setSizes([]);
-    setMaxPrice(20000000);
-    setQuick("all");
-    setLocalQ("");
+  const clearFilters = () => {
+    setLocalQuery("");
+    navigate({
+      search: {
+        sort: search.sort,
+        quick: "all",
+        view: search.view,
+      } as never,
+    });
   };
 
-  const submitSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setParam("q", localQ.trim() || undefined);
+  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    updateSearch({ q: localQuery.trim() || undefined });
   };
+
+  const setSizeFilters = (sizes: number[]) => {
+    updateSearch({ sizes: serialiseSizes(sizes) });
+  };
+
+  const categoryLabel = CATEGORIES.find((item) => item.id === search.category)?.fa;
 
   return (
-    <div className="bg-ink text-foreground min-h-screen">
+    <div className="min-h-screen bg-ink text-foreground">
       <Navbar />
 
-      {/* Hero header */}
-      <section className="px-6 pt-12 pb-6 border-b border-border relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.06] [background-image:radial-gradient(circle_at_1px_1px,#c8f135_1px,transparent_0)] [background-size:24px_24px]" />
-        <div className="max-w-[1400px] mx-auto relative">
-          <div className="eyebrow text-neon mb-3">Explore</div>
-          <h1 className="font-display font-black uppercase text-5xl md:text-7xl leading-none">
-            All <span className="text-neon">Kicks</span>
+      <header className="relative overflow-hidden border-b border-border px-4 pb-7 pt-10 sm:px-6 sm:pt-12">
+        <div className="absolute inset-0 opacity-[0.05] [background-image:radial-gradient(circle_at_1px_1px,#c8f135_1px,transparent_0)] [background-size:24px_24px]" />
+        <div className="relative mx-auto max-w-[1400px]">
+          <p className="eyebrow text-neon">Catalog</p>
+          <h1 className="mt-3 font-display text-4xl font-black uppercase leading-none sm:text-6xl lg:text-7xl">
+            انتخاب <span className="text-neon">کفش</span>
           </h1>
-          <p className="font-fa text-muted-foreground mt-3">
-            <span className="font-mono-num">{filtered.length}</span> مدل از بهترین برندهای جهان
+          <p className="mt-3 max-w-2xl font-fa text-sm leading-7 text-muted-foreground sm:text-base">
+            این صفحه از Dataset نمایشی پروژه استفاده می‌کند. فیلترها، مرتب‌سازی و نوع نمایش در نشانی صفحه ذخیره می‌شوند.
           </p>
 
-          {/* Search */}
-          <form onSubmit={submitSearch} className="mt-6 max-w-xl flex items-center gap-2 bg-surface border border-border rounded-full px-4 py-2.5 focus-within:border-neon transition">
-            <Search size={16} className="text-muted-foreground" />
-            <input
-              value={localQ}
-              onChange={(e) => setLocalQ(e.target.value)}
-              placeholder="جستجوی کفش، برند، رنگ..."
-              className="bg-transparent outline-none flex-1 text-sm font-fa"
+          <form onSubmit={submitSearch} className="mt-6 grid max-w-2xl gap-2 sm:grid-cols-[1fr_auto]">
+            <label htmlFor="catalog-search" className="sr-only">
+              جستجو در کاتالوگ
+            </label>
+            <SearchInput
+              id="catalog-search"
+              data-testid="catalog-search"
+              value={localQuery}
+              onChange={(event) => setLocalQuery(event.currentTarget.value)}
+              onClear={() => {
+                setLocalQuery("");
+                updateSearch({ q: undefined });
+              }}
+              placeholder="برند، مدل، رنگ، شناسه یا برچسب"
+              autoComplete="off"
+              className="bg-surface"
             />
-            {localQ && (
-              <button type="button" onClick={() => { setLocalQ(""); setParam("q", undefined); }} className="text-muted-foreground hover:text-neon">
-                <X size={14} />
-              </button>
-            )}
-            <button type="submit" className="eyebrow bg-neon text-ink px-3 py-1 rounded-full">Go</button>
+            <Button type="submit">جستجو</Button>
           </form>
 
-          {/* Quick filters */}
-          <div className="flex gap-2 mt-5 overflow-x-auto no-scrollbar -mx-1 px-1">
-            {QUICK_FILTERS.map(qf => {
-              const Icon = qf.icon;
-              const active = quick === qf.id;
+          <div
+            role="group"
+            aria-label="فیلترهای سریع"
+            className="-mx-1 mt-5 flex gap-2 overflow-x-auto px-1 pb-1"
+          >
+            {QUICK_FILTERS.map((item) => {
+              const Icon = item.icon;
+              const active = search.quick === item.id;
               return (
                 <button
-                  key={qf.id}
-                  onClick={() => setQuick(qf.id)}
-                  className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border transition ${
-                    active ? "bg-neon text-ink border-neon" : "bg-surface border-border hover:border-neon"
+                  key={item.id}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => updateSearch({ quick: item.id })}
+                  className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border px-4 font-fa text-sm transition-colors ${
+                    active
+                      ? "border-neon bg-neon font-bold text-ink"
+                      : "border-border bg-surface hover:border-neon"
                   }`}
                 >
-                  <Icon size={13} />
-                  <span className="font-fa text-xs">{qf.label}</span>
+                  <Icon aria-hidden="true" className="size-4" />
+                  {item.label}
                 </button>
               );
             })}
           </div>
 
-          {/* Active pills */}
-          <div className="flex flex-wrap gap-2 mt-4">
-            {brand && (
-              <button onClick={() => setParam("brand", undefined)} className="eyebrow bg-neon text-ink px-3 py-1.5 rounded-full inline-flex items-center gap-2">
-                {brand} <X size={12} />
-              </button>
-            )}
-            {category && (
-              <button onClick={() => setParam("category", undefined)} className="eyebrow bg-neon text-ink px-3 py-1.5 rounded-full inline-flex items-center gap-2">
-                {category} <X size={12} />
-              </button>
-            )}
-            {q && (
-              <button onClick={() => { setLocalQ(""); setParam("q", undefined); }} className="eyebrow bg-neon-orange text-white px-3 py-1.5 rounded-full inline-flex items-center gap-2">
-                "{q}" <X size={12} />
-              </button>
-            )}
-            {sizes.map(sz => (
-              <button key={sz} onClick={() => setSizes(s => s.filter(x => x !== sz))} className="eyebrow bg-surface border border-border px-3 py-1.5 rounded-full inline-flex items-center gap-2 font-mono-num">
-                Size {sz} <X size={12} />
-              </button>
-            ))}
-            {(brand || category || sizes.length > 0 || q) && (
-              <button onClick={clearAll} className="eyebrow text-muted-foreground hover:text-neon px-3 py-1.5">
-                Clear all
-              </button>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 sm:px-6 py-8">
-        <div className="max-w-[1400px] mx-auto grid lg:grid-cols-[280px_1fr] gap-8">
-          {/* Sidebar */}
-          <aside className={`${showFilters ? "fixed inset-0 z-50 bg-ink overflow-auto p-6" : "hidden"} lg:relative lg:block lg:inset-auto lg:p-0 lg:bg-transparent`}>
-            <div className="lg:sticky lg:top-28 space-y-7">
-              <div className="flex items-center justify-between lg:hidden">
-                <h3 className="font-display font-bold text-xl uppercase">Filters</h3>
-                <button onClick={() => setShowFilters(false)}><X /></button>
-              </div>
-
-              <div>
-                <div className="eyebrow text-neon mb-3">Brand</div>
-                <div className="space-y-1.5 max-h-64 overflow-auto no-scrollbar">
-                  {BRANDS.map(b => {
-                    const count = SHOES.filter(s => s.brand === b).length;
-                    if (!count) return null;
-                    return (
-                      <button
-                        key={b}
-                        onClick={() => setParam("brand", brand === b ? undefined : b)}
-                        className={`w-full flex items-center justify-between text-sm py-1.5 px-2 rounded-md transition-colors ${
-                          brand === b ? "bg-neon text-ink font-bold" : "hover:bg-surface"
-                        }`}
-                      >
-                        <span>{b}</span>
-                        <span className="font-mono-num text-xs opacity-60">{count}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <div className="eyebrow text-neon mb-3">Category</div>
-                <div className="space-y-1">
-                  <button
-                    onClick={() => setParam("category", undefined)}
-                    className={`block w-full text-left text-sm py-1.5 px-2 rounded-md ${!category ? "bg-neon text-ink font-bold" : "hover:bg-surface"}`}
-                  >
-                    All
-                  </button>
-                  {CATEGORIES.map(c => (
-                    <button
-                      key={c.id}
-                      onClick={() => setParam("category", c.id)}
-                      className={`w-full text-left text-sm py-1.5 px-2 rounded-md flex items-center gap-2 ${category === c.id ? "bg-neon text-ink font-bold" : "hover:bg-surface"}`}
-                    >
-                      <span>{c.icon}</span> {c.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="eyebrow text-neon mb-3">Size</div>
-                <div className="grid grid-cols-4 gap-2">
-                  {ALL_SIZES.map(sz => {
-                    const active = sizes.includes(sz);
-                    return (
-                      <button
-                        key={sz}
-                        onClick={() => setSizes(s => active ? s.filter(x => x !== sz) : [...s, sz])}
-                        className={`font-mono-num text-sm py-2 rounded-lg border transition-colors ${
-                          active ? "bg-neon text-ink border-neon font-bold" : "border-border hover:border-neon"
-                        }`}
-                      >
-                        {sz}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <div className="eyebrow text-neon mb-3">Max Price</div>
-                <input
-                  type="range"
-                  min={1000000}
-                  max={20000000}
-                  step={500000}
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(Number(e.target.value))}
-                  className="w-full accent-[--neon]"
+          {activeFilters ? (
+            <div className="mt-4 flex flex-wrap items-center gap-2" aria-label="فیلترهای فعال">
+              {search.brand ? (
+                <FilterChip label={`برند ${search.brand}`} onRemove={() => updateSearch({ brand: undefined })} />
+              ) : null}
+              {categoryLabel ? (
+                <FilterChip label={categoryLabel} onRemove={() => updateSearch({ category: undefined })} />
+              ) : null}
+              {search.q ? (
+                <FilterChip
+                  label={`جستجو: ${search.q}`}
+                  onRemove={() => {
+                    setLocalQuery("");
+                    updateSearch({ q: undefined });
+                  }}
                 />
-                <div className="font-mono-num text-sm text-muted-foreground mt-2">
-                  تا {new Intl.NumberFormat("fa-IR").format(maxPrice)} تومان
-                </div>
-              </div>
+              ) : null}
+              {selectedSizes.map((size) => (
+                <FilterChip
+                  key={size}
+                  label={`سایز ${size}`}
+                  onRemove={() => setSizeFilters(selectedSizes.filter((item) => item !== size))}
+                />
+              ))}
+              {search.priceMax && search.priceMax < CATALOG_MAX_PRICE ? (
+                <FilterChip
+                  label={`تا ${new Intl.NumberFormat("fa-IR").format(search.priceMax)} تومان`}
+                  onRemove={() => updateSearch({ priceMax: undefined })}
+                />
+              ) : null}
+              <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
+                پاک‌کردن همه
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      </header>
 
-              <button onClick={clearAll} className="w-full btn-ghost-neon justify-center">
-                Clear All
-              </button>
+      <section className="px-4 py-8 sm:px-6">
+        <div className="mx-auto grid max-w-[1400px] gap-8 lg:grid-cols-[17.5rem_minmax(0,1fr)]">
+          <aside className="hidden lg:block" aria-label="فیلتر محصولات">
+            <div className="sticky top-28 rounded-2xl border border-border bg-surface p-5">
+              <CatalogFilters
+                brand={search.brand}
+                category={search.category}
+                sizes={selectedSizes}
+                priceMax={search.priceMax ?? CATALOG_MAX_PRICE}
+                onBrandChange={(brand) => updateSearch({ brand })}
+                onCategoryChange={(category) => updateSearch({ category })}
+                onSizesChange={setSizeFilters}
+                onPriceMaxChange={(priceMax) =>
+                  updateSearch(
+                    { priceMax: priceMax === CATALOG_MAX_PRICE ? undefined : priceMax },
+                    { replace: true },
+                  )
+                }
+                onClear={clearFilters}
+              />
             </div>
           </aside>
 
-          {/* Grid / List */}
-          <div>
-            <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
+          <div className="min-w-0">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setShowFilters(true)}
-                  className="lg:hidden inline-flex items-center gap-2 bg-surface border border-border rounded-full px-4 py-2 text-sm"
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="lg:hidden"
+                  onClick={() => setFilterDialogOpen(true)}
+                  data-testid="mobile-filter-trigger"
                 >
-                  <SlidersHorizontal size={14} /> Filters
-                </button>
-                <span className="hidden lg:block font-mono-num text-sm text-muted-foreground">
-                  {filtered.length} products
-                </span>
+                  <SlidersHorizontal aria-hidden="true" className="size-4" />
+                  فیلترها
+                </Button>
+                <p className="font-fa text-sm text-muted-foreground" aria-live="polite" aria-atomic="true">
+                  <span className="font-mono-num text-foreground">{products.length}</span> محصول نمایشی
+                </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <div className="hidden sm:flex bg-surface border border-border rounded-full p-1">
-                  <button
-                    onClick={() => setView("grid")}
-                    className={`p-1.5 rounded-full transition ${view === "grid" ? "bg-neon text-ink" : "text-muted-foreground hover:text-foreground"}`}
-                    aria-label="Grid view"
+              <div className="flex flex-1 items-center justify-end gap-2 sm:flex-initial">
+                <div role="group" aria-label="نوع نمایش" className="hidden rounded-full border border-border bg-surface p-1 sm:flex">
+                  <IconButton
+                    label="نمایش شبکه‌ای"
+                    size="sm"
+                    variant={search.view === "grid" ? "default" : "ghost"}
+                    aria-pressed={search.view === "grid"}
+                    onClick={() => updateSearch({ view: "grid" })}
+                    className="rounded-full"
                   >
-                    <Grid3x3 size={14} />
-                  </button>
-                  <button
-                    onClick={() => setView("list")}
-                    className={`p-1.5 rounded-full transition ${view === "list" ? "bg-neon text-ink" : "text-muted-foreground hover:text-foreground"}`}
-                    aria-label="List view"
+                    <Grid3x3 aria-hidden="true" className="size-4" />
+                  </IconButton>
+                  <IconButton
+                    label="نمایش فهرستی"
+                    size="sm"
+                    variant={search.view === "list" ? "default" : "ghost"}
+                    aria-pressed={search.view === "list"}
+                    onClick={() => updateSearch({ view: "list" })}
+                    className="rounded-full"
                   >
-                    <LayoutList size={14} />
-                  </button>
+                    <LayoutList aria-hidden="true" className="size-4" />
+                  </IconButton>
                 </div>
+
+                <label htmlFor="catalog-sort" className="sr-only">مرتب‌سازی محصولات</label>
                 <select
-                  value={sort}
-                  onChange={(e) => navigate({ search: (p: Record<string, unknown>) => ({ ...p, sort: e.target.value as never }) })}
-                  className="bg-surface border border-border rounded-full px-4 py-2 text-sm font-display uppercase tracking-wide outline-none focus:border-neon"
+                  id="catalog-sort"
+                  data-testid="catalog-sort"
+                  value={search.sort}
+                  onChange={(event) => updateSearch({ sort: event.currentTarget.value as CatalogSearch["sort"] })}
+                  className="min-h-11 min-w-0 rounded-full border border-border bg-surface px-4 font-fa text-sm outline-none focus-visible:border-neon focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <option value="newest">Newest</option>
-                  <option value="price-asc">Price ↑</option>
-                  <option value="price-desc">Price ↓</option>
-                  <option value="popular">Most Popular</option>
+                  <option value="newest">جدیدترین</option>
+                  <option value="price-asc">قیمت: کم به زیاد</option>
+                  <option value="price-desc">قیمت: زیاد به کم</option>
+                  <option value="popular">بیشترین بازخورد داده</option>
                 </select>
               </div>
             </div>
 
-            {filtered.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center py-24 border border-dashed border-border rounded-3xl"
+            {products.length ? (
+              <div
+                data-testid="catalog-results"
+                className={
+                  search.view === "grid"
+                    ? "grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 xl:grid-cols-3"
+                    : "space-y-4"
+                }
               >
-                <div className="text-6xl mb-4">👟</div>
-                <h3 className="font-display font-bold text-2xl uppercase">Nothing here</h3>
-                <p className="font-fa text-muted-foreground mt-2">هیچ کفشی پیدا نشد. فیلترها رو تغییر بده.</p>
-                <button onClick={clearAll} className="btn-hype mt-6">Clear filters</button>
-              </motion.div>
-            ) : view === "grid" ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 lg:gap-5">
-                {filtered.map((s, i) => <ShoeCard key={s.id} shoe={s} index={i} />)}
+                {products.map((shoe, index) => (
+                  <ShoeCard
+                    key={shoe.id}
+                    shoe={shoe}
+                    index={index}
+                    variant={search.view}
+                    onQuickView={setQuickViewShoe}
+                  />
+                ))}
               </div>
             ) : (
-              <div className="space-y-3">
-                {filtered.map((s, i) => <ShoeCard key={s.id} shoe={s} index={i} variant="list" />)}
-              </div>
+              <EmptyState
+                title="محصولی با این فیلترها پیدا نشد"
+                description="فیلترها را تغییر دهید یا همه آن‌ها را پاک کنید."
+                action={
+                  <Button type="button" onClick={clearFilters}>
+                    نمایش همه محصولات
+                  </Button>
+                }
+                className="min-h-72 border border-dashed border-border bg-surface"
+              />
             )}
           </div>
         </div>
       </section>
 
+      <DialogPrimitive.Root open={filterDialogOpen} onOpenChange={setFilterDialogOpen}>
+        <DialogPrimitive.Portal>
+          <DialogPrimitive.Overlay className="fixed inset-0 z-[var(--z-overlay)] bg-overlay backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 motion-reduce:animate-none" />
+          <DialogPrimitive.Content
+            data-testid="mobile-filter-dialog"
+            className="fixed inset-y-0 start-0 z-[var(--z-modal)] w-[min(92vw,25rem)] overflow-y-auto border-e border-border bg-surface-elevated p-5 shadow-[var(--shadow-overlay)] outline-none"
+          >
+            <div className="mb-6 flex items-start justify-between gap-3">
+              <div>
+                <DialogPrimitive.Title className="font-fa text-xl font-bold">فیلتر محصولات</DialogPrimitive.Title>
+                <DialogPrimitive.Description className="mt-1 font-fa text-sm text-muted-foreground">
+                  انتخاب‌ها فوراً در URL ذخیره می‌شوند.
+                </DialogPrimitive.Description>
+              </div>
+              <DialogPrimitive.Close asChild>
+                <IconButton label="بستن فیلترها" variant="ghost">
+                  <X aria-hidden="true" className="size-5" />
+                </IconButton>
+              </DialogPrimitive.Close>
+            </div>
+
+            <CatalogFilters
+              brand={search.brand}
+              category={search.category}
+              sizes={selectedSizes}
+              priceMax={search.priceMax ?? CATALOG_MAX_PRICE}
+              onBrandChange={(brand) => updateSearch({ brand })}
+              onCategoryChange={(category) => updateSearch({ category })}
+              onSizesChange={setSizeFilters}
+              onPriceMaxChange={(priceMax) =>
+                updateSearch(
+                  { priceMax: priceMax === CATALOG_MAX_PRICE ? undefined : priceMax },
+                  { replace: true },
+                )
+              }
+              onClear={clearFilters}
+              onApply={() => setFilterDialogOpen(false)}
+            />
+          </DialogPrimitive.Content>
+        </DialogPrimitive.Portal>
+      </DialogPrimitive.Root>
+
+      <QuickViewDialog
+        shoe={quickViewShoe}
+        open={quickViewShoe !== null}
+        onOpenChange={(open) => {
+          if (!open) setQuickViewShoe(null);
+        }}
+      />
+
       <Footer />
       <MobileBottomNav />
     </div>
+  );
+}
+
+function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onRemove}
+      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-neon bg-neon/10 px-3 font-fa text-xs text-foreground transition-colors hover:bg-neon hover:text-ink"
+    >
+      <span>{label}</span>
+      <X aria-hidden="true" className="size-3.5" />
+      <span className="sr-only">حذف فیلتر</span>
+    </button>
   );
 }
