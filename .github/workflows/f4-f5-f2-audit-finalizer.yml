@@ -1,0 +1,42 @@
+name: Temporary F4-F5 F2 Audit Finalizer
+
+on:
+  push:
+    branches:
+      - phase/sole-f4-f5-catalog-product-card
+    paths:
+      - .github/workflows/f4-f5-f2-audit-finalizer.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out phase branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase/sole-f4-f5-catalog-product-card
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+          no-cache: true
+
+      - name: Apply cumulative audit correction
+        run: |
+          python3 scripts/patch-f2-audit-for-catalog-schema.py
+          bunx prettier --write scripts/audit-f2-navigation-search.mjs
+          rm scripts/patch-f2-audit-for-catalog-schema.py
+          rm .github/workflows/f4-f5-f2-audit-finalizer.yml
+
+      - name: Commit correction and cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/audit-f2-navigation-search.mjs scripts/patch-f2-audit-for-catalog-schema.py .github/workflows/f4-f5-f2-audit-finalizer.yml
+          git commit -m "fix(audit): align F2 query contract with catalog schema"
+          git push origin HEAD:phase/sole-f4-f5-catalog-product-card
