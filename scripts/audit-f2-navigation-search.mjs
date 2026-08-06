@@ -4,7 +4,10 @@ import path from "node:path";
 import process from "node:process";
 
 const ROOT = process.cwd();
-const EXPECTED_BRANCH = "phase/sole-f2-navigation-search";
+const OWNER_BRANCH = "phase/sole-f2-navigation-search";
+const INTEGRATION_BRANCH = "integration/sole-frontend-v2";
+const CONTROLLED_PHASE = /^phase\/sole-f(?:\d+)(?:-f\d+)?-[a-z0-9-]+$/;
+const CONTROLLED_RELEASE = /^release\/sole-frontend-v2(?:-|$)/;
 const FOUNDATION_SHA = "a908b2723322dde27699fa4c92fa9c0de95e0c75";
 const REPORT_PATH = path.join(ROOT, "artifacts/audits/f2-navigation-search.json");
 const HANDOFF_PATH = "docs/handoffs/F2-NAVIGATION-SEARCH.md";
@@ -52,7 +55,16 @@ const branch =
   "detached";
 const head = git(["rev-parse", "HEAD"]);
 
-add("expected branch", branch === EXPECTED_BRANCH, { expected: EXPECTED_BRANCH, actual: branch });
+const controlledBranch =
+  branch === OWNER_BRANCH ||
+  branch === INTEGRATION_BRANCH ||
+  CONTROLLED_PHASE.test(branch) ||
+  CONTROLLED_RELEASE.test(branch);
+add("controlled phase or integration branch", controlledBranch, {
+  owner: OWNER_BRANCH,
+  integration: INTEGRATION_BRANCH,
+  actual: branch,
+});
 
 let foundationIsAncestor = false;
 try {

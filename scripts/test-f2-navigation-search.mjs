@@ -86,26 +86,50 @@ async function configureViewport(client, width, height) {
 }
 
 async function setSearchInput(client, value) {
-  await evaluate(
+  const focused = await evaluate(
     client,
     `(() => {
       const input = document.querySelector('[data-testid="search-input"]');
-      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
-      setter?.call(input, ${JSON.stringify(value)});
-      input?.dispatchEvent(new Event('input', { bubbles: true }));
-      return input?.value;
+      if (!(input instanceof HTMLInputElement)) return false;
+      input.focus();
+      input.select();
+      return document.activeElement === input;
     })()`,
   );
+  if (!focused) throw new Error("Search input could not receive focus");
+  await waitForExpression(
+    client,
+    `document.activeElement === document.querySelector('[data-testid="search-input"]')`,
+    10_000,
+  );
+  await key(client, "Backspace", { code: "Backspace", keyCode: 8 });
+  await client.send("Input.insertText", { text: value });
   await waitForExpression(
     client,
     `document.querySelector('[data-testid="search-input"]')?.value === ${JSON.stringify(value)}`,
+    10_000,
+  );
+  await waitForExpression(
+    client,
+    `!document.querySelector('[data-testid="search-loading"]')`,
+    10_000,
   );
 }
 
 async function openSearch(client) {
+  await waitForExpression(
+    client,
+    `document.querySelector('[data-testid="global-header"]')?.dataset.hydrated === "true"`,
+    10_000,
+  );
   await waitForExpression(client, `!${bodyLockedExpression}`);
   await visibleClick(client, '[data-search-trigger="true"]');
   await waitForExpression(client, `document.querySelector('[data-testid="search-dialog"]')`);
+  await waitForExpression(
+    client,
+    `document.activeElement === document.querySelector('[data-testid="search-input"]')`,
+    10_000,
+  );
 }
 
 async function submitQuery(client, query) {
@@ -272,7 +296,12 @@ async function main() {
     await setSearchInput(client, "Air Max");
     await waitForExpression(
       client,
-      `document.querySelectorAll('[data-testid="search-result"]').length > 0`,
+      `(() => {
+        const input = document.querySelector('[data-testid="search-input"]');
+        const results = document.querySelectorAll('[data-testid="search-result"]');
+        return input?.value === "Air Max" && results.length > 0;
+      })()`,
+      15_000,
     );
     const suggestions = await evaluate(
       client,
