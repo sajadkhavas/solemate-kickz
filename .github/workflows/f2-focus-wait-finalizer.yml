@@ -1,0 +1,42 @@
+name: Temporary F2 Focus Wait Finalizer
+
+on:
+  push:
+    branches:
+      - phase/sole-f4-f5-catalog-product-card
+    paths:
+      - .github/workflows/f2-focus-wait-finalizer.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out phase branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase/sole-f4-f5-catalog-product-card
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+          no-cache: true
+
+      - name: Apply focus wait and remove temporary files
+        run: |
+          python3 scripts/patch-f2-focus-restoration-wait.py
+          bunx prettier --write scripts/test-f2-navigation-search.mjs
+          rm scripts/patch-f2-focus-restoration-wait.py
+          rm .github/workflows/f2-focus-wait-finalizer.yml
+
+      - name: Commit corrected test timing
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(test): await completed search focus restoration"
+          git push origin HEAD:phase/sole-f4-f5-catalog-product-card
