@@ -51,6 +51,7 @@ function ProductsPage() {
   const navigate = Route.useNavigate();
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [quickViewShoe, setQuickViewShoe] = useState<Shoe | null>(null);
+  const [quickViewOpener, setQuickViewOpener] = useState<HTMLElement | null>(null);
   const [localQuery, setLocalQuery] = useState(search.q ?? "");
 
   useEffect(() => setLocalQuery(search.q ?? ""), [search.q]);
@@ -85,6 +86,11 @@ function ProductsPage() {
 
   const setSizeFilters = (sizes: number[]) => {
     updateSearch({ sizes: serialiseSizes(sizes) });
+  };
+
+  const openQuickView = (shoe: Shoe, opener: HTMLElement) => {
+    setQuickViewOpener(opener);
+    setQuickViewShoe(shoe);
   };
 
   const categoryLabel = CATEGORIES.find((item) => item.id === search.category)?.fa;
@@ -308,7 +314,7 @@ function ProductsPage() {
                     shoe={shoe}
                     index={index}
                     variant={search.view}
-                    onQuickView={setQuickViewShoe}
+                    onQuickView={openQuickView}
                   />
                 ))}
               </div>
@@ -374,6 +380,7 @@ function ProductsPage() {
 
       <QuickViewDialog
         shoe={quickViewShoe}
+        opener={quickViewOpener}
         open={quickViewShoe !== null}
         onOpenChange={(open) => {
           if (!open) setQuickViewShoe(null);

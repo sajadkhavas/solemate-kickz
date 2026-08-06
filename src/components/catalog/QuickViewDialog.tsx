@@ -1,7 +1,7 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Link } from "@tanstack/react-router";
 import { Heart, ShoppingBag, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,13 @@ import { useStore } from "@/store";
 
 interface QuickViewDialogProps {
   shoe: Shoe | null;
+  opener?: HTMLElement | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function QuickViewDialog({ shoe, open, onOpenChange }: QuickViewDialogProps) {
+export function QuickViewDialog({ shoe, opener, open, onOpenChange }: QuickViewDialogProps) {
+  const openerRef = useRef<HTMLElement | null>(null);
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [imageFailed, setImageFailed] = useState(false);
   const addToCart = useStore((state) => state.addToCart);
@@ -25,9 +27,10 @@ export function QuickViewDialog({ shoe, open, onOpenChange }: QuickViewDialogPro
 
   useEffect(() => {
     if (!open) return;
+    if (opener) openerRef.current = opener;
     setSelectedSize(null);
     setImageFailed(false);
-  }, [open, shoe?.id]);
+  }, [open, opener, shoe?.id]);
 
   if (!shoe) return null;
 
@@ -46,6 +49,10 @@ export function QuickViewDialog({ shoe, open, onOpenChange }: QuickViewDialogPro
         <DialogPrimitive.Content
           data-testid="quick-view-dialog"
           dir="rtl"
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            openerRef.current?.focus({ preventScroll: true });
+          }}
           className="fixed inset-x-3 top-1/2 z-[var(--z-modal)] mx-auto grid max-h-[min(90dvh,52rem)] max-w-4xl -translate-y-1/2 overflow-y-auto rounded-2xl border border-border bg-surface-elevated shadow-[var(--shadow-overlay)] outline-none md:grid-cols-[minmax(0,1fr)_minmax(20rem,0.85fr)]"
         >
           <div className="relative min-h-72 overflow-hidden rounded-t-2xl bg-surface-2 md:min-h-full md:rounded-e-none md:rounded-s-2xl">

@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Eye, Heart } from "lucide-react";
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type RefObject } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ interface Props {
   shoe: Shoe;
   index?: number;
   variant?: "grid" | "list";
-  onQuickView?: (shoe: Shoe) => void;
+  onQuickView?: (shoe: Shoe, opener: HTMLElement) => void;
 }
 
 function buildPreviews(shoe: Shoe) {
@@ -93,7 +93,8 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
     toast(isWishlisted ? "از علاقه‌مندی حذف شد" : "به علاقه‌مندی اضافه شد");
   };
 
-  const openQuickView = () => onQuickView?.(shoe);
+  const openQuickView = (event: MouseEvent<HTMLButtonElement>) =>
+    onQuickView?.(shoe, event.currentTarget);
 
   if (variant === "list") {
     return (
