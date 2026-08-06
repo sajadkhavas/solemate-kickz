@@ -14,7 +14,7 @@
 
 ## Clean validation candidate
 
-`a2f897918b4ca64956bd585f4589ec1ed4a04736`
+`139a363f17fc09aa9bc0c5e66d407ba17a480c26`
 
 This candidate contains the complete F4/F5 implementation, the Product Card 44-pixel target correction, the cumulative F2 query-schema audit correction, the F2 Reduced Motion QA correction and deterministic F4/F5 Visual QA.
 
@@ -33,7 +33,8 @@ This candidate contains the complete F4/F5 implementation, the Product Card 44-p
 - F2 verifies that SearchDialog submits `q`, `/products` uses `catalogSearchSchema`, and that schema validates `q` in the extracted catalog state module.
 - The isolated F2 terminal diagnostic verified Reduced Motion with zero active long transform animations and Zoom 200% without overflow on `/`, `/products`, `/product/1`, `/cart` and `/auth`.
 - F2 Visual QA ignores completed historical animations while retaining failure coverage for active transform animations.
-- F4/F5 Visual QA blocks inherited remote Unsplash media during QA, validates the real image-failure fallback, waits for fonts and image completion, allows entry animations to settle before measuring targets and prints exact critical findings when present.
+- F4/F5 Visual QA blocks inherited remote Unsplash media during QA, validates the real image-failure fallback, waits for fonts, allows entry animations to settle before measuring targets and prints exact critical findings when present.
+- The QA no longer waits for `image.complete` on intentionally blocked remote media, avoiding a false timeout while preserving fallback and layout validation.
 
 ## Process integrity
 
