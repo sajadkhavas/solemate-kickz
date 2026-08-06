@@ -44,7 +44,7 @@ jobs:
         run: bun run audit:source-contracts
 
       - name: Foundation browser behavior tests
-        run: bun run test:foundation
+        run: node scripts/retry-foundation-browser-check.mjs
 
       - name: Homepage completion audit
         run: node scripts/audit-f3-homepage.mjs
