@@ -137,11 +137,7 @@ async function run(baseUrl) {
       await evaluate(client, `location.search`),
     );
 
-    await evaluate(
-      client,
-      `([...document.querySelectorAll('[data-testid="catalog-filters"] button')]
-        .find((button) => button.textContent?.trim() === '42'))?.click()`,
-    );
+    await click(client, '[data-testid="catalog-size-filter"][data-size="42"]');
     await waitForExpression(client, `new URLSearchParams(location.search).get('sizes') === '42'`);
     record(
       "Size filter survives URL state",
@@ -201,7 +197,7 @@ async function run(baseUrl) {
       client,
       `({
         brandPressed: [...document.querySelectorAll('[data-testid="catalog-filters"] button')].some((button) => button.textContent?.includes('Nike') && button.getAttribute('aria-pressed') === 'true'),
-        sizePressed: [...document.querySelectorAll('[data-testid="catalog-filters"] button')].some((button) => button.textContent?.trim() === '42' && button.getAttribute('aria-pressed') === 'true'),
+        sizePressed: document.querySelector('[data-testid="catalog-size-filter"][data-size="42"]')?.getAttribute('aria-pressed') === 'true',
         list: new URLSearchParams(location.search).get('view') === 'list'
       })`,
     );
