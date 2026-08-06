@@ -137,7 +137,12 @@ async function captureState(client, baseUrl, name, url, width, height, setup) {
   await navigate(client, `${baseUrl}${url}`);
   await waitForExpression(client, `document.querySelector('h1')`);
   if (setup) await setup();
-  await sleep(250);
+  await waitForExpression(client, `document.fonts.status === 'loaded'`);
+  await waitForExpression(
+    client,
+    `[...document.querySelectorAll('[data-testid="product-card"] img')].every((image) => image.complete)`,
+  );
+  await sleep(650);
   const metrics = await inspect(client);
   const file = await screenshot(client, `${name}-${width}x${height}`);
   const findings = [];
@@ -153,6 +158,10 @@ async function run(baseUrl) {
   fs.rmSync(OUTPUT, { recursive: true, force: true });
   const browser = await openBrowser({ debugPort: 9246, logPath: CHROME_LOG });
   const { client } = browser;
+  await client.send("Network.enable");
+  await client.send("Network.setBlockedURLs", {
+    urls: ["https://images.unsplash.com/*", "https://*.unsplash.com/*"],
+  });
 
   client.on("Runtime.exceptionThrown", (event) => {
     browserErrors.push(
@@ -242,6 +251,7 @@ async function run(baseUrl) {
   fs.mkdirSync(path.dirname(REPORT), { recursive: true });
   fs.writeFileSync(REPORT, `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify(report.summary));
+  if (criticalFindings.length) console.error(JSON.stringify(criticalFindings, null, 2));
   if (!report.pass) process.exitCode = 1;
 }
 
