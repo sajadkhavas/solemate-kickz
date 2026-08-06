@@ -1,0 +1,44 @@
+name: Temporary F2 Visual Active Motion Finalizer
+
+on:
+  push:
+    branches:
+      - phase/sole-f4-f5-catalog-product-card
+    paths:
+      - .github/workflows/f2-visual-active-motion-finalizer.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out phase branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase/sole-f4-f5-catalog-product-card
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+          no-cache: true
+
+      - name: Apply correction and remove diagnostics
+        run: |
+          python3 scripts/patch-f2-visual-active-motion.py
+          bunx prettier --write scripts/visual-qa-f2-navigation-search.mjs
+          rm scripts/patch-f2-visual-active-motion.py
+          rm scripts/diagnose-f2-terminal-checks.mjs
+          rm .github/workflows/f2-terminal-diagnostic-temporary.yml
+          rm .github/workflows/f2-visual-active-motion-finalizer.yml
+
+      - name: Commit corrected visual contract
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(qa): evaluate only active reduced-motion animations"
+          git push origin HEAD:phase/sole-f4-f5-catalog-product-card
