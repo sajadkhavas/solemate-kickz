@@ -60,6 +60,14 @@
 - Bundle optimization and remote media migration remain owned by F11.
 - Release-wide accessibility regression remains owned by F12.
 
+## Supervisor correction record
+
+- Exact-head run `31123281366` failed only the permanent check `size guide avoids fabricated conversion data`.
+- The failure was caused by wording drift: the content said `نمودار یا جدول رسمی`, while both the audit and browser test intentionally required the explicit phrase `نمودار رسمی`.
+- The truthful content was aligned to `نمودار رسمی یا جدول رسمی برند` without adding any conversion values, table, brand-specific size claims or backend data.
+- The audit was not removed, skipped or weakened.
+- Final acceptance still requires a successful exact-head CI run and a successful post-merge Integration CI run.
+
 ## Validation
 
-Final phase SHA, exact-head workflow run, counts and supervisor decision will be recorded after CI completes.
+Final phase SHA, exact-head workflow run, counts, Integration merge SHA and post-merge CI result will be recorded after all gates pass.
