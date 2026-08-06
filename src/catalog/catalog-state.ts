@@ -13,9 +13,14 @@ export const catalogSearchSchema = z.object({
   brand: fallback(z.string().trim().min(1).optional(), undefined),
   category: fallback(z.string().trim().min(1).optional(), undefined),
   q: fallback(z.string().trim().optional(), undefined),
-  sort: fallback(z.enum(["newest", "price-asc", "price-desc", "popular"]), "newest").default("newest"),
+  sort: fallback(z.enum(["newest", "price-asc", "price-desc", "popular"]), "newest").default(
+    "newest",
+  ),
   sizes: fallback(z.string().optional(), undefined),
-  priceMax: fallback(z.coerce.number().int().min(CATALOG_MIN_PRICE).max(CATALOG_MAX_PRICE).optional(), undefined),
+  priceMax: fallback(
+    z.coerce.number().int().min(CATALOG_MIN_PRICE).max(CATALOG_MAX_PRICE).optional(),
+    undefined,
+  ),
   quick: fallback(z.enum(["all", "new", "sale", "limited"]), "all").default("all"),
   view: fallback(z.enum(["grid", "list"]), "grid").default("grid"),
 });
@@ -47,13 +52,16 @@ export function filterCatalog(shoes: Shoe[], search: CatalogSearch): Shoe[] {
     .filter((shoe) => {
       if (search.brand && shoe.brand !== search.brand) return false;
       if (search.category && shoe.category !== search.category) return false;
-      if (selectedSizes.length && !selectedSizes.some((size) => shoe.sizes.includes(size))) return false;
+      if (selectedSizes.length && !selectedSizes.some((size) => shoe.sizes.includes(size)))
+        return false;
       if (productPrice(shoe) > maximumPrice) return false;
       if (search.quick === "new" && !shoe.isNew) return false;
       if (search.quick === "sale" && !shoe.sale_price) return false;
       if (search.quick === "limited" && !shoe.isLimited) return false;
       if (query) {
-        const text = normalizeSearchText([shoe.brand, shoe.name, shoe.colorway, shoe.sku, ...shoe.tags].join(" "));
+        const text = normalizeSearchText(
+          [shoe.brand, shoe.name, shoe.colorway, shoe.sku, ...shoe.tags].join(" "),
+        );
         if (!text.includes(query)) return false;
       }
       return true;
@@ -61,14 +69,19 @@ export function filterCatalog(shoes: Shoe[], search: CatalogSearch): Shoe[] {
     .sort((first, second) => {
       if (search.sort === "price-asc") return productPrice(first) - productPrice(second);
       if (search.sort === "price-desc") return productPrice(second) - productPrice(first);
-      if (search.sort === "popular") return second.reviews - first.reviews || second.rating - first.rating;
+      if (search.sort === "popular")
+        return second.reviews - first.reviews || second.rating - first.rating;
       return Number(second.isNew) - Number(first.isNew) || second.id - first.id;
     });
 }
 
 export function hasCatalogFilters(search: CatalogSearch) {
   return Boolean(
-    search.brand || search.category || search.q || parseSizeParam(search.sizes).length ||
-      (search.priceMax && search.priceMax < CATALOG_MAX_PRICE) || search.quick !== "all"
+    search.brand ||
+    search.category ||
+    search.q ||
+    parseSizeParam(search.sizes).length ||
+    (search.priceMax && search.priceMax < CATALOG_MAX_PRICE) ||
+    search.quick !== "all",
   );
 }

@@ -88,8 +88,7 @@ export function QuickViewDialog({ shoe, open, onOpenChange }: QuickViewDialogPro
                 <bdi dir="ltr">{shoe.name}</bdi>
               </DialogPrimitive.Title>
               <DialogPrimitive.Description className="mt-2 font-fa text-sm leading-6 text-muted-foreground">
-                نمایش سریع بر پایه داده نمایشی پروژه است. برای افزودن به سبد یک سایز را
-                انتخاب کنید.
+                نمایش سریع بر پایه داده نمایشی پروژه است. برای افزودن به سبد یک سایز را انتخاب کنید.
               </DialogPrimitive.Description>
               <p className="mt-1 text-sm text-muted-foreground">
                 <bdi dir="ltr">{shoe.colorway}</bdi>

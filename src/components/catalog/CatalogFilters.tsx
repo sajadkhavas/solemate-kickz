@@ -35,9 +35,7 @@ export function CatalogFilters({
   onApply,
 }: CatalogFiltersProps) {
   const toggleSize = (size: number) => {
-    onSizesChange(
-      sizes.includes(size) ? sizes.filter((item) => item !== size) : [...sizes, size],
-    );
+    onSizesChange(sizes.includes(size) ? sizes.filter((item) => item !== size) : [...sizes, size]);
   };
 
   return (
@@ -148,7 +146,9 @@ export function CatalogFilters({
           className="min-h-11 w-full accent-[var(--neon)]"
         />
         <output className="mt-1 block font-fa text-sm text-muted-foreground">
-          تا <span className="font-mono-num">{new Intl.NumberFormat("fa-IR").format(priceMax)}</span> تومان
+          تا{" "}
+          <span className="font-mono-num">{new Intl.NumberFormat("fa-IR").format(priceMax)}</span>{" "}
+          تومان
         </output>
       </fieldset>
 

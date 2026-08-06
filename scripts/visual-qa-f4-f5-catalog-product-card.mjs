@@ -1,7 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { evaluate, navigate, openBrowser, serialiseArgument, sleep, waitForExpression } from "./browser-harness.mjs";
+import {
+  evaluate,
+  navigate,
+  openBrowser,
+  serialiseArgument,
+  sleep,
+  waitForExpression,
+} from "./browser-harness.mjs";
 import { withCatalogServer } from "./f4-f5-browser-runner.mjs";
 
 const ROOT = process.cwd();
@@ -25,7 +32,10 @@ const VIEWPORTS = [
 ];
 
 function slug(value) {
-  return value.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
+  return value
+    .replace(/[^a-z0-9]+/gi, "-")
+    .replace(/^-|-$/g, "")
+    .toLowerCase();
 }
 
 async function viewport(client, width, height, mobile = width < 768) {
@@ -119,7 +129,11 @@ async function run(baseUrl) {
   const { client } = browser;
 
   client.on("Runtime.exceptionThrown", (event) => {
-    browserErrors.push(event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception");
+    browserErrors.push(
+      event.exceptionDetails?.exception?.description ??
+        event.exceptionDetails?.text ??
+        "Runtime exception",
+    );
   });
   client.on("Runtime.consoleAPICalled", (event) => {
     if (event.type === "error") browserErrors.push(event.args.map(serialiseArgument).join(" "));
@@ -148,11 +162,17 @@ async function run(baseUrl) {
     );
     await captureState(client, baseUrl, "mobile-filter-open", "/products", 390, 844, async () => {
       await click(client, '[data-testid="mobile-filter-trigger"]');
-      await waitForExpression(client, `document.querySelector('[data-testid="mobile-filter-dialog"]')`);
+      await waitForExpression(
+        client,
+        `document.querySelector('[data-testid="mobile-filter-dialog"]')`,
+      );
     });
     await captureState(client, baseUrl, "quick-view-open", "/products", 1280, 800, async () => {
       await click(client, '[data-testid="quick-view-trigger"]');
-      await waitForExpression(client, `document.querySelector('[data-testid="quick-view-dialog"]')`);
+      await waitForExpression(
+        client,
+        `document.querySelector('[data-testid="quick-view-dialog"]')`,
+      );
     });
 
     await client.send("Emulation.setEmulatedMedia", {
@@ -164,8 +184,12 @@ async function run(baseUrl) {
     await browser.close();
   }
 
-  const hydration = browserErrors.filter((error) => /hydration|server rendered html|did not match/i.test(error));
-  const runtime = browserErrors.filter((error) => /uncaught|typeerror|referenceerror|syntaxerror/i.test(error));
+  const hydration = browserErrors.filter((error) =>
+    /hydration|server rendered html|did not match/i.test(error),
+  );
+  const runtime = browserErrors.filter((error) =>
+    /uncaught|typeerror|referenceerror|syntaxerror/i.test(error),
+  );
   if (hydration.length) criticalFindings.push({ name: "hydration", findings: hydration });
   if (runtime.length) criticalFindings.push({ name: "runtime", findings: runtime });
 

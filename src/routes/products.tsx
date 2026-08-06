@@ -59,10 +59,7 @@ function ProductsPage() {
   const products = useMemo(() => filterCatalog(SHOES, search), [search]);
   const activeFilters = hasCatalogFilters(search);
 
-  const updateSearch = (
-    patch: Partial<CatalogSearch>,
-    options: { replace?: boolean } = {},
-  ) => {
+  const updateSearch = (patch: Partial<CatalogSearch>, options: { replace?: boolean } = {}) => {
     navigate({
       replace: options.replace,
       search: (previous) => ({ ...previous, ...patch }) as never,
@@ -103,10 +100,14 @@ function ProductsPage() {
             انتخاب <span className="text-neon">کفش</span>
           </h1>
           <p className="mt-3 max-w-2xl font-fa text-sm leading-7 text-muted-foreground sm:text-base">
-            این صفحه از Dataset نمایشی پروژه استفاده می‌کند. فیلترها، مرتب‌سازی و نوع نمایش در نشانی صفحه ذخیره می‌شوند.
+            این صفحه از Dataset نمایشی پروژه استفاده می‌کند. فیلترها، مرتب‌سازی و نوع نمایش در نشانی
+            صفحه ذخیره می‌شوند.
           </p>
 
-          <form onSubmit={submitSearch} className="mt-6 grid max-w-2xl gap-2 sm:grid-cols-[1fr_auto]">
+          <form
+            onSubmit={submitSearch}
+            className="mt-6 grid max-w-2xl gap-2 sm:grid-cols-[1fr_auto]"
+          >
             <label htmlFor="catalog-search" className="sr-only">
               جستجو در کاتالوگ
             </label>
@@ -156,10 +157,16 @@ function ProductsPage() {
           {activeFilters ? (
             <div className="mt-4 flex flex-wrap items-center gap-2" aria-label="فیلترهای فعال">
               {search.brand ? (
-                <FilterChip label={`برند ${search.brand}`} onRemove={() => updateSearch({ brand: undefined })} />
+                <FilterChip
+                  label={`برند ${search.brand}`}
+                  onRemove={() => updateSearch({ brand: undefined })}
+                />
               ) : null}
               {categoryLabel ? (
-                <FilterChip label={categoryLabel} onRemove={() => updateSearch({ category: undefined })} />
+                <FilterChip
+                  label={categoryLabel}
+                  onRemove={() => updateSearch({ category: undefined })}
+                />
               ) : null}
               {search.q ? (
                 <FilterChip
@@ -227,13 +234,22 @@ function ProductsPage() {
                   <SlidersHorizontal aria-hidden="true" className="size-4" />
                   فیلترها
                 </Button>
-                <p className="font-fa text-sm text-muted-foreground" aria-live="polite" aria-atomic="true">
-                  <span className="font-mono-num text-foreground">{products.length}</span> محصول نمایشی
+                <p
+                  className="font-fa text-sm text-muted-foreground"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  <span className="font-mono-num text-foreground">{products.length}</span> محصول
+                  نمایشی
                 </p>
               </div>
 
               <div className="flex flex-1 items-center justify-end gap-2 sm:flex-initial">
-                <div role="group" aria-label="نوع نمایش" className="hidden rounded-full border border-border bg-surface p-1 sm:flex">
+                <div
+                  role="group"
+                  aria-label="نوع نمایش"
+                  className="hidden rounded-full border border-border bg-surface p-1 sm:flex"
+                >
                   <IconButton
                     label="نمایش شبکه‌ای"
                     size="sm"
@@ -256,12 +272,16 @@ function ProductsPage() {
                   </IconButton>
                 </div>
 
-                <label htmlFor="catalog-sort" className="sr-only">مرتب‌سازی محصولات</label>
+                <label htmlFor="catalog-sort" className="sr-only">
+                  مرتب‌سازی محصولات
+                </label>
                 <select
                   id="catalog-sort"
                   data-testid="catalog-sort"
                   value={search.sort}
-                  onChange={(event) => updateSearch({ sort: event.currentTarget.value as CatalogSearch["sort"] })}
+                  onChange={(event) =>
+                    updateSearch({ sort: event.currentTarget.value as CatalogSearch["sort"] })
+                  }
                   className="min-h-11 min-w-0 rounded-full border border-border bg-surface px-4 font-fa text-sm outline-none focus-visible:border-neon focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <option value="newest">جدیدترین</option>
@@ -316,7 +336,9 @@ function ProductsPage() {
           >
             <div className="mb-6 flex items-start justify-between gap-3">
               <div>
-                <DialogPrimitive.Title className="font-fa text-xl font-bold">فیلتر محصولات</DialogPrimitive.Title>
+                <DialogPrimitive.Title className="font-fa text-xl font-bold">
+                  فیلتر محصولات
+                </DialogPrimitive.Title>
                 <DialogPrimitive.Description className="mt-1 font-fa text-sm text-muted-foreground">
                   انتخاب‌ها فوراً در URL ذخیره می‌شوند.
                 </DialogPrimitive.Description>

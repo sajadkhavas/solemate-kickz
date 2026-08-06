@@ -168,16 +168,11 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
             variant="ghost"
             aria-pressed={isWishlisted}
             aria-label={
-              isWishlisted
-                ? `حذف ${shoe.name} از علاقه‌مندی`
-                : `افزودن ${shoe.name} به علاقه‌مندی`
+              isWishlisted ? `حذف ${shoe.name} از علاقه‌مندی` : `افزودن ${shoe.name} به علاقه‌مندی`
             }
             onClick={handleWishlist}
           >
-            <Heart
-              aria-hidden="true"
-              className={isWishlisted ? "size-4 fill-current" : "size-4"}
-            />
+            <Heart aria-hidden="true" className={isWishlisted ? "size-4 fill-current" : "size-4"} />
             <span className="sm:sr-only">علاقه‌مندی</span>
           </Button>
         </div>
@@ -215,9 +210,7 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
             onClick={handleWishlist}
             aria-pressed={isWishlisted}
             aria-label={
-              isWishlisted
-                ? `حذف ${shoe.name} از علاقه‌مندی`
-                : `افزودن ${shoe.name} به علاقه‌مندی`
+              isWishlisted ? `حذف ${shoe.name} از علاقه‌مندی` : `افزودن ${shoe.name} به علاقه‌مندی`
             }
             className={`grid size-11 place-items-center rounded-full border backdrop-blur transition-colors ${
               isWishlisted
@@ -225,10 +218,7 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
                 : "border-border bg-ink/75 text-white hover:border-neon"
             }`}
           >
-            <Heart
-              aria-hidden="true"
-              className={isWishlisted ? "size-4 fill-current" : "size-4"}
-            />
+            <Heart aria-hidden="true" className={isWishlisted ? "size-4 fill-current" : "size-4"} />
           </button>
         </div>
 
@@ -237,9 +227,7 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
             <span className="eyebrow rounded-full bg-neon px-2 py-1 text-ink">جدید</span>
           ) : null}
           {shoe.isLimited ? (
-            <span className="eyebrow rounded-full bg-neon-orange px-2 py-1 text-white">
-              لیمیتد
-            </span>
+            <span className="eyebrow rounded-full bg-neon-orange px-2 py-1 text-white">لیمیتد</span>
           ) : null}
           {discount ? (
             <span className="eyebrow rounded-full bg-purple-hype px-2 py-1 text-white">

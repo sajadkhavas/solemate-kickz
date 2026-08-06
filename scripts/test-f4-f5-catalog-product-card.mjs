@@ -79,7 +79,9 @@ async function run(baseUrl) {
 
   client.on("Runtime.exceptionThrown", (event) => {
     browserErrors.push(
-      event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception",
+      event.exceptionDetails?.exception?.description ??
+        event.exceptionDetails?.text ??
+        "Runtime exception",
     );
   });
   client.on("Runtime.consoleAPICalled", (event) => {
@@ -97,19 +99,32 @@ async function run(baseUrl) {
     });
 
     await navigate(client, `${baseUrl}/products`);
-    await waitForExpression(client, `document.querySelectorAll('[data-testid="product-card"]').length > 0`);
-    const initialCount = await evaluate(client, `document.querySelectorAll('[data-testid="product-card"]').length`);
+    await waitForExpression(
+      client,
+      `document.querySelectorAll('[data-testid="product-card"]').length > 0`,
+    );
+    const initialCount = await evaluate(
+      client,
+      `document.querySelectorAll('[data-testid="product-card"]').length`,
+    );
     record("Catalog renders real dataset cards", initialCount > 10, initialCount);
 
     await setInput(client, "#catalog-search", "Nike");
     await press(client, "Enter", "Enter");
     await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);
-    await waitForExpression(client, `document.querySelectorAll('[data-testid="product-card"]').length > 0`);
+    await waitForExpression(
+      client,
+      `document.querySelectorAll('[data-testid="product-card"]').length > 0`,
+    );
     const searchState = await evaluate(
       client,
       `({ q: new URLSearchParams(location.search).get('q'), count: document.querySelectorAll('[data-testid="product-card"]').length })`,
     );
-    record("Search is URL-backed", searchState.q === "Nike" && searchState.count < initialCount, searchState);
+    record(
+      "Search is URL-backed",
+      searchState.q === "Nike" && searchState.count < initialCount,
+      searchState,
+    );
 
     await clickText(client, '[aria-label="فیلترهای سریع"] button', "تخفیف‌دار");
     await waitForExpression(client, `new URLSearchParams(location.search).get('quick') === 'sale'`);
@@ -137,7 +152,10 @@ async function run(baseUrl) {
         return true;
       })()`,
     );
-    await waitForExpression(client, `new URLSearchParams(location.search).get('sort') === 'price-desc'`);
+    await waitForExpression(
+      client,
+      `new URLSearchParams(location.search).get('sort') === 'price-desc'`,
+    );
     record(
       "Sorting is URL-backed",
       await evaluate(client, `new URLSearchParams(location.search).get('sort') === 'price-desc'`),
@@ -146,18 +164,31 @@ async function run(baseUrl) {
 
     const beforeHistory = await evaluate(client, `location.search`);
     await evaluate(client, `history.back(); true`);
-    await waitForExpression(client, `new URLSearchParams(location.search).get('sort') !== 'price-desc'`);
+    await waitForExpression(
+      client,
+      `new URLSearchParams(location.search).get('sort') !== 'price-desc'`,
+    );
     const backState = await evaluate(client, `location.search`);
     await evaluate(client, `history.forward(); true`);
-    await waitForExpression(client, `new URLSearchParams(location.search).get('sort') === 'price-desc'`);
+    await waitForExpression(
+      client,
+      `new URLSearchParams(location.search).get('sort') === 'price-desc'`,
+    );
     const forwardState = await evaluate(client, `location.search`);
-    record("Browser Back and Forward restore catalog state", beforeHistory === forwardState && backState !== forwardState, {
-      beforeHistory,
-      backState,
-      forwardState,
-    });
+    record(
+      "Browser Back and Forward restore catalog state",
+      beforeHistory === forwardState && backState !== forwardState,
+      {
+        beforeHistory,
+        backState,
+        forwardState,
+      },
+    );
 
-    await navigate(client, `${baseUrl}/products?brand=Nike&sizes=42&priceMax=6000000&quick=all&view=list&sort=price-asc`);
+    await navigate(
+      client,
+      `${baseUrl}/products?brand=Nike&sizes=42&priceMax=6000000&quick=all&view=list&sort=price-asc`,
+    );
     await waitForExpression(client, `document.querySelector('[data-testid="catalog-results"]')`);
     const deepLink = await evaluate(
       client,
@@ -167,7 +198,11 @@ async function run(baseUrl) {
         list: new URLSearchParams(location.search).get('view') === 'list'
       })`,
     );
-    record("Refresh and deep-link restore filters", deepLink.brandPressed && deepLink.sizePressed && deepLink.list, deepLink);
+    record(
+      "Refresh and deep-link restore filters",
+      deepLink.brandPressed && deepLink.sizePressed && deepLink.list,
+      deepLink,
+    );
 
     await navigate(client, `${baseUrl}/products`);
     await click(client, '[data-testid="quick-view-trigger"]');
@@ -180,26 +215,52 @@ async function run(baseUrl) {
         focusInside: document.querySelector('[data-testid="quick-view-dialog"]')?.contains(document.activeElement)
       })`,
     );
-    record("Quick View opens with focus containment", quickViewInitial.open && quickViewInitial.addDisabled && quickViewInitial.focusInside, quickViewInitial);
+    record(
+      "Quick View opens with focus containment",
+      quickViewInitial.open && quickViewInitial.addDisabled && quickViewInitial.focusInside,
+      quickViewInitial,
+    );
 
     await click(client, '[data-testid="quick-view-size"]');
-    await waitForExpression(client, `document.querySelector('[data-testid="quick-view-add"]')?.disabled === false`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="quick-view-add"]')?.disabled === false`,
+    );
     record(
       "Quick View requires explicit size selection",
-      await evaluate(client, `document.querySelector('[data-testid="quick-view-add"]')?.disabled === false`),
+      await evaluate(
+        client,
+        `document.querySelector('[data-testid="quick-view-add"]')?.disabled === false`,
+      ),
       true,
     );
 
-    const wishlistSelector = '[data-testid="quick-view-dialog"] button[aria-pressed]';
-    const wishlistBefore = await evaluate(client, `document.querySelector(${JSON.stringify(wishlistSelector)})?.getAttribute('aria-pressed')`);
+    const wishlistSelector = '[data-testid="quick-view-wishlist"]';
+    const wishlistBefore = await evaluate(
+      client,
+      `document.querySelector(${JSON.stringify(wishlistSelector)})?.getAttribute('aria-pressed')`,
+    );
     await click(client, wishlistSelector);
-    const wishlistAfter = await evaluate(client, `document.querySelector(${JSON.stringify(wishlistSelector)})?.getAttribute('aria-pressed')`);
-    record("Wishlist interaction is persistent and pressed", wishlistBefore !== wishlistAfter, { wishlistBefore, wishlistAfter });
+    const wishlistAfter = await evaluate(
+      client,
+      `document.querySelector(${JSON.stringify(wishlistSelector)})?.getAttribute('aria-pressed')`,
+    );
+    record("Wishlist interaction is persistent and pressed", wishlistBefore !== wishlistAfter, {
+      wishlistBefore,
+      wishlistAfter,
+    });
 
     await press(client, "Escape", "Escape");
     await waitForExpression(client, `!document.querySelector('[data-testid="quick-view-dialog"]')`);
-    const restoredFocus = await evaluate(client, `document.activeElement?.getAttribute('data-testid')`);
-    record("Quick View Escape restores trigger focus", restoredFocus === "quick-view-trigger", restoredFocus);
+    const restoredFocus = await evaluate(
+      client,
+      `document.activeElement?.getAttribute('data-testid')`,
+    );
+    record(
+      "Quick View Escape restores trigger focus",
+      restoredFocus === "quick-view-trigger",
+      restoredFocus,
+    );
 
     await client.send("Emulation.setDeviceMetricsOverride", {
       width: 390,
@@ -211,7 +272,10 @@ async function run(baseUrl) {
     });
     await navigate(client, `${baseUrl}/products`);
     await click(client, '[data-testid="mobile-filter-trigger"]');
-    await waitForExpression(client, `document.querySelector('[data-testid="mobile-filter-dialog"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="mobile-filter-dialog"]')`,
+    );
     const mobileDialog = await evaluate(
       client,
       `({
@@ -220,12 +284,19 @@ async function run(baseUrl) {
         locked: document.body.hasAttribute('data-scroll-locked') || document.body.style.overflow === 'hidden'
       })`,
     );
-    record("Mobile filter dialog traps focus and locks scroll", mobileDialog.open && mobileDialog.focusInside && mobileDialog.locked, mobileDialog);
+    record(
+      "Mobile filter dialog traps focus and locks scroll",
+      mobileDialog.open && mobileDialog.focusInside && mobileDialog.locked,
+      mobileDialog,
+    );
 
     await clickText(client, '[data-testid="mobile-filter-dialog"] button', "Nike");
     await waitForExpression(client, `new URLSearchParams(location.search).get('brand') === 'Nike'`);
     await click(client, '[data-testid="apply-mobile-filters"]');
-    await waitForExpression(client, `!document.querySelector('[data-testid="mobile-filter-dialog"]')`);
+    await waitForExpression(
+      client,
+      `!document.querySelector('[data-testid="mobile-filter-dialog"]')`,
+    );
     record(
       "Mobile filter applies URL state and closes",
       await evaluate(client, `new URLSearchParams(location.search).get('brand') === 'Nike'`),
@@ -243,10 +314,18 @@ async function run(baseUrl) {
         disabled: document.querySelector('[data-testid="quick-view-add"]')?.disabled
       })`,
     );
-    record("Sold-out Quick View cannot add to cart", soldOut.disabled === true && /ناموجود/.test(soldOut.text), soldOut);
+    record(
+      "Sold-out Quick View cannot add to cart",
+      soldOut.disabled === true && /ناموجود/.test(soldOut.text),
+      soldOut,
+    );
 
-    const hydration = browserErrors.filter((error) => /hydration|server rendered html|did not match/i.test(error));
-    const runtime = browserErrors.filter((error) => /uncaught|typeerror|referenceerror|syntaxerror/i.test(error));
+    const hydration = browserErrors.filter((error) =>
+      /hydration|server rendered html|did not match/i.test(error),
+    );
+    const runtime = browserErrors.filter((error) =>
+      /uncaught|typeerror|referenceerror|syntaxerror/i.test(error),
+    );
     record("No hydration mismatch", hydration.length === 0, hydration);
     record("No runtime exception", runtime.length === 0, runtime);
   } finally {

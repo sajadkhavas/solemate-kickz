@@ -10,7 +10,8 @@ const read = (file) => fs.readFileSync(path.join(ROOT, file), "utf8");
 const exists = (file) => fs.existsSync(path.join(ROOT, file));
 const git = (...args) => execFileSync("git", args, { cwd: ROOT, encoding: "utf8" }).trim();
 
-const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || git("branch", "--show-current");
+const branch =
+  process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || git("branch", "--show-current");
 const allowedBranch =
   branch === "phase/sole-f4-f5-catalog-product-card" ||
   branch === "integration/sole-frontend-v2" ||
@@ -42,23 +43,60 @@ check("catalog state module exists", exists("src/catalog/catalog-state.ts"));
 check("filter component exists", exists("src/components/catalog/CatalogFilters.tsx"));
 check("quick view component exists", exists("src/components/catalog/QuickViewDialog.tsx"));
 check("handoff exists", exists("docs/handoffs/F4-F5-CATALOG-PRODUCT-CARD.md"));
-check("all catalog filters are URL modeled", ["brand", "category", "q", "sort", "sizes", "priceMax", "quick", "view"].every((key) => state.includes(`${key}:`)));
+check(
+  "all catalog filters are URL modeled",
+  ["brand", "category", "q", "sort", "sizes", "priceMax", "quick", "view"].every((key) =>
+    state.includes(`${key}:`),
+  ),
+);
 check("catalog uses permanent filter function", products.includes("filterCatalog(SHOES, search)"));
-check("sizes are serialized in URL", products.includes("serialiseSizes") && state.includes("parseSizeParam"));
-check("catalog search draft synchronizes from URL", products.includes("useEffect(() => setLocalQuery(search.q ?? \"\")"));
-check("mobile filter uses an accessible dialog", products.includes("DialogPrimitive.Content") && products.includes('data-testid="mobile-filter-dialog"'));
+check(
+  "sizes are serialized in URL",
+  products.includes("serialiseSizes") && state.includes("parseSizeParam"),
+);
+check(
+  "catalog search draft synchronizes from URL",
+  products.includes('useEffect(() => setLocalQuery(search.q ?? "")'),
+);
+check(
+  "mobile filter uses an accessible dialog",
+  products.includes("DialogPrimitive.Content") &&
+    products.includes('data-testid="mobile-filter-dialog"'),
+);
 check("filter controls expose pressed state", filters.includes("aria-pressed"));
 check("filter touch targets meet shared contract", filters.includes("min-h-11"));
 check("catalog result count is announced", products.includes('aria-live="polite"'));
 check("empty result state is implemented", products.includes("<EmptyState"));
-check("canonical catalog link exists", products.includes('rel: "canonical"') && products.includes('href: "/products"'));
-check("product card does not add arbitrary size", !card.includes("addToCart") && !card.includes("Math.floor(shoe.sizes.length / 2)"));
-check("quick view requires explicit size", quickView.includes("selectedSize === null") && quickView.includes('data-testid="quick-view-size"'));
+check(
+  "canonical catalog link exists",
+  products.includes('rel: "canonical"') && products.includes('href: "/products"'),
+);
+check(
+  "product card does not add arbitrary size",
+  !card.includes("addToCart") && !card.includes("Math.floor(shoe.sizes.length / 2)"),
+);
+check(
+  "quick view requires explicit size",
+  quickView.includes("selectedSize === null") &&
+    quickView.includes('data-testid="quick-view-size"'),
+);
 check("quick view add is guarded", quickView.includes("shoe.isSoldOut || selectedSize === null"));
-check("wishlist controls expose pressed state", card.includes("aria-pressed={isWishlisted}") && quickView.includes("aria-pressed={wishlisted}"));
-check("image failure states are present", card.includes("تصویر در دسترس نیست") && quickView.includes("پیش‌نمایش تصویر در دسترس نیست"));
-check("format gate includes F4-F5 files", String(packageJson.scripts?.["format:check"] ?? "").includes("catalog-state.ts"));
-check("aggregate gate includes F4-F5", String(packageJson.scripts?.check ?? "").includes("audit:f4-f5"));
+check(
+  "wishlist controls expose pressed state",
+  card.includes("aria-pressed={isWishlisted}") && quickView.includes("aria-pressed={wishlisted}"),
+);
+check(
+  "image failure states are present",
+  card.includes("تصویر در دسترس نیست") && quickView.includes("پیش‌نمایش تصویر در دسترس نیست"),
+);
+check(
+  "format gate includes F4-F5 files",
+  String(packageJson.scripts?.["format:check"] ?? "").includes("catalog-state.ts"),
+);
+check(
+  "aggregate gate includes F4-F5",
+  String(packageJson.scripts?.check ?? "").includes("audit:f4-f5"),
+);
 check("runtime artifacts are not tracked", trackedArtifacts.length === 0, trackedArtifacts);
 
 const failed = checks.filter((item) => !item.pass);
