@@ -61,8 +61,9 @@ function ProductsPage() {
 
   const updateSearch = (patch: Partial<CatalogSearch>, options: { replace?: boolean } = {}) => {
     navigate({
+      to: "/products",
       replace: options.replace,
-      search: (previous) => ({ ...previous, ...patch }) as never,
+      search: { ...search, ...patch } as never,
     });
   };
 
