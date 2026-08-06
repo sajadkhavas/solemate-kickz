@@ -73,6 +73,32 @@ async function click(client, selector) {
   await sleep(120);
 }
 
+async function activateVisible(client, selector) {
+  const activated = await evaluate(
+    client,
+    `(() => {
+      const target = [...document.querySelectorAll(${JSON.stringify(selector)})].find((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return rect.width > 0 && rect.height > 0 && style.display !== 'none' &&
+          style.visibility !== 'hidden' && style.pointerEvents !== 'none';
+      });
+      if (!(target instanceof HTMLElement)) return false;
+      target.scrollIntoView({ block: 'center', inline: 'center' });
+      target.focus({ preventScroll: true });
+      target.dispatchEvent(new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        view: window,
+      }));
+      return true;
+    })()`,
+  );
+  if (!activated) throw new Error(`Visible activation target not found: ${selector}`);
+  await sleep(150);
+}
+
 async function inspect(client) {
   return evaluate(
     client,
@@ -168,7 +194,14 @@ async function run(baseUrl) {
       );
     });
     await captureState(client, baseUrl, "quick-view-open", "/products", 1280, 800, async () => {
-      await click(client, '[data-testid="quick-view-trigger"]');
+      await waitForExpression(
+        client,
+        `[...document.querySelectorAll('[data-testid="quick-view-trigger"]')].some((element) => {
+          const rect = element.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0;
+        })`,
+      );
+      await activateVisible(client, '[data-testid="quick-view-trigger"]');
       await waitForExpression(
         client,
         `document.querySelector('[data-testid="quick-view-dialog"]')`,
