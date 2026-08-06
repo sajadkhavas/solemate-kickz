@@ -35,7 +35,7 @@ export function SizeGuideDialog({ sizes }: SizeGuideDialogProps) {
                 راهنمای عمومی انتخاب سایز
               </DialogPrimitive.Title>
               <DialogPrimitive.Description className="mt-2 font-fa text-sm leading-7 text-muted-foreground">
-                Dataset فعلی نمودار یا جدول رسمی برند و طول داخلی کفش را ندارد؛ بنابراین این
+                Dataset فعلی نمودار رسمی یا جدول رسمی برند و طول داخلی کفش را ندارد؛ بنابراین این
                 راهنما فقط روش اندازه‌گیری را توضیح می‌دهد و جایگزین جدول رسمی سازنده نیست.
               </DialogPrimitive.Description>
             </div>
