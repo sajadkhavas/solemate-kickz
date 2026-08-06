@@ -16,7 +16,7 @@ export const catalogSearchSchema = z.object({
   sort: fallback(z.enum(["newest", "price-asc", "price-desc", "popular"]), "newest").default(
     "newest",
   ),
-  sizes: fallback(z.string().optional(), undefined),
+  sizes: fallback(z.union([z.string(), z.number().int()]).optional(), undefined),
   priceMax: fallback(
     z.coerce.number().int().min(CATALOG_MIN_PRICE).max(CATALOG_MAX_PRICE).optional(),
     undefined,
@@ -27,18 +27,19 @@ export const catalogSearchSchema = z.object({
 
 export type CatalogSearch = z.infer<typeof catalogSearchSchema>;
 
-export function parseSizeParam(value?: string): number[] {
-  if (!value) return [];
-  return [...new Set(value.split(",").map(Number))]
+export function parseSizeParam(value?: string | number): number[] {
+  if (value === undefined || value === null || value === "") return [];
+  return [...new Set(String(value).split(",").map(Number))]
     .filter((size) => CATALOG_SIZES.includes(size as (typeof CATALOG_SIZES)[number]))
     .sort((a, b) => a - b);
 }
 
-export function serialiseSizes(values: number[]): string | undefined {
+export function serialiseSizes(values: number[]): string | number | undefined {
   const sizes = [...new Set(values)]
     .filter((size) => CATALOG_SIZES.includes(size as (typeof CATALOG_SIZES)[number]))
     .sort((a, b) => a - b);
-  return sizes.length ? sizes.join(",") : undefined;
+  if (!sizes.length) return undefined;
+  return sizes.length === 1 ? sizes[0] : sizes.join(",");
 }
 
 const productPrice = (shoe: Shoe) => shoe.sale_price ?? shoe.price;
