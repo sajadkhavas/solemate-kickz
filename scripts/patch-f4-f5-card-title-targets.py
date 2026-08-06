@@ -14,15 +14,16 @@ path.write_text(text)
 
 path = Path("scripts/audit-f4-f5-catalog-product-card.mjs")
 text = path.read_text()
-anchor = '''check("wishlist controls expose pressed state", card.includes("aria-pressed={isWishlisted}") && quickView.includes("aria-pressed={wishlisted}"));
-check("image failure states are present", card.includes("تصویر در دسترس نیست") && quickView.includes("پیش‌نمایش تصویر در دسترس نیست"));'''
-replacement = '''check("wishlist controls expose pressed state", card.includes("aria-pressed={isWishlisted}") && quickView.includes("aria-pressed={wishlisted}"));
-check(
+anchor = '''check(
+  "image failure states are present",
+  card.includes("تصویر در دسترس نیست") && quickView.includes("پیش‌نمایش تصویر در دسترس نیست"),
+);'''
+addition = '''check(
   "Product Card detail links meet the 44px target contract",
   card.includes("mt-1 flex min-h-11 w-full items-center rounded-sm") &&
     card.includes("mt-2 flex min-h-11 flex-col justify-center rounded-sm"),
 );
-check("image failure states are present", card.includes("تصویر در دسترس نیست") && quickView.includes("پیش‌نمایش تصویر در دسترس نیست"));'''
+'''
 if anchor not in text:
-    raise SystemExit("Audit insertion anchor not found")
-path.write_text(text.replace(anchor, replacement, 1))
+    raise SystemExit("Formatted audit insertion anchor not found")
+path.write_text(text.replace(anchor, addition + anchor, 1))
