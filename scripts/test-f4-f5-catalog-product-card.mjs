@@ -137,7 +137,11 @@ async function run(baseUrl) {
       await evaluate(client, `location.search`),
     );
 
-    await clickText(client, '[data-testid="catalog-filters"] button', "42");
+    await evaluate(
+      client,
+      `([...document.querySelectorAll('[data-testid="catalog-filters"] button')]
+        .find((button) => button.textContent?.trim() === '42'))?.click()`,
+    );
     await waitForExpression(client, `new URLSearchParams(location.search).get('sizes') === '42'`);
     record(
       "Size filter survives URL state",
