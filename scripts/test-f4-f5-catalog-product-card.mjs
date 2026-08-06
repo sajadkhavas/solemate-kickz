@@ -52,11 +52,17 @@ async function click(client, selector) {
   const clicked = await evaluate(
     client,
     `(() => {
-      const target = document.querySelector(${JSON.stringify(selector)});
+      const target = [...document.querySelectorAll(${JSON.stringify(selector)})].find((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return rect.width > 0 && rect.height > 0 && style.display !== 'none' &&
+          style.visibility !== 'hidden' && style.pointerEvents !== 'none';
+      });
+      target?.scrollIntoView({ block: 'center', inline: 'center' });
       target?.click(); return Boolean(target);
     })()`,
   );
-  if (!clicked) throw new Error(`Clickable target not found: ${selector}`);
+  if (!clicked) throw new Error(`Visible clickable target not found: ${selector}`);
   await sleep(120);
 }
 
