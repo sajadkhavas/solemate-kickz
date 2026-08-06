@@ -110,7 +110,10 @@ async function run(baseUrl) {
     record("Catalog renders real dataset cards", initialCount > 10, initialCount);
 
     await setInput(client, "#catalog-search", "Nike");
-    await press(client, "Enter", "Enter");
+    await evaluate(
+      client,
+      `document.querySelector('#catalog-search')?.closest('form')?.requestSubmit()`,
+    );
     await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);
     await waitForExpression(
       client,
