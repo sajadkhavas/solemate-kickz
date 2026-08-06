@@ -138,10 +138,6 @@ async function captureState(client, baseUrl, name, url, width, height, setup) {
   await waitForExpression(client, `document.querySelector('h1')`);
   if (setup) await setup();
   await waitForExpression(client, `document.fonts.status === 'loaded'`);
-  await waitForExpression(
-    client,
-    `[...document.querySelectorAll('[data-testid="product-card"] img')].every((image) => image.complete)`,
-  );
   await sleep(650);
   const metrics = await inspect(client);
   const file = await screenshot(client, `${name}-${width}x${height}`);
