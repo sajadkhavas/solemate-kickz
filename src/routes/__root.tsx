@@ -17,6 +17,7 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { MagneticCursor } from "@/components/MagneticCursor";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
+import { useStore } from "@/store";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -129,6 +130,22 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function StoreHydration() {
+  useEffect(() => {
+    let active = true;
+    Promise.resolve(useStore.persist.rehydrate())
+      .catch(() => undefined)
+      .finally(() => {
+        if (active) useStore.getState().setHasHydrated(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return null;
+}
+
 function RouteAccessibility() {
   const location = useLocation();
   const firstRender = useRef(true);
@@ -172,6 +189,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <MotionConfig reducedMotion="user">
+        <StoreHydration />
         <RouteAccessibility />
         <CartDrawer />
         <MagneticCursor />

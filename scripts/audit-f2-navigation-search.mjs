@@ -34,6 +34,25 @@ function add(name, pass, evidence) {
   checks.push({ name, pass: Boolean(pass), evidence });
 }
 
+function stripF7CheckoutRoute(source) {
+  return source
+    .replace(/^import \{ Route as CheckoutRouteImport \} from '\.\/routes\/checkout'\n/m, "")
+    .replace(
+      /const CheckoutRoute = CheckoutRouteImport\.update\(\{\n  id: '\/checkout',\n  path: '\/checkout',\n  getParentRoute: \(\) => rootRouteImport,\n\} as any\)\n/m,
+      "",
+    )
+    .replace(/^  '\/checkout': typeof CheckoutRoute\n/gm, "")
+    .replace(/^    \| '\/checkout'\n/gm, "")
+    .replace(/^  CheckoutRoute: typeof CheckoutRoute\n/gm, "")
+    .replace(
+      /^    '\/checkout': \{\n      id: '\/checkout'\n      path: '\/checkout'\n      fullPath: '\/checkout'\n      preLoaderRoute: typeof CheckoutRouteImport\n      parentRoute: typeof rootRouteImport\n    \}\n/m,
+      "",
+    )
+    .replace(/^  CheckoutRoute: CheckoutRoute,\n/gm, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 const files = {
   navbar: read("src/components/Navbar.tsx"),
   desktop: read("src/components/navigation/DesktopNavigation.tsx"),
@@ -47,6 +66,7 @@ const files = {
   navigationCss: read("src/components/navigation/navigation.css"),
   behavior: read("scripts/test-f2-navigation-search.mjs"),
   visual: read("scripts/visual-qa-f2-navigation-search.mjs"),
+  routeTree: read("src/routeTree.gen.ts"),
 };
 const packageJson = JSON.parse(read("package.json"));
 const branch =
@@ -81,10 +101,18 @@ add("accepted Foundation is ancestor", foundationIsAncestor, {
   foundation: FOUNDATION_SHA,
   head,
 });
+
+const foundationRouteTree = git(["show", `${FOUNDATION_SHA}:src/routeTree.gen.ts`]);
+const normalizedFoundationRouteTree = stripF7CheckoutRoute(foundationRouteTree);
+const normalizedCurrentRouteTree = stripF7CheckoutRoute(files.routeTree);
 add(
-  "generated route tree unchanged",
-  git(["diff", "--name-only", FOUNDATION_SHA, "--", "src/routeTree.gen.ts"]) === "",
-  "src/routeTree.gen.ts",
+  "generated route tree preserves F2 routes and only adds F7 checkout",
+  normalizedCurrentRouteTree === normalizedFoundationRouteTree &&
+    files.routeTree.includes("CheckoutRouteImport") &&
+    files.routeTree.includes("'/checkout'"),
+  normalizedCurrentRouteTree === normalizedFoundationRouteTree
+    ? "all pre-F7 generated route content is byte-equivalent after removing the authorized checkout route"
+    : "non-checkout generated route content changed",
 );
 
 const trackedSourceFiles = git([

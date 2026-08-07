@@ -14,6 +14,7 @@ const expectedReportFragments = [
   "f8-content-pages",
   "f4-f5-catalog-product-card",
   "f6-product-detail",
+  "f7-cart-checkout",
 ];
 
 function walk(directory) {
@@ -49,7 +50,9 @@ function collectFailures(value, location = "report", failures = []) {
   for (const key of ["summary", "checks", "results"]) {
     const child = value[key];
     if (Array.isArray(child)) {
-      child.forEach((entry, index) => collectFailures(entry, `${location}.${key}[${index}]`, failures));
+      child.forEach((entry, index) =>
+        collectFailures(entry, `${location}.${key}[${index}]`, failures),
+      );
     } else if (child && typeof child === "object") {
       collectFailures(child, `${location}.${key}`, failures);
     }
