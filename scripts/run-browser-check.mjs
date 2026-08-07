@@ -116,9 +116,24 @@ async function runBrowserScript(baseUrl) {
   return waitForBrowserResult(child, reportPath);
 }
 
+function isRetryableChromeStartup(result) {
+  if (mode !== "behavior" || result.code === 0) return false;
+  const fatal = String(result.report?.fatalError ?? "");
+  return /json\/version|Chrome\/Chromium executable|remote-debugging-port/i.test(fatal);
+}
+
+async function runWithStartupRecovery(baseUrl) {
+  const first = await runBrowserScript(baseUrl);
+  if (!isRetryableChromeStartup(first)) return first;
+
+  console.warn("Foundation Chrome startup failed; retrying once without masking behavior failures.");
+  await sleep(1_000);
+  return runBrowserScript(baseUrl);
+}
+
 async function main() {
   if (existingBaseUrl) {
-    const result = await runBrowserScript(existingBaseUrl);
+    const result = await runWithStartupRecovery(existingBaseUrl);
     process.exitCode = result.code;
     return;
   }
@@ -152,7 +167,7 @@ async function main() {
 
   try {
     await waitForHttp(baseUrl);
-    const result = await runBrowserScript(baseUrl);
+    const result = await runWithStartupRecovery(baseUrl);
     process.exitCode = result.code;
   } finally {
     await cleanup();
