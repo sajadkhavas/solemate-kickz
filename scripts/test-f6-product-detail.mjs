@@ -12,8 +12,14 @@ import {
 import { withF6Server } from "./f6-browser-runner.mjs";
 
 const ROOT = process.cwd();
-const REPORT = path.join(ROOT, "artifacts/reports/f6-product-detail-behavior.json");
-const CHROME_LOG = path.join(ROOT, "artifacts/runtime/f6-product-detail-chrome.txt");
+const REPORT = path.join(
+  ROOT,
+  "artifacts/reports/f6-product-detail-behavior.json",
+);
+const CHROME_LOG = path.join(
+  ROOT,
+  "artifacts/runtime/f6-product-detail-chrome.txt",
+);
 const results = [];
 const browserErrors = [];
 
@@ -81,20 +87,30 @@ async function run(baseUrl) {
 
   client.on("Runtime.exceptionThrown", (event) => {
     browserErrors.push(
-      event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception",
+      event.exceptionDetails?.exception?.description ??
+        event.exceptionDetails?.text ??
+        "Runtime exception",
     );
   });
   client.on("Runtime.consoleAPICalled", (event) => {
-    if (event.type === "error") browserErrors.push(event.args.map(serialiseArgument).join(" "));
+    if (event.type === "error") {
+      browserErrors.push(event.args.map(serialiseArgument).join(" "));
+    }
   });
 
   try {
     await viewport(client, 1280, 900);
     await navigate(client, `${baseUrl}/product/1`);
-    await waitForExpression(client, `document.querySelector('[data-testid="product-purchase-panel"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="product-purchase-panel"]')`,
+    );
     await evaluate(client, `localStorage.removeItem('sole-store'); true`);
     await navigate(client, `${baseUrl}/product/1`);
-    await waitForExpression(client, `document.querySelector('[data-testid="product-purchase-panel"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="product-purchase-panel"]')`,
+    );
 
     const initial = await evaluate(
       client,
@@ -107,7 +123,10 @@ async function run(baseUrl) {
     );
     record(
       "Product starts without automatic size selection",
-      initial.h1 === 1 && initial.selected === 0 && initial.disabled === true && /انتخاب نشده/.test(initial.status ?? ""),
+      initial.h1 === 1 &&
+        initial.selected === 0 &&
+        initial.disabled === true &&
+        /انتخاب نشده/.test(initial.status ?? ""),
       initial,
     );
 
@@ -129,14 +148,24 @@ async function run(baseUrl) {
         return { id: item?.id, size: item?.size, qty: item?.qty };
       })()`,
     );
-    record("Quantity and selected size reach local cart", cart.id === 1 && Number(cart.size) > 0 && cart.qty === 2, cart);
+    record(
+      "Quantity and selected size reach local cart",
+      cart.id === 1 && Number(cart.size) > 0 && cart.qty === 2,
+      cart,
+    );
     await key(client, "Escape", "Escape", 27);
-    await waitForExpression(client, `!document.querySelector('[role="dialog"]')`);
+    await waitForExpression(
+      client,
+      `!document.querySelector('[role="dialog"]')`,
+    );
 
     const first = await selectedThumbnail(client);
     await click(client, '[data-testid="product-gallery-next"]');
     const afterControl = await selectedThumbnail(client);
-    await evaluate(client, `document.querySelector('[data-testid="product-gallery-stage"]')?.focus(); true`);
+    await evaluate(
+      client,
+      `document.querySelector('[data-testid="product-gallery-stage"]')?.focus(); true`,
+    );
     await key(client, "ArrowLeft", "ArrowLeft", 37);
     const afterKeyboard = await selectedThumbnail(client);
     await evaluate(
@@ -151,7 +180,9 @@ async function run(baseUrl) {
     const afterSwipe = await selectedThumbnail(client);
     record(
       "Gallery supports controls, keyboard and swipe",
-      first !== afterControl && afterControl !== afterKeyboard && afterKeyboard !== afterSwipe,
+      first !== afterControl &&
+        afterControl !== afterKeyboard &&
+        afterKeyboard !== afterSwipe,
       { first, afterControl, afterKeyboard, afterSwipe },
     );
 
@@ -170,22 +201,35 @@ async function run(baseUrl) {
         return true;
       })()`,
     );
-    await waitForExpression(client, `document.querySelector('[data-testid="product-main-image-fallback"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="product-main-image-fallback"]')`,
+    );
     record("Main image has a designed fallback", true, null);
 
     await click(client, '[data-testid="size-guide-trigger"]');
-    await waitForExpression(client, `document.querySelector('[data-testid="size-guide-dialog"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="size-guide-dialog"]')`,
+    );
     const guide = await evaluate(
       client,
       `document.querySelector('[data-testid="size-guide-dialog"]')?.textContent`,
     );
     await key(client, "Escape", "Escape", 27);
-    await waitForExpression(client, `!document.querySelector('[data-testid="size-guide-dialog"]')`);
+    await waitForExpression(
+      client,
+      `!document.querySelector('[data-testid="size-guide-dialog"]')`,
+    );
     await waitForExpression(
       client,
       `document.activeElement === document.querySelector('[data-testid="size-guide-trigger"]')`,
     );
-    record("Size guide is truthful and restores focus", /نمودار رسمی/.test(guide ?? ""), guide);
+    record(
+      "Size guide is truthful and restores focus",
+      /نمودار رسمی/.test(guide ?? ""),
+      guide,
+    );
 
     const wishlistBefore = await evaluate(
       client,
@@ -200,7 +244,10 @@ async function run(baseUrl) {
 
     await viewport(client, 390, 844, true);
     await navigate(client, `${baseUrl}/product/1`);
-    await waitForExpression(client, `document.querySelector('[data-testid="product-mobile-purchase"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="product-mobile-purchase"]')`,
+    );
     const mobile = await evaluate(
       client,
       `(() => {
@@ -210,11 +257,18 @@ async function run(baseUrl) {
         return { visible: Boolean(rect && rect.width > 0 && rect.height > 0), disabled: button?.disabled };
       })()`,
     );
-    record("Mobile sticky bar follows size-selection rules", mobile.visible && mobile.disabled === true, mobile);
+    record(
+      "Mobile sticky bar follows size-selection rules",
+      mobile.visible && mobile.disabled === true,
+      mobile,
+    );
 
     await viewport(client, 1280, 900);
     await navigate(client, `${baseUrl}/product/7`);
-    await waitForExpression(client, `document.querySelector('[data-testid="product-purchase-panel"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="product-purchase-panel"]')`,
+    );
     const soldOut = await evaluate(
       client,
       `({
@@ -225,15 +279,26 @@ async function run(baseUrl) {
     );
     record(
       "Dataset sold-out product cannot be added",
-      soldOut.desktop === true && soldOut.mobile === true && /Dataset ناموجود/.test(soldOut.text ?? ""),
+      soldOut.desktop === true &&
+        soldOut.mobile === true &&
+        /Dataset ناموجود/.test(soldOut.text ?? ""),
       soldOut,
     );
 
     await navigate(client, `${baseUrl}/product/2`);
-    await waitForExpression(client, `document.querySelector('[data-testid="product-purchase-panel"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="product-purchase-panel"]')`,
+    );
     await navigate(client, `${baseUrl}/product/1`);
-    await waitForExpression(client, `document.querySelector('[data-testid="related-products"]')`);
-    await waitForExpression(client, `document.querySelector('[data-testid="recently-viewed-products"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="related-products"]')`,
+    );
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="recently-viewed-products"]')`,
+    );
     const collections = await evaluate(
       client,
       `({
@@ -241,12 +306,22 @@ async function run(baseUrl) {
         recent: document.querySelectorAll('[data-testid="recently-viewed-products"] [data-testid="product-card"]').length
       })`,
     );
-    record("Related and recently viewed sections use Product Cards", collections.related > 0 && collections.recent > 0, collections);
+    record(
+      "Related and recently viewed sections use Product Cards",
+      collections.related > 0 && collections.recent > 0,
+      collections,
+    );
 
     const meaningfulErrors = browserErrors.filter((text) =>
-      /hydration|server rendered html|did not match|uncaught|typeerror|referenceerror|syntaxerror/i.test(text),
+      /hydration|server rendered html|did not match|uncaught|typeerror|referenceerror|syntaxerror/i.test(
+        text,
+      ),
     );
-    record("No hydration or runtime errors", meaningfulErrors.length === 0, meaningfulErrors);
+    record(
+      "No hydration or runtime errors",
+      meaningfulErrors.length === 0,
+      meaningfulErrors,
+    );
   } finally {
     await browser.close();
   }
@@ -258,7 +333,11 @@ async function run(baseUrl) {
     generatedAt: new Date().toISOString(),
     results,
     browserErrors,
-    summary: { total: results.length, passed: results.length - failed.length, failed: failed.length },
+    summary: {
+      total: results.length,
+      passed: results.length - failed.length,
+      failed: failed.length,
+    },
     pass: failed.length === 0,
   };
   fs.writeFileSync(REPORT, `${JSON.stringify(report, null, 2)}\n`);
@@ -277,7 +356,17 @@ withF6Server(
   fs.mkdirSync(path.dirname(REPORT), { recursive: true });
   fs.writeFileSync(
     REPORT,
-    `${JSON.stringify({ schemaVersion: 1, suite: "f6-product-detail-browser-behavior", pass: false, fatalError: error instanceof Error ? (error.stack ?? error.message) : String(error) }, null, 2)}\n`,
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        suite: "f6-product-detail-browser-behavior",
+        pass: false,
+        fatalError:
+          error instanceof Error ? (error.stack ?? error.message) : String(error),
+      },
+      null,
+      2,
+    )}\n`,
   );
   console.error(error instanceof Error ? (error.stack ?? error.message) : String(error));
   process.exitCode = 1;
