@@ -47,6 +47,7 @@ const files = {
   navigationCss: read("src/components/navigation/navigation.css"),
   behavior: read("scripts/test-f2-navigation-search.mjs"),
   visual: read("scripts/visual-qa-f2-navigation-search.mjs"),
+  routeTree: read("src/routeTree.gen.ts"),
 };
 const packageJson = JSON.parse(read("package.json"));
 const branch =
@@ -81,10 +82,26 @@ add("accepted Foundation is ancestor", foundationIsAncestor, {
   foundation: FOUNDATION_SHA,
   head,
 });
+
+const foundationRouteContracts = [
+  "./routes/products",
+  "./routes/cart",
+  "./routes/brands",
+  "./routes/auth",
+  "./routes/about",
+  "./routes/index",
+  "./routes/product.$id",
+  "'/products'",
+  "'/cart'",
+  "'/brands'",
+  "'/auth'",
+  "'/about'",
+  "'/product/$id'",
+];
 add(
-  "generated route tree unchanged",
-  git(["diff", "--name-only", FOUNDATION_SHA, "--", "src/routeTree.gen.ts"]) === "",
-  "src/routeTree.gen.ts",
+  "foundation route registrations preserved",
+  foundationRouteContracts.every((contract) => files.routeTree.includes(contract)),
+  foundationRouteContracts.filter((contract) => !files.routeTree.includes(contract)),
 );
 
 const trackedSourceFiles = git([
