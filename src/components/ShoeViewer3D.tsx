@@ -47,9 +47,10 @@ interface Props {
 }
 
 export function ShoeViewer3D({ fallbackImage, alt, priority = false }: Props) {
-  const reduced = useReducedMotion() === true;
+  const prefersReducedMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const modelRef = useRef<HTMLElement | null>(null);
+  const [hydrated, setHydrated] = useState(false);
   const [activated, setActivated] = useState(false);
   const [inView, setInView] = useState(false);
   const [documentVisible, setDocumentVisible] = useState(true);
@@ -59,9 +60,14 @@ export function ShoeViewer3D({ fallbackImage, alt, priority = false }: Props) {
   const [errored, setErrored] = useState(false);
   const [posterFailed, setPosterFailed] = useState(false);
   const [interacted, setInteracted] = useState(false);
+  const reduced = hydrated && prefersReducedMotion === true;
 
   const runtimeActive = activated && inView && documentVisible && !reduced && supported && !errored;
   const parallax = useMouseParallax(3, 4, runtimeActive);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     const element = rootRef.current;
