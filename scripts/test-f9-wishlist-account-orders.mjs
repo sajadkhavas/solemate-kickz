@@ -16,6 +16,7 @@ const REPORT = path.join(ROOT, "artifacts/reports/f9-wishlist-account-orders-beh
 const CHROME_LOG = path.join(ROOT, "artifacts/runtime/f9-wishlist-account-orders-chrome.txt");
 const results = [];
 const browserErrors = [];
+const apiRequests = [];
 
 function record(name, pass, evidence = null) {
   results.push({ name, pass: Boolean(pass), evidence });
@@ -52,6 +53,23 @@ async function click(client, selector) {
   await sleep(140);
 }
 
+async function clickProductCardWishlist(client, productId) {
+  const clicked = await evaluate(
+    client,
+    `(() => {
+      const link = document.querySelector('a[href="/product/${productId}"]');
+      const card = link?.closest('[data-testid="product-card"]');
+      const target = card?.querySelector('button[aria-pressed]');
+      if (!(target instanceof HTMLButtonElement)) return false;
+      target.scrollIntoView({ block: 'center' });
+      target.click();
+      return true;
+    })()`,
+  );
+  if (!clicked) throw new Error(`Wishlist control not found for product ${productId}`);
+  await sleep(140);
+}
+
 async function fill(client, selector, value) {
   const changed = await evaluate(
     client,
@@ -70,6 +88,12 @@ async function fill(client, selector, value) {
   await sleep(80);
 }
 
+async function pressKey(client, key, code = key) {
+  await client.send("Input.dispatchKeyEvent", { type: "rawKeyDown", key, code });
+  await client.send("Input.dispatchKeyEvent", { type: "keyUp", key, code });
+  await sleep(140);
+}
+
 async function readPersisted(client) {
   return evaluate(
     client,
@@ -85,6 +109,16 @@ async function run(baseUrl) {
   const browser = await openBrowser({ debugPort: 9256, logPath: CHROME_LOG });
   const { client } = browser;
 
+  await client.send("Network.enable");
+  client.on("Network.requestWillBeSent", (event) => {
+    if (event.type === "Fetch" || event.type === "XHR") {
+      apiRequests.push({
+        type: event.type,
+        url: event.request.url,
+        method: event.request.method,
+      });
+    }
+  });
   client.on("Runtime.exceptionThrown", (event) => {
     browserErrors.push(
       event.exceptionDetails?.exception?.description ??
@@ -118,19 +152,65 @@ async function run(baseUrl) {
       `({ count: document.querySelectorAll('[data-testid="wishlist-grid"] [data-testid="product-card"]').length, text: document.querySelector('[data-testid="wishlist-count"]')?.textContent })`,
     );
     record(
-      "Wishlist restores persisted Product Cards",
+      "Wishlist restores persisted Product Cards and count",
       populated.count === 2 && /۲|2/.test(populated.text ?? ""),
       populated,
     );
 
-    await click(client, '[data-testid="wishlist-clear"]');
+    const keyboardFocused = await evaluate(
+      client,
+      `(() => {
+        const button = document.querySelector('[data-testid="wishlist-clear"]');
+        if (!(button instanceof HTMLButtonElement)) return false;
+        button.focus();
+        return document.activeElement === button;
+      })()`,
+    );
+    record("Wishlist clear control receives keyboard focus", keyboardFocused);
+    await pressKey(client, "Enter");
     await waitForExpression(client, `document.querySelector('[data-testid="wishlist-empty"]')`);
     const cleared = await readPersisted(client);
     record(
-      "Wishlist clear action persists",
+      "Wishlist clear action works from keyboard and persists",
       Array.isArray(cleared.wishlist) && cleared.wishlist.length === 0,
       cleared.wishlist,
     );
+
+    await navigate(client, `${baseUrl}/product/1`);
+    await waitForExpression(client, `document.querySelector('[data-testid="product-wishlist"]')`);
+    await click(client, '[data-testid="product-wishlist"]');
+    let persisted = await readPersisted(client);
+    record(
+      "PDP wishlist action updates the shared persisted store",
+      Array.isArray(persisted.wishlist) && persisted.wishlist.includes(1),
+      persisted.wishlist,
+    );
+
+    await navigate(client, `${baseUrl}/products`);
+    await waitForExpression(
+      client,
+      `document.querySelector('a[href="/product/1"]')?.closest('[data-testid="product-card"]')`,
+    );
+    const cardPressed = await evaluate(
+      client,
+      `document.querySelector('a[href="/product/1"]')?.closest('[data-testid="product-card"]')?.querySelector('button[aria-pressed]')?.getAttribute('aria-pressed')`,
+    );
+    record("ProductCard reflects PDP wishlist state", cardPressed === "true", cardPressed);
+    await clickProductCardWishlist(client, 1);
+    persisted = await readPersisted(client);
+    record(
+      "ProductCard removal synchronizes the shared wishlist",
+      Array.isArray(persisted.wishlist) && !persisted.wishlist.includes(1),
+      persisted.wishlist,
+    );
+
+    await navigate(client, `${baseUrl}/product/1`);
+    await waitForExpression(client, `document.querySelector('[data-testid="product-wishlist"]')`);
+    const pdpPressed = await evaluate(
+      client,
+      `document.querySelector('[data-testid="product-wishlist"]')?.getAttribute('aria-pressed')`,
+    );
+    record("PDP reflects ProductCard wishlist removal", pdpPressed === "false", pdpPressed);
 
     await navigate(client, `${baseUrl}/account`);
     await waitForExpression(
@@ -141,7 +221,7 @@ async function run(baseUrl) {
 
     await click(client, '[data-testid="account-start-demo"]');
     await waitForExpression(client, `document.querySelector('[data-testid="account-overview"]')`);
-    let persisted = await readPersisted(client);
+    persisted = await readPersisted(client);
     record(
       "Local demo session becomes active",
       persisted.demoAccountMode === "active",
@@ -150,23 +230,68 @@ async function run(baseUrl) {
 
     await navigate(client, `${baseUrl}/account?section=profile`);
     await waitForExpression(client, `document.querySelector('[data-testid="account-profile"]')`);
-    await fill(client, "#demo-profile-name", "سجاد تست");
+    await fill(client, "#demo-profile-name", "");
+    await fill(client, "#demo-profile-email", "invalid");
+    await click(client, '[data-testid="account-profile-save"]');
+    persisted = await readPersisted(client);
+    const invalidStatus = await evaluate(
+      client,
+      `document.querySelector('[data-testid="account-profile"] [role="status"]')?.textContent`,
+    );
+    record(
+      "Profile rejects required empty or invalid values without persistence",
+      persisted.demoProfile?.name === "کاربر نمایشی SOLE" && /معتبر/.test(invalidStatus ?? ""),
+      { profile: persisted.demoProfile, status: invalidStatus },
+    );
+
+    const profileRequestsBefore = apiRequests.length;
+    const longPersianName = `سجاد ${"آزمایشی ".repeat(18).trim()}`;
+    await fill(client, "#demo-profile-name", longPersianName);
     await fill(client, "#demo-profile-email", "sajad@example.com");
-    await fill(client, "#demo-profile-phone", "09120000000");
+    await fill(client, "#demo-profile-phone", "");
     await click(client, '[data-testid="account-profile-save"]');
     persisted = await readPersisted(client);
     record(
-      "Profile edits persist locally",
-      persisted.demoProfile?.name === "سجاد تست" &&
-        persisted.demoProfile?.email === "sajad@example.com",
+      "Long Persian profile values and an empty optional phone persist locally",
+      persisted.demoProfile?.name === longPersianName &&
+        persisted.demoProfile?.email === "sajad@example.com" &&
+        persisted.demoProfile?.phone === "",
       persisted.demoProfile,
     );
+    record(
+      "Profile save performs no Fetch/XHR backend synchronization",
+      apiRequests.length === profileRequestsBefore,
+      apiRequests.slice(profileRequestsBefore),
+    );
+
+    await navigate(client, `${baseUrl}/account?section=profile`);
+    await waitForExpression(
+      client,
+      `document.querySelector('#demo-profile-name')?.value === ${JSON.stringify(longPersianName)}`,
+    );
+    record("Direct profile URL refresh restores local profile state", true);
 
     await navigate(client, `${baseUrl}/account?section=addresses`);
     await waitForExpression(client, `document.querySelector('[data-testid="account-addresses"]')`);
-    await fill(client, "#demo-address-recipient", "گیرنده تست");
+    await click(client, '[data-testid="account-address-add"]');
+    persisted = await readPersisted(client);
+    const emptyAddressStatus = await evaluate(
+      client,
+      `document.querySelector('[data-testid="account-addresses"] [role="status"]')?.textContent`,
+    );
+    record(
+      "Address form rejects empty values",
+      Array.isArray(persisted.demoAddresses) &&
+        persisted.demoAddresses.length === 0 &&
+        /کامل/.test(emptyAddressStatus ?? ""),
+      { addresses: persisted.demoAddresses, status: emptyAddressStatus },
+    );
+
+    const addressRequestsBefore = apiRequests.length;
+    const longPersianAddress = `خیابان ولیعصر، ${"کوچه آزمایشی پلاک ۱۲، ".repeat(14).trim()}`;
+    await fill(client, "#demo-address-recipient", "گیرنده تست با نام فارسی طولانی");
     await fill(client, "#demo-address-city", "تهران");
-    await fill(client, "#demo-address-line", "نشانی نمایشی برای تست رابط کاربری SOLE");
+    await fill(client, "#demo-address-line", longPersianAddress);
     await click(client, '[data-testid="account-address-add"]');
     await waitForExpression(
       client,
@@ -174,11 +299,43 @@ async function run(baseUrl) {
     );
     persisted = await readPersisted(client);
     record(
-      "Address add persists local-only data",
+      "Long Persian address persists local-only data",
       Array.isArray(persisted.demoAddresses) &&
         persisted.demoAddresses.length === 1 &&
-        persisted.demoAddresses[0]?.city === "تهران",
+        persisted.demoAddresses[0]?.address === longPersianAddress,
       persisted.demoAddresses,
+    );
+    record(
+      "Address add performs no Fetch/XHR backend synchronization",
+      apiRequests.length === addressRequestsBefore,
+      apiRequests.slice(addressRequestsBefore),
+    );
+
+    const removeButton = await evaluate(
+      client,
+      `(() => {
+        const button = [...document.querySelectorAll('[data-testid="account-addresses"] button')]
+          .find((item) => item.getAttribute('aria-label')?.startsWith('حذف آدرس'));
+        if (!(button instanceof HTMLButtonElement)) return false;
+        button.click();
+        return true;
+      })()`,
+    );
+    if (!removeButton) throw new Error("Address remove control not found");
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="account-address-empty"]')`,
+    );
+    persisted = await readPersisted(client);
+    record(
+      "Address removal persists locally",
+      Array.isArray(persisted.demoAddresses) && persisted.demoAddresses.length === 0,
+      persisted.demoAddresses,
+    );
+    record(
+      "Address remove performs no Fetch/XHR backend synchronization",
+      apiRequests.length === addressRequestsBefore,
+      apiRequests.slice(addressRequestsBefore),
     );
 
     await navigate(client, `${baseUrl}/account?section=orders`);
@@ -204,9 +361,28 @@ async function run(baseUrl) {
     );
     record(
       "Demo order detail avoids real payment or shipping claims",
-      /تراکنش واقعی نیستند/.test(detail ?? "") && /انجام نشده/.test(detail ?? ""),
+      /تراکنش واقعی نیستند/.test(detail ?? "") &&
+        /انجام نشده/.test(detail ?? "") &&
+        /اطلاعات واقعی موجود نیست/.test(detail ?? ""),
       detail,
     );
+
+    await evaluate(client, `history.back(); true`);
+    await waitForExpression(client, `document.querySelector('[data-testid="account-orders"]')`);
+    record("Browser back restores the orders list URL state", true);
+    await evaluate(client, `history.forward(); true`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="account-order-detail"]')`,
+    );
+    record("Browser forward restores the order detail URL state", true);
+
+    await navigate(client, `${baseUrl}/account?section=orders&order=SOLE-DEMO-2401`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="account-order-detail"]')`,
+    );
+    record("Order detail supports a direct deep link and refresh", true);
 
     await navigate(client, `${baseUrl}/account?section=orders&order=UNKNOWN`);
     await waitForExpression(
@@ -262,6 +438,13 @@ async function run(baseUrl) {
       mobileAccount,
     );
 
+    await click(client, '[data-testid="mobile-menu-trigger"]');
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="mobile-menu-content"] a[href="/wishlist"]')`,
+    );
+    record("Mobile global navigation exposes Wishlist", true);
+
     const meaningfulErrors = browserErrors.filter((text) =>
       /hydration|server rendered html|did not match|uncaught|typeerror|referenceerror|syntaxerror/i.test(
         text,
@@ -279,6 +462,7 @@ async function run(baseUrl) {
     generatedAt: new Date().toISOString(),
     results,
     browserErrors,
+    apiRequests,
     summary: {
       total: results.length,
       passed: results.length - failed.length,
@@ -302,7 +486,16 @@ withF9Server(
   fs.mkdirSync(path.dirname(REPORT), { recursive: true });
   fs.writeFileSync(
     REPORT,
-    `${JSON.stringify({ schemaVersion: 1, suite: "f9-wishlist-account-orders-browser-behavior", pass: false, fatalError: error instanceof Error ? (error.stack ?? error.message) : String(error) }, null, 2)}\n`,
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        suite: "f9-wishlist-account-orders-browser-behavior",
+        pass: false,
+        fatalError: error instanceof Error ? (error.stack ?? error.message) : String(error),
+      },
+      null,
+      2,
+    )}\n`,
   );
   console.error(error instanceof Error ? (error.stack ?? error.message) : String(error));
   process.exitCode = 1;
