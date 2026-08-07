@@ -88,6 +88,11 @@ jobs:
         run: node scripts/diagnose-f7-checkout-submit.mjs
         continue-on-error: true
 
+      - name: Diagnose F7 product add failure
+        if: ${{ failure() && steps.f7_behavior.conclusion == 'failure' }}
+        run: node scripts/diagnose-f7-product-add.mjs
+        continue-on-error: true
+
       - name: F9 wishlist account and orders completion audit
         run: bun run audit:f9
 
