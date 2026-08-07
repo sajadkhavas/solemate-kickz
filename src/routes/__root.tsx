@@ -138,10 +138,14 @@ function StoreHydration() {
     Promise.resolve(useStore.persist.rehydrate())
       .catch(() => undefined)
       .finally(() => {
-        if (active) useStore.getState().setHasHydrated(true);
+        if (!active) return;
+        useStore.getState().setHasHydrated(true);
+        document.documentElement.dataset.soleHydrated = "true";
       });
+
     return () => {
       active = false;
+      delete document.documentElement.dataset.soleHydrated;
     };
   }, []);
 
