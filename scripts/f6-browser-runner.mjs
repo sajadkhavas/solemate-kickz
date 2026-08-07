@@ -5,7 +5,8 @@ import path from "node:path";
 import { waitForHttp } from "./browser-harness.mjs";
 
 const ROOT = process.cwd();
-const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+const sleep = (milliseconds) =>
+  new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 function waitForExit(child) {
   if (child.exitCode !== null) return Promise.resolve();
