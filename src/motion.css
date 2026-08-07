@@ -3,7 +3,7 @@
   --motion-duration-navigation: 220ms;
   --motion-duration-reveal: 360ms;
   --motion-duration-product: 320ms;
-  --motion-duration-cart: 200ms;
+  --motion-duration-cart: 100ms;
   --motion-duration-dialog: 240ms;
   --motion-duration-storytelling: 640ms;
   --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
@@ -49,7 +49,7 @@
   }
 }
 
-/* Editorial/navigation overlays may animate; transactional surfaces stay immediate. */
+/* Navigation overlays may animate; transaction lifecycle is intentionally shorter. */
 [data-testid="mobile-menu-overlay"],
 [data-testid="search-overlay"] {
   animation-duration: var(--motion-duration-dialog) !important;
@@ -61,11 +61,16 @@
   animation-timing-function: var(--motion-ease-emphasized-out) !important;
 }
 
-/* Search and Cart content remain immediate. Animating Radix Content/Cart Presence can delay rapid lifecycle transitions. */
-[data-testid="search-dialog"],
+/* Search content stays immediate so rapid reopen/submit cycles never wait on Presence. */
+[data-testid="search-dialog"] {
+  animation: none !important;
+}
+
+/* Cart keeps only a very short functional open/close cue so focus restoration completes with Radix Presence. */
 [data-foundation-overlay="cart"],
 [data-testid="cart-drawer"] {
-  animation: none !important;
+  animation-duration: var(--motion-duration-cart) !important;
+  animation-timing-function: var(--motion-ease-standard-out) !important;
 }
 
 [data-testid="product-card"] img,
