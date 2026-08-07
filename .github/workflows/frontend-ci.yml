@@ -6,7 +6,6 @@ on:
     branches:
       - "phase/**"
       - "integration/**"
-      - "supervisor/**"
 
 permissions:
   contents: read
