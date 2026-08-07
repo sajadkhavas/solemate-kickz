@@ -55,6 +55,10 @@ function main() {
   const heroSource = sources["src/components/sections/Hero.tsx"] ?? "";
   const viewerSource = sources["src/components/ShoeViewer3D.tsx"] ?? "";
   const featuredSource = sources["src/components/sections/FeaturedDrops.tsx"] ?? "";
+  const stylesSource = read("src/styles.css");
+  const motionStylesSource = fs.existsSync(path.join(ROOT, "src/motion.css"))
+    ? read("src/motion.css")
+    : "";
 
   const head = runGit(["rev-parse", "HEAD"]);
   const foundationExists = runGit(["cat-file", "-e", `${FOUNDATION_SHA}^{commit}`]);
@@ -162,14 +166,21 @@ function main() {
     },
   );
 
+  const reducedMotionCss =
+    stylesSource.includes("prefers-reduced-motion: reduce") ||
+    motionStylesSource.includes("prefers-reduced-motion: reduce");
+  const hydrationSafeReducedMotion =
+    viewerSource.includes("useReducedMotion") &&
+    viewerSource.includes("prefersReducedMotion") &&
+    viewerSource.includes("hydrated") &&
+    viewerSource.includes("const reduced = hydrated && prefersReducedMotion === true");
   record(
     "Reduced motion hooks",
-    viewerSource.includes("useReducedMotion") &&
-      viewerSource.includes("reduceMotion") &&
-      read("src/styles.css").includes("prefers-reduced-motion: reduce"),
+    hydrationSafeReducedMotion && reducedMotionCss,
     {
       componentHook: viewerSource.includes("useReducedMotion"),
-      cssHook: read("src/styles.css").includes("prefers-reduced-motion: reduce"),
+      hydrationSafe: hydrationSafeReducedMotion,
+      cssHook: reducedMotionCss,
     },
   );
 
@@ -179,19 +190,27 @@ function main() {
     minimumClassPresent: /min-h-11|size-11/.test(combined),
   });
 
+  const progressive3D =
+    viewerSource.includes('data-testid="shoe-viewer-enable-3d"') &&
+    viewerSource.includes('import("@google/model-viewer")') &&
+    viewerSource.includes('import("@/lib/create-shoe-model")') &&
+    viewerSource.includes("IntersectionObserver") &&
+    viewerSource.includes("activated && inView && documentVisible") &&
+    viewerSource.includes("!reduced") &&
+    !viewerSource.includes("auto-rotate");
   record(
     "Homepage resilient states",
     combined.includes('data-image-fallback="true"') &&
       combined.includes('data-testid="home-featured-empty"') &&
       heroSource.includes("?? SHOES[0]") &&
       viewerSource.includes('data-testid="hero-poster"') &&
-      viewerSource.includes("requestIdleCallback"),
+      progressive3D,
     {
       imageFailure: combined.includes('data-image-fallback="true"'),
       emptyState: combined.includes('data-testid="home-featured-empty"'),
       missingProductFallback: heroSource.includes("?? SHOES[0]"),
-      delayedJavaScriptPoster: viewerSource.includes('data-testid="hero-poster"'),
-      progressive3D: viewerSource.includes("requestIdleCallback"),
+      staticPoster: viewerSource.includes('data-testid="hero-poster"'),
+      progressive3D,
     },
   );
 
