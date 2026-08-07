@@ -220,8 +220,18 @@ export async function evaluate(client, expression) {
         y: Math.max(0, Math.min(innerHeight - 1, activationRect.top + activationRect.height / 2)),
       };`,
   );
-  const point = await evaluateRaw(client, coordinateExpression);
+
+  let point = await evaluateRaw(client, coordinateExpression);
   if (!point) return false;
+
+  // scrollIntoView and responsive layout can still be settling when the first
+  // coordinates are measured. Re-measure after one short user-scale settle so
+  // the physical pointer event lands on the visible control rather than stale
+  // pre-scroll coordinates. Assertions themselves are never retried.
+  await sleep(120);
+  point = await evaluateRaw(client, coordinateExpression);
+  if (!point) return false;
+
   await dispatchPointerActivation(client, point);
   return true;
 }
