@@ -18,7 +18,7 @@ The phase branch was verified at this exact SHA before implementation began.
 
 ## Final SHA
 
-The authoritative final SHA is the PR head validated by Frontend CI and is reported in the PR/final supervisor report. A Git commit cannot embed its own future content-addressed SHA without changing that SHA; therefore this handoff deliberately does not use a stale self-reference.
+The authoritative final SHA is the final PR head reported in the supervisor summary. A Git commit cannot embed its own future content-addressed SHA without changing that SHA, so this handoff intentionally avoids a stale self-reference.
 
 ## Scope
 
@@ -107,7 +107,7 @@ F7 evidence is included in:
 - `bun run verify:cumulative`
 - `.github/workflows/frontend-ci.yml`
 
-The F2 generated-route guard was not removed or bypassed. It now strips only the authorized generated `/checkout` additions and byte-compares all remaining generated route content against the accepted F2 foundation tree.
+The F2 generated-route guard was not removed or bypassed. It strips only the authorized generated `/checkout` additions and byte-compares all remaining generated route content against the accepted F2 foundation tree.
 
 ## Test coverage
 
@@ -165,15 +165,42 @@ Still intentionally unimplemented until real services/contracts exist:
 
 ## Validation
 
-Required exact-head validation is performed by Frontend CI with Node `22.23.1` and Bun `1.3.14` and includes inherited F0/F1, F2, F3, F4/F5, F6 and F8 gates plus F7.
+Required exact-head validation is defined in Frontend CI with Node `22.23.1` and Bun `1.3.14` and includes inherited F0/F1, F2, F3, F4/F5, F6 and F8 gates plus F7.
 
-The final supervisor report records:
+Required F7 release validation is:
 
-- exact PR head SHA;
-- workflow run/result;
-- F7 audit/test/Visual QA results;
-- typecheck/lint/format/build results;
-- cumulative verifier result;
-- whether the phase is **Accepted** or only **Implementation Complete**.
+- `audit:f7`;
+- `test:f7`;
+- `typecheck`;
+- `lint`;
+- `format:check`;
+- `build`;
+- `qa:visual:f7`;
+- `verify:cumulative`;
+- all inherited frontend gates.
 
-No merge into `main` is part of F7. The only intended PR base is `integration/sole-frontend-v2`.
+### Current external CI blocker
+
+PR #9 triggered Frontend CI on the implementation head, but GitHub did not start the `quality` job. The check-run annotation reported:
+
+`The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings`
+
+Observed evidence from the first exact-head attempt:
+
+- PR: `#9`;
+- blocked workflow run: `31180237954`;
+- blocked check-run/job: `92871499634`;
+- result: the job never started, so no repository test/build/visual step executed.
+
+This is an account/billing blocker, not a passing validation result. F7 must remain **Implementation Complete / Validation Blocked**, and the PR must remain Draft until the final PR head passes every required Frontend CI gate after billing/spending access is restored.
+
+## Release state
+
+- Implementation: complete for the requested F7 frontend scope.
+- Truthfulness boundary: implemented.
+- Permanent F7 gates: implemented and registered.
+- GitHub Actions execution: blocked before job start by account billing/spending state.
+- Accepted: **No**.
+- Current classification: **Implementation Complete / Validation Blocked**.
+- Merge into `main`: not performed.
+- Intended PR base: `integration/sole-frontend-v2` only.
