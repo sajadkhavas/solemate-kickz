@@ -16,7 +16,7 @@ export const motionDurations = {
   navigation: 0.22,
   reveal: 0.36,
   product: 0.32,
-  cart: 0.2,
+  cart: 0.1,
   dialog: 0.24,
   storytelling: 0.64,
 } as const;
