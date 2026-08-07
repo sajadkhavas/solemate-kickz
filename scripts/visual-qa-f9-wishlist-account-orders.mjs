@@ -96,16 +96,45 @@ async function inspect(client) {
             height: Math.round(rect.height),
           };
         });
+      const clippedControls = controls
+        .filter((element) => {
+          const rect = element.getBoundingClientRect();
+          return rect.left < -1 || rect.right > innerWidth + 1;
+        })
+        .slice(0, 20)
+        .map((element) => {
+          const rect = element.getBoundingClientRect();
+          return {
+            tag: element.tagName,
+            label: element.getAttribute('aria-label') || element.textContent?.trim().slice(0, 60),
+            left: Math.round(rect.left),
+            right: Math.round(rect.right),
+          };
+        });
       const unnamedButtons = controls.filter(
         (element) => element.tagName === 'BUTTON' && !((element.getAttribute('aria-label') || element.textContent || '').trim()),
       ).length;
+      const brokenImages = main
+        ? [...main.querySelectorAll('img')]
+            .filter((image) => image.complete && image.naturalWidth === 0)
+            .map((image) => image.getAttribute('src'))
+        : [];
+      let focusProbe = true;
+      const focusTarget = controls.find((element) => element instanceof HTMLElement);
+      if (focusTarget instanceof HTMLElement) {
+        focusTarget.focus({ preventScroll: true });
+        focusProbe = document.activeElement === focusTarget;
+      }
       return {
         viewport: { width: innerWidth, height: innerHeight },
         documentWidth: document.documentElement.scrollWidth,
         overflow: document.documentElement.scrollWidth > innerWidth + 1,
         h1: document.querySelectorAll('main h1').length,
         tinyTargets,
+        clippedControls,
         unnamedButtons,
+        brokenImages,
+        focusProbe,
       };
     })()`,
   );
@@ -121,6 +150,18 @@ async function capture(client, baseUrl, name, url, width, height, state) {
   await waitForExpression(client, `document.fonts.status === 'loaded'`);
   await sleep(550);
 
+  if (name === "wishlist-populated-mobile") {
+    await evaluate(
+      client,
+      `(() => {
+        const title = document.querySelector('[data-testid="wishlist-grid"] h3');
+        if (!title) return false;
+        title.textContent = 'نام بسیار طولانی محصول برای بررسی شکست چیدمان و رفتار متن در کارت علاقه‌مندی SOLE '.repeat(5);
+        return true;
+      })()`,
+    );
+  }
+
   const metrics = await inspect(client);
   const file = await screenshot(client, `${name}-${width}x${height}`);
   const findings = [];
@@ -128,6 +169,13 @@ async function capture(client, baseUrl, name, url, width, height, state) {
   if (metrics.h1 !== 1) findings.push(`h1-count-${metrics.h1}`);
   if (metrics.unnamedButtons) findings.push(`unnamed-buttons-${metrics.unnamedButtons}`);
   if (metrics.tinyTargets.length) findings.push(`targets-below-44-${metrics.tinyTargets.length}`);
+  if (metrics.clippedControls.length) {
+    findings.push(`horizontally-clipped-controls-${metrics.clippedControls.length}`);
+  }
+  if (!metrics.focusProbe) findings.push("focus-probe-failed");
+  if (name.startsWith("wishlist") && metrics.brokenImages.length) {
+    findings.push(`broken-wishlist-images-${metrics.brokenImages.length}`);
+  }
   if (findings.length) criticalFindings.push({ name, width, height, findings, metrics });
   captures.push({ name, url, width, height, file, metrics, findings });
 }
@@ -150,14 +198,28 @@ const baseState = {
   ],
 };
 
+const longState = {
+  ...baseState,
+  demoProfile: {
+    name: `سجاد ${"نام فارسی بسیار طولانی ".repeat(10).trim()}`,
+    email: "very.long.demo.account.value@example.com",
+    phone: "",
+  },
+  demoAddresses: [
+    {
+      id: "visual-address-long",
+      recipient: `گیرنده ${"نمایشی طولانی ".repeat(8).trim()}`,
+      city: "تهران",
+      address: `خیابان ولیعصر، ${"کوچه و نشانی فارسی بسیار طولانی پلاک ۱۲، ".repeat(12).trim()}`,
+    },
+  ],
+};
+
 async function run(baseUrl) {
   fs.rmSync(OUTPUT, { recursive: true, force: true });
   const browser = await openBrowser({ debugPort: 9257, logPath: CHROME_LOG });
   const { client } = browser;
   await client.send("Network.enable");
-  await client.send("Network.setBlockedURLs", {
-    urls: ["https://images.unsplash.com/*", "https://*.unsplash.com/*"],
-  });
 
   client.on("Runtime.exceptionThrown", (event) => {
     browserErrors.push(
@@ -175,12 +237,17 @@ async function run(baseUrl) {
       await capture(client, baseUrl, "account-overview", "/account", width, height, baseState);
     }
 
+    await client.send("Network.setBlockedURLs", {
+      urls: ["https://images.unsplash.com/*", "https://*.unsplash.com/*"],
+    });
     await capture(client, baseUrl, "wishlist-empty", "/wishlist", 390, 844, {
       ...baseState,
       wishlist: [],
     });
     await capture(client, baseUrl, "wishlist-populated-mobile", "/wishlist", 390, 844, baseState);
     await capture(client, baseUrl, "wishlist-populated-desktop", "/wishlist", 1440, 900, baseState);
+    await client.send("Network.setBlockedURLs", { urls: [] });
+
     await capture(client, baseUrl, "account-guest", "/account", 390, 844, null);
     await capture(
       client,
@@ -194,11 +261,29 @@ async function run(baseUrl) {
     await capture(
       client,
       baseUrl,
+      "account-profile-long-mobile",
+      "/account?section=profile",
+      320,
+      568,
+      longState,
+    );
+    await capture(
+      client,
+      baseUrl,
       "account-addresses",
       "/account?section=addresses",
       390,
       844,
       baseState,
+    );
+    await capture(
+      client,
+      baseUrl,
+      "account-addresses-long-mobile",
+      "/account?section=addresses",
+      320,
+      568,
+      longState,
     );
     await capture(
       client,
@@ -214,6 +299,15 @@ async function run(baseUrl) {
       baseUrl,
       "account-order-detail",
       "/account?section=orders&order=SOLE-DEMO-2401",
+      390,
+      844,
+      baseState,
+    );
+    await capture(
+      client,
+      baseUrl,
+      "account-order-missing",
+      "/account?section=orders&order=UNKNOWN",
       390,
       844,
       baseState,
@@ -269,7 +363,16 @@ withF9Server(
   fs.mkdirSync(path.dirname(REPORT), { recursive: true });
   fs.writeFileSync(
     REPORT,
-    `${JSON.stringify({ schemaVersion: 1, suite: "f9-wishlist-account-orders-visual", pass: false, fatalError: error instanceof Error ? (error.stack ?? error.message) : String(error) }, null, 2)}\n`,
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        suite: "f9-wishlist-account-orders-visual",
+        pass: false,
+        fatalError: error instanceof Error ? (error.stack ?? error.message) : String(error),
+      },
+      null,
+      2,
+    )}\n`,
   );
   console.error(error instanceof Error ? (error.stack ?? error.message) : String(error));
   process.exitCode = 1;
