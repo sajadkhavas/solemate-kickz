@@ -63,34 +63,9 @@
   animation-timing-function: var(--motion-ease-emphasized-out) !important;
 }
 
-[data-testid="search-dialog"][data-state="open"] {
-  animation: sole-dialog-top-in var(--motion-duration-dialog) var(--motion-ease-emphasized-out) both;
-}
-
-[data-testid="search-dialog"][data-state="closed"] {
-  animation: sole-dialog-top-out var(--motion-duration-dialog) var(--motion-ease-standard) both;
-}
-
-@keyframes sole-dialog-top-in {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes sole-dialog-top-out {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
+/* Search content remains immediate: animating Radix Content extends Presence and can delay rapid reopen/submit cycles. */
+[data-testid="search-dialog"] {
+  animation: none !important;
 }
 
 [data-testid="product-card"] img,
