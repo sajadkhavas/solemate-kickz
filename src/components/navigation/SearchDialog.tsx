@@ -2,7 +2,6 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { useNavigate } from "@tanstack/react-router";
 import { Clock3, Search, Trash2, X } from "lucide-react";
 import {
-  useDeferredValue,
   useEffect,
   useMemo,
   useRef,
@@ -61,7 +60,8 @@ export function SearchDialog() {
   const openerRef = useRef<HTMLElement | null>(null);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
-  const deferredQuery = useDeferredValue(query);
+  // Dataset search is local and synchronous; deferring it can leave the UI in a stale loading state.
+  const deferredQuery = query;
   const suggestions = useMemo(() => getDatasetSuggestions(), []);
   const results = useMemo(() => searchShoes(deferredQuery), [deferredQuery]);
   const normalizedQuery = normalizeSearchText(query);

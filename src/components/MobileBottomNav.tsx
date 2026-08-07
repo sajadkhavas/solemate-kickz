@@ -91,19 +91,21 @@ export function MobileBottomNav() {
           </button>
 
           <Link
-            to="/auth"
-            aria-current={active("/auth") ? "page" : undefined}
+            to="/account"
+            search={{ section: "overview" }}
+            aria-current={active("/account") ? "page" : undefined}
+            data-testid="mobile-account-link"
             className="relative flex min-h-11 flex-col items-center justify-center gap-1 rounded-md font-fa text-[10px] text-muted-foreground transition-colors hover:bg-interactive focus-visible:outline-none"
           >
             <span
               aria-hidden="true"
-              className={`absolute top-1 h-0.5 w-5 rounded-full bg-primary ${active("/auth") ? "opacity-100" : "opacity-0"}`}
+              className={`absolute top-1 h-0.5 w-5 rounded-full bg-primary ${active("/account") ? "opacity-100" : "opacity-0"}`}
             />
             <User
               aria-hidden="true"
-              className={`size-5 ${active("/auth") ? "text-primary" : ""}`}
+              className={`size-5 ${active("/account") ? "text-primary" : ""}`}
             />
-            <span className={active("/auth") ? "font-bold text-foreground" : ""}>حساب</span>
+            <span className={active("/account") ? "font-bold text-foreground" : ""}>حساب</span>
           </Link>
         </div>
       </nav>

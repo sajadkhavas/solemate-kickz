@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, ShoppingBag, User } from "lucide-react";
+import { Heart, Search, ShoppingBag, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { DesktopNavigation } from "@/components/navigation/DesktopNavigation";
@@ -15,7 +15,7 @@ function DemoDisclosure() {
   return (
     <div className="border-b border-primary/30 bg-primary text-primary-foreground">
       <p className="mx-auto flex min-h-9 max-w-[1400px] items-center justify-center px-4 text-center font-fa text-[11px] font-semibold sm:text-xs">
-        نسخه نمایشی فرانت‌اند — جستجو از Dataset داخلی پروژه استفاده می‌کند
+        نسخه نمایشی فرانت‌اند — جستجو، Wishlist و Account از داده محلی مرورگر استفاده می‌کنند
       </p>
     </div>
   );
@@ -26,6 +26,7 @@ export function Navbar() {
   const [mounted, setMounted] = useState(false);
   const setCartOpen = useStore((state) => state.setCartOpen);
   const setSearchOpen = useStore((state) => state.setSearchOpen);
+  const wishlistCount = useStore((state) => state.wishlist.length);
   const cartCount = useCartCount();
 
   useEffect(() => {
@@ -44,7 +45,9 @@ export function Navbar() {
   }, []);
 
   const visibleCartCount = mounted ? cartCount : 0;
+  const visibleWishlistCount = mounted ? wishlistCount : 0;
   const cartDescriptionId = "desktop-cart-count-description";
+  const wishlistDescriptionId = "desktop-wishlist-count-description";
 
   return (
     <>
@@ -76,8 +79,33 @@ export function Navbar() {
             </IconButton>
 
             <Link
-              to="/auth"
-              aria-label="ورود یا حساب کاربری"
+              to="/wishlist"
+              aria-label="علاقه‌مندی‌ها"
+              aria-describedby={visibleWishlistCount ? wishlistDescriptionId : undefined}
+              data-testid="wishlist-nav-link"
+              className="relative hidden size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-interactive hover:text-foreground focus-visible:outline-none sm:inline-flex"
+            >
+              <Heart aria-hidden="true" className="size-5" />
+              {visibleWishlistCount > 0 ? (
+                <>
+                  <span id={wishlistDescriptionId} className="sr-only">
+                    تعداد علاقه‌مندی‌ها: {visibleWishlistCount}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="absolute -end-0.5 -top-0.5 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 font-mono-num text-[10px] font-bold text-primary-foreground"
+                  >
+                    {visibleWishlistCount}
+                  </span>
+                </>
+              ) : null}
+            </Link>
+
+            <Link
+              to="/account"
+              search={{ section: "overview" }}
+              aria-label="حساب کاربری نمایشی"
+              data-testid="account-nav-link"
               className="hidden size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-interactive hover:text-foreground focus-visible:outline-none sm:inline-flex"
             >
               <User aria-hidden="true" className="size-5" />

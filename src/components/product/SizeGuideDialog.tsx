@@ -35,8 +35,9 @@ export function SizeGuideDialog({ sizes }: SizeGuideDialogProps) {
                 راهنمای عمومی انتخاب سایز
               </DialogPrimitive.Title>
               <DialogPrimitive.Description className="mt-2 font-fa text-sm leading-7 text-muted-foreground">
-                Dataset فعلی نمودار رسمی یا جدول رسمی برند و طول داخلی کفش را ندارد؛ بنابراین این
-                راهنما فقط روش اندازه‌گیری را توضیح می‌دهد و جایگزین جدول رسمی سازنده نیست.
+                Dataset فعلی نمودار رسمی یا جدول رسمی برند و طول داخلی کفش را
+                ندارد؛ بنابراین این راهنما فقط روش اندازه‌گیری را توضیح می‌دهد و
+                جایگزین جدول رسمی سازنده نیست.
               </DialogPrimitive.Description>
             </div>
             <DialogPrimitive.Close asChild>
@@ -48,24 +49,46 @@ export function SizeGuideDialog({ sizes }: SizeGuideDialogProps) {
 
           <ol className="mt-6 space-y-4 font-fa text-sm leading-7">
             <li className="flex gap-3">
-              <Footprints aria-hidden="true" className="mt-1 size-5 shrink-0 text-primary" />
-              <span>پا را با جورابی که معمولاً با کفش می‌پوشید روی یک کاغذ قرار دهید.</span>
+              <Footprints
+                aria-hidden="true"
+                className="mt-1 size-5 shrink-0 text-primary"
+              />
+              <span>
+                پا را با جورابی که معمولاً با کفش می‌پوشید روی یک کاغذ قرار دهید.
+              </span>
             </li>
             <li className="flex gap-3">
-              <Ruler aria-hidden="true" className="mt-1 size-5 shrink-0 text-primary" />
-              <span>از انتهای پاشنه تا بلندترین انگشت را اندازه بگیرید و پای بزرگ‌تر را مبنا قرار دهید.</span>
+              <Ruler
+                aria-hidden="true"
+                className="mt-1 size-5 shrink-0 text-primary"
+              />
+              <span>
+                از انتهای پاشنه تا بلندترین انگشت را اندازه بگیرید و پای بزرگ‌تر را
+                مبنا قرار دهید.
+              </span>
             </li>
             <li className="flex gap-3">
-              <span aria-hidden="true" className="mt-1 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+              <span
+                aria-hidden="true"
+                className="mt-1 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground"
+              >
                 ۳
               </span>
-              <span>عدد به‌دست‌آمده را با جدول رسمی همان برند مقایسه کنید؛ قالب برندها یکسان نیست.</span>
+              <span>
+                عدد به‌دست‌آمده را با جدول رسمی همان برند مقایسه کنید؛ قالب برندها
+                یکسان نیست.
+              </span>
             </li>
           </ol>
 
           <section className="mt-6 rounded-xl border border-border bg-surface p-4">
-            <h3 className="font-fa text-sm font-bold">سایزهای ثبت‌شده برای این محصول</h3>
-            <div className="mt-3 flex flex-wrap gap-2" aria-label="سایزهای قابل انتخاب">
+            <h3 className="font-fa text-sm font-bold">
+              سایزهای ثبت‌شده برای این محصول
+            </h3>
+            <div
+              className="mt-3 flex flex-wrap gap-2"
+              aria-label="سایزهای قابل انتخاب"
+            >
               {sizes.map((size) => (
                 <span
                   key={size}
@@ -78,8 +101,8 @@ export function SizeGuideDialog({ sizes }: SizeGuideDialogProps) {
           </section>
 
           <p className="mt-4 font-fa text-xs leading-6 text-muted-foreground">
-            برای تصمیم قطعی، جدول رسمی برند و شرایط تعویض فروشنده باید از Backend یا محتوای
-            تأییدشده دریافت شود.
+            برای تصمیم قطعی، جدول رسمی برند و شرایط تعویض فروشنده باید از Backend
+            یا محتوای تأییدشده دریافت شود.
           </p>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>

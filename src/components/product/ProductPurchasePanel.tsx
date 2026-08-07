@@ -41,7 +41,10 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
       return;
     }
 
-    addToCart(shoe.id, selectedSize, quantity);
+    if (!addToCart(shoe.id, selectedSize, quantity)) {
+      toast.error("این انتخاب دیگر با Dataset فعلی قابل افزودن نیست.");
+      return;
+    }
     toast.success(`${quantity} عدد به سبد محلی اضافه شد.`);
     setCartOpen(true);
   };
@@ -133,7 +136,6 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
           value={quantity}
           onChange={setQuantity}
           min={1}
-          max={10}
           disabled={shoe.isSoldOut}
           label="تعداد برای افزودن به سبد"
           className="bg-background"

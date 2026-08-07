@@ -17,6 +17,7 @@ import { SoleLogo } from "@/components/navigation/SoleLogo";
 const MOBILE_LINKS = [
   { to: "/", label: "خانه" },
   { to: "/products", label: "فروشگاه" },
+  { to: "/wishlist", label: "علاقه‌مندی‌ها" },
   { to: "/brands", label: "برندها" },
   { to: "/about", label: "درباره SOLE" },
   { to: "/cart", label: "سبد خرید" },

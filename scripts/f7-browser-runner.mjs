@@ -5,8 +5,7 @@ import path from "node:path";
 import { waitForHttp } from "./browser-harness.mjs";
 
 const ROOT = process.cwd();
-const sleep = (milliseconds) =>
-  new Promise((resolve) => setTimeout(resolve, milliseconds));
+const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 function waitForExit(child) {
   if (child.exitCode !== null) return Promise.resolve();
@@ -27,7 +26,7 @@ async function stopProcess(child) {
   }
 }
 
-export async function withF6Server({ envName, port, logPath }, callback) {
+export async function withF7Server({ envName, port, logPath }, callback) {
   const externalBaseUrl = process.env[envName];
   if (externalBaseUrl) return callback(externalBaseUrl);
 

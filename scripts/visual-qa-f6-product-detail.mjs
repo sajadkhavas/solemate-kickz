@@ -15,7 +15,10 @@ import { withF6Server } from "./f6-browser-runner.mjs";
 const ROOT = process.cwd();
 const OUTPUT = path.join(ROOT, "artifacts/visual-qa/f6-product-detail");
 const REPORT = path.join(OUTPUT, "f6-product-detail.json");
-const CHROME_LOG = path.join(ROOT, "artifacts/runtime/f6-product-detail-visual-chrome.txt");
+const CHROME_LOG = path.join(
+  ROOT,
+  "artifacts/runtime/f6-product-detail-visual-chrome.txt",
+);
 const captures = [];
 const criticalFindings = [];
 const browserErrors = [];
@@ -132,7 +135,10 @@ async function inspect(client) {
 async function capture(client, baseUrl, name, url, width, height, setup) {
   await viewport(client, width, height);
   await navigate(client, `${baseUrl}${url}`);
-  await waitForExpression(client, `document.querySelector('[data-testid="product-purchase-panel"]')`);
+  await waitForExpression(
+    client,
+    `document.querySelector('[data-testid="product-purchase-panel"]')`,
+  );
   await waitForExpression(client, `document.fonts.status === 'loaded'`);
   if (setup) await setup();
   await sleep(650);
@@ -142,10 +148,16 @@ async function capture(client, baseUrl, name, url, width, height, setup) {
   const findings = [];
   if (metrics.overflow) findings.push("horizontal-overflow");
   if (metrics.h1 !== 1) findings.push(`h1-count-${metrics.h1}`);
-  if (metrics.unnamedButtons) findings.push(`unnamed-buttons-${metrics.unnamedButtons}`);
-  if (metrics.tinyTargets.length) findings.push(`targets-below-44-${metrics.tinyTargets.length}`);
+  if (metrics.unnamedButtons) {
+    findings.push(`unnamed-buttons-${metrics.unnamedButtons}`);
+  }
+  if (metrics.tinyTargets.length) {
+    findings.push(`targets-below-44-${metrics.tinyTargets.length}`);
+  }
   if (!metrics.mainFallback) findings.push("blocked-main-image-fallback-missing");
-  if (findings.length) criticalFindings.push({ name, width, height, findings, metrics });
+  if (findings.length) {
+    criticalFindings.push({ name, width, height, findings, metrics });
+  }
   captures.push({ name, url, width, height, file, metrics, findings });
 }
 
@@ -174,31 +186,85 @@ async function run(baseUrl) {
 
   try {
     for (const [width, height] of VIEWPORTS) {
-      await capture(client, baseUrl, "product-default", "/product/1", width, height);
+      await capture(
+        client,
+        baseUrl,
+        "product-default",
+        "/product/1",
+        width,
+        height,
+      );
     }
 
-    await capture(client, baseUrl, "product-selected-quantity", "/product/1", 1280, 800, async () => {
-      await click(client, '[data-testid="product-size-option"]');
-      await click(client, '[aria-label="تعداد برای افزودن به سبد"] button:last-of-type');
-    });
+    await capture(
+      client,
+      baseUrl,
+      "product-selected-quantity",
+      "/product/1",
+      1280,
+      800,
+      async () => {
+        await click(client, '[data-testid="product-size-option"]');
+        await click(
+          client,
+          '[aria-label="تعداد برای افزودن به سبد"] button:last-of-type',
+        );
+      },
+    );
 
-    await capture(client, baseUrl, "product-size-guide", "/product/1", 390, 844, async () => {
-      await click(client, '[data-testid="size-guide-trigger"]');
-      await waitForExpression(client, `document.querySelector('[data-testid="size-guide-dialog"]')`);
-    });
+    await capture(
+      client,
+      baseUrl,
+      "product-size-guide",
+      "/product/1",
+      390,
+      844,
+      async () => {
+        await click(client, '[data-testid="size-guide-trigger"]');
+        await waitForExpression(
+          client,
+          `document.querySelector('[data-testid="size-guide-dialog"]')`,
+        );
+      },
+    );
 
-    await capture(client, baseUrl, "product-gallery-zoom", "/product/1", 1280, 800, async () => {
-      await click(client, '[data-testid="product-gallery-zoom"]');
-      await waitForExpression(client, `document.querySelector('[data-testid="product-gallery-dialog"]')`);
-    });
+    await capture(
+      client,
+      baseUrl,
+      "product-gallery-zoom",
+      "/product/1",
+      1280,
+      800,
+      async () => {
+        await click(client, '[data-testid="product-gallery-zoom"]');
+        await waitForExpression(
+          client,
+          `document.querySelector('[data-testid="product-gallery-dialog"]')`,
+        );
+      },
+    );
 
-    await capture(client, baseUrl, "product-sold-out", "/product/7", 390, 844);
+    await capture(
+      client,
+      baseUrl,
+      "product-sold-out",
+      "/product/7",
+      390,
+      844,
+    );
 
     await client.send("Emulation.setEmulatedMedia", {
       media: "screen",
       features: [{ name: "prefers-reduced-motion", value: "reduce" }],
     });
-    await capture(client, baseUrl, "product-reduced-motion", "/product/1", 390, 844);
+    await capture(
+      client,
+      baseUrl,
+      "product-reduced-motion",
+      "/product/1",
+      390,
+      844,
+    );
   } finally {
     await browser.close();
   }
@@ -209,8 +275,12 @@ async function run(baseUrl) {
   const runtime = browserErrors.filter((error) =>
     /uncaught|typeerror|referenceerror|syntaxerror/i.test(error),
   );
-  if (hydration.length) criticalFindings.push({ name: "hydration", findings: hydration });
-  if (runtime.length) criticalFindings.push({ name: "runtime", findings: runtime });
+  if (hydration.length) {
+    criticalFindings.push({ name: "hydration", findings: hydration });
+  }
+  if (runtime.length) {
+    criticalFindings.push({ name: "runtime", findings: runtime });
+  }
 
   const report = {
     schemaVersion: 1,
@@ -229,7 +299,9 @@ async function run(baseUrl) {
   fs.mkdirSync(path.dirname(REPORT), { recursive: true });
   fs.writeFileSync(REPORT, `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify(report.summary));
-  if (criticalFindings.length) console.error(JSON.stringify(criticalFindings, null, 2));
+  if (criticalFindings.length) {
+    console.error(JSON.stringify(criticalFindings, null, 2));
+  }
   if (!report.pass) process.exitCode = 1;
 }
 
@@ -250,7 +322,8 @@ withF6Server(
         suite: "f6-product-detail-visual",
         generatedAt: new Date().toISOString(),
         pass: false,
-        fatalError: error instanceof Error ? (error.stack ?? error.message) : String(error),
+        fatalError:
+          error instanceof Error ? (error.stack ?? error.message) : String(error),
       },
       null,
       2,
