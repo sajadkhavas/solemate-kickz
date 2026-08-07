@@ -7,6 +7,7 @@ const ROOT = process.cwd();
 const OWNER_BRANCH = "phase/sole-f2-navigation-search";
 const INTEGRATION_BRANCH = "integration/sole-frontend-v2";
 const CONTROLLED_PHASE = /^phase\/sole-f(?:\d+)(?:-f\d+)?-[a-z0-9-]+$/;
+const CONTROLLED_SUPERVISOR = /^supervisor\/sole-f\d+(?:-f\d+)+-[a-z0-9-]+$/;
 const CONTROLLED_RELEASE = /^release\/sole-frontend-v2(?:-|$)/;
 const FOUNDATION_SHA = "a908b2723322dde27699fa4c92fa9c0de95e0c75";
 const REPORT_PATH = path.join(ROOT, "artifacts/audits/f2-navigation-search.json");
@@ -32,6 +33,14 @@ function read(relativePath) {
 
 function add(name, pass, evidence) {
   checks.push({ name, pass: Boolean(pass), evidence });
+}
+
+function extractFullPathRegistrations(source) {
+  const match = source.match(
+    /export interface FileRoutesByFullPath \{([\s\S]*?)\n\}\nexport interface FileRoutesByTo/,
+  );
+  if (!match) return [];
+  return [...match[1].matchAll(/^  '([^']+)': typeof /gm)].map((entry) => entry[1]).sort();
 }
 
 const files = {
@@ -61,8 +70,9 @@ const controlledBranch =
   branch === OWNER_BRANCH ||
   branch === INTEGRATION_BRANCH ||
   CONTROLLED_PHASE.test(branch) ||
+  CONTROLLED_SUPERVISOR.test(branch) ||
   CONTROLLED_RELEASE.test(branch);
-add("controlled phase or integration branch", controlledBranch, {
+add("controlled phase, supervisor or integration branch", controlledBranch, {
   owner: OWNER_BRANCH,
   integration: INTEGRATION_BRANCH,
   actual: branch,
@@ -83,25 +93,18 @@ add("accepted Foundation is ancestor", foundationIsAncestor, {
   head,
 });
 
-const foundationRouteContracts = [
-  "./routes/products",
-  "./routes/cart",
-  "./routes/brands",
-  "./routes/auth",
-  "./routes/about",
-  "./routes/index",
-  "./routes/product.$id",
-  "'/products'",
-  "'/cart'",
-  "'/brands'",
-  "'/auth'",
-  "'/about'",
-  "'/product/$id'",
-];
+const foundationRouteTree = git(["show", `${FOUNDATION_SHA}:src/routeTree.gen.ts`]);
+const baselineRoutes = extractFullPathRegistrations(foundationRouteTree);
+const currentRoutes = extractFullPathRegistrations(files.routeTree);
+const authorizedAdditions = ["/account", "/checkout", "/wishlist"];
+const expectedRoutes = [...new Set([...baselineRoutes, ...authorizedAdditions])].sort();
 add(
-  "foundation route registrations preserved",
-  foundationRouteContracts.every((contract) => files.routeTree.includes(contract)),
-  foundationRouteContracts.filter((contract) => !files.routeTree.includes(contract)),
+  "generated route set is exact Foundation plus authorized F7/F9 additions",
+  JSON.stringify(currentRoutes) === JSON.stringify(expectedRoutes) &&
+    files.routeTree.includes("CheckoutRouteImport") &&
+    files.routeTree.includes("WishlistRouteImport") &&
+    files.routeTree.includes("AccountRouteImport"),
+  { baselineRoutes, authorizedAdditions, expectedRoutes, currentRoutes },
 );
 
 const trackedSourceFiles = git([
@@ -120,8 +123,9 @@ const unsafeUrls = [];
 const positiveTabindex = [];
 for (const file of trackedSourceFiles) {
   const source = read(file);
-  if (/href\s*=\s*["']#["']/i.test(source) || /href\s*=\s*["']javascript:/i.test(source))
+  if (/href\s*=\s*["']#["']/i.test(source) || /href\s*=\s*["']javascript:/i.test(source)) {
     unsafeUrls.push(file);
+  }
   if (/tabIndex\s*=\s*\{?\s*[1-9]/.test(source)) positiveTabindex.push(file);
 }
 add("no unsafe or placeholder URL", unsafeUrls.length === 0, unsafeUrls);

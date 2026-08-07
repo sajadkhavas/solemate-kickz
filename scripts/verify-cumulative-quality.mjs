@@ -14,6 +14,7 @@ const expectedReportFragments = [
   "f8-content-pages",
   "f4-f5-catalog-product-card",
   "f6-product-detail",
+  "f7-cart-checkout",
   "f9-wishlist-account-orders",
 ];
 

@@ -18,10 +18,7 @@ type ProductPurchasePanelProps = {
   onShare: () => Promise<void>;
 };
 
-export function ProductPurchasePanel({
-  shoe,
-  onShare,
-}: ProductPurchasePanelProps) {
+export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProps) {
   const addToCart = useStore((state) => state.addToCart);
   const setCartOpen = useStore((state) => state.setCartOpen);
   const toggleWishlist = useStore((state) => state.toggleWishlist);
@@ -44,18 +41,17 @@ export function ProductPurchasePanel({
       return;
     }
 
-    addToCart(shoe.id, selectedSize, quantity);
+    if (!addToCart(shoe.id, selectedSize, quantity)) {
+      toast.error("این انتخاب دیگر با Dataset فعلی قابل افزودن نیست.");
+      return;
+    }
     toast.success(`${quantity} عدد به سبد محلی اضافه شد.`);
     setCartOpen(true);
   };
 
   const handleWishlist = () => {
     toggleWishlist(shoe.id);
-    toast(
-      isWishlisted
-        ? "از علاقه‌مندی محلی حذف شد."
-        : "در علاقه‌مندی محلی ذخیره شد.",
-    );
+    toast(isWishlisted ? "از علاقه‌مندی محلی حذف شد." : "در علاقه‌مندی محلی ذخیره شد.");
   };
 
   return (
@@ -122,13 +118,8 @@ export function ProductPurchasePanel({
           })}
         </div>
 
-        <p
-          data-testid="product-size-status"
-          className="mt-3 font-fa text-xs text-muted-foreground"
-        >
-          {selectedSize === null
-            ? "هنوز سایزی انتخاب نشده است."
-            : `سایز انتخابی: EU ${selectedSize}`}
+        <p data-testid="product-size-status" className="mt-3 font-fa text-xs text-muted-foreground">
+          {selectedSize === null ? "هنوز سایزی انتخاب نشده است." : `سایز انتخابی: EU ${selectedSize}`}
         </p>
       </div>
 
@@ -145,7 +136,6 @@ export function ProductPurchasePanel({
           value={quantity}
           onChange={setQuantity}
           min={1}
-          max={10}
           disabled={shoe.isSoldOut}
           label="تعداد برای افزودن به سبد"
           className="bg-background"
@@ -209,9 +199,7 @@ export function ProductPurchasePanel({
             <dd className="mt-1 font-display uppercase">{shoe.category}</dd>
           </div>
           <div>
-            <dt className="font-fa text-xs text-muted-foreground">
-              سایزهای ثبت‌شده
-            </dt>
+            <dt className="font-fa text-xs text-muted-foreground">سایزهای ثبت‌شده</dt>
             <dd className="mt-1 font-mono-num">{shoe.sizes.join("، ")}</dd>
           </div>
           <div>
@@ -228,10 +216,7 @@ export function ProductPurchasePanel({
             اصالت، زمان ارسال یا شرایط بازگشت ندارد؛ بنابراین این صفحه چنین
             ادعاهایی نمایش نمی‌دهد.
           </p>
-          <div
-            className="mt-3 flex flex-wrap items-center gap-2"
-            aria-label="پالت رنگ ثبت‌شده"
-          >
+          <div className="mt-3 flex flex-wrap items-center gap-2" aria-label="پالت رنگ ثبت‌شده">
             <span className="font-fa text-xs text-muted-foreground">
               پالت رنگ ثبت‌شده:
             </span>
