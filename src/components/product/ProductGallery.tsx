@@ -1,5 +1,11 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { ChevronLeft, ChevronRight, Expand, ImageOff, X } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Expand,
+  ImageOff,
+  X,
+} from "lucide-react";
 import {
   useEffect,
   useRef,
@@ -19,7 +25,13 @@ type SafeImageProps = {
   onFailure?: () => void;
 };
 
-function SafeImage({ src, alt, className, testId, onFailure }: SafeImageProps) {
+function SafeImage({
+  src,
+  alt,
+  className,
+  testId,
+  onFailure,
+}: SafeImageProps) {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => setFailed(false), [src]);
