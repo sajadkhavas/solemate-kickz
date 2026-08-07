@@ -215,22 +215,34 @@ export async function evaluate(client, expression) {
     /target\?\.click\(\);\s*return Boolean\(target\);/,
     `if (!target) return null;
       const activationRect = target.getBoundingClientRect();
+      const x = Math.max(0, Math.min(innerWidth - 1, activationRect.left + activationRect.width / 2));
+      const y = Math.max(0, Math.min(innerHeight - 1, activationRect.top + activationRect.height / 2));
+      const hitTarget = document.elementFromPoint(x, y);
       return {
-        x: Math.max(0, Math.min(innerWidth - 1, activationRect.left + activationRect.width / 2)),
-        y: Math.max(0, Math.min(innerHeight - 1, activationRect.top + activationRect.height / 2)),
+        x,
+        y,
+        actionable: hitTarget === target || Boolean(hitTarget && target.contains(hitTarget)),
+        disabled: 'disabled' in target ? Boolean(target.disabled) : false,
       };`,
   );
 
-  let point = await evaluateRaw(client, coordinateExpression);
-  if (!point) return false;
+  const started = Date.now();
+  let point = null;
+  while (Date.now() - started < 2_000) {
+    point = await evaluateRaw(client, coordinateExpression);
+    if (!point) return false;
+    if (point.actionable && !point.disabled) break;
+    await sleep(50);
+  }
 
-  // scrollIntoView and responsive layout can still be settling when the first
-  // coordinates are measured. Re-measure after one short user-scale settle so
-  // the physical pointer event lands on the visible control rather than stale
-  // pre-scroll coordinates. Assertions themselves are never retried.
-  await sleep(120);
+  if (!point?.actionable || point.disabled) return false;
+
+  // Re-measure once more after the target is actually topmost. This prevents
+  // physical CDP clicks from landing on an exiting Radix overlay or stale
+  // pre-scroll coordinates while preserving a real user-like pointer event.
+  await sleep(50);
   point = await evaluateRaw(client, coordinateExpression);
-  if (!point) return false;
+  if (!point?.actionable || point.disabled) return false;
 
   await dispatchPointerActivation(client, point);
   return true;
