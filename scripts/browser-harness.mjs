@@ -232,6 +232,8 @@ async function waitForHydratedShell(client, timeout = 15_000) {
     const ready = await evaluateRaw(
       client,
       `(() => {
+        const appRoot = document.getElementById('main-content');
+        if (appRoot) return document.documentElement.dataset.soleHydrated === 'true';
         const header = document.querySelector('[data-testid="global-header"]');
         return !header || header.getAttribute('data-hydrated') === 'true';
       })()`,
@@ -239,7 +241,7 @@ async function waitForHydratedShell(client, timeout = 15_000) {
     if (ready) return;
     await sleep(100);
   }
-  throw new Error("Timed out waiting for the global shell to hydrate.");
+  throw new Error("Timed out waiting for the application shell to hydrate.");
 }
 
 export async function navigate(client, url) {
