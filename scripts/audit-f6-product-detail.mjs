@@ -51,9 +51,15 @@ record(
 );
 
 const ancestry = git("merge-base", "--is-ancestor", BASELINE, "HEAD");
-record("accepted Integration baseline is an ancestor", ancestry.status === 0, ancestry);
+record(
+  "accepted Integration baseline is an ancestor",
+  ancestry.status === 0,
+  ancestry,
+);
 
-for (const file of requiredFiles) record(`${file} exists`, exists(file), file);
+for (const file of requiredFiles) {
+  record(`${file} exists`, exists(file), file);
+}
 
 const route = read("src/routes/product.$id.tsx");
 const gallery = read("src/components/product/ProductGallery.tsx");
@@ -123,7 +129,8 @@ record(
 record(
   "gallery exposes image fallback and zoom dialog",
   gallery.includes("product-main-image-fallback") ||
-    (gallery.includes("SafeImage") && gallery.includes("product-gallery-dialog")),
+    (gallery.includes("SafeImage") &&
+      gallery.includes("product-gallery-dialog")),
   null,
 );
 record(
@@ -142,8 +149,7 @@ record(
 );
 record(
   "size guide avoids fabricated conversion data",
-  sizeGuide.includes("نمودار رسمی") &&
-    !sizeGuide.includes("<table"),
+  sizeGuide.includes("نمودار رسمی") && !sizeGuide.includes("<table"),
   null,
 );
 
@@ -160,8 +166,12 @@ const forbiddenClaims = [
 ];
 record(
   "unsupported commerce and specification claims are absent",
-  forbiddenClaims.every((claim) => !route.includes(claim) && !purchase.includes(claim)),
-  forbiddenClaims.filter((claim) => route.includes(claim) || purchase.includes(claim)),
+  forbiddenClaims.every(
+    (claim) => !route.includes(claim) && !purchase.includes(claim),
+  ),
+  forbiddenClaims.filter(
+    (claim) => route.includes(claim) || purchase.includes(claim),
+  ),
 );
 record(
   "dataset boundary is explicit",
@@ -187,7 +197,11 @@ record(
 );
 
 const trackedArtifacts = git("ls-files", "artifacts");
-record("runtime artifacts are not tracked", trackedArtifacts.stdout === "", trackedArtifacts.stdout);
+record(
+  "runtime artifacts are not tracked",
+  trackedArtifacts.stdout === "",
+  trackedArtifacts.stdout,
+);
 
 const failed = checks.filter((check) => !check.pass);
 const report = {
