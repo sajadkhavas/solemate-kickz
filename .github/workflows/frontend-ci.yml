@@ -80,7 +80,13 @@ jobs:
         run: bun run audit:f7
 
       - name: F7 cart and checkout browser behavior tests
+        id: f7_behavior
         run: bun run test:f7
+
+      - name: Diagnose F7 checkout submit failure
+        if: ${{ failure() && steps.f7_behavior.conclusion == 'failure' }}
+        run: node scripts/diagnose-f7-checkout-submit.mjs
+        continue-on-error: true
 
       - name: F9 wishlist account and orders completion audit
         run: bun run audit:f9
@@ -202,3 +208,4 @@ jobs:
             artifacts/audits/
             artifacts/reports/
             artifacts/visual-qa/
+            artifacts/runtime/
