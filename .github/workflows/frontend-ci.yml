@@ -56,7 +56,16 @@ jobs:
         run: bun run audit:f2
 
       - name: Navigation and search browser behavior tests
-        run: bun run test:f2
+        shell: bash
+        run: |
+          if bun run test:f2; then
+            exit 0
+          fi
+          if [ -f artifacts/reports/f2-navigation-search-behavior.json ]; then
+            REPORT="$(tr '\n' ' ' < artifacts/reports/f2-navigation-search-behavior.json | sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g')"
+            echo "::error file=scripts/test-f2-navigation-search.mjs,line=1::${REPORT}"
+          fi
+          exit 1
 
       - name: Content pages completion audit
         run: bun run audit:f8
