@@ -50,11 +50,17 @@ const wishlist = read("src/routes/wishlist.tsx");
 const account = read("src/routes/account.tsx");
 const store = read("src/store/index.ts");
 const navbar = read("src/components/Navbar.tsx");
-const mobile = read("src/components/MobileBottomNav.tsx");
+const mobileBottom = read("src/components/MobileBottomNav.tsx");
+const mobileNavigation = read("src/components/navigation/MobileNavigation.tsx");
+const productCard = read("src/components/ShoeCard.tsx");
+const purchasePanel = read("src/components/product/ProductPurchasePanel.tsx");
 const auth = read("src/routes/auth.tsx");
+const routeTree = read("src/routeTree.gen.ts");
 const packageJson = read("package.json");
 const workflow = read(".github/workflows/frontend-ci.yml");
 const verifier = read("scripts/verify-cumulative-quality.mjs");
+const behavior = read("scripts/test-f9-wishlist-account-orders.mjs");
+const visual = read("scripts/visual-qa-f9-wishlist-account-orders.mjs");
 
 record(
   "wishlist route uses the persisted shared wishlist",
@@ -68,6 +74,18 @@ record(
     wishlist.includes('data-testid="wishlist-grid"') &&
     wishlist.includes('data-testid="wishlist-clear"') &&
     wishlist.includes("در حال خواندن"),
+);
+record(
+  "wishlist synchronization is shared across ProductCard and PDP",
+  productCard.includes("state.wishlist.includes(shoe.id)") &&
+    productCard.includes("state.toggleWishlist") &&
+    purchasePanel.includes("state.wishlist.includes(shoe.id)") &&
+    purchasePanel.includes("state.toggleWishlist"),
+);
+record(
+  "wishlist product images expose an error fallback",
+  productCard.includes("onError={() => setFailed(true)}") &&
+    productCard.includes("تصویر در دسترس نیست"),
 );
 record(
   "account exposes guest, active and expired session states",
@@ -98,10 +116,16 @@ record(
     auth.includes("اطلاعات واردشده ارسال یا در localStorage و sessionStorage ذخیره نمی‌شوند"),
 );
 record(
-  "global navigation reaches F9 account and wishlist",
+  "global navigation reaches F9 account and wishlist on desktop and mobile",
   navbar.includes('to="/wishlist"') &&
     navbar.includes('to="/account"') &&
-    mobile.includes('to="/account"'),
+    mobileBottom.includes('to="/account"') &&
+    mobileNavigation.includes('{ to: "/wishlist", label: "علاقه‌مندی‌ها" }'),
+);
+record(
+  "route tree includes account and wishlist routes",
+  routeTree.includes("'/account': typeof AccountRoute") &&
+    routeTree.includes("'/wishlist': typeof WishlistRoute"),
 );
 record(
   "F9 pages are noindex frontend-only surfaces",
@@ -121,6 +145,39 @@ record(
   workflow.includes("F9 wishlist account and orders completion audit") &&
     workflow.includes("F9 wishlist account and orders browser behavior tests") &&
     workflow.includes("F9 wishlist account and orders Visual QA"),
+);
+record(
+  "F9 browser gate covers keyboard sync persistence URL history and local-only writes",
+  behavior.includes("Wishlist clear action works from keyboard and persists") &&
+    behavior.includes("ProductCard reflects PDP wishlist state") &&
+    behavior.includes("PDP reflects ProductCard wishlist removal") &&
+    behavior.includes("Long Persian profile values and an empty optional phone persist locally") &&
+    behavior.includes("Address removal persists locally") &&
+    behavior.includes("Profile save performs no Fetch/XHR backend synchronization") &&
+    behavior.includes("Address add performs no Fetch/XHR backend synchronization") &&
+    behavior.includes("Browser back restores the orders list URL state") &&
+    behavior.includes("Browser forward restores the order detail URL state") &&
+    behavior.includes("Mobile global navigation exposes Wishlist"),
+);
+record(
+  "F9 Visual QA covers required viewports and release-blocking states",
+  [320, 375, 390, 430, 768, 1024, 1280, 1440, 1920].every((width) =>
+    visual.includes(`[${width},`),
+  ) &&
+    visual.includes('"wishlist-empty"') &&
+    visual.includes('"wishlist-populated-mobile"') &&
+    visual.includes('"account-guest"') &&
+    visual.includes('"account-profile"') &&
+    visual.includes('"account-addresses"') &&
+    visual.includes('"account-orders"') &&
+    visual.includes('"account-order-detail"') &&
+    visual.includes('"account-order-missing"') &&
+    visual.includes('"account-expired"') &&
+    visual.includes('"account-reduced-motion"') &&
+    visual.includes("horizontal-overflow") &&
+    visual.includes("horizontally-clipped-controls") &&
+    visual.includes("focus-probe-failed") &&
+    visual.includes("broken-wishlist-images"),
 );
 record(
   "runtime artifacts are not tracked",
