@@ -1,0 +1,223 @@
+:root {
+  --motion-duration-feedback: 140ms;
+  --motion-duration-navigation: 220ms;
+  --motion-duration-reveal: 360ms;
+  --motion-duration-product: 320ms;
+  --motion-duration-cart: 200ms;
+  --motion-duration-dialog: 240ms;
+  --motion-duration-storytelling: 640ms;
+  --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --motion-ease-standard-out: cubic-bezier(0, 0, 0, 1);
+  --motion-ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --motion-ease-emphasized-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Legacy ambient loops were decorative and generated continuous GPU work. */
+.animate-marquee,
+.animate-float,
+.animate-pulse-glow,
+.animate-spin-slow,
+.hero-particle {
+  animation: none !important;
+  will-change: auto !important;
+}
+
+.route-motion-feedback {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: var(--z-toast);
+  block-size: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  transform-origin: center;
+  animation: sole-route-feedback var(--motion-duration-navigation) var(--motion-ease-standard-out)
+    both;
+}
+
+@keyframes sole-route-feedback {
+  from {
+    opacity: 0;
+    transform: scaleX(0.2);
+  }
+  35% {
+    opacity: 0.9;
+  }
+  to {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+/* Existing Radix surfaces keep their proven focus/scroll-lock behavior; only timing is normalized. */
+[data-testid="mobile-menu-overlay"],
+[data-testid="search-overlay"],
+[data-foundation-overlay="cart"] {
+  animation-duration: var(--motion-duration-dialog) !important;
+  animation-timing-function: var(--motion-ease-emphasized-out) !important;
+}
+
+[data-testid="mobile-menu-content"],
+[data-testid="cart-drawer"] {
+  animation-duration: var(--motion-duration-dialog) !important;
+  animation-timing-function: var(--motion-ease-emphasized-out) !important;
+}
+
+[data-testid="search-dialog"][data-state="open"] {
+  animation: sole-dialog-top-in var(--motion-duration-dialog) var(--motion-ease-emphasized-out) both;
+}
+
+[data-testid="search-dialog"][data-state="closed"] {
+  animation: sole-dialog-top-out var(--motion-duration-dialog) var(--motion-ease-standard) both;
+}
+
+@keyframes sole-dialog-top-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sole-dialog-top-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+[data-testid="product-card"] img,
+[data-testid="home-featured"] img,
+[data-testid="product-main-image"] {
+  transition-duration: var(--motion-duration-product) !important;
+  transition-timing-function: var(--motion-ease-emphasized) !important;
+}
+
+[data-testid="product-size-option"],
+[data-testid="product-add-to-cart"],
+[data-testid="product-mobile-add-to-cart"],
+[data-testid="product-wishlist"],
+[data-testid="quick-view-trigger"],
+[data-testid="wishlist-clear"],
+[data-testid="account-profile-save"],
+[data-testid="account-address-add"] {
+  transition-duration: var(--motion-duration-feedback) !important;
+  transition-timing-function: var(--motion-ease-standard-out) !important;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  [data-testid="product-card"]:hover {
+    transform: translateY(-2px);
+    transition:
+      transform var(--motion-duration-feedback) var(--motion-ease-standard-out),
+      border-color var(--motion-duration-feedback) var(--motion-ease-standard-out);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-motion-feedback {
+    display: none;
+  }
+
+  [data-motion],
+  [data-testid="search-dialog"],
+  [data-testid="mobile-menu-content"],
+  [data-testid="cart-drawer"],
+  [data-testid="product-card"] {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  [data-testid="product-card"] img,
+  [data-testid="home-featured"] img,
+  [data-testid="product-main-image"] {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .route-motion-feedback {
+    background: CanvasText;
+  }
+}
+
+/* One deliberate storytelling idea on the hero; commerce routes stay immediate. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-testid="home-hero"] h1,
+  [data-testid="home-hero"] [data-testid="hero-primary-cta"],
+  [data-testid="home-hero"] [data-testid="hero-secondary-cta"] {
+    animation: sole-hero-copy-in 420ms var(--motion-ease-emphasized-out) both;
+  }
+
+  [data-testid="home-hero"] [data-testid="hero-primary-cta"],
+  [data-testid="home-hero"] [data-testid="hero-secondary-cta"] {
+    animation-delay: 90ms;
+  }
+
+  [data-testid="hero-media"] {
+    animation: sole-hero-media-in 480ms var(--motion-ease-emphasized-out) 60ms both;
+  }
+
+  [data-testid="product-main-image"] {
+    animation: sole-product-media-in var(--motion-duration-product) var(--motion-ease-emphasized)
+      both;
+  }
+}
+
+@keyframes sole-hero-copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sole-hero-media-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes sole-product-media-in {
+  from {
+    opacity: 0.65;
+    transform: scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+[data-testid="cart-drawer-item"] {
+  /* F7 used a 32px exit travel. F10 makes cart mutation feedback opacity/layout-only. */
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-testid="home-hero"] h1,
+  [data-testid="home-hero"] [data-testid="hero-primary-cta"],
+  [data-testid="home-hero"] [data-testid="hero-secondary-cta"],
+  [data-testid="hero-media"],
+  [data-testid="product-main-image"] {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}

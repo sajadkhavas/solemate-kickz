@@ -13,6 +13,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import foundationCss from "../foundation.css?url";
 import appCss from "../styles.css?url";
+import motionCss from "../motion.css?url";
 import { CartDrawer } from "@/components/CartDrawer";
 import { MagneticCursor } from "@/components/MagneticCursor";
 import { Button } from "@/components/ui/button";
@@ -102,6 +103,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "stylesheet", href: foundationCss },
+      { rel: "stylesheet", href: motionCss },
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
     ],
   }),
@@ -146,6 +148,18 @@ function StoreHydration() {
   return null;
 }
 
+function RouteMotionFeedback() {
+  const location = useLocation();
+  return (
+    <div
+      key={location.pathname}
+      data-motion="navigation-feedback"
+      className="route-motion-feedback"
+      aria-hidden="true"
+    />
+  );
+}
+
 function RouteAccessibility() {
   const location = useLocation();
   const firstRender = useRef(true);
@@ -169,6 +183,7 @@ function RouteAccessibility() {
 
   return (
     <>
+      <RouteMotionFeedback />
       <div
         role={routeNeedsMainLandmark ? "main" : undefined}
         aria-label={routeNeedsMainLandmark ? "محتوای اصلی" : undefined}
