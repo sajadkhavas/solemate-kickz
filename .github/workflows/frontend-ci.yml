@@ -8,7 +8,7 @@ on:
       - "integration/**"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: frontend-ci-${{ github.workflow }}-${{ github.ref }}
@@ -39,21 +39,6 @@ jobs:
 
       - name: Install from lockfile
         run: bun install --frozen-lockfile
-
-      - name: Normalize F9 formatting when needed
-        if: github.event_name == 'pull_request' && github.head_ref == 'phase/sole-f9-wishlist-account-orders'
-        shell: bash
-        run: |
-          bun run format:f9
-          bunx prettier --write scripts/audit-f2-navigation-search.mjs
-          if ! git diff --quiet; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "style(f9): apply prettier formatting"
-            git push origin HEAD:phase/sole-f9-wishlist-account-orders
-            exit 1
-          fi
 
       - name: Foundation source-contract audit
         run: bun run audit:source-contracts
