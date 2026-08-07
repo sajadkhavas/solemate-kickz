@@ -49,22 +49,22 @@
   }
 }
 
-/* Existing Radix surfaces keep their proven focus/scroll-lock behavior; only timing is normalized. */
+/* Editorial/navigation overlays may animate; transactional surfaces stay immediate. */
 [data-testid="mobile-menu-overlay"],
-[data-testid="search-overlay"],
-[data-foundation-overlay="cart"] {
+[data-testid="search-overlay"] {
   animation-duration: var(--motion-duration-dialog) !important;
   animation-timing-function: var(--motion-ease-emphasized-out) !important;
 }
 
-[data-testid="mobile-menu-content"],
+[data-testid="mobile-menu-content"] {
+  animation-duration: var(--motion-duration-dialog) !important;
+  animation-timing-function: var(--motion-ease-emphasized-out) !important;
+}
+
+/* Search and Cart content remain immediate. Animating Radix Content/Cart Presence can delay rapid lifecycle transitions. */
+[data-testid="search-dialog"],
+[data-foundation-overlay="cart"],
 [data-testid="cart-drawer"] {
-  animation-duration: var(--motion-duration-dialog) !important;
-  animation-timing-function: var(--motion-ease-emphasized-out) !important;
-}
-
-/* Search content remains immediate: animating Radix Content extends Presence and can delay rapid reopen/submit cycles. */
-[data-testid="search-dialog"] {
   animation: none !important;
 }
 
