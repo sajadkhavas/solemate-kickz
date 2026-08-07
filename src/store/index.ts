@@ -12,6 +12,23 @@ interface AuthUser {
   email: string;
 }
 
+export type DemoAccountMode = "guest" | "active" | "expired";
+
+export interface DemoAccountProfile {
+  name: string;
+  email: string;
+  phone: string;
+}
+
+export interface DemoAddress {
+  id: string;
+  recipient: string;
+  city: string;
+  address: string;
+}
+
+type DemoAddressInput = Omit<DemoAddress, "id">;
+
 interface Store {
   cart: CartItem[];
   addToCart: (id: number, size: number, qty?: number) => void;
@@ -21,6 +38,7 @@ interface Store {
 
   wishlist: number[];
   toggleWishlist: (id: number) => void;
+  clearWishlist: () => void;
 
   recentlyViewed: number[];
   addRecentlyViewed: (id: number) => void;
@@ -40,9 +58,31 @@ interface Store {
   user: AuthUser | null;
   signIn: (user: AuthUser) => void;
   signOut: () => void;
+
+  demoAccountMode: DemoAccountMode;
+  demoProfile: DemoAccountProfile;
+  demoAddresses: DemoAddress[];
+  startDemoSession: () => void;
+  expireDemoSession: () => void;
+  resetDemoSession: () => void;
+  updateDemoProfile: (profile: DemoAccountProfile) => void;
+  addDemoAddress: (address: DemoAddressInput) => void;
+  removeDemoAddress: (id: string) => void;
 }
 
 const normalizeHistoryTerm = (value: string) => value.trim().replace(/\s+/g, " ");
+
+const defaultDemoProfile: DemoAccountProfile = {
+  name: "کاربر نمایشی SOLE",
+  email: "demo@sole.local",
+  phone: "",
+};
+
+let addressSequence = 0;
+const nextDemoAddressId = () => {
+  addressSequence += 1;
+  return `sole-local-address-${Date.now()}-${addressSequence}`;
+};
 
 export const useStore = create<Store>()(
   persist(
@@ -77,6 +117,7 @@ export const useStore = create<Store>()(
             ? get().wishlist.filter((item) => item !== id)
             : [id, ...get().wishlist],
         }),
+      clearWishlist: () => set({ wishlist: [] }),
 
       recentlyViewed: [],
       addRecentlyViewed: (id) =>
@@ -113,13 +154,33 @@ export const useStore = create<Store>()(
       user: null,
       signIn: (user) => set({ user }),
       signOut: () => set({ user: null }),
+
+      demoAccountMode: "guest",
+      demoProfile: defaultDemoProfile,
+      demoAddresses: [],
+      startDemoSession: () => set({ demoAccountMode: "active" }),
+      expireDemoSession: () => set({ demoAccountMode: "expired" }),
+      resetDemoSession: () => set({ demoAccountMode: "guest" }),
+      updateDemoProfile: (profile) => set({ demoProfile: profile }),
+      addDemoAddress: (address) =>
+        set({
+          demoAddresses: [
+            ...get().demoAddresses,
+            {
+              id: nextDemoAddressId(),
+              recipient: address.recipient,
+              city: address.city,
+              address: address.address,
+            },
+          ],
+        }),
+      removeDemoAddress: (id) =>
+        set({ demoAddresses: get().demoAddresses.filter((item) => item.id !== id) }),
     }),
     {
       name: "sole-store",
       storage: createJSONStorage(() =>
-        typeof window !== "undefined"
-          ? window.localStorage
-          : (undefined as unknown as Storage),
+        typeof window !== "undefined" ? window.localStorage : (undefined as unknown as Storage),
       ),
       partialize: (state) => ({
         cart: state.cart,
@@ -127,6 +188,9 @@ export const useStore = create<Store>()(
         recentlyViewed: state.recentlyViewed,
         searchHistory: state.searchHistory,
         user: state.user,
+        demoAccountMode: state.demoAccountMode,
+        demoProfile: state.demoProfile,
+        demoAddresses: state.demoAddresses,
       }),
     },
   ),

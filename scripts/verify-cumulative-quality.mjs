@@ -14,6 +14,7 @@ const expectedReportFragments = [
   "f8-content-pages",
   "f4-f5-catalog-product-card",
   "f6-product-detail",
+  "f9-wishlist-account-orders",
 ];
 
 function walk(directory) {
@@ -38,9 +39,7 @@ function collectFailures(value, location = "report", failures = []) {
     typeof value.foundationCriticalFindings === "number" &&
     value.foundationCriticalFindings > 0
   ) {
-    failures.push(
-      `${location}.foundationCriticalFindings=${value.foundationCriticalFindings}`,
-    );
+    failures.push(`${location}.foundationCriticalFindings=${value.foundationCriticalFindings}`);
   }
   if (Array.isArray(value.criticalFindings) && value.criticalFindings.length > 0) {
     failures.push(`${location}.criticalFindings=${value.criticalFindings.length}`);
@@ -49,7 +48,9 @@ function collectFailures(value, location = "report", failures = []) {
   for (const key of ["summary", "checks", "results"]) {
     const child = value[key];
     if (Array.isArray(child)) {
-      child.forEach((entry, index) => collectFailures(entry, `${location}.${key}[${index}]`, failures));
+      child.forEach((entry, index) =>
+        collectFailures(entry, `${location}.${key}[${index}]`, failures),
+      );
     } else if (child && typeof child === "object") {
       collectFailures(child, `${location}.${key}`, failures);
     }
