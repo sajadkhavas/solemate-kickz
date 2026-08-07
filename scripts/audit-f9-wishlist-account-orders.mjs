@@ -58,7 +58,9 @@ const verifier = read("scripts/verify-cumulative-quality.mjs");
 
 record(
   "wishlist route uses the persisted shared wishlist",
-  wishlist.includes("state.wishlist") && wishlist.includes("<ShoeCard") && store.includes("clearWishlist"),
+  wishlist.includes("state.wishlist") &&
+    wishlist.includes("<ShoeCard") &&
+    store.includes("clearWishlist"),
 );
 record(
   "wishlist has loading, empty, populated and clear states",
@@ -97,7 +99,9 @@ record(
 );
 record(
   "global navigation reaches F9 account and wishlist",
-  navbar.includes('to="/wishlist"') && navbar.includes('to="/account"') && mobile.includes('to="/account"'),
+  navbar.includes('to="/wishlist"') &&
+    navbar.includes('to="/account"') &&
+    mobile.includes('to="/account"'),
 );
 record(
   "F9 pages are noindex frontend-only surfaces",
@@ -118,7 +122,11 @@ record(
     workflow.includes("F9 wishlist account and orders browser behavior tests") &&
     workflow.includes("F9 wishlist account and orders Visual QA"),
 );
-record("runtime artifacts are not tracked", git("ls-files", "artifacts").stdout === "", git("ls-files", "artifacts").stdout);
+record(
+  "runtime artifacts are not tracked",
+  git("ls-files", "artifacts").stdout === "",
+  git("ls-files", "artifacts").stdout,
+);
 
 const forbiddenClaims = [
   "سفارش واقعی شما",

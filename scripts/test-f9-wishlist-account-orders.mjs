@@ -86,7 +86,11 @@ async function run(baseUrl) {
   const { client } = browser;
 
   client.on("Runtime.exceptionThrown", (event) => {
-    browserErrors.push(event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception");
+    browserErrors.push(
+      event.exceptionDetails?.exception?.description ??
+        event.exceptionDetails?.text ??
+        "Runtime exception",
+    );
   });
   client.on("Runtime.consoleAPICalled", (event) => {
     if (event.type === "error") browserErrors.push(event.args.map(serialiseArgument).join(" "));
@@ -105,51 +109,75 @@ async function run(baseUrl) {
       `localStorage.setItem('sole-store', JSON.stringify({ state: { wishlist: [1, 2], cart: [], recentlyViewed: [], searchHistory: [], user: null, demoAccountMode: 'guest', demoProfile: { name: 'کاربر نمایشی SOLE', email: 'demo@sole.local', phone: '' }, demoAddresses: [] }, version: 0 })); true`,
     );
     await navigate(client, `${baseUrl}/wishlist`);
-    await waitForExpression(client, `document.querySelectorAll('[data-testid="wishlist-grid"] [data-testid="product-card"]').length === 2`);
+    await waitForExpression(
+      client,
+      `document.querySelectorAll('[data-testid="wishlist-grid"] [data-testid="product-card"]').length === 2`,
+    );
     const populated = await evaluate(
       client,
       `({ count: document.querySelectorAll('[data-testid="wishlist-grid"] [data-testid="product-card"]').length, text: document.querySelector('[data-testid="wishlist-count"]')?.textContent })`,
     );
-    record("Wishlist restores persisted Product Cards", populated.count === 2 && /۲|2/.test(populated.text ?? ""), populated);
+    record(
+      "Wishlist restores persisted Product Cards",
+      populated.count === 2 && /۲|2/.test(populated.text ?? ""),
+      populated,
+    );
 
     await click(client, '[data-testid="wishlist-clear"]');
     await waitForExpression(client, `document.querySelector('[data-testid="wishlist-empty"]')`);
     const cleared = await readPersisted(client);
-    record("Wishlist clear action persists", Array.isArray(cleared.wishlist) && cleared.wishlist.length === 0, cleared.wishlist);
+    record(
+      "Wishlist clear action persists",
+      Array.isArray(cleared.wishlist) && cleared.wishlist.length === 0,
+      cleared.wishlist,
+    );
 
     await navigate(client, `${baseUrl}/account`);
-    await waitForExpression(client, `document.querySelector('[data-testid="account-guest-state"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="account-guest-state"]')`,
+    );
     record("Account starts in guest state", true);
 
     await click(client, '[data-testid="account-start-demo"]');
     await waitForExpression(client, `document.querySelector('[data-testid="account-overview"]')`);
     let persisted = await readPersisted(client);
-    record("Local demo session becomes active", persisted.demoAccountMode === "active", persisted.demoAccountMode);
+    record(
+      "Local demo session becomes active",
+      persisted.demoAccountMode === "active",
+      persisted.demoAccountMode,
+    );
 
     await navigate(client, `${baseUrl}/account?section=profile`);
     await waitForExpression(client, `document.querySelector('[data-testid="account-profile"]')`);
-    await fill(client, '#demo-profile-name', 'سجاد تست');
-    await fill(client, '#demo-profile-email', 'sajad@example.com');
-    await fill(client, '#demo-profile-phone', '09120000000');
+    await fill(client, "#demo-profile-name", "سجاد تست");
+    await fill(client, "#demo-profile-email", "sajad@example.com");
+    await fill(client, "#demo-profile-phone", "09120000000");
     await click(client, '[data-testid="account-profile-save"]');
     persisted = await readPersisted(client);
     record(
       "Profile edits persist locally",
-      persisted.demoProfile?.name === "سجاد تست" && persisted.demoProfile?.email === "sajad@example.com",
+      persisted.demoProfile?.name === "سجاد تست" &&
+        persisted.demoProfile?.email === "sajad@example.com",
       persisted.demoProfile,
     );
 
     await navigate(client, `${baseUrl}/account?section=addresses`);
     await waitForExpression(client, `document.querySelector('[data-testid="account-addresses"]')`);
-    await fill(client, '#demo-address-recipient', 'گیرنده تست');
-    await fill(client, '#demo-address-city', 'تهران');
-    await fill(client, '#demo-address-line', 'نشانی نمایشی برای تست رابط کاربری SOLE');
+    await fill(client, "#demo-address-recipient", "گیرنده تست");
+    await fill(client, "#demo-address-city", "تهران");
+    await fill(client, "#demo-address-line", "نشانی نمایشی برای تست رابط کاربری SOLE");
     await click(client, '[data-testid="account-address-add"]');
-    await waitForExpression(client, `!document.querySelector('[data-testid="account-address-empty"]')`);
+    await waitForExpression(
+      client,
+      `!document.querySelector('[data-testid="account-address-empty"]')`,
+    );
     persisted = await readPersisted(client);
     record(
       "Address add persists local-only data",
-      Array.isArray(persisted.demoAddresses) && persisted.demoAddresses.length === 1 && persisted.demoAddresses[0]?.city === "تهران",
+      Array.isArray(persisted.demoAddresses) &&
+        persisted.demoAddresses.length === 1 &&
+        persisted.demoAddresses[0]?.city === "تهران",
       persisted.demoAddresses,
     );
 
@@ -159,41 +187,85 @@ async function run(baseUrl) {
       client,
       `({ rows: document.querySelectorAll('[data-testid="account-order-open"]').length, text: document.querySelector('[data-testid="account-orders"]')?.textContent })`,
     );
-    record("Demo order list is explicit and navigable", list.rows >= 2 && /نمایشی/.test(list.text ?? ""), list);
+    record(
+      "Demo order list is explicit and navigable",
+      list.rows >= 2 && /نمایشی/.test(list.text ?? ""),
+      list,
+    );
 
     await click(client, '[data-testid="account-order-open"]');
-    await waitForExpression(client, `document.querySelector('[data-testid="account-order-detail"]')`);
-    const detail = await evaluate(client, `document.querySelector('[data-testid="account-order-detail"]')?.textContent`);
-    record("Demo order detail avoids real payment or shipping claims", /تراکنش واقعی نیستند/.test(detail ?? "") && /انجام نشده/.test(detail ?? ""), detail);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="account-order-detail"]')`,
+    );
+    const detail = await evaluate(
+      client,
+      `document.querySelector('[data-testid="account-order-detail"]')?.textContent`,
+    );
+    record(
+      "Demo order detail avoids real payment or shipping claims",
+      /تراکنش واقعی نیستند/.test(detail ?? "") && /انجام نشده/.test(detail ?? ""),
+      detail,
+    );
 
     await navigate(client, `${baseUrl}/account?section=orders&order=UNKNOWN`);
-    await waitForExpression(client, `document.querySelector('[data-testid="account-order-missing"]')`);
-    const missing = await evaluate(client, `document.querySelector('[data-testid="account-order-missing"]')?.textContent`);
-    record("Unknown order has a designed no-backend state", /هیچ درخواست Backend انجام نشد/.test(missing ?? ""), missing);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="account-order-missing"]')`,
+    );
+    const missing = await evaluate(
+      client,
+      `document.querySelector('[data-testid="account-order-missing"]')?.textContent`,
+    );
+    record(
+      "Unknown order has a designed no-backend state",
+      /هیچ درخواست Backend انجام نشد/.test(missing ?? ""),
+      missing,
+    );
 
     await navigate(client, `${baseUrl}/account`);
     await waitForExpression(client, `document.querySelector('[data-testid="account-overview"]')`);
     await click(client, '[data-testid="account-expire-session"]');
-    await waitForExpression(client, `document.querySelector('[data-testid="account-expired-state"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="account-expired-state"]')`,
+    );
     persisted = await readPersisted(client);
-    record("Expired-session state persists", persisted.demoAccountMode === "expired", persisted.demoAccountMode);
+    record(
+      "Expired-session state persists",
+      persisted.demoAccountMode === "expired",
+      persisted.demoAccountMode,
+    );
 
     await click(client, '[data-testid="account-restart-demo"]');
     await waitForExpression(client, `document.querySelector('[data-testid="account-overview"]')`);
     persisted = await readPersisted(client);
-    record("Expired session can restart locally", persisted.demoAccountMode === "active", persisted.demoAccountMode);
+    record(
+      "Expired session can restart locally",
+      persisted.demoAccountMode === "active",
+      persisted.demoAccountMode,
+    );
 
     await viewport(client, 390, 844, true);
     await navigate(client, `${baseUrl}/account`);
-    await waitForExpression(client, `document.querySelector('[data-testid="mobile-account-link"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="mobile-account-link"]')`,
+    );
     const mobileAccount = await evaluate(
       client,
       `({ current: document.querySelector('[data-testid="mobile-account-link"]')?.getAttribute('aria-current'), href: document.querySelector('[data-testid="mobile-account-link"]')?.getAttribute('href') })`,
     );
-    record("Mobile account navigation targets the account dashboard", mobileAccount.current === "page" && /\/account/.test(mobileAccount.href ?? ""), mobileAccount);
+    record(
+      "Mobile account navigation targets the account dashboard",
+      mobileAccount.current === "page" && /\/account/.test(mobileAccount.href ?? ""),
+      mobileAccount,
+    );
 
     const meaningfulErrors = browserErrors.filter((text) =>
-      /hydration|server rendered html|did not match|uncaught|typeerror|referenceerror|syntaxerror/i.test(text),
+      /hydration|server rendered html|did not match|uncaught|typeerror|referenceerror|syntaxerror/i.test(
+        text,
+      ),
     );
     record("No hydration or runtime errors", meaningfulErrors.length === 0, meaningfulErrors);
   } finally {
@@ -207,7 +279,11 @@ async function run(baseUrl) {
     generatedAt: new Date().toISOString(),
     results,
     browserErrors,
-    summary: { total: results.length, passed: results.length - failed.length, failed: failed.length },
+    summary: {
+      total: results.length,
+      passed: results.length - failed.length,
+      failed: failed.length,
+    },
     pass: failed.length === 0,
   };
   fs.writeFileSync(REPORT, `${JSON.stringify(report, null, 2)}\n`);

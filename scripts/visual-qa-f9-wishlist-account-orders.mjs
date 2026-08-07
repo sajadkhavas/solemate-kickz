@@ -15,7 +15,10 @@ import { withF9Server } from "./f9-browser-runner.mjs";
 const ROOT = process.cwd();
 const OUTPUT = path.join(ROOT, "artifacts/visual-qa/f9-wishlist-account-orders");
 const REPORT = path.join(OUTPUT, "f9-wishlist-account-orders.json");
-const CHROME_LOG = path.join(ROOT, "artifacts/runtime/f9-wishlist-account-orders-visual-chrome.txt");
+const CHROME_LOG = path.join(
+  ROOT,
+  "artifacts/runtime/f9-wishlist-account-orders-visual-chrome.txt",
+);
 const captures = [];
 const criticalFindings = [];
 const browserErrors = [];
@@ -33,7 +36,10 @@ const VIEWPORTS = [
 ];
 
 const safeName = (value) =>
-  value.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
+  value
+    .replace(/[^a-z0-9]+/gi, "-")
+    .replace(/^-|-$/g, "")
+    .toLowerCase();
 
 async function viewport(client, width, height, mobile = width < 768) {
   await client.send("Emulation.setDeviceMetricsOverride", {
@@ -154,7 +160,11 @@ async function run(baseUrl) {
   });
 
   client.on("Runtime.exceptionThrown", (event) => {
-    browserErrors.push(event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception");
+    browserErrors.push(
+      event.exceptionDetails?.exception?.description ??
+        event.exceptionDetails?.text ??
+        "Runtime exception",
+    );
   });
   client.on("Runtime.consoleAPICalled", (event) => {
     if (event.type === "error") browserErrors.push(event.args.map(serialiseArgument).join(" "));
@@ -165,15 +175,53 @@ async function run(baseUrl) {
       await capture(client, baseUrl, "account-overview", "/account", width, height, baseState);
     }
 
-    await capture(client, baseUrl, "wishlist-empty", "/wishlist", 390, 844, { ...baseState, wishlist: [] });
+    await capture(client, baseUrl, "wishlist-empty", "/wishlist", 390, 844, {
+      ...baseState,
+      wishlist: [],
+    });
     await capture(client, baseUrl, "wishlist-populated-mobile", "/wishlist", 390, 844, baseState);
     await capture(client, baseUrl, "wishlist-populated-desktop", "/wishlist", 1440, 900, baseState);
     await capture(client, baseUrl, "account-guest", "/account", 390, 844, null);
-    await capture(client, baseUrl, "account-profile", "/account?section=profile", 1280, 800, baseState);
-    await capture(client, baseUrl, "account-addresses", "/account?section=addresses", 390, 844, baseState);
-    await capture(client, baseUrl, "account-orders", "/account?section=orders", 1280, 800, baseState);
-    await capture(client, baseUrl, "account-order-detail", "/account?section=orders&order=SOLE-DEMO-2401", 390, 844, baseState);
-    await capture(client, baseUrl, "account-expired", "/account", 390, 844, { ...baseState, demoAccountMode: "expired" });
+    await capture(
+      client,
+      baseUrl,
+      "account-profile",
+      "/account?section=profile",
+      1280,
+      800,
+      baseState,
+    );
+    await capture(
+      client,
+      baseUrl,
+      "account-addresses",
+      "/account?section=addresses",
+      390,
+      844,
+      baseState,
+    );
+    await capture(
+      client,
+      baseUrl,
+      "account-orders",
+      "/account?section=orders",
+      1280,
+      800,
+      baseState,
+    );
+    await capture(
+      client,
+      baseUrl,
+      "account-order-detail",
+      "/account?section=orders&order=SOLE-DEMO-2401",
+      390,
+      844,
+      baseState,
+    );
+    await capture(client, baseUrl, "account-expired", "/account", 390, 844, {
+      ...baseState,
+      demoAccountMode: "expired",
+    });
 
     await client.send("Emulation.setEmulatedMedia", {
       media: "screen",
@@ -184,8 +232,12 @@ async function run(baseUrl) {
     await browser.close();
   }
 
-  const hydration = browserErrors.filter((error) => /hydration|server rendered html|did not match/i.test(error));
-  const runtime = browserErrors.filter((error) => /uncaught|typeerror|referenceerror|syntaxerror/i.test(error));
+  const hydration = browserErrors.filter((error) =>
+    /hydration|server rendered html|did not match/i.test(error),
+  );
+  const runtime = browserErrors.filter((error) =>
+    /uncaught|typeerror|referenceerror|syntaxerror/i.test(error),
+  );
   if (hydration.length) criticalFindings.push({ name: "hydration", findings: hydration });
   if (runtime.length) criticalFindings.push({ name: "runtime", findings: runtime });
 

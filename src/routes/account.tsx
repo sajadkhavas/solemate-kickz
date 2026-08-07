@@ -120,13 +120,16 @@ function AccountPage() {
           <div className="mt-6 flex items-start gap-3 rounded-[var(--radius-lg)] border border-warning/40 bg-warning/5 p-4">
             <ShieldAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-warning" />
             <p className="font-fa text-sm leading-6 text-muted-foreground">
-              هر تغییری در پروفایل، آدرس یا وضعیت نشست فقط در localStorage همین مرورگر ثبت می‌شود
-              و نباید به‌عنوان داده حساب واقعی برداشت شود.
+              هر تغییری در پروفایل، آدرس یا وضعیت نشست فقط در localStorage همین مرورگر ثبت می‌شود و
+              نباید به‌عنوان داده حساب واقعی برداشت شود.
             </p>
           </div>
 
           {!mounted ? (
-            <div role="status" className="mt-8 rounded-[var(--radius-xl)] border border-border bg-surface p-8 text-center font-fa text-muted-foreground">
+            <div
+              role="status"
+              className="mt-8 rounded-[var(--radius-xl)] border border-border bg-surface p-8 text-center font-fa text-muted-foreground"
+            >
               در حال خواندن وضعیت محلی حساب…
             </div>
           ) : resolvedMode === "guest" ? (
@@ -211,7 +214,13 @@ function ExpiredState({ onRestart, onReset }: { onRestart: () => void; onReset: 
   );
 }
 
-function AccountSidebar({ section, onSignOut }: { section: AccountSection; onSignOut: () => void }) {
+function AccountSidebar({
+  section,
+  onSignOut,
+}: {
+  section: AccountSection;
+  onSignOut: () => void;
+}) {
   const links = [
     { id: "overview", label: "داشبورد", icon: Home },
     { id: "profile", label: "پروفایل", icon: UserRound },
@@ -232,7 +241,9 @@ function AccountSidebar({ section, onSignOut }: { section: AccountSection; onSig
               search={{ section: item.id }}
               aria-current={active ? "page" : undefined}
               className={`flex min-h-11 items-center gap-3 rounded-[var(--radius-md)] px-3 font-fa text-sm transition-colors ${
-                active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-interactive hover:text-foreground"
+                active
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-interactive hover:text-foreground"
               }`}
             >
               <Icon aria-hidden="true" className="size-4" />
@@ -251,7 +262,13 @@ function AccountSidebar({ section, onSignOut }: { section: AccountSection; onSig
   );
 }
 
-function OverviewSection({ wishlistCount, addressCount }: { wishlistCount: number; addressCount: number }) {
+function OverviewSection({
+  wishlistCount,
+  addressCount,
+}: {
+  wishlistCount: number;
+  addressCount: number;
+}) {
   const cards = [
     {
       label: "علاقه‌مندی محلی",
@@ -295,7 +312,11 @@ function OverviewSection({ wishlistCount, addressCount }: { wishlistCount: numbe
           );
 
           return card.to ? (
-            <Link key={card.label} to={card.to} className="block min-h-11 rounded-[var(--radius-xl)]">
+            <Link
+              key={card.label}
+              to={card.to}
+              className="block min-h-11 rounded-[var(--radius-xl)]"
+            >
               {content}
             </Link>
           ) : (
@@ -316,8 +337,8 @@ function OverviewSection({ wishlistCount, addressCount }: { wishlistCount: numbe
           <BookOpenCheck aria-hidden="true" className="size-6 text-primary" />
           <h3 className="mt-4 font-display text-xl font-bold">مرز داده روشن است</h3>
           <p className="mt-2 font-fa text-sm leading-6 text-muted-foreground">
-            پروفایل و آدرس‌ها برای تست تعامل ذخیره محلی هستند. تاریخچه سفارش ثابت و نمونه است و
-            هیچ تراکنش واقعی را نمایش نمی‌دهد.
+            پروفایل و آدرس‌ها برای تست تعامل ذخیره محلی هستند. تاریخچه سفارش ثابت و نمونه است و هیچ
+            تراکنش واقعی را نمایش نمی‌دهد.
           </p>
         </div>
         <div className="rounded-[var(--radius-xl)] border border-border bg-surface p-6">
@@ -364,7 +385,10 @@ function ProfileSection() {
       <p className="mt-3 font-fa text-sm leading-6 text-muted-foreground">
         این اطلاعات برای تست UI است و به سرور ارسال نمی‌شود.
       </p>
-      <form onSubmit={submit} className="mt-6 max-w-2xl space-y-5 rounded-[var(--radius-xl)] border border-border bg-surface p-6">
+      <form
+        onSubmit={submit}
+        className="mt-6 max-w-2xl space-y-5 rounded-[var(--radius-xl)] border border-border bg-surface p-6"
+      >
         <LabeledInput
           id="demo-profile-name"
           label="نام نمایشی"
@@ -390,8 +414,14 @@ function ProfileSection() {
           dir="ltr"
           inputMode="tel"
         />
-        <Button type="submit" data-testid="account-profile-save">ذخیره محلی</Button>
-        {status ? <p role="status" className="font-fa text-sm text-muted-foreground">{status}</p> : null}
+        <Button type="submit" data-testid="account-profile-save">
+          ذخیره محلی
+        </Button>
+        {status ? (
+          <p role="status" className="font-fa text-sm text-muted-foreground">
+            {status}
+          </p>
+        ) : null}
       </form>
     </section>
   );
@@ -430,11 +460,16 @@ function AddressesSection() {
       <div className="mt-6 grid gap-4">
         {addresses.length ? (
           addresses.map((item) => (
-            <article key={item.id} className="flex flex-col gap-4 rounded-[var(--radius-xl)] border border-border bg-surface p-5 sm:flex-row sm:items-start sm:justify-between">
+            <article
+              key={item.id}
+              className="flex flex-col gap-4 rounded-[var(--radius-xl)] border border-border bg-surface p-5 sm:flex-row sm:items-start sm:justify-between"
+            >
               <div>
                 <p className="font-fa font-bold">{item.recipient}</p>
                 <p className="mt-2 font-fa text-sm text-muted-foreground">{item.city}</p>
-                <p className="mt-1 font-fa text-sm leading-6 text-muted-foreground">{item.address}</p>
+                <p className="mt-1 font-fa text-sm leading-6 text-muted-foreground">
+                  {item.address}
+                </p>
                 <span className="mt-3 inline-flex rounded-full border border-border px-2 py-1 font-fa text-xs text-muted-foreground">
                   local-only
                 </span>
@@ -451,21 +486,34 @@ function AddressesSection() {
             </article>
           ))
         ) : (
-          <div data-testid="account-address-empty" className="rounded-[var(--radius-xl)] border border-dashed border-border-strong p-6 font-fa text-sm text-muted-foreground">
+          <div
+            data-testid="account-address-empty"
+            className="rounded-[var(--radius-xl)] border border-dashed border-border-strong p-6 font-fa text-sm text-muted-foreground"
+          >
             هنوز آدرس نمایشی ذخیره نشده است.
           </div>
         )}
       </div>
 
-      <form onSubmit={submit} className="mt-6 max-w-2xl space-y-5 rounded-[var(--radius-xl)] border border-border bg-surface p-6">
+      <form
+        onSubmit={submit}
+        className="mt-6 max-w-2xl space-y-5 rounded-[var(--radius-xl)] border border-border bg-surface p-6"
+      >
         <div className="flex items-center gap-2">
           <Plus aria-hidden="true" className="size-5 text-primary" />
           <h3 className="font-display text-xl font-bold">افزودن آدرس محلی</h3>
         </div>
-        <LabeledInput id="demo-address-recipient" label="نام گیرنده نمایشی" value={recipient} onChange={setRecipient} />
+        <LabeledInput
+          id="demo-address-recipient"
+          label="نام گیرنده نمایشی"
+          value={recipient}
+          onChange={setRecipient}
+        />
         <LabeledInput id="demo-address-city" label="شهر" value={city} onChange={setCity} />
         <div>
-          <label htmlFor="demo-address-line" className="mb-2 block font-fa text-sm font-medium">نشانی نمایشی</label>
+          <label htmlFor="demo-address-line" className="mb-2 block font-fa text-sm font-medium">
+            نشانی نمایشی
+          </label>
           <textarea
             id="demo-address-line"
             value={address}
@@ -474,18 +522,21 @@ function AddressesSection() {
             className="w-full rounded-[var(--radius-md)] border border-input bg-background px-4 py-3 font-fa outline-none focus:border-primary"
           />
         </div>
-        <Button type="submit" data-testid="account-address-add">ذخیره آدرس محلی</Button>
-        {status ? <p role="status" className="font-fa text-sm text-muted-foreground">{status}</p> : null}
+        <Button type="submit" data-testid="account-address-add">
+          ذخیره آدرس محلی
+        </Button>
+        {status ? (
+          <p role="status" className="font-fa text-sm text-muted-foreground">
+            {status}
+          </p>
+        ) : null}
       </form>
     </section>
   );
 }
 
 function OrdersSection({ orderId }: { orderId?: string }) {
-  const selectedOrder = useMemo(
-    () => DEMO_ORDERS.find((item) => item.id === orderId),
-    [orderId],
-  );
+  const selectedOrder = useMemo(() => DEMO_ORDERS.find((item) => item.id === orderId), [orderId]);
 
   if (orderId) {
     if (!selectedOrder) {
@@ -532,22 +583,50 @@ function OrdersSection({ orderId }: { orderId?: string }) {
             <h3 className="font-display text-xl font-bold">آیتم نمایشی</h3>
             <div className="mt-5 flex gap-4">
               <div className="size-24 shrink-0 overflow-hidden rounded-[var(--radius-lg)] bg-surface-2">
-                {shoe ? <img src={shoe.image} alt="" width={96} height={96} className="size-full object-cover" /> : null}
+                {shoe ? (
+                  <img
+                    src={shoe.image}
+                    alt=""
+                    width={96}
+                    height={96}
+                    className="size-full object-cover"
+                  />
+                ) : null}
               </div>
               <div className="min-w-0">
-                <p className="font-display text-lg font-bold"><bdi dir="ltr">{shoe?.brand} {shoe?.name}</bdi></p>
-                <p className="mt-2 font-fa text-sm text-muted-foreground">سایز نمایشی: {selectedOrder.size}</p>
-                <p className="mt-1 font-fa text-sm text-muted-foreground">تعداد: {selectedOrder.qty.toLocaleString("fa-IR")}</p>
+                <p className="font-display text-lg font-bold">
+                  <bdi dir="ltr">
+                    {shoe?.brand} {shoe?.name}
+                  </bdi>
+                </p>
+                <p className="mt-2 font-fa text-sm text-muted-foreground">
+                  سایز نمایشی: {selectedOrder.size}
+                </p>
+                <p className="mt-1 font-fa text-sm text-muted-foreground">
+                  تعداد: {selectedOrder.qty.toLocaleString("fa-IR")}
+                </p>
                 <Price value={unitPrice * selectedOrder.qty} className="mt-3 font-bold" />
               </div>
             </div>
           </article>
           <aside className="rounded-[var(--radius-xl)] border border-border bg-surface p-6">
             <dl className="space-y-4 font-fa text-sm">
-              <div><dt className="text-muted-foreground">تاریخ نمونه</dt><dd className="mt-1 font-semibold">{selectedOrder.placedAt}</dd></div>
-              <div><dt className="text-muted-foreground">وضعیت نمونه</dt><dd className="mt-1 font-semibold">{selectedOrder.status}</dd></div>
-              <div><dt className="text-muted-foreground">پرداخت</dt><dd className="mt-1 font-semibold">انجام نشده — UI فقط نمایشی</dd></div>
-              <div><dt className="text-muted-foreground">ارسال</dt><dd className="mt-1 font-semibold">اطلاعات واقعی موجود نیست</dd></div>
+              <div>
+                <dt className="text-muted-foreground">تاریخ نمونه</dt>
+                <dd className="mt-1 font-semibold">{selectedOrder.placedAt}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">وضعیت نمونه</dt>
+                <dd className="mt-1 font-semibold">{selectedOrder.status}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">پرداخت</dt>
+                <dd className="mt-1 font-semibold">انجام نشده — UI فقط نمایشی</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">ارسال</dt>
+                <dd className="mt-1 font-semibold">اطلاعات واقعی موجود نیست</dd>
+              </div>
             </dl>
           </aside>
         </div>
@@ -566,15 +645,28 @@ function OrdersSection({ orderId }: { orderId?: string }) {
         {DEMO_ORDERS.map((item) => {
           const shoe = SHOES.find((candidate) => candidate.id === item.productId);
           return (
-            <article key={item.id} className="rounded-[var(--radius-xl)] border border-border bg-surface p-5">
+            <article
+              key={item.id}
+              className="rounded-[var(--radius-xl)] border border-border bg-surface p-5"
+            >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="font-mono-num text-sm font-bold">{item.id}</p>
-                  <p className="mt-2 font-fa text-sm text-muted-foreground">{item.placedAt} — {item.status}</p>
-                  <p className="mt-1 text-sm"><bdi dir="ltr">{shoe?.brand} {shoe?.name}</bdi></p>
+                  <p className="mt-2 font-fa text-sm text-muted-foreground">
+                    {item.placedAt} — {item.status}
+                  </p>
+                  <p className="mt-1 text-sm">
+                    <bdi dir="ltr">
+                      {shoe?.brand} {shoe?.name}
+                    </bdi>
+                  </p>
                 </div>
                 <Button asChild variant="outline">
-                  <Link to="/account" search={{ section: "orders", order: item.id }} data-testid="account-order-open">
+                  <Link
+                    to="/account"
+                    search={{ section: "orders", order: item.id }}
+                    data-testid="account-order-open"
+                  >
                     جزئیات نمونه
                   </Link>
                 </Button>
@@ -601,7 +693,9 @@ function LabeledInput({
 } & Omit<InputHTMLAttributes<HTMLInputElement>, "id" | "value" | "onChange">) {
   return (
     <div>
-      <label htmlFor={id} className="mb-2 block font-fa text-sm font-medium">{label}</label>
+      <label htmlFor={id} className="mb-2 block font-fa text-sm font-medium">
+        {label}
+      </label>
       <input
         {...props}
         id={id}

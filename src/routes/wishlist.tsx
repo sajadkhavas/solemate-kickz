@@ -16,7 +16,8 @@ export const Route = createFileRoute("/wishlist")({
       { title: "علاقه‌مندی‌ها — SOLE" },
       {
         name: "description",
-        content: "فهرست علاقه‌مندی‌های محلی SOLE؛ داده‌ها فقط در مرورگر همین نسخه نمایشی نگه‌داری می‌شوند.",
+        content:
+          "فهرست علاقه‌مندی‌های محلی SOLE؛ داده‌ها فقط در مرورگر همین نسخه نمایشی نگه‌داری می‌شوند.",
       },
       { name: "robots", content: "noindex, nofollow" },
     ],
@@ -32,7 +33,8 @@ function WishlistPage() {
   useEffect(() => setMounted(true), []);
 
   const shoes = useMemo(
-    () => (mounted ? wishlist.map((id) => SHOES.find((shoe) => shoe.id === id)).filter(Boolean) : []),
+    () =>
+      mounted ? wishlist.map((id) => SHOES.find((shoe) => shoe.id === id)).filter(Boolean) : [],
     [mounted, wishlist],
   );
 
@@ -85,8 +87,8 @@ function WishlistPage() {
                 </span>
                 <h2 className="mt-5 font-display text-3xl font-black">هنوز چیزی ذخیره نکرده‌اید</h2>
                 <p className="mt-3 font-fa leading-7 text-muted-foreground">
-                  از کارت محصول یا صفحه جزئیات، دکمه قلب را بزنید. انتخاب شما در همین مرورگر
-                  باقی می‌ماند تا بعداً دوباره آن را ببینید.
+                  از کارت محصول یا صفحه جزئیات، دکمه قلب را بزنید. انتخاب شما در همین مرورگر باقی
+                  می‌ماند تا بعداً دوباره آن را ببینید.
                 </p>
                 <Button asChild size="lg" className="mt-6">
                   <Link to="/products">
