@@ -8,7 +8,7 @@ on:
       - "integration/**"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: frontend-ci-${{ github.workflow }}-${{ github.ref }}
@@ -39,30 +39,6 @@ jobs:
 
       - name: Install from lockfile
         run: bun install --frozen-lockfile
-
-      - name: Normalize legacy F6 formatting once
-        if: github.event_name == 'pull_request' && github.head_ref == 'phase/sole-f9-wishlist-account-orders'
-        shell: bash
-        run: |
-          bunx prettier --write \
-            package.json \
-            scripts/audit-f6-product-detail.mjs \
-            scripts/f6-browser-runner.mjs \
-            scripts/test-f6-product-detail.mjs \
-            scripts/visual-qa-f6-product-detail.mjs \
-            src/components/product/ProductGallery.tsx \
-            src/components/product/ProductPurchasePanel.tsx \
-            src/components/product/SizeGuideDialog.tsx \
-            'src/routes/product.$id.tsx' \
-            src/components/navigation/SearchDialog.tsx
-          if ! git diff --quiet; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "style: normalize cumulative frontend formatting"
-            git push origin HEAD:phase/sole-f9-wishlist-account-orders
-            exit 1
-          fi
 
       - name: Foundation source-contract audit
         run: bun run audit:source-contracts
