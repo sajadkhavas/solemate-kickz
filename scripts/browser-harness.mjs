@@ -208,7 +208,7 @@ async function dispatchPointerActivation(client, point) {
 }
 
 async function recoverProductAddActivation(client, expression, point) {
-  if (!expression.includes('[data-testid=\"product-add-to-cart\"]')) return;
+  if (!expression.includes("product-add-to-cart")) return;
   await sleep(180);
   const drawerOpen = await evaluateRaw(
     client,
