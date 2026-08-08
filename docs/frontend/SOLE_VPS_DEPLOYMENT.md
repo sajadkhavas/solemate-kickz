@@ -17,18 +17,18 @@ These were deployment-path problems, not application-feature failures.
 
 ## Permanent rules
 
-1. Production VPS runtime is Node `22.23.1`.
-2. Bun is a package manager/build bootstrap only; the production HTTP process runs Node.
+1. Production VPS runtime is the project-local Node `22.23.1` under `.runtime/node`; do not replace a shared server's global Node just for SOLE.
+2. Bun is a project-local package manager/build bootstrap; do not replace global Bun.
 3. Normal Lovable preview/build behavior remains unchanged.
-4. A self-hosted build must use `bun run build:vps`. That command opts into Nitro `node-server` and verifies `.output/server/index.mjs`.
+4. A self-hosted build must use the Node-server deployment path and verify `.output/server/index.mjs`.
 5. Do not run `vite dev` or `vite preview` as the production service.
 6. Shared/critical servers must use the cgroup-limited install/build helpers.
 7. Preview access should bind to `127.0.0.1` and use an SSH tunnel until a deliberate reverse-proxy configuration is approved.
 8. Never change firewall, Nginx, Xray, x-ui, or unrelated services from SOLE deployment scripts.
 
-TanStack Start documents Node deployment as a Nitro build followed by `node .output/server/index.mjs`. SOLE follows that shape.
+TanStack Start documents Node deployment as a Nitro build followed by `node .output/server/index.mjs`. SOLE follows that shape using its local Node runtime.
 
-## 1. Preflight
+## 1. Read-only preflight
 
 From the repository root:
 
@@ -36,13 +36,23 @@ From the repository root:
 bash scripts/deployment/vps-preflight.sh
 ```
 
-The preflight is read-only. It checks Node, CPU capabilities, memory, disk, the preview port, and required utilities.
+The preflight checks CPU capabilities, memory, disk, the preview port, required utilities, and reports both system/local Node. A global Node mismatch is informational: SOLE does not require replacing it.
 
-If Node is not exactly `22.23.1`, fix the Node runtime before continuing. `.nvmrc` and `.node-version` both pin that version.
+## 2. Bootstrap the exact Node runtime locally
 
-## 2. Bootstrap a CPU-compatible Bun locally
+```bash
+bash scripts/deployment/bootstrap-node-vps.sh
+```
 
-Do not install or replace a global Bun runtime on a shared server.
+This downloads Node `22.23.1` from nodejs.org, verifies the archive against `SHASUMS256.txt`, and installs it only under `.runtime/node`.
+
+Verify it with:
+
+```bash
+scripts/deployment/node-vps.sh --version
+```
+
+## 3. Bootstrap a CPU-compatible Bun locally
 
 ```bash
 bash scripts/deployment/bootstrap-bun-vps.sh
@@ -56,11 +66,9 @@ On x64:
 - SSE4.2 without AVX2 -> x64 baseline Bun;
 - older than SSE4.2 -> deployment stops.
 
-The repository remains pinned to Bun `1.3.14`. If that baseline executable cannot run on an older VPS CPU, the bootstrap has the explicitly isolated compatibility fallback that was validated during the 2026-08-08 server test.
+The repository remains pinned to Bun `1.3.14`. If that baseline executable cannot run on an older VPS CPU, the bootstrap has the explicitly isolated compatibility fallback to `1.3.13` validated during the 2026-08-08 server test. Core dumps are disabled during this probe so an incompatible binary does not leave a large dump on a constrained server.
 
-## 3. Install from the lockfile with resource limits
-
-On a shared or memory-constrained host:
+## 4. Install from the lockfile with resource limits
 
 ```bash
 bash scripts/deployment/install-vps-safe.sh
@@ -68,7 +76,7 @@ bash scripts/deployment/install-vps-safe.sh
 
 It uses `systemd-run` when available and applies CPU, RAM, swap, task, and niceness limits. It does not restart or modify any system service.
 
-## 4. Build the correct Node artifact
+## 5. Build the correct Node artifact
 
 Preferred on a shared host:
 
@@ -76,52 +84,40 @@ Preferred on a shared host:
 bash scripts/deployment/build-vps-safe.sh
 ```
 
-On a dedicated build machine:
-
-```bash
-bun run build:vps
-```
-
-`build:vps`:
+The safe build uses `.runtime/node/bin/node`, not the server's global Node. The underlying builder:
 
 - requires Node `22.23.1`;
 - sets `SOLE_DEPLOY_TARGET=node-server`;
 - builds with Vite/Nitro;
 - fails unless `.output/server/index.mjs` and `.output/public` exist.
 
-A normal `bun run build` is intentionally left available for the Lovable-connected workflow. It is not the VPS deployment command.
+On a development/build machine already running exact Node `22.23.1`, `bun run build:vps` invokes the same builder. A normal `bun run build` is intentionally left available for the Lovable-connected workflow and is not the VPS deployment command.
 
-## 5. Production service
+## 6. Production service
 
 Use `deploy/systemd/sole-frontend.service.example` as a reviewed template. Do not blindly overwrite an existing unit.
 
 The template:
 
-- runs `node .output/server/index.mjs`;
+- runs `.runtime/node/bin/node .output/server/index.mjs`;
 - binds only to `127.0.0.1:4173`;
 - has Node heap, CPU, memory, swap and task limits;
 - enables systemd hardening;
 - never starts a Vite development server.
 
-Adjust `User`, `Group`, and `WorkingDirectory` to the dedicated deployment account/path before enabling it.
+Adjust `User`, `Group`, and `WorkingDirectory` to the dedicated deployment account/path before enabling it. If you use release directories plus a `current` symlink, bootstrap `.runtime/node` inside each release before switching `current`.
 
-## 6. Smoke test before exposure
+## 7. Smoke test before exposure
 
 After the production Node service is running:
 
 ```bash
-bun run smoke:vps
-```
-
-or:
-
-```bash
-node scripts/deployment/smoke-node-server.mjs
+scripts/deployment/node-vps.sh scripts/deployment/smoke-node-server.mjs
 ```
 
 The smoke test checks the favicon and two SSR requests to the home page. A slow first request is reported, but HTTP failures stop the test.
 
-## 7. Private preview through SSH
+## 8. Private preview through SSH
 
 Keep the service bound to loopback. From the workstation:
 
@@ -137,12 +133,13 @@ http://127.0.0.1:4173
 
 No public firewall rule is required for port 4173.
 
-## 8. Shared server safety
+## 9. Shared server safety
 
 For a server that already hosts critical workloads:
 
 - do not build without cgroup limits;
 - do not expose 4173 publicly just for preview;
+- do not replace global Node or Bun;
 - do not restart Nginx or unrelated services to test SOLE;
 - verify critical services before and after any manual deployment change;
 - stop and remove only the SOLE unit/files when cleaning up.

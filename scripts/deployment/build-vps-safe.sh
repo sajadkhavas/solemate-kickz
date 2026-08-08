@@ -2,7 +2,18 @@
 set -Eeuo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+NODE="$ROOT/.runtime/node/bin/node"
 cd "$ROOT"
+
+[[ -x "$NODE" ]] || {
+  echo "ERROR: Run scripts/deployment/bootstrap-node-vps.sh first." >&2
+  exit 1
+}
+
+[[ "$($NODE -v)" == "v22.23.1" ]] || {
+  echo "ERROR: Local Node must be v22.23.1." >&2
+  exit 1
+}
 
 if command -v systemd-run >/dev/null 2>&1; then
   UNIT="sole-build-$(date +%s)"
@@ -19,8 +30,8 @@ if command -v systemd-run >/dev/null 2>&1; then
     --property=MemorySwapMax="${SOLE_BUILD_SWAP_MAX:-768M}" \
     --property=TasksMax=128 \
     --property=Nice=15 \
-    /usr/bin/env node scripts/deployment/build-node-server.mjs
+    "$NODE" scripts/deployment/build-node-server.mjs
 else
   echo "WARN: systemd-run unavailable; building without cgroup limits."
-  node scripts/deployment/build-node-server.mjs
+  "$NODE" scripts/deployment/build-node-server.mjs
 fi

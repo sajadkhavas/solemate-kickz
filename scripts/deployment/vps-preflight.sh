@@ -13,19 +13,31 @@ fail() {
 echo "===== SOLE VPS PREFLIGHT (READ-ONLY) ====="
 echo "ROOT=$ROOT"
 
-for command in node git curl; do
+for command in git curl tar xz sha256sum; do
   command -v "$command" >/dev/null 2>&1 || fail "$command is required"
 done
 
-NODE_VERSION="$(node -v)"
-echo "NODE=$NODE_VERSION"
-[[ "$NODE_VERSION" == "$REQUIRED_NODE" ]] ||
-  fail "Node $REQUIRED_NODE is required; found $NODE_VERSION"
+if command -v node >/dev/null 2>&1; then
+  echo "SYSTEM_NODE=$(node -v)"
+else
+  echo "SYSTEM_NODE=NOT_INSTALLED"
+fi
+
+LOCAL_NODE="$ROOT/.runtime/node/bin/node"
+if [[ -x "$LOCAL_NODE" ]]; then
+  LOCAL_NODE_VERSION="$($LOCAL_NODE -v)"
+  echo "LOCAL_NODE=$LOCAL_NODE_VERSION"
+  [[ "$LOCAL_NODE_VERSION" == "$REQUIRED_NODE" ]] ||
+    fail "Local Node must be $REQUIRED_NODE; found $LOCAL_NODE_VERSION"
+else
+  echo "LOCAL_NODE=NOT_BOOTSTRAPPED"
+fi
 
 ARCH="$(uname -m)"
 echo "ARCH=$ARCH"
 
 if [[ "$ARCH" == "x86_64" ]]; then
+  command -v lscpu >/dev/null 2>&1 || fail "lscpu is required on x86_64"
   FLAGS="$(lscpu | awk -F: '/^Flags:/ {print $2}')"
   grep -qw sse4_2 <<<"$FLAGS" || fail "x86_64 CPU must expose SSE4.2 for Bun baseline"
   if grep -qw avx2 <<<"$FLAGS"; then

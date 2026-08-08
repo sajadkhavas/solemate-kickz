@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
+ulimit -c 0 || true
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 RUNTIME="$ROOT/.runtime"
-PACKAGE_VERSION="$(node -p "JSON.parse(require('fs').readFileSync('$ROOT/package.json','utf8')).packageManager.split('@')[1]")"
+PACKAGE_VERSION="$(sed -nE 's/.*"packageManager"[[:space:]]*:[[:space:]]*"bun@([^"]+)".*/\1/p' "$ROOT/package.json" | head -1)"
 BASELINE_FALLBACK_VERSION="${SOLE_BUN_BASELINE_FALLBACK_VERSION:-1.3.13}"
+
+[[ -n "$PACKAGE_VERSION" ]] || {
+  echo "ERROR: Could not read Bun version from package.json." >&2
+  exit 1
+}
 
 mkdir -p "$RUNTIME"
 ARCH="$(uname -m)"

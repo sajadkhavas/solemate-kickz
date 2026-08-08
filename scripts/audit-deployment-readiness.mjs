@@ -21,7 +21,9 @@ const [
   nvmrc,
   nodeVersion,
   preflight,
-  bootstrap,
+  bootstrapNode,
+  nodeWrapper,
+  bootstrapBun,
   installSafe,
   buildSafe,
   buildNode,
@@ -29,12 +31,15 @@ const [
   service,
   docs,
   gitignore,
+  workflow,
 ] = await Promise.all([
   text("package.json"),
   text("vite.config.ts"),
   text(".nvmrc"),
   text(".node-version"),
   text("scripts/deployment/vps-preflight.sh"),
+  text("scripts/deployment/bootstrap-node-vps.sh"),
+  text("scripts/deployment/node-vps.sh"),
   text("scripts/deployment/bootstrap-bun-vps.sh"),
   text("scripts/deployment/install-vps-safe.sh"),
   text("scripts/deployment/build-vps-safe.sh"),
@@ -43,6 +48,7 @@ const [
   text("deploy/systemd/sole-frontend.service.example"),
   text("docs/frontend/SOLE_VPS_DEPLOYMENT.md"),
   text(".gitignore"),
+  text(".github/workflows/frontend-ci.yml"),
 ]);
 
 let pkg = {};
@@ -76,18 +82,24 @@ if (/export default defineConfig\(\{\s*nitro:\s*\{\s*preset:\s*["']node-server["
   failures.push("node-server must not be hard-coded for normal Lovable preview/build");
 }
 
-requireMatch("preflight must enforce Node 22.23.1", preflight, /REQUIRED_NODE="v22\.23\.1"/);
+requireMatch("preflight must report system Node without requiring it", preflight, /SYSTEM_NODE=/);
+requireMatch("preflight must recognize local Node", preflight, /LOCAL_NODE=/);
 requireMatch("preflight must inspect AVX2", preflight, /\bavx2\b/);
-requireMatch("bootstrap must support x64 baseline Bun", bootstrap, /x64-baseline/);
-requireMatch("bootstrap must install Bun locally", bootstrap, /RUNTIME.*bun|\.runtime\/bun/s);
+requireMatch("local Node bootstrap must pin 22.23.1", bootstrapNode, /VERSION="22\.23\.1"/);
+requireMatch("local Node bootstrap must verify checksum", bootstrapNode, /SHASUMS256\.txt[\s\S]*sha256sum/);
+requireMatch("Node wrapper must execute local runtime", nodeWrapper, /\.runtime\/node\/bin\/node|RUNTIME.*node/s);
+requireMatch("bootstrap must support x64 baseline Bun", bootstrapBun, /x64-baseline/);
+requireMatch("Bun bootstrap must disable core dumps", bootstrapBun, /ulimit -c 0/);
+requireMatch("bootstrap must install Bun locally", bootstrapBun, /RUNTIME.*bun|\.runtime\/bun/s);
 requireMatch("safe dependency install must use cgroup memory limits", installSafe, /MemoryMax/);
 requireMatch("safe build must use cgroup memory limits", buildSafe, /MemoryMax/);
+requireMatch("safe build must use local Node", buildSafe, /\.runtime\/node\/bin\/node/);
 requireMatch("VPS build must set node-server target", buildNode, /SOLE_DEPLOY_TARGET:\s*"node-server"/);
 requireMatch("VPS build must verify Nitro server output", buildNode, /\.output\/server\/index\.mjs/);
 requireMatch("smoke test must probe loopback by default", smoke, /http:\/\/127\.0\.0\.1:4173/);
 
 requireMatch("systemd service must bind loopback", service, /127\.0\.0\.1/);
-requireMatch("systemd service must use production Node output", service, /node\s+\.output\/server\/index\.mjs/);
+requireMatch("systemd service must use local Node production output", service, /\.runtime\/node\/bin\/node\s+\.output\/server\/index\.mjs/);
 requireMatch("systemd service must have a hard memory limit", service, /MemoryMax=/);
 if (/\b(vite dev|vite preview|bun run dev)\b/.test(service)) {
   failures.push("systemd production service must never run a Vite dev/preview server");
@@ -95,8 +107,10 @@ if (/\b(vite dev|vite preview|bun run dev)\b/.test(service)) {
 
 requireMatch("deployment docs must forbid dev server as production", docs, /Do not run `vite dev` or `vite preview` as the production service/i);
 requireMatch("deployment docs must document SSH loopback preview", docs, /127\.0\.0\.1:4173/);
-requireMatch("deployment docs must document Node 22.23.1", docs, /22\.23\.1/);
+requireMatch("deployment docs must document local Node bootstrap", docs, /bootstrap-node-vps\.sh/);
 requireMatch("runtime artifacts must be ignored", gitignore, /^\/?\.runtime\/$/m);
+requireMatch("frontend workflow must run deployment audit", workflow, /VPS deployment contract audit[\s\S]*audit:deploy/);
+requireMatch("frontend workflow must build Node-server output", workflow, /VPS Node-server build[\s\S]*build:vps/);
 
 try {
   const serviceStats = await stat("deploy/systemd/sole-frontend.service.example");

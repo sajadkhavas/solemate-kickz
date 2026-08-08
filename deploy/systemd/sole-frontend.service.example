@@ -14,7 +14,7 @@ Environment=NITRO_HOST=127.0.0.1
 Environment=PORT=4173
 Environment=NITRO_PORT=4173
 Environment=NODE_OPTIONS=--max-old-space-size=256
-ExecStart=/usr/bin/node .output/server/index.mjs
+ExecStart=/var/www/sole/current/.runtime/node/bin/node .output/server/index.mjs
 Restart=on-failure
 RestartSec=3
 TimeoutStopSec=15
