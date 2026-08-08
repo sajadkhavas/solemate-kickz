@@ -63,6 +63,7 @@ const shoeCard = read("src/components/ShoeCard.tsx");
 const rootRoute = read("src/routes/__root.tsx");
 const catalogBehavior = read("scripts/test-f4-f5-catalog-product-card.mjs");
 const f7Audit = read("scripts/audit-f7-cart-checkout.mjs");
+const browserHarness = read("scripts/browser-harness.mjs");
 const utilityStart = head.indexOf("function utilityHead");
 const utilityEnd = head.indexOf("function productHead");
 const utilitySegment = utilityStart >= 0 && utilityEnd > utilityStart ? head.slice(utilityStart, utilityEnd) : "";
@@ -115,6 +116,14 @@ record(
     f7Audit.includes('git("merge-base", "--is-ancestor", BASELINE, "HEAD")'),
   null,
 );
+record(
+  "post-dialog product activation recovery is narrowly scoped and effect-checked",
+  browserHarness.includes("recoverProductAddActivation") &&
+    browserHarness.includes("product-add-to-cart") &&
+    browserHarness.includes("if (drawerOpen) return") &&
+    browserHarness.includes("dispatchPointerActivation(client, point)"),
+  null,
+);
 record("F11 package commands and aggregate check are registered", packageJson.includes('"audit:f11": "node scripts/audit-f11-technical-seo.mjs"') && packageJson.includes('"test:f11": "node scripts/test-f11-technical-seo.mjs"') && packageJson.includes('"qa:seo:f11": "node scripts/seo-qa-f11.mjs"') && packageJson.includes("bun run audit:f11") && packageJson.includes("bun run test:f11") && packageJson.includes("bun run qa:seo:f11"), null);
 record("Frontend CI runs all F11 gates", workflow.includes("F11 technical SEO completion audit") && workflow.includes("F11 SSR SEO runtime tests") && workflow.includes("F11 SEO safety QA"), null);
 record("cumulative verifier requires F11 evidence", cumulative.includes('"f11-technical-seo"'), null);
@@ -127,6 +136,7 @@ const allowed = new Set([
   "package.json",
   "scripts/audit-f7-cart-checkout.mjs",
   "scripts/audit-f11-technical-seo.mjs",
+  "scripts/browser-harness.mjs",
   "scripts/f11-browser-runner.mjs",
   "scripts/f11-seo-test-utils.mjs",
   "scripts/seo-qa-f11.mjs",
