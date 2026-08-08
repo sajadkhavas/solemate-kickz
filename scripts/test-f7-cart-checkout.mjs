@@ -155,7 +155,7 @@ async function run(baseUrl) {
     await waitForExpression(client, `document.querySelector('[data-testid="product-purchase-panel"]')`);
 
     await click(client, '[data-testid="product-size-option"]');
-    await click(client, '[data-testid="product-add-to-cart"]');
+    await activateVisible(client, '[data-testid="product-add-to-cart"]');
     await waitForExpression(client, `document.querySelector('[data-testid="cart-drawer"]')`);
     await key(client, "Escape", "Escape", 27);
     await waitForExpression(client, `!document.querySelector('[data-testid="cart-drawer"]')`);
