@@ -185,6 +185,30 @@ async function evaluateRaw(client, expression) {
 }
 
 async function dispatchPointerActivation(client, point) {
+  const mobileViewport = await evaluateRaw(client, "window.innerWidth < 768");
+
+  if (mobileViewport) {
+    await client.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [
+        {
+          x: point.x,
+          y: point.y,
+          radiusX: 1,
+          radiusY: 1,
+          force: 1,
+          id: 1,
+        },
+      ],
+    });
+    await sleep(50);
+    await client.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+    return;
+  }
+
   await client.send("Input.dispatchMouseEvent", {
     type: "mouseMoved",
     x: point.x,
@@ -238,7 +262,7 @@ export async function evaluate(client, expression) {
   if (!point?.actionable || point.disabled) return false;
 
   // Re-measure once more after the target is actually topmost. This prevents
-  // physical CDP clicks from landing on an exiting Radix overlay or stale
+  // physical CDP activations from landing on an exiting Radix overlay or stale
   // pre-scroll coordinates while preserving a real user-like pointer event.
   await sleep(50);
   point = await evaluateRaw(client, coordinateExpression);

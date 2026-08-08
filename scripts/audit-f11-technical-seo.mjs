@@ -25,7 +25,11 @@ function exists(relativePath) {
 
 function git(...args) {
   const result = spawnSync("git", args, { cwd: ROOT, encoding: "utf8" });
-  return { status: result.status, stdout: result.stdout.trim(), stderr: result.stderr.trim() };
+  return {
+    status: result.status,
+    stdout: result.stdout.trim(),
+    stderr: result.stderr.trim(),
+  };
 }
 
 const requiredFiles = [
@@ -43,15 +47,47 @@ const requiredFiles = [
 for (const file of requiredFiles) record(`${file} exists`, exists(file), file);
 
 const branchResult = git("branch", "--show-current");
-const branch = process.env.GITHUB_HEAD_REF || branchResult.stdout || process.env.GITHUB_REF_NAME || "detached";
-record("controlled F11 or Integration branch", branch === OWNER_BRANCH || branch === INTEGRATION_BRANCH || process.env.CI === "true", branch);
-record("accepted F10 Integration baseline is ancestor", git("merge-base", "--is-ancestor", BASELINE, "HEAD").status === 0, BASELINE);
-record("generated route tree is untouched", git("diff", "--name-only", BASELINE, "HEAD", "--", "src/routeTree.gen.ts").stdout === "", git("diff", "--name-only", BASELINE, "HEAD", "--", "src/routeTree.gen.ts").stdout);
-record("lockfile is untouched", git("diff", "--name-only", BASELINE, "HEAD", "--", "bun.lock").stdout === "", null);
+const branch =
+  process.env.GITHUB_HEAD_REF || branchResult.stdout || process.env.GITHUB_REF_NAME || "detached";
+record(
+  "controlled F11 or Integration branch",
+  branch === OWNER_BRANCH || branch === INTEGRATION_BRANCH || process.env.CI === "true",
+  branch,
+);
+record(
+  "accepted F10 Integration baseline is ancestor",
+  git("merge-base", "--is-ancestor", BASELINE, "HEAD").status === 0,
+  BASELINE,
+);
+record(
+  "generated route tree is untouched",
+  git("diff", "--name-only", BASELINE, "HEAD", "--", "src/routeTree.gen.ts").stdout === "",
+  git("diff", "--name-only", BASELINE, "HEAD", "--", "src/routeTree.gen.ts").stdout,
+);
+record(
+  "lockfile is untouched",
+  git("diff", "--name-only", BASELINE, "HEAD", "--", "bun.lock").stdout === "",
+  null,
+);
 
 const routeTree = read("src/routeTree.gen.ts");
-const routeSet = ["/", "/about", "/account", "/auth", "/brands", "/cart", "/checkout", "/products", "/wishlist", "/product/$id"];
-record("current route surface is preserved", routeSet.every((route) => routeTree.includes(`'${route}'`)), routeSet.filter((route) => !routeTree.includes(`'${route}'`)));
+const routeSet = [
+  "/",
+  "/about",
+  "/account",
+  "/auth",
+  "/brands",
+  "/cart",
+  "/checkout",
+  "/products",
+  "/wishlist",
+  "/product/$id",
+];
+record(
+  "current route surface is preserved",
+  routeSet.every((route) => routeTree.includes(`'${route}'`)),
+  routeSet.filter((route) => !routeTree.includes(`'${route}'`)),
+);
 
 const config = read("src/seo/seo-config.ts");
 const head = read("src/seo/seo-head.ts");
@@ -64,7 +100,10 @@ const cumulative = read("scripts/verify-cumulative-quality.mjs");
 const productRoute = read("src/routes/product.$id.tsx");
 const shoeCard = read("src/components/ShoeCard.tsx");
 const rootRoute = read("src/routes/__root.tsx");
-const handoff = exists("docs/handoffs/F11-TECHNICAL-SEO.md") ? read("docs/handoffs/F11-TECHNICAL-SEO.md") : "";
+const browserHarness = read("scripts/browser-harness.mjs");
+const handoff = exists("docs/handoffs/F11-TECHNICAL-SEO.md")
+  ? read("docs/handoffs/F11-TECHNICAL-SEO.md")
+  : "";
 
 record(
   "Site URL is environment configured, normalized and rejects local origins",
@@ -77,6 +116,11 @@ record(
   null,
 );
 record(
+  "JSON-LD serializer escapes script-breaking less-than characters",
+  config.includes("safeJsonLd") && /replace\(\/<\/g/.test(config) && config.includes("u003c"),
+  null,
+);
+record(
   "indexation matrix explicitly covers every route",
   routeSet.every((route) => head.includes(`"${route}"`)) &&
     head.includes('"/products": "demo-catalog"') &&
@@ -85,17 +129,18 @@ record(
 );
 record(
   "utility routes are noindex without homepage canonical",
-  ["/auth", "/cart", "/checkout", "/wishlist", "/account"].every((route) => head.includes(`"${route}"`)) &&
+  ["/auth", "/cart", "/checkout", "/wishlist", "/account"].every((route) =>
+    head.includes(`"${route}"`),
+  ) &&
     head.includes('{ name: "robots", content: "noindex, follow" }') &&
-    !head.includes('utilityHead(pathname: UtilityPath): HeadResult {\n  const canonical'),
+    !/function utilityHead[\s\S]*rel: "canonical"/.test(head),
   null,
 );
 record(
   "demo catalog and products are held out of index and sitemap",
   head.includes('pathname !== "/products"') &&
     head.includes('{ name: "robots", content: "noindex, follow" }') &&
-    serverSeo.includes('SITEMAP_PATHS = ["/", "/about", "/brands"]') &&
-    !serverSeo.includes('SITEMAP_PATHS = ["/", "/about", "/brands", "/products"]'),
+    serverSeo.includes('SITEMAP_PATHS = ["/", "/about", "/brands"]'),
   null,
 );
 record(
@@ -116,16 +161,28 @@ record(
   null,
 );
 record(
-  "structured data is minimal, SSR-head managed and safely serialized",
+  "structured data is minimal and SSR-head managed",
   head.includes('type: "application/ld+json"') &&
     head.includes('"@type": "WebSite"') &&
     head.includes('"@type": "BreadcrumbList"') &&
-    config.includes("safeJsonLd") &&
-    config.includes('.replace(/</g, "\\\\u003c")'),
+    head.includes("safeJsonLd"),
   null,
 );
-const forbiddenSchema = ["Offer", "AggregateRating", "Review", "availability", "priceCurrency", "shippingDetails", "hasMerchantReturnPolicy", "seller"];
-record("no fake merchant/review structured data", forbiddenSchema.every((key) => !head.includes(`\"${key}\"`)), forbiddenSchema.filter((key) => head.includes(`\"${key}\"`)));
+const forbiddenSchema = [
+  "Offer",
+  "AggregateRating",
+  "Review",
+  "availability",
+  "priceCurrency",
+  "shippingDetails",
+  "hasMerchantReturnPolicy",
+  "seller",
+];
+record(
+  "no fake merchant or review structured data",
+  forbiddenSchema.every((key) => !head.includes(`\"${key}\"`)),
+  forbiddenSchema.filter((key) => head.includes(`\"${key}\"`)),
+);
 record(
   "robots and sitemap are server-served without route-tree additions",
   serverEntry.includes("createSeoInfrastructureResponse") &&
@@ -136,8 +193,9 @@ record(
   null,
 );
 record(
-  "4xx/5xx responses receive X-Robots-Tag noindex",
-  serverEntry.includes("withErrorNoindex") && serverSeo.includes('headers.set("x-robots-tag", "noindex, follow")'),
+  "4xx and 5xx responses receive X-Robots-Tag noindex",
+  serverEntry.includes("withErrorNoindex") &&
+    serverSeo.includes('headers.set("x-robots-tag", "noindex, follow")'),
   null,
 );
 record(
@@ -146,12 +204,12 @@ record(
   null,
 );
 record(
-  "invalid products are real notFound responses",
+  "invalid products use TanStack notFound semantics",
   productRoute.includes("throw notFound()") && productRoute.includes("SHOES.find"),
   null,
 );
 record(
-  "catalog/product discovery remains crawlable through real Links",
+  "catalog product discovery remains crawlable through real Links",
   shoeCard.includes("<Link") && shoeCard.includes('to: "/product/$id"'),
   null,
 );
@@ -161,7 +219,15 @@ record(
   null,
 );
 record(
-  "F11 package commands and cumulative check are registered",
+  "mobile browser activation uses real CDP touch events on narrow viewports",
+  browserHarness.includes('mobileViewport = await evaluateRaw(client, "window.innerWidth < 768")') &&
+    browserHarness.includes('"Input.dispatchTouchEvent"') &&
+    browserHarness.includes('type: "touchStart"') &&
+    browserHarness.includes('type: "touchEnd"'),
+  null,
+);
+record(
+  "F11 package commands and aggregate check are registered",
   packageJson.includes('"audit:f11": "node scripts/audit-f11-technical-seo.mjs"') &&
     packageJson.includes('"test:f11": "node scripts/test-f11-technical-seo.mjs"') &&
     packageJson.includes('"qa:seo:f11": "node scripts/seo-qa-f11.mjs"') &&
@@ -199,6 +265,7 @@ const allowed = new Set([
   "docs/handoffs/F11-TECHNICAL-SEO.md",
   "package.json",
   "scripts/audit-f11-technical-seo.mjs",
+  "scripts/browser-harness.mjs",
   "scripts/f11-browser-runner.mjs",
   "scripts/f11-seo-test-utils.mjs",
   "scripts/seo-qa-f11.mjs",
@@ -209,12 +276,19 @@ const allowed = new Set([
   "src/seo/seo-config.ts",
   "src/seo/seo-head.ts",
   "src/seo/seo-server.ts",
-  "src/routes/product.$id.tsx",
 ]);
 const outOfScope = changed.filter((file) => !allowed.has(file));
-record("diff stays inside F11 and necessary invalid-product correction", outOfScope.length === 0, outOfScope);
-record("runtime artifacts are not tracked", git("ls-files", "artifacts").stdout === "", git("ls-files", "artifacts").stdout);
-record("no temporary F11 workflow is tracked", git("ls-files", ".github/workflows/*f11*dev*", ".github/workflows/*acceptance*dev*").stdout === "", null);
+record("diff stays inside F11 and necessary regression scope", outOfScope.length === 0, outOfScope);
+record(
+  "runtime artifacts are not tracked",
+  git("ls-files", "artifacts").stdout === "",
+  git("ls-files", "artifacts").stdout,
+);
+record(
+  "no temporary F11 workflow is tracked",
+  git("ls-files", ".github/workflows/*f11*dev*", ".github/workflows/*acceptance*dev*").stdout === "",
+  null,
+);
 
 const failed = checks.filter((check) => !check.pass);
 const report = {
@@ -223,7 +297,11 @@ const report = {
   generatedAt: new Date().toISOString(),
   baseline: BASELINE,
   branch,
-  summary: { total: checks.length, passed: checks.length - failed.length, failed: failed.length },
+  summary: {
+    total: checks.length,
+    passed: checks.length - failed.length,
+    failed: failed.length,
+  },
   checks,
   pass: failed.length === 0,
 };
