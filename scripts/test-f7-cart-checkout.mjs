@@ -309,7 +309,7 @@ async function run(baseUrl) {
       checkoutHead,
     );
 
-    await click(client, '[data-testid="checkout-review-submit"]');
+    await activateVisible(client, '[data-testid="checkout-review-submit"]');
     await waitForExpression(client, `document.querySelector('[data-testid="checkout-error-summary"]')`);
     const invalid = await evaluate(
       client,
@@ -329,7 +329,7 @@ async function run(baseUrl) {
     await setField(client, '#checkout-province', 'تهران');
     await setField(client, '#checkout-city', 'تهران');
     await setField(client, '#checkout-address', 'خیابان نمونه، کوچه نمونه، ساختمان نمونه برای بررسی فرانت‌اند');
-    await click(client, '[data-testid="checkout-review-submit"]');
+    await activateVisible(client, '[data-testid="checkout-review-submit"]');
     await waitForExpression(client, `document.querySelector('[data-testid="checkout-review"]')`);
     const review = await evaluate(
       client,
