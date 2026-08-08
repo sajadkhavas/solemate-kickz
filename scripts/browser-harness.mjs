@@ -188,6 +188,10 @@ async function dispatchPointerActivation(client, point) {
   const mobileViewport = await evaluateRaw(client, "window.innerWidth < 768");
 
   if (mobileViewport) {
+    await client.send("Emulation.setTouchEmulationEnabled", {
+      enabled: true,
+      maxTouchPoints: 1,
+    });
     await client.send("Input.dispatchTouchEvent", {
       type: "touchStart",
       touchPoints: [
