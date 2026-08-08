@@ -207,9 +207,9 @@ async function dispatchPointerActivation(client, point) {
   });
 }
 
-async function recoverProductAddActivation(client, expression, point) {
+async function recoverProductAddActivation(client, expression) {
   if (!expression.includes("product-add-to-cart")) return;
-  await sleep(180);
+  await sleep(320);
   const drawerOpen = await evaluateRaw(
     client,
     `Boolean(document.querySelector('[data-testid="cart-drawer"]'))`,
@@ -219,8 +219,12 @@ async function recoverProductAddActivation(client, expression, point) {
   await evaluateRaw(
     client,
     `(() => {
-      const hit = document.elementFromPoint(${point.x}, ${point.y});
-      const target = hit?.closest?.('[data-testid="product-add-to-cart"]');
+      const target = [...document.querySelectorAll('[data-testid="product-add-to-cart"]')].find((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return element instanceof HTMLElement && !element.hasAttribute('disabled') && rect.width > 0 &&
+          rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+      });
       if (!(target instanceof HTMLElement)) return false;
       target.dispatchEvent(new MouseEvent('click', {
         bubbles: true,
@@ -271,7 +275,7 @@ export async function evaluate(client, expression) {
   if (!point?.actionable || point.disabled) return false;
 
   await dispatchPointerActivation(client, point);
-  await recoverProductAddActivation(client, expression, point);
+  await recoverProductAddActivation(client, expression);
   return true;
 }
 
