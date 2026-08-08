@@ -16,6 +16,11 @@ dist-ssr
 .nitro
 *.local
 
+# Local deployment/runtime bootstrap state.
+/.runtime/
+/.home/
+/.bun-cache/
+
 # Runtime quality reports and screenshots are uploaded by GitHub Actions.
 /artifacts/
 
