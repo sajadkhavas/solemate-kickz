@@ -185,63 +185,6 @@ async function evaluateRaw(client, expression) {
 }
 
 async function dispatchPointerActivation(client, point) {
-  const mobileViewport = await evaluateRaw(client, "window.innerWidth < 768");
-
-  if (mobileViewport) {
-    await client.send("Emulation.setTouchEmulationEnabled", {
-      enabled: true,
-      maxTouchPoints: 1,
-    });
-    await evaluateRaw(
-      client,
-      `(() => {
-        globalThis.__soleCdpTouchClickObserved = false;
-        document.addEventListener('click', () => {
-          globalThis.__soleCdpTouchClickObserved = true;
-        }, { capture: true, once: true });
-        return true;
-      })()`,
-    );
-    await client.send("Input.dispatchTouchEvent", {
-      type: "touchStart",
-      touchPoints: [
-        {
-          x: point.x,
-          y: point.y,
-          radiusX: 1,
-          radiusY: 1,
-          force: 1,
-          id: 1,
-        },
-      ],
-    });
-    await sleep(50);
-    await client.send("Input.dispatchTouchEvent", {
-      type: "touchEnd",
-      touchPoints: [],
-    });
-    await sleep(120);
-    const clickObserved = await evaluateRaw(client, "Boolean(globalThis.__soleCdpTouchClickObserved)");
-    if (!clickObserved) {
-      await evaluateRaw(
-        client,
-        `(() => {
-          const hit = document.elementFromPoint(${point.x}, ${point.y});
-          const target = hit?.closest?.('button, a[href], [role="button"]');
-          if (!(target instanceof HTMLElement)) return false;
-          target.dispatchEvent(new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            composed: true,
-            view: window,
-          }));
-          return true;
-        })()`,
-      );
-    }
-    return;
-  }
-
   await client.send("Input.dispatchMouseEvent", {
     type: "mouseMoved",
     x: point.x,
@@ -294,6 +237,9 @@ export async function evaluate(client, expression) {
 
   if (!point?.actionable || point.disabled) return false;
 
+  // Re-measure once more after the target is actually topmost. This prevents
+  // physical CDP clicks from landing on an exiting Radix overlay or stale
+  // pre-scroll coordinates while preserving a real user-like pointer event.
   await sleep(50);
   point = await evaluateRaw(client, coordinateExpression);
   if (!point?.actionable || point.disabled) return false;
