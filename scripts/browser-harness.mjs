@@ -192,6 +192,16 @@ async function dispatchPointerActivation(client, point) {
       enabled: true,
       maxTouchPoints: 1,
     });
+    await evaluateRaw(
+      client,
+      `(() => {
+        globalThis.__soleCdpTouchClickObserved = false;
+        document.addEventListener('click', () => {
+          globalThis.__soleCdpTouchClickObserved = true;
+        }, { capture: true, once: true });
+        return true;
+      })()`,
+    );
     await client.send("Input.dispatchTouchEvent", {
       type: "touchStart",
       touchPoints: [
@@ -210,6 +220,25 @@ async function dispatchPointerActivation(client, point) {
       type: "touchEnd",
       touchPoints: [],
     });
+    await sleep(120);
+    const clickObserved = await evaluateRaw(client, "Boolean(globalThis.__soleCdpTouchClickObserved)");
+    if (!clickObserved) {
+      await evaluateRaw(
+        client,
+        `(() => {
+          const hit = document.elementFromPoint(${point.x}, ${point.y});
+          const target = hit?.closest?.('button, a[href], [role="button"]');
+          if (!(target instanceof HTMLElement)) return false;
+          target.dispatchEvent(new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            composed: true,
+            view: window,
+          }));
+          return true;
+        })()`,
+      );
+    }
     return;
   }
 
@@ -265,9 +294,6 @@ export async function evaluate(client, expression) {
 
   if (!point?.actionable || point.disabled) return false;
 
-  // Re-measure once more after the target is actually topmost. This prevents
-  // physical CDP activations from landing on an exiting Radix overlay or stale
-  // pre-scroll coordinates while preserving a real user-like pointer event.
   await sleep(50);
   point = await evaluateRaw(client, coordinateExpression);
   if (!point?.actionable || point.disabled) return false;
