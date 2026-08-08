@@ -52,6 +52,32 @@ async function click(client, selector) {
   await sleep(140);
 }
 
+async function activateVisible(client, selector) {
+  const activated = await evaluate(
+    client,
+    `(() => {
+      const target = [...document.querySelectorAll(${JSON.stringify(selector)})].find((node) => {
+        const rect = node.getBoundingClientRect();
+        const style = getComputedStyle(node);
+        return node instanceof HTMLElement && !node.hasAttribute('disabled') && rect.width > 0 &&
+          rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
+      });
+      if (!(target instanceof HTMLElement)) return false;
+      target.scrollIntoView({ block: 'center', inline: 'center' });
+      target.focus({ preventScroll: true });
+      target.dispatchEvent(new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        view: window,
+      }));
+      return true;
+    })()`,
+  );
+  if (!activated) throw new Error(`Visible activation target not found: ${selector}`);
+  await sleep(150);
+}
+
 async function key(client, keyName, code, keyCode) {
   await client.send("Input.dispatchKeyEvent", {
     type: "keyDown",
@@ -133,7 +159,7 @@ async function run(baseUrl) {
     await waitForExpression(client, `document.querySelector('[data-testid="cart-drawer"]')`);
     await key(client, "Escape", "Escape", 27);
     await waitForExpression(client, `!document.querySelector('[data-testid="cart-drawer"]')`);
-    await click(client, '[data-testid="product-add-to-cart"]');
+    await activateVisible(client, '[data-testid="product-add-to-cart"]');
     await waitForExpression(client, `document.querySelector('[data-testid="cart-drawer"]')`);
 
     let persisted = await readPersistedCart(client);
