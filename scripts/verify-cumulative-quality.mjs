@@ -16,6 +16,7 @@ const expectedReportFragments = [
   "f6-product-detail",
   "f7-cart-checkout",
   "f9-wishlist-account-orders",
+  "f10-motion-3d",
 ];
 
 function walk(directory) {

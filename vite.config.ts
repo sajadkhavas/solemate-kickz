@@ -6,10 +6,15 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+const isNodeServerBuild = process.env.SOLE_DEPLOY_TARGET === "node-server";
+
 export default defineConfig({
+  // Keep Lovable's normal preview/build behavior unchanged. Self-hosted VPS builds
+  // opt in explicitly through `bun run build:vps`, which sets SOLE_DEPLOY_TARGET.
+  ...(isNodeServerBuild ? { nitro: { preset: "node-server" } } : {}),
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
+    // nitro/vite builds from this.
     server: { entry: "server" },
   },
 });

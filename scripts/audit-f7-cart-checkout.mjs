@@ -8,6 +8,7 @@ const BASELINE = "e870dfe7ea06e5967810391f67ce083035d34ad1";
 const OWNER_BRANCH = "phase/sole-f7-cart-checkout";
 const INTEGRATION_BRANCH = "integration/sole-frontend-v2";
 const SUPERVISOR_BRANCH = "supervisor/sole-f7-f9-integration";
+const F10_BRANCH = "phase/sole-f10-motion-3d-interaction";
 const REPORT = path.join(ROOT, "artifacts/audits/f7-cart-checkout.json");
 const checks = [];
 
@@ -50,10 +51,11 @@ const branch =
   branchResult.stdout ||
   process.env.GITHUB_REF_NAME ||
   "detached";
+const controlledBranches = [OWNER_BRANCH, INTEGRATION_BRANCH, SUPERVISOR_BRANCH, F10_BRANCH];
 record(
   "branch is controlled",
-  branch === OWNER_BRANCH || branch === INTEGRATION_BRANCH || branch === SUPERVISOR_BRANCH,
-  { expected: [OWNER_BRANCH, INTEGRATION_BRANCH, SUPERVISOR_BRANCH], actual: branch },
+  controlledBranches.includes(branch),
+  { expected: controlledBranches, actual: branch },
 );
 record(
   "accepted Integration baseline is an ancestor",

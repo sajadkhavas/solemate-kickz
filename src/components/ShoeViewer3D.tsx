@@ -1,32 +1,27 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useMouseParallax } from "@/hooks/useMouseParallax";
+import { motionTransition } from "@/lib/motion-system";
 
-// TypeScript declaration for <model-viewer> web component (React 19 uses React.JSX)
 type ModelViewerProps = React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLElement> & {
     src?: string;
     alt?: string;
     poster?: string;
-    "auto-rotate"?: boolean;
     "camera-controls"?: boolean;
-    ar?: boolean;
     "shadow-intensity"?: string;
     exposure?: string;
     "environment-image"?: string;
-    "rotation-per-second"?: string;
     "field-of-view"?: string;
     "min-camera-orbit"?: string;
     "max-camera-orbit"?: string;
-    "disable-zoom"?: boolean;
     "interaction-prompt"?: string;
   },
   HTMLElement
 >;
 
 declare global {
-  // React 19 reads intrinsic elements from React.JSX
   namespace React {
     namespace JSX {
       interface IntrinsicElements {
@@ -36,17 +31,14 @@ declare global {
   }
 }
 
-const hasWebGL = () => {
+function hasWebGL() {
   try {
     const canvas = document.createElement("canvas");
     return Boolean(canvas.getContext("webgl") || canvas.getContext("experimental-webgl"));
   } catch {
     return false;
   }
-};
-
-// Deep model compression remains owned by F9/F11.
-const MODEL_SRC = "/models/shoe.glb";
+}
 
 interface Props {
   fallbackImage: string;
@@ -55,112 +47,135 @@ interface Props {
 }
 
 export function ShoeViewer3D({ fallbackImage, alt, priority = false }: Props) {
-  const reduceMotion = useReducedMotion() === true;
-  const [ready, setReady] = useState(false);
-  const [supported, setSupported] = useState(true);
+  const prefersReducedMotion = useReducedMotion();
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const modelRef = useRef<HTMLElement | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+  const [activated, setActivated] = useState(false);
+  const [inView, setInView] = useState(false);
+  const [documentVisible, setDocumentVisible] = useState(true);
+  const [modelSrc, setModelSrc] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [supported, setSupported] = useState(true);
   const [errored, setErrored] = useState(false);
   const [posterFailed, setPosterFailed] = useState(false);
   const [interacted, setInteracted] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
-  const modelRef = useRef<HTMLElement | null>(null);
-  const parallax = useMouseParallax(12, 18);
+  const reduced = hydrated && prefersReducedMotion === true;
+
+  const runtimeActive = activated && inView && documentVisible && !reduced && supported && !errored;
+  const parallax = useMouseParallax(3, 4, runtimeActive);
 
   useEffect(() => {
     setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined" || reduceMotion) return;
-    if (!hasWebGL()) {
-      setSupported(false);
+    const element = rootRef.current;
+    if (!element || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(Boolean(entry?.isIntersecting)),
+      { rootMargin: "160px 0px", threshold: 0.05 },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const update = () => setDocumentVisible(!document.hidden);
+    update();
+    document.addEventListener("visibilitychange", update);
+    return () => document.removeEventListener("visibilitychange", update);
+  }, []);
+
+  useEffect(() => {
+    if (!runtimeActive) {
+      setModelSrc(null);
+      setLoaded(false);
       return;
     }
 
     let cancelled = false;
-    let timeoutId: ReturnType<typeof setTimeout> | undefined;
-    let idleId: number | undefined;
+    let objectUrl: string | null = null;
 
-    const load = () => {
-      import("@google/model-viewer")
-        .then(() => {
-          if (!cancelled) setReady(true);
-        })
-        .catch(() => {
-          if (!cancelled) setErrored(true);
-        });
-    };
-
-    const idleWindow = window as typeof window & {
-      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
-      cancelIdleCallback?: (id: number) => void;
-    };
-
-    if (typeof idleWindow.requestIdleCallback === "function") {
-      idleId = idleWindow.requestIdleCallback(load, { timeout: 1800 });
-    } else {
-      timeoutId = setTimeout(load, 350);
-    }
+    Promise.all([import("@google/model-viewer"), import("@/lib/create-shoe-model")])
+      .then(([, modelFactory]) => {
+        if (cancelled) return;
+        objectUrl = URL.createObjectURL(modelFactory.createShoeModelBlob());
+        setModelSrc(objectUrl);
+      })
+      .catch(() => {
+        if (!cancelled) setErrored(true);
+      });
 
     return () => {
       cancelled = true;
-      if (idleId !== undefined) idleWindow.cancelIdleCallback?.(idleId);
-      if (timeoutId !== undefined) clearTimeout(timeoutId);
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [reduceMotion]);
+  }, [runtimeActive]);
 
   useEffect(() => {
     const element = modelRef.current;
-    if (!element || !ready) return;
+    if (!element || !modelSrc) return;
 
     const onLoad = () => setLoaded(true);
     const onError = () => setErrored(true);
     const onInteraction = () => setInteracted(true);
-    const interactionEvents = ["pointerdown", "wheel", "touchstart"] as const;
 
     element.addEventListener("load", onLoad);
     element.addEventListener("error", onError);
-    interactionEvents.forEach((eventName) =>
-      element.addEventListener(eventName, onInteraction, { once: true }),
-    );
+    element.addEventListener("pointerdown", onInteraction, { once: true });
 
     return () => {
       element.removeEventListener("load", onLoad);
       element.removeEventListener("error", onError);
-      interactionEvents.forEach((eventName) =>
-        element.removeEventListener(eventName, onInteraction),
-      );
+      element.removeEventListener("pointerdown", onInteraction);
     };
-  }, [ready]);
+  }, [modelSrc]);
 
-  const canRenderModel = ready && supported && !errored && !reduceMotion;
-  const interactive = hydrated && !reduceMotion;
-  const rotateX = interactive ? parallax.rotateX : 0;
-  const rotateY = interactive ? parallax.rotateY : 0;
-  const lightX = interactive ? parallax.lightX : 50;
-  const lightY = interactive ? parallax.lightY : 50;
+  const activate = useCallback(() => {
+    if (reduced) return;
+    if (!hasWebGL()) {
+      setSupported(false);
+      return;
+    }
+    setActivated(true);
+  }, [reduced]);
+
+  const canMountModel = runtimeActive && Boolean(modelSrc);
 
   return (
-    <div className="relative w-full" data-testid="shoe-viewer">
+    <div
+      ref={rootRef}
+      className="relative w-full"
+      data-testid="shoe-viewer"
+      data-3d-active={canMountModel ? "true" : "false"}
+    >
       <div
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
-          background: `radial-gradient(circle at ${lightX}% ${
-            lightY + 20
-          }%, rgba(200,241,53,0.24), transparent 58%)`,
-          filter: "blur(42px)",
+          background: `radial-gradient(circle at ${parallax.lightX}% ${parallax.lightY + 18}%, rgba(200,241,53,0.18), transparent 58%)`,
+          filter: "blur(36px)",
         }}
         aria-hidden="true"
       />
 
       <motion.div
         className="relative w-full"
-        animate={{ rotateX, rotateY }}
-        transition={
-          reduceMotion
-            ? { duration: 0 }
-            : { type: "spring", stiffness: 150, damping: 22, mass: 0.5 }
+        animate={
+          runtimeActive
+            ? { rotateX: parallax.rotateX, rotateY: parallax.rotateY }
+            : { rotateX: 0, rotateY: 0 }
         }
+        transition={motionTransition(reduced, {
+          type: "spring",
+          stiffness: 180,
+          damping: 28,
+          mass: 0.45,
+        })}
         style={{ transformStyle: "preserve-3d", perspective: 1200 }}
       >
         <div className="relative aspect-square min-h-[300px] w-full overflow-hidden rounded-3xl sm:min-h-[420px] lg:min-h-[520px]">
@@ -177,7 +192,7 @@ export function ShoeViewer3D({ fallbackImage, alt, priority = false }: Props) {
               data-testid="hero-poster"
               onError={() => setPosterFailed(true)}
               className={`absolute inset-0 h-full w-full select-none object-contain transition-opacity duration-300 motion-reduce:transition-none ${
-                loaded && canRenderModel ? "opacity-0" : "opacity-100"
+                loaded && canMountModel ? "opacity-0" : "opacity-100"
               }`}
             />
           ) : (
@@ -191,23 +206,21 @@ export function ShoeViewer3D({ fallbackImage, alt, priority = false }: Props) {
             </div>
           )}
 
-          {canRenderModel ? (
+          {canMountModel && modelSrc ? (
             <model-viewer
               ref={modelRef as React.RefObject<HTMLElement>}
-              src={MODEL_SRC}
+              src={modelSrc}
               poster={fallbackImage}
               alt=""
               aria-hidden="true"
               tabIndex={-1}
-              auto-rotate
               camera-controls
-              shadow-intensity="1.5"
-              exposure="0.8"
-              rotation-per-second="20deg"
+              shadow-intensity="1.25"
+              exposure="0.9"
               environment-image="neutral"
-              field-of-view="25deg"
-              min-camera-orbit="auto auto 80%"
-              max-camera-orbit="auto auto 120%"
+              field-of-view="28deg"
+              min-camera-orbit="auto auto 82%"
+              max-camera-orbit="auto auto 118%"
               interaction-prompt="none"
               data-testid="hero-model-viewer"
               style={{
@@ -219,14 +232,39 @@ export function ShoeViewer3D({ fallbackImage, alt, priority = false }: Props) {
               }}
             />
           ) : null}
+
+          {!activated && !reduced && supported ? (
+            <button
+              type="button"
+              onClick={activate}
+              data-testid="shoe-viewer-enable-3d"
+              className="absolute inset-inline-end-4 top-4 z-10 inline-flex min-h-11 items-center rounded-full border border-border-strong bg-background/90 px-4 font-fa text-xs font-bold text-foreground backdrop-blur transition-colors hover:border-primary hover:text-primary"
+            >
+              فعال‌کردن نمای سه‌بعدی
+            </button>
+          ) : null}
         </div>
       </motion.div>
 
-      {canRenderModel && loaded && !interacted ? (
-        <p aria-hidden="true" className="mt-3 text-center font-fa text-xs text-muted-foreground">
-          برای مشاهده زاویه‌ها، مدل را بکشید.
-        </p>
-      ) : null}
+      <div className="mt-3 min-h-6 text-center font-fa text-xs text-muted-foreground" aria-live="polite">
+        {reduced
+          ? "برای احترام به تنظیم کاهش حرکت، تصویر ثابت نمایش داده می‌شود."
+          : !supported
+            ? "نمای سه‌بعدی روی این دستگاه پشتیبانی نمی‌شود؛ تصویر ثابت در دسترس است."
+            : errored
+              ? "نمای سه‌بعدی بارگذاری نشد؛ تصویر ثابت در دسترس است."
+              : activated && !inView
+                ? "نمای سه‌بعدی خارج از صفحه متوقف شده است."
+                : activated && !documentVisible
+                  ? "نمای سه‌بعدی هنگام پنهان بودن صفحه متوقف می‌شود."
+                  : activated && !modelSrc
+                    ? "در حال آماده‌سازی نمای سه‌بعدی…"
+                    : canMountModel && loaded && !interacted
+                      ? "برای دیدن زاویه‌ها، مدل را به‌صورت افقی بکشید."
+                      : !activated
+                        ? "نمای سه‌بعدی اختیاری است و فقط پس از درخواست شما بارگذاری می‌شود."
+                        : ""}
+      </div>
     </div>
   );
 }

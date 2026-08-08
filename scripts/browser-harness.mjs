@@ -215,13 +215,35 @@ export async function evaluate(client, expression) {
     /target\?\.click\(\);\s*return Boolean\(target\);/,
     `if (!target) return null;
       const activationRect = target.getBoundingClientRect();
+      const x = Math.max(0, Math.min(innerWidth - 1, activationRect.left + activationRect.width / 2));
+      const y = Math.max(0, Math.min(innerHeight - 1, activationRect.top + activationRect.height / 2));
+      const hitTarget = document.elementFromPoint(x, y);
       return {
-        x: Math.max(0, Math.min(innerWidth - 1, activationRect.left + activationRect.width / 2)),
-        y: Math.max(0, Math.min(innerHeight - 1, activationRect.top + activationRect.height / 2)),
+        x,
+        y,
+        actionable: hitTarget === target || Boolean(hitTarget && target.contains(hitTarget)),
+        disabled: 'disabled' in target ? Boolean(target.disabled) : false,
       };`,
   );
-  const point = await evaluateRaw(client, coordinateExpression);
-  if (!point) return false;
+
+  const started = Date.now();
+  let point = null;
+  while (Date.now() - started < 2_000) {
+    point = await evaluateRaw(client, coordinateExpression);
+    if (!point) return false;
+    if (point.actionable && !point.disabled) break;
+    await sleep(50);
+  }
+
+  if (!point?.actionable || point.disabled) return false;
+
+  // Re-measure once more after the target is actually topmost. This prevents
+  // physical CDP clicks from landing on an exiting Radix overlay or stale
+  // pre-scroll coordinates while preserving a real user-like pointer event.
+  await sleep(50);
+  point = await evaluateRaw(client, coordinateExpression);
+  if (!point?.actionable || point.disabled) return false;
+
   await dispatchPointerActivation(client, point);
   return true;
 }
@@ -232,6 +254,8 @@ async function waitForHydratedShell(client, timeout = 15_000) {
     const ready = await evaluateRaw(
       client,
       `(() => {
+        const appRoot = document.getElementById('main-content');
+        if (appRoot) return document.documentElement.dataset.soleHydrated === 'true';
         const header = document.querySelector('[data-testid="global-header"]');
         return !header || header.getAttribute('data-hydrated') === 'true';
       })()`,
@@ -239,7 +263,7 @@ async function waitForHydratedShell(client, timeout = 15_000) {
     if (ready) return;
     await sleep(100);
   }
-  throw new Error("Timed out waiting for the global shell to hydrate.");
+  throw new Error("Timed out waiting for the application shell to hydrate.");
 }
 
 export async function navigate(client, url) {
