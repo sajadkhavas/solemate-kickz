@@ -34,20 +34,6 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
   const canAdd = !shoe.isSoldOut && selectedSize !== null;
   const currentPrice = shoe.sale_price ?? shoe.price;
 
-  const revealCart = () => {
-    // A previous Radix close cycle can finish after the next click in headless
-    // and very fast user interactions. Reset first, then reopen after two paint
-    // frames so the latest user action deterministically wins that close cycle.
-    setCartOpen(false);
-    if (typeof window === "undefined") {
-      setCartOpen(true);
-      return;
-    }
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => setCartOpen(true));
-    });
-  };
-
   const handleAdd = () => {
     if (shoe.isSoldOut) return;
     if (selectedSize === null) {
@@ -60,7 +46,7 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
       return;
     }
     toast.success(`${quantity} عدد به سبد محلی اضافه شد.`);
-    revealCart();
+    setCartOpen(true);
   };
 
   const handleWishlist = () => {
