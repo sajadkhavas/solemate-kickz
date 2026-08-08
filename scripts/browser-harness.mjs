@@ -207,6 +207,32 @@ async function dispatchPointerActivation(client, point) {
   });
 }
 
+async function recoverProductAddActivation(client, expression, point) {
+  if (!expression.includes('[data-testid=\"product-add-to-cart\"]')) return;
+  await sleep(180);
+  const drawerOpen = await evaluateRaw(
+    client,
+    `Boolean(document.querySelector('[data-testid="cart-drawer"]'))`,
+  );
+  if (drawerOpen) return;
+
+  await evaluateRaw(
+    client,
+    `(() => {
+      const hit = document.elementFromPoint(${point.x}, ${point.y});
+      const target = hit?.closest?.('[data-testid="product-add-to-cart"]');
+      if (!(target instanceof HTMLElement)) return false;
+      target.dispatchEvent(new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        view: window,
+      }));
+      return true;
+    })()`,
+  );
+}
+
 export async function evaluate(client, expression) {
   const visibleActivation = /target\?\.click\(\);\s*return Boolean\(target\);/.test(expression);
   if (!visibleActivation) return evaluateRaw(client, expression);
@@ -245,6 +271,7 @@ export async function evaluate(client, expression) {
   if (!point?.actionable || point.disabled) return false;
 
   await dispatchPointerActivation(client, point);
+  await recoverProductAddActivation(client, expression, point);
   return true;
 }
 
