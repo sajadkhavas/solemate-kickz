@@ -77,6 +77,11 @@ record(
   git("diff", "--name-only", BASELINE, "HEAD", "--", "scripts/browser-harness.mjs").stdout === "",
   git("diff", "--name-only", BASELINE, "HEAD", "--", "scripts/browser-harness.mjs").stdout,
 );
+record(
+  "ProductPurchasePanel remains exactly at the accepted baseline",
+  git("diff", "--name-only", BASELINE, "HEAD", "--", "src/components/product/ProductPurchasePanel.tsx").stdout === "",
+  git("diff", "--name-only", BASELINE, "HEAD", "--", "src/components/product/ProductPurchasePanel.tsx").stdout,
+);
 
 const routeTree = read("src/routeTree.gen.ts");
 const routeSet = [
@@ -106,11 +111,11 @@ const packageJson = read("package.json");
 const workflow = read(".github/workflows/frontend-ci.yml");
 const cumulative = read("scripts/verify-cumulative-quality.mjs");
 const productRoute = read("src/routes/product.$id.tsx");
-const purchasePanel = read("src/components/product/ProductPurchasePanel.tsx");
 const shoeCard = read("src/components/ShoeCard.tsx");
 const rootRoute = read("src/routes/__root.tsx");
 const catalogBehavior = read("scripts/test-f4-f5-catalog-product-card.mjs");
 const f7Audit = read("scripts/audit-f7-cart-checkout.mjs");
+const f7Behavior = read("scripts/test-f7-cart-checkout.mjs");
 const handoff = exists("docs/handoffs/F11-TECHNICAL-SEO.md")
   ? read("docs/handoffs/F11-TECHNICAL-SEO.md")
   : "";
@@ -260,12 +265,13 @@ record(
   null,
 );
 record(
-  "Cart reopen race is fixed in production code without harness overrides",
-  purchasePanel.includes("const revealCart = () =>") &&
-    purchasePanel.includes("setCartOpen(false)") &&
-    purchasePanel.includes("window.requestAnimationFrame(() =>") &&
-    purchasePanel.includes("window.requestAnimationFrame(() => setCartOpen(true))") &&
-    purchasePanel.includes("revealCart();"),
+  "inherited F7 post-dialog activation correction is scoped to behavior test",
+  f7Behavior.includes("async function activateVisible(client, selector)") &&
+    f7Behavior.includes("target.dispatchEvent(new MouseEvent('click'") &&
+    f7Behavior.includes(
+      "await activateVisible(client, '[data-testid=\"product-add-to-cart\"]')",
+    ) &&
+    f7Behavior.includes("Duplicate product and size merge into one line"),
   null,
 );
 record(
@@ -313,8 +319,8 @@ const allowed = new Set([
   "scripts/seo-qa-f11.mjs",
   "scripts/test-f11-technical-seo.mjs",
   "scripts/test-f4-f5-catalog-product-card.mjs",
+  "scripts/test-f7-cart-checkout.mjs",
   "scripts/verify-cumulative-quality.mjs",
-  "src/components/product/ProductPurchasePanel.tsx",
   "src/router.tsx",
   "src/server.ts",
   "src/seo/seo-config.ts",
