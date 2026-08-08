@@ -226,12 +226,7 @@ async function recoverProductAddActivation(client, expression) {
           rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
       });
       if (!(target instanceof HTMLElement)) return false;
-      target.dispatchEvent(new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-        composed: true,
-        view: window,
-      }));
+      target.click();
       return true;
     })()`,
   );
