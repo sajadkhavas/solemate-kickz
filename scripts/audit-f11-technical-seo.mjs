@@ -14,15 +14,12 @@ function record(name, pass, evidence = null) {
   checks.push({ name, pass: Boolean(pass), evidence });
   if (!pass) console.error(`FAIL ${name}: ${JSON.stringify(evidence)}`);
 }
-
 function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), "utf8");
 }
-
 function exists(relativePath) {
   return fs.existsSync(path.join(ROOT, relativePath));
 }
-
 function git(...args) {
   const result = spawnSync("git", args, { cwd: ROOT, encoding: "utf8" });
   return { status: result.status, stdout: result.stdout.trim(), stderr: result.stderr.trim() };
@@ -65,6 +62,7 @@ const productRoute = read("src/routes/product.$id.tsx");
 const shoeCard = read("src/components/ShoeCard.tsx");
 const rootRoute = read("src/routes/__root.tsx");
 const catalogBehavior = read("scripts/test-f4-f5-catalog-product-card.mjs");
+const f7Audit = read("scripts/audit-f7-cart-checkout.mjs");
 const utilityStart = head.indexOf("function utilityHead");
 const utilityEnd = head.indexOf("function productHead");
 const utilitySegment = utilityStart >= 0 && utilityEnd > utilityStart ? head.slice(utilityStart, utilityEnd) : "";
@@ -110,6 +108,13 @@ record(
     catalogBehavior.includes("await activateVisible(client, '[data-testid=\"apply-mobile-filters\"]')"),
   null,
 );
+record(
+  "inherited F7 branch guard remains strict and forward-compatible",
+  f7Audit.includes("const CONTROLLED_PHASE = /^phase\\/sole-f") &&
+    f7Audit.includes("CONTROLLED_PHASE.test(branch)") &&
+    f7Audit.includes('git("merge-base", "--is-ancestor", BASELINE, "HEAD")'),
+  null,
+);
 record("F11 package commands and aggregate check are registered", packageJson.includes('"audit:f11": "node scripts/audit-f11-technical-seo.mjs"') && packageJson.includes('"test:f11": "node scripts/test-f11-technical-seo.mjs"') && packageJson.includes('"qa:seo:f11": "node scripts/seo-qa-f11.mjs"') && packageJson.includes("bun run audit:f11") && packageJson.includes("bun run test:f11") && packageJson.includes("bun run qa:seo:f11"), null);
 record("Frontend CI runs all F11 gates", workflow.includes("F11 technical SEO completion audit") && workflow.includes("F11 SSR SEO runtime tests") && workflow.includes("F11 SEO safety QA"), null);
 record("cumulative verifier requires F11 evidence", cumulative.includes('"f11-technical-seo"'), null);
@@ -120,6 +125,7 @@ const allowed = new Set([
   ".github/workflows/frontend-ci.yml",
   "docs/handoffs/F11-TECHNICAL-SEO.md",
   "package.json",
+  "scripts/audit-f7-cart-checkout.mjs",
   "scripts/audit-f11-technical-seo.mjs",
   "scripts/f11-browser-runner.mjs",
   "scripts/f11-seo-test-utils.mjs",
