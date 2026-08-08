@@ -84,6 +84,7 @@ if (/export default defineConfig\(\{\s*nitro:\s*\{\s*preset:\s*["']node-server["
 
 requireMatch("preflight must report system Node without requiring it", preflight, /SYSTEM_NODE=/);
 requireMatch("preflight must recognize local Node", preflight, /LOCAL_NODE=/);
+requireMatch("preflight must require ss before checking the port", preflight, /for command in[^\n]*\bss\b/);
 requireMatch("preflight must inspect AVX2", preflight, /\bavx2\b/);
 requireMatch("local Node bootstrap must pin 22.23.1", bootstrapNode, /VERSION="22\.23\.1"/);
 requireMatch("local Node bootstrap must verify checksum", bootstrapNode, /SHASUMS256\.txt[\s\S]*sha256sum/);
@@ -92,8 +93,11 @@ requireMatch("bootstrap must support x64 baseline Bun", bootstrapBun, /x64-basel
 requireMatch("Bun bootstrap must disable core dumps", bootstrapBun, /ulimit -c 0/);
 requireMatch("bootstrap must install Bun locally", bootstrapBun, /RUNTIME.*bun|\.runtime\/bun/s);
 requireMatch("safe dependency install must use cgroup memory limits", installSafe, /MemoryMax/);
+requireMatch("safe dependency install must isolate HOME", installSafe, /--setenv="HOME=\$HOME_DIR"/);
+requireMatch("safe dependency install must isolate Bun cache", installSafe, /BUN_INSTALL_CACHE_DIR/);
 requireMatch("safe build must use cgroup memory limits", buildSafe, /MemoryMax/);
 requireMatch("safe build must use local Node", buildSafe, /\.runtime\/node\/bin\/node/);
+requireMatch("safe build must isolate HOME", buildSafe, /--setenv="HOME=\$HOME_DIR"/);
 requireMatch("VPS build must set node-server target", buildNode, /SOLE_DEPLOY_TARGET:\s*"node-server"/);
 requireMatch("VPS build must verify Nitro server output", buildNode, /\.output\/server\/index\.mjs/);
 requireMatch("smoke test must probe loopback by default", smoke, /http:\/\/127\.0\.0\.1:4173/);

@@ -13,7 +13,7 @@ fail() {
 echo "===== SOLE VPS PREFLIGHT (READ-ONLY) ====="
 echo "ROOT=$ROOT"
 
-for command in git curl tar xz sha256sum; do
+for command in git curl tar xz sha256sum ss; do
   command -v "$command" >/dev/null 2>&1 || fail "$command is required"
 done
 
@@ -61,7 +61,7 @@ FREE_MB="$((FREE_KB / 1024))"
 echo "DISK_FREE_MB=$FREE_MB"
 (( FREE_MB >= 2048 )) || fail "At least 2 GiB free disk space is required"
 
-if ss -lnt 2>/dev/null | awk '{print $4}' | grep -Eq "(^|:)$PORT$"; then
+if ss -lnt | awk '{print $4}' | grep -Eq "(^|:)$PORT$"; then
   fail "Port $PORT is already listening"
 fi
 echo "PORT_${PORT}=FREE"

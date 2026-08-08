@@ -3,6 +3,7 @@ set -Eeuo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 NODE="$ROOT/.runtime/node/bin/node"
+HOME_DIR="$ROOT/.home"
 cd "$ROOT"
 
 [[ -x "$NODE" ]] || {
@@ -14,6 +15,8 @@ cd "$ROOT"
   echo "ERROR: Local Node must be v22.23.1." >&2
   exit 1
 }
+
+mkdir -p "$HOME_DIR"
 
 if command -v systemd-run >/dev/null 2>&1; then
   UNIT="sole-build-$(date +%s)"
@@ -30,8 +33,9 @@ if command -v systemd-run >/dev/null 2>&1; then
     --property=MemorySwapMax="${SOLE_BUILD_SWAP_MAX:-768M}" \
     --property=TasksMax=128 \
     --property=Nice=15 \
+    --setenv="HOME=$HOME_DIR" \
     "$NODE" scripts/deployment/build-node-server.mjs
 else
   echo "WARN: systemd-run unavailable; building without cgroup limits."
-  "$NODE" scripts/deployment/build-node-server.mjs
+  HOME="$HOME_DIR" "$NODE" scripts/deployment/build-node-server.mjs
 fi
