@@ -105,6 +105,33 @@ async function activateVisible(client, selector) {
   await sleep(150);
 }
 
+async function activateVisibleText(client, selector, text) {
+  const activated = await evaluate(
+    client,
+    `(() => {
+      const target = [...document.querySelectorAll(${JSON.stringify(selector)})].find((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return rect.width > 0 && rect.height > 0 && style.display !== 'none' &&
+          style.visibility !== 'hidden' && style.pointerEvents !== 'none' &&
+          element.textContent?.trim().includes(${JSON.stringify(text)});
+      });
+      if (!(target instanceof HTMLElement)) return false;
+      target.scrollIntoView({ block: 'center', inline: 'center' });
+      target.focus({ preventScroll: true });
+      target.dispatchEvent(new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        view: window,
+      }));
+      return true;
+    })()`,
+  );
+  if (!activated) throw new Error(`Visible text activation target not found: ${text}`);
+  await sleep(150);
+}
+
 async function run(baseUrl) {
   const browser = await openBrowser({ debugPort: 9245, logPath: CHROME_LOG });
   const { client } = browser;
@@ -228,11 +255,7 @@ async function run(baseUrl) {
     record(
       "Browser Back and Forward restore catalog state",
       beforeHistory === forwardState && backState !== forwardState,
-      {
-        beforeHistory,
-        backState,
-        forwardState,
-      },
+      { beforeHistory, backState, forwardState },
     );
 
     await navigate(
@@ -315,11 +338,7 @@ async function run(baseUrl) {
       client,
       `document.activeElement?.getAttribute('data-testid')`,
     );
-    record(
-      "Quick View Escape restores trigger focus",
-      restoredFocus === "quick-view-trigger",
-      restoredFocus,
-    );
+    record("Quick View Escape restores trigger focus", restoredFocus === "quick-view-trigger", restoredFocus);
 
     await client.send("Emulation.setDeviceMetricsOverride", {
       width: 390,
@@ -330,7 +349,7 @@ async function run(baseUrl) {
       screenHeight: 844,
     });
     await navigate(client, `${baseUrl}/products`);
-    await click(client, '[data-testid="mobile-filter-trigger"]');
+    await activateVisible(client, '[data-testid="mobile-filter-trigger"]');
     await waitForExpression(
       client,
       `document.querySelector('[data-testid="mobile-filter-dialog"]')`,
@@ -349,9 +368,9 @@ async function run(baseUrl) {
       mobileDialog,
     );
 
-    await clickText(client, '[data-testid="mobile-filter-dialog"] button', "Nike");
+    await activateVisibleText(client, '[data-testid="mobile-filter-dialog"] button', "Nike");
     await waitForExpression(client, `new URLSearchParams(location.search).get('brand') === 'Nike'`);
-    await click(client, '[data-testid="apply-mobile-filters"]');
+    await activateVisible(client, '[data-testid="apply-mobile-filters"]');
     await waitForExpression(
       client,
       `!document.querySelector('[data-testid="mobile-filter-dialog"]')`,
