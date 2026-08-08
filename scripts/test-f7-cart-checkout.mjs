@@ -198,7 +198,7 @@ async function run(baseUrl) {
     record("Drawer Escape restores the actual cart trigger", restored === "Cart", restored);
 
     await click(client, '[data-testid="product-size-option"]:nth-of-type(2)');
-    await click(client, '[data-testid="product-add-to-cart"]');
+    await activateVisible(client, '[data-testid="product-add-to-cart"]');
     await waitForExpression(client, `document.querySelector('[data-testid="cart-drawer"]')`);
     persisted = await readPersistedCart(client);
     record(
