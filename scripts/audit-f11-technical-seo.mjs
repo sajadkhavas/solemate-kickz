@@ -101,6 +101,10 @@ const productRoute = read("src/routes/product.$id.tsx");
 const shoeCard = read("src/components/ShoeCard.tsx");
 const rootRoute = read("src/routes/__root.tsx");
 const browserHarness = read("scripts/browser-harness.mjs");
+const utilityStart = head.indexOf("function utilityHead");
+const utilityEnd = head.indexOf("function productHead");
+const utilitySegment =
+  utilityStart >= 0 && utilityEnd > utilityStart ? head.slice(utilityStart, utilityEnd) : "";
 const handoff = exists("docs/handoffs/F11-TECHNICAL-SEO.md")
   ? read("docs/handoffs/F11-TECHNICAL-SEO.md")
   : "";
@@ -129,12 +133,13 @@ record(
 );
 record(
   "utility routes are noindex without homepage canonical",
-  ["/auth", "/cart", "/checkout", "/wishlist", "/account"].every((route) =>
-    head.includes(`"${route}"`),
-  ) &&
-    head.includes('{ name: "robots", content: "noindex, follow" }') &&
-    !/function utilityHead[\s\S]*rel: "canonical"/.test(head),
-  null,
+  utilitySegment.length > 0 &&
+    ["/auth", "/cart", "/checkout", "/wishlist", "/account"].every((route) =>
+      head.includes(`"${route}"`),
+    ) &&
+    utilitySegment.includes('{ name: "robots", content: "noindex, follow" }') &&
+    !utilitySegment.includes('rel: "canonical"'),
+  utilitySegment || "utilityHead segment missing",
 );
 record(
   "demo catalog and products are held out of index and sitemap",
@@ -221,6 +226,7 @@ record(
 record(
   "mobile browser activation uses real CDP touch events on narrow viewports",
   browserHarness.includes('mobileViewport = await evaluateRaw(client, "window.innerWidth < 768")') &&
+    browserHarness.includes('"Emulation.setTouchEmulationEnabled"') &&
     browserHarness.includes('"Input.dispatchTouchEvent"') &&
     browserHarness.includes('type: "touchStart"') &&
     browserHarness.includes('type: "touchEnd"'),
