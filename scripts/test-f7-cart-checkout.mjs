@@ -52,6 +52,27 @@ async function click(client, selector) {
   await sleep(140);
 }
 
+async function selectProductSize(client, index) {
+  const selected = await evaluate(
+    client,
+    `(() => {
+      const target = [...document.querySelectorAll('[data-testid="product-size-option"]')][${index}];
+      if (!(target instanceof HTMLButtonElement)) return false;
+      const rect = target.getBoundingClientRect();
+      const style = getComputedStyle(target);
+      if (rect.width <= 0 || rect.height <= 0 || style.visibility === 'hidden' || style.display === 'none') return false;
+      target.scrollIntoView({ block: 'center', inline: 'center' });
+      target?.click();
+      return Boolean(target);
+    })()`,
+  );
+  if (!selected) throw new Error(`Product size option ${index} was not selectable`);
+  await waitForExpression(
+    client,
+    `document.querySelectorAll('[data-testid="product-size-option"]')[${index}]?.getAttribute('aria-pressed') === 'true'`,
+  );
+}
+
 async function activateVisible(client, selector) {
   const activated = await evaluate(
     client,
@@ -154,7 +175,7 @@ async function run(baseUrl) {
     await navigate(client, `${baseUrl}/product/1`);
     await waitForExpression(client, `document.querySelector('[data-testid="product-purchase-panel"]')`);
 
-    await click(client, '[data-testid="product-size-option"]');
+    await selectProductSize(client, 0);
     await activateVisible(client, '[data-testid="product-add-to-cart"]');
     await waitForExpression(client, `document.querySelector('[data-testid="cart-drawer"]')`);
     await key(client, "Escape", "Escape", 27);
@@ -197,7 +218,7 @@ async function run(baseUrl) {
     const restored = await evaluate(client, `document.activeElement?.getAttribute('aria-label')`);
     record("Drawer Escape restores the actual cart trigger", restored === "Cart", restored);
 
-    await click(client, '[data-testid="product-size-option"]:nth-of-type(2)');
+    await selectProductSize(client, 1);
     await activateVisible(client, '[data-testid="product-add-to-cart"]');
     await waitForExpression(client, `document.querySelector('[data-testid="cart-drawer"]')`);
     persisted = await readPersistedCart(client);
