@@ -29,6 +29,7 @@ const PHASE_FILES = new Set([
   "scripts/test-f4-f5-catalog-product-card.mjs",
   "scripts/test-f7-cart-checkout.mjs",
   "scripts/visual-qa-f6-product-detail.mjs",
+  "scripts/visual-qa-f7-cart-checkout.mjs",
   "scripts/test-f9-wishlist-account-orders.mjs",
   "scripts/verify-cumulative-quality.mjs",
   "src/router.tsx",
@@ -285,6 +286,7 @@ const f11Runtime = read("scripts/test-f11-technical-seo.mjs");
 const catalogBehavior = read("scripts/test-f4-f5-catalog-product-card.mjs");
 const f7Audit = read("scripts/audit-f7-cart-checkout.mjs");
 const f6Visual = read("scripts/visual-qa-f6-product-detail.mjs");
+const f7Visual = read("scripts/visual-qa-f7-cart-checkout.mjs");
 const f7Behavior = read("scripts/test-f7-cart-checkout.mjs");
 const f9Behavior = read("scripts/test-f9-wishlist-account-orders.mjs");
 const handoff = read("docs/handoffs/F11-TECHNICAL-SEO.md");
@@ -470,6 +472,14 @@ record(
     f7Audit.includes('git("merge-base", "--is-ancestor", BASELINE, "HEAD")'),
   null,
 );
+record(
+  "F7 visual QA reseeds cart and checkout draft before stateful review capture",
+  f7Visual.includes("async function seedCheckoutState") &&
+    f7Visual.includes("sessionStorage.removeItem('sole-checkout-draft-v1')") &&
+    (f7Visual.match(/await seedCheckoutState\(client, baseUrl\)/g) ?? []).length >= 2,
+  null,
+);
+
 record(
   "F6 fallback visual QA deterministically exercises image-error fallback",
   f6Visual.includes("async function ensureMainImageFallback") &&

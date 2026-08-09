@@ -97,6 +97,18 @@ async function setField(client, selector, value) {
   await sleep(70);
 }
 
+async function seedCheckoutState(client, baseUrl) {
+  await navigate(client, `${baseUrl}/`);
+  await evaluate(
+    client,
+    `(() => {
+      localStorage.setItem('sole-store', JSON.stringify({ state: { cart: [{ id: 1, size: 40, qty: 2 }] } }));
+      sessionStorage.removeItem('sole-checkout-draft-v1');
+      return true;
+    })()`,
+  );
+}
+
 async function inspect(client, rootSelector) {
   return evaluate(
     client,
@@ -185,15 +197,7 @@ async function run(baseUrl) {
   });
 
   try {
-    await navigate(client, `${baseUrl}/`);
-    await evaluate(
-      client,
-      `(() => {
-        localStorage.setItem('sole-store', JSON.stringify({ state: { cart: [{ id: 1, size: 40, qty: 2 }] } }));
-        sessionStorage.removeItem('sole-checkout-draft-v1');
-        return true;
-      })()`,
-    );
+    await seedCheckoutState(client, baseUrl);
 
     for (const [width, height] of VIEWPORTS) {
       await capture(
@@ -329,6 +333,7 @@ async function run(baseUrl) {
     );
 
     await viewport(client, 390, 844, true);
+    await seedCheckoutState(client, baseUrl);
     await navigate(client, `${baseUrl}/checkout`);
     await waitForExpression(client, `document.querySelector('[data-testid="checkout-form"]')`);
     await setField(client, "#checkout-firstName", "سجاد");
