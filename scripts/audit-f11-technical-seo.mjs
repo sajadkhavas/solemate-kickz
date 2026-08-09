@@ -8,6 +8,8 @@ const BASELINE = "6da6036da3b7825ff7fa11bcd191d8872ddeb85c";
 const OWNER_BRANCH = "phase/sole-f11-technical-seo";
 const INTEGRATION_BRANCH = "integration/sole-frontend-v2";
 const FORMAT_COMMIT_MESSAGE = "Normalize cumulative Prettier formatting";
+const F3_FORMAT_FILE = "scripts/audit-f3-homepage.mjs";
+const F3_FORMAT_COMMIT_MESSAGE = "Normalize F3 homepage audit formatting";
 const REPORT = path.join(ROOT, "artifacts/audits/f11-technical-seo.json");
 const checks = [];
 
@@ -16,6 +18,7 @@ const PHASE_FILES = new Set([
   "docs/handoffs/F11-TECHNICAL-SEO.md",
   "package.json",
   "scripts/audit-f2-navigation-search.mjs",
+  F3_FORMAT_FILE,
   "scripts/audit-f7-cart-checkout.mjs",
   "scripts/audit-f11-technical-seo.mjs",
   "scripts/diagnose-f7-checkout-submit.mjs",
@@ -138,6 +141,21 @@ function formatBaselineFile(relativePath) {
       formatted.stdout === current ? null : "final file differs from formatted accepted baseline",
   };
 }
+
+const f3FormatComparison = formatBaselineFile(F3_FORMAT_FILE);
+record(
+  "F3 homepage audit final content is formatting-only versus the accepted baseline",
+  f3FormatComparison.pass,
+  f3FormatComparison,
+);
+const f3FormatSubjects = lines(
+  git("log", "--format=%s", `${BASELINE}..HEAD`, "--", F3_FORMAT_FILE).stdout,
+);
+record(
+  "F3 homepage audit changed only through the supervised formatting commit",
+  f3FormatSubjects.length === 1 && f3FormatSubjects[0] === F3_FORMAT_COMMIT_MESSAGE,
+  f3FormatSubjects,
+);
 
 const requiredFiles = [
   "src/seo/seo-config.ts",
