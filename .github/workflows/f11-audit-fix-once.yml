@@ -1,0 +1,136 @@
+name: F11 one-time formatter audit correction
+
+on:
+  push:
+    branches:
+      - phase/sole-f11-technical-seo
+
+permissions:
+  contents: write
+
+jobs:
+  correct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: phase/sole-f11-technical-seo
+          fetch-depth: 0
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - run: bun install --frozen-lockfile --ignore-scripts
+
+      - name: Replace history-sensitive formatter check with final-content proof
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/audit-f11-technical-seo.mjs')
+          source = path.read_text()
+
+          old_helper = '''function lines(value) {
+            return value.split("\\n").map((item) => item.trim()).filter(Boolean);
+          }
+          '''
+          new_helper = '''function lines(value) {
+            return value.split("\\n").map((item) => item.trim()).filter(Boolean);
+          }
+
+          function formatBaselineFile(relativePath) {
+            const baseline = spawnSync("git", ["show", `${BASELINE}:${relativePath}`], {
+              cwd: ROOT,
+              encoding: "utf8",
+            });
+            if (baseline.status !== 0) {
+              return { pass: false, reason: baseline.stderr.trim() || "baseline file unavailable" };
+            }
+
+            const prettierBin = path.join(
+              ROOT,
+              "node_modules",
+              ".bin",
+              process.platform === "win32" ? "prettier.cmd" : "prettier",
+            );
+            const formatted = spawnSync(prettierBin, ["--stdin-filepath", relativePath], {
+              cwd: ROOT,
+              encoding: "utf8",
+              input: baseline.stdout,
+            });
+            if (formatted.status !== 0) {
+              return { pass: false, reason: formatted.stderr.trim() || "Prettier failed" };
+            }
+
+            const current = read(relativePath);
+            return {
+              pass: formatted.stdout === current,
+              reason: formatted.stdout === current ? null : "final file differs from formatted accepted baseline",
+            };
+          }
+          '''
+
+          old_block = '''const inheritedFormatFiles = [...FORMAT_CLEANUP_FILES].filter((file) => !PHASE_FILES.has(file));
+          const inheritedFormatViolations = inheritedFormatFiles.filter((file) => {
+            const subjects = lines(git("log", "--format=%s", `${BASELINE}..HEAD`, "--", file).stdout);
+            return subjects.length !== 1 || subjects[0] !== FORMAT_COMMIT_MESSAGE;
+          });
+          record(
+            "inherited cumulative-format files have no behavioral F11 edits",
+            inheritedFormatViolations.length === 0,
+            inheritedFormatViolations,
+          );
+          record(
+            "ProductPurchasePanel changed only through automated cumulative formatting",
+            !inheritedFormatViolations.includes("src/components/product/ProductPurchasePanel.tsx") &&
+              FORMAT_CLEANUP_FILES.has("src/components/product/ProductPurchasePanel.tsx"),
+            null,
+          );
+          '''
+          new_block = '''const inheritedFormatFiles = [...FORMAT_CLEANUP_FILES].filter((file) => !PHASE_FILES.has(file));
+          const inheritedFormatComparisons = inheritedFormatFiles.map((file) => ({
+            file,
+            ...formatBaselineFile(file),
+          }));
+          const inheritedFormatViolations = inheritedFormatComparisons.filter((entry) => !entry.pass);
+          record(
+            "inherited cumulative-format files equal the Prettier-formatted accepted baseline",
+            inheritedFormatViolations.length === 0,
+            inheritedFormatViolations,
+          );
+          const purchasePanelComparison = inheritedFormatComparisons.find(
+            (entry) => entry.file === "src/components/product/ProductPurchasePanel.tsx",
+          );
+          record(
+            "ProductPurchasePanel final content is formatting-only versus the accepted baseline",
+            purchasePanelComparison?.pass === true,
+            purchasePanelComparison ?? null,
+          );
+          '''
+
+          if old_helper not in source:
+            raise SystemExit('helper anchor not found')
+          if old_block not in source:
+            raise SystemExit('formatter check anchor not found')
+
+          source = source.replace(old_helper, new_helper, 1).replace(old_block, new_block, 1)
+          path.write_text(source)
+          PY
+
+          ./node_modules/.bin/prettier --write scripts/audit-f11-technical-seo.mjs
+          git diff --check
+
+      - name: Commit correction and remove one-time workflow
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/f11-audit-fix-once.yml
+          git add scripts/audit-f11-technical-seo.mjs
+          git diff --cached --check
+          git commit -m 'Validate inherited formatter cleanup by final content'
+          git push origin HEAD:phase/sole-f11-technical-seo
