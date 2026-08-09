@@ -81,6 +81,24 @@ async function click(client, selector) {
   await sleep(180);
 }
 
+async function ensureMainImageFallback(client) {
+  const triggered = await evaluate(
+    client,
+    `(() => {
+      if (document.querySelector('[data-testid="product-main-image-fallback"]')) return true;
+      const image = document.querySelector('[data-testid="product-main-image"]');
+      if (!(image instanceof HTMLImageElement)) return false;
+      image.dispatchEvent(new Event('error'));
+      return true;
+    })()`,
+  );
+  if (!triggered) throw new Error("Main product image or fallback was not found");
+  await waitForExpression(
+    client,
+    `document.querySelector('[data-testid="product-main-image-fallback"]')`,
+  );
+}
+
 async function inspect(client) {
   return evaluate(
     client,
@@ -141,6 +159,7 @@ async function capture(client, baseUrl, name, url, width, height, setup) {
   );
   await waitForExpression(client, `document.fonts.status === 'loaded'`);
   if (setup) await setup();
+  await ensureMainImageFallback(client);
   await sleep(650);
 
   const metrics = await inspect(client);

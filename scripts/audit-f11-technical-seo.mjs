@@ -28,6 +28,7 @@ const PHASE_FILES = new Set([
   "scripts/test-f11-technical-seo.mjs",
   "scripts/test-f4-f5-catalog-product-card.mjs",
   "scripts/test-f7-cart-checkout.mjs",
+  "scripts/visual-qa-f6-product-detail.mjs",
   "scripts/test-f9-wishlist-account-orders.mjs",
   "scripts/verify-cumulative-quality.mjs",
   "src/router.tsx",
@@ -283,6 +284,7 @@ const f11TestUtils = read("scripts/f11-seo-test-utils.mjs");
 const f11Runtime = read("scripts/test-f11-technical-seo.mjs");
 const catalogBehavior = read("scripts/test-f4-f5-catalog-product-card.mjs");
 const f7Audit = read("scripts/audit-f7-cart-checkout.mjs");
+const f6Visual = read("scripts/visual-qa-f6-product-detail.mjs");
 const f7Behavior = read("scripts/test-f7-cart-checkout.mjs");
 const f9Behavior = read("scripts/test-f9-wishlist-account-orders.mjs");
 const handoff = read("docs/handoffs/F11-TECHNICAL-SEO.md");
@@ -468,6 +470,15 @@ record(
     f7Audit.includes('git("merge-base", "--is-ancestor", BASELINE, "HEAD")'),
   null,
 );
+record(
+  "F6 fallback visual QA deterministically exercises image-error fallback",
+  f6Visual.includes("async function ensureMainImageFallback") &&
+    f6Visual.includes("image.dispatchEvent(new Event('error'))") &&
+    f6Visual.includes("await ensureMainImageFallback(client)") &&
+    f6Visual.includes("product-main-image-fallback"),
+  null,
+);
+
 record(
   "inherited F7 variant selection remains committed before add",
   f7Behavior.includes("async function selectProductSize") &&
