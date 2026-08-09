@@ -37,6 +37,9 @@ jobs:
       - name: Install from lockfile
         run: bun install --frozen-lockfile
 
+      - name: Align temporary audit anchor
+        run: sed -i "s/f6Visual.includes('product-main-image-fallback')/f6Visual.includes(\"product-main-image-fallback\")/g" scripts/f11-apply-f6-visual-fix.py
+
       - name: Apply hydration-aware F6 visual fix
         run: python3 scripts/f11-apply-f6-visual-fix.py
 
