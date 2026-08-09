@@ -74,27 +74,10 @@ class CdpClient {
   }
 
   send(method, params = {}) {
-    let normalizedParams = params;
-    if (method === "Input.dispatchKeyEvent" && params && typeof params === "object") {
-      const virtualKeyCodes = {
-        Enter: 13,
-        " ": 32,
-        Spacebar: 32,
-      };
-      const virtualKeyCode = virtualKeyCodes[params.key];
-      if (virtualKeyCode && params.windowsVirtualKeyCode == null) {
-        normalizedParams = {
-          ...params,
-          windowsVirtualKeyCode: virtualKeyCode,
-          nativeVirtualKeyCode: virtualKeyCode,
-        };
-      }
-    }
-
     const id = ++this.sequence;
     return new Promise((resolve, reject) => {
       this.pending.set(id, { resolve, reject });
-      this.socket.send(JSON.stringify({ id, method, params: normalizedParams }));
+      this.socket.send(JSON.stringify({ id, method, params }));
     });
   }
 
