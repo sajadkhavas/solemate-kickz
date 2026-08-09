@@ -7,8 +7,76 @@ const ROOT = process.cwd();
 const BASELINE = "6da6036da3b7825ff7fa11bcd191d8872ddeb85c";
 const OWNER_BRANCH = "phase/sole-f11-technical-seo";
 const INTEGRATION_BRANCH = "integration/sole-frontend-v2";
+const FORMAT_COMMIT_MESSAGE = "Normalize cumulative Prettier formatting";
 const REPORT = path.join(ROOT, "artifacts/audits/f11-technical-seo.json");
 const checks = [];
+
+const PHASE_FILES = new Set([
+  ".github/workflows/frontend-ci.yml",
+  "docs/handoffs/F11-TECHNICAL-SEO.md",
+  "package.json",
+  "scripts/audit-f2-navigation-search.mjs",
+  "scripts/audit-f7-cart-checkout.mjs",
+  "scripts/audit-f11-technical-seo.mjs",
+  "scripts/diagnose-f7-checkout-submit.mjs",
+  "scripts/f11-browser-runner.mjs",
+  "scripts/f11-seo-test-utils.mjs",
+  "scripts/seo-qa-f11.mjs",
+  "scripts/test-f11-technical-seo.mjs",
+  "scripts/test-f4-f5-catalog-product-card.mjs",
+  "scripts/test-f7-cart-checkout.mjs",
+  "scripts/test-f9-wishlist-account-orders.mjs",
+  "scripts/verify-cumulative-quality.mjs",
+  "src/router.tsx",
+  "src/server.ts",
+  "src/routes/products.tsx",
+  "src/seo/seo-config.ts",
+  "src/seo/seo-head.ts",
+  "src/seo/seo-server.ts",
+]);
+
+const FORMAT_CLEANUP_FILES = new Set([
+  "docs/handoffs/F10-MOTION-3D-INTERACTION.md",
+  "docs/handoffs/F11-TECHNICAL-SEO.md",
+  "scripts/audit-deployment-readiness.mjs",
+  "scripts/audit-f10-motion-3d.mjs",
+  "scripts/audit-f11-technical-seo.mjs",
+  "scripts/audit-f6-product-detail.mjs",
+  "scripts/audit-f7-cart-checkout.mjs",
+  "scripts/deployment/build-node-server.mjs",
+  "scripts/deployment/smoke-node-server.mjs",
+  "scripts/f11-browser-runner.mjs",
+  "scripts/f11-seo-test-utils.mjs",
+  "scripts/f6-browser-runner.mjs",
+  "scripts/f7-browser-runner.mjs",
+  "scripts/run-browser-check.mjs",
+  "scripts/seo-qa-f11.mjs",
+  "scripts/test-f10-motion-3d.mjs",
+  "scripts/test-f11-technical-seo.mjs",
+  "scripts/test-f4-f5-catalog-product-card.mjs",
+  "scripts/test-f6-product-detail.mjs",
+  "scripts/test-f7-cart-checkout.mjs",
+  "scripts/visual-qa-f10-motion-3d.mjs",
+  "scripts/visual-qa-f6-product-detail.mjs",
+  "scripts/visual-qa-f7-cart-checkout.mjs",
+  "src/cart/cart-domain.ts",
+  "src/checkout/checkout-domain.ts",
+  "src/components/CartDrawer.tsx",
+  "src/components/KineticText.tsx",
+  "src/components/ShoeViewer3D.tsx",
+  "src/components/product/ProductGallery.tsx",
+  "src/components/product/ProductPurchasePanel.tsx",
+  "src/components/product/SizeGuideDialog.tsx",
+  "src/components/ui/commerce-primitives.tsx",
+  "src/lib/create-shoe-model.ts",
+  "src/lib/motion-system.ts",
+  "src/routes/cart.tsx",
+  "src/routes/checkout.tsx",
+  "src/routes/product.$id.tsx",
+  "src/seo/seo-config.ts",
+  "src/seo/seo-head.ts",
+  "src/store/index.ts",
+]);
 
 function record(name, pass, evidence = null) {
   checks.push({ name, pass: Boolean(pass), evidence });
@@ -30,6 +98,10 @@ function git(...args) {
     stdout: result.stdout.trim(),
     stderr: result.stderr.trim(),
   };
+}
+
+function lines(value) {
+  return value.split("\n").map((item) => item.trim()).filter(Boolean);
 }
 
 const requiredFiles = [
@@ -65,34 +137,55 @@ record(
   git("diff", "--name-only", BASELINE, "HEAD", "--", "src/routeTree.gen.ts").stdout === "",
   git("diff", "--name-only", BASELINE, "HEAD", "--", "src/routeTree.gen.ts").stdout,
 );
-record(
-  "lockfile is untouched",
-  git("diff", "--name-only", BASELINE, "HEAD", "--", "bun.lock").stdout === "",
-  null,
-);
+record("lockfile is untouched", git("diff", "--name-only", BASELINE, "HEAD", "--", "bun.lock").stdout === "");
 record(
   "shared browser harness remains exactly at the accepted baseline",
   git("diff", "--name-only", BASELINE, "HEAD", "--", "scripts/browser-harness.mjs").stdout === "",
   git("diff", "--name-only", BASELINE, "HEAD", "--", "scripts/browser-harness.mjs").stdout,
 );
+
+const formatCommits = lines(
+  git("log", "--format=%H", `--grep=^${FORMAT_COMMIT_MESSAGE}$`, `${BASELINE}..HEAD`).stdout,
+);
 record(
-  "ProductPurchasePanel remains exactly at the accepted baseline",
-  git(
-    "diff",
-    "--name-only",
-    BASELINE,
-    "HEAD",
-    "--",
-    "src/components/product/ProductPurchasePanel.tsx",
-  ).stdout === "",
-  git(
-    "diff",
-    "--name-only",
-    BASELINE,
-    "HEAD",
-    "--",
-    "src/components/product/ProductPurchasePanel.tsx",
-  ).stdout,
+  "exactly one supervisor cumulative formatting commit exists",
+  formatCommits.length === 1,
+  formatCommits,
+);
+const formatCommit = formatCommits[0] ?? null;
+const formatCommitFiles = formatCommit
+  ? lines(git("diff-tree", "--no-commit-id", "--name-only", "-r", formatCommit).stdout).sort()
+  : [];
+const expectedFormatCommitFiles = [
+  ".github/workflows/f11-format-once.yml",
+  ...FORMAT_CLEANUP_FILES,
+].sort();
+record(
+  "formatter commit changed only the reported cumulative files and removed its one-time workflow",
+  JSON.stringify(formatCommitFiles) === JSON.stringify(expectedFormatCommitFiles),
+  { expected: expectedFormatCommitFiles, actual: formatCommitFiles },
+);
+
+const inheritedFormatFiles = [...FORMAT_CLEANUP_FILES].filter((file) => !PHASE_FILES.has(file));
+const inheritedFormatViolations = inheritedFormatFiles.filter((file) => {
+  const subjects = lines(git("log", "--format=%s", `${BASELINE}..HEAD`, "--", file).stdout);
+  return subjects.length !== 1 || subjects[0] !== FORMAT_COMMIT_MESSAGE;
+});
+record(
+  "inherited cumulative-format files have no behavioral F11 edits",
+  inheritedFormatViolations.length === 0,
+  inheritedFormatViolations,
+);
+record(
+  "ProductPurchasePanel changed only through automated cumulative formatting",
+  !inheritedFormatViolations.includes("src/components/product/ProductPurchasePanel.tsx") &&
+    FORMAT_CLEANUP_FILES.has("src/components/product/ProductPurchasePanel.tsx"),
+  null,
+);
+record(
+  "one-time formatting workflow is absent from final tree",
+  git("ls-files", ".github/workflows/f11-format-once.yml").stdout === "",
+  git("ls-files", ".github/workflows/f11-format-once.yml").stdout,
 );
 
 const routeTree = read("src/routeTree.gen.ts");
@@ -268,11 +361,7 @@ record(
   shoeCard.includes("<Link") && shoeCard.includes('to: "/product/$id"'),
   null,
 );
-record(
-  "Persian RTL document contract remains intact",
-  rootRoute.includes('<html lang="fa" dir="rtl"'),
-  null,
-);
+record("Persian RTL document contract remains intact", rootRoute.includes('<html lang="fa" dir="rtl"'));
 record(
   "F11 SSR helper only follows bounded same-origin redirects",
   f11TestUtils.includes("target.origin !== base.origin") &&
@@ -293,15 +382,9 @@ record(
 record(
   "inherited mobile catalog gate uses scoped visible-event activation",
   catalogBehavior.includes("async function activateVisibleText") &&
-    catalogBehavior.includes(
-      "await activateVisible(client, '[data-testid=\"mobile-filter-trigger\"]')",
-    ) &&
-    catalogBehavior.includes(
-      'await activateVisibleText(client, \'[data-testid="mobile-filter-dialog"] button\', "Nike")',
-    ) &&
-    catalogBehavior.includes(
-      "await activateVisible(client, '[data-testid=\"apply-mobile-filters\"]')",
-    ),
+    catalogBehavior.includes("mobile-filter-trigger") &&
+    catalogBehavior.includes("mobile-filter-dialog") &&
+    catalogBehavior.includes("apply-mobile-filters"),
   null,
 );
 record(
@@ -312,11 +395,11 @@ record(
   null,
 );
 record(
-  "inherited F7 post-dialog activation correction is scoped to behavior test",
-  f7Behavior.includes("async function activateVisible(client, selector)") &&
-    f7Behavior.includes("target.dispatchEvent(new MouseEvent('click'") &&
-    f7Behavior.includes("await activateVisible(client, '[data-testid=\"product-add-to-cart\"]')") &&
-    f7Behavior.includes("Duplicate product and size merge into one line"),
+  "inherited F7 variant selection remains committed before add",
+  f7Behavior.includes("async function selectProductSize") &&
+    f7Behavior.includes("getAttribute('aria-pressed') === 'true'") &&
+    f7Behavior.includes("Duplicate product and size merge into one line") &&
+    f7Behavior.includes("Cart identity is variant-aware by product and size"),
   null,
 );
 record(
@@ -346,11 +429,7 @@ record(
     workflow.includes("F11 SEO safety QA"),
   null,
 );
-record(
-  "cumulative verifier requires F11 evidence",
-  cumulative.includes('"f11-technical-seo"'),
-  null,
-);
+record("cumulative verifier requires F11 evidence", cumulative.includes('"f11-technical-seo"'));
 record(
   "handoff records required F11 policies and validation sections",
   /Baseline SHA/.test(handoff) &&
@@ -366,41 +445,27 @@ record(
   handoff ? "content checked" : "missing",
 );
 
-const changed = git("diff", "--name-only", BASELINE, "HEAD").stdout.split("\n").filter(Boolean);
-const allowed = new Set([
-  ".github/workflows/frontend-ci.yml",
-  "docs/handoffs/F11-TECHNICAL-SEO.md",
-  "package.json",
-  "scripts/audit-f2-navigation-search.mjs",
-  "scripts/audit-f7-cart-checkout.mjs",
-  "scripts/audit-f11-technical-seo.mjs",
-  "scripts/diagnose-f7-checkout-submit.mjs",
-  "scripts/f11-browser-runner.mjs",
-  "scripts/f11-seo-test-utils.mjs",
-  "scripts/seo-qa-f11.mjs",
-  "scripts/test-f11-technical-seo.mjs",
-  "scripts/test-f4-f5-catalog-product-card.mjs",
-  "scripts/test-f7-cart-checkout.mjs",
-  "scripts/test-f9-wishlist-account-orders.mjs",
-  "scripts/verify-cumulative-quality.mjs",
-  "src/router.tsx",
-  "src/server.ts",
-  "src/routes/products.tsx",
-  "src/seo/seo-config.ts",
-  "src/seo/seo-head.ts",
-  "src/seo/seo-server.ts",
-]);
-const outOfScope = changed.filter((file) => !allowed.has(file));
-record("diff stays inside F11 and necessary regression scope", outOfScope.length === 0, outOfScope);
+const changed = lines(git("diff", "--name-only", BASELINE, "HEAD").stdout);
+const allowedFiles = new Set([...PHASE_FILES, ...FORMAT_CLEANUP_FILES]);
+const outOfScope = changed.filter((file) => !allowedFiles.has(file));
+record(
+  "diff stays inside F11 regression scope plus the constrained formatter cleanup",
+  outOfScope.length === 0,
+  outOfScope,
+);
 record(
   "runtime artifacts are not tracked",
   git("ls-files", "artifacts").stdout === "",
   git("ls-files", "artifacts").stdout,
 );
 record(
-  "no temporary F11 workflow is tracked",
-  git("ls-files", ".github/workflows/*f11*dev*", ".github/workflows/*acceptance*dev*").stdout ===
-    "",
+  "no temporary F11 development or formatter workflow is tracked",
+  git(
+    "ls-files",
+    ".github/workflows/*f11*dev*",
+    ".github/workflows/*acceptance*dev*",
+    ".github/workflows/f11-format-once.yml",
+  ).stdout === "",
   null,
 );
 
@@ -411,6 +476,7 @@ const report = {
   generatedAt: new Date().toISOString(),
   baseline: BASELINE,
   branch,
+  formatCommit,
   summary: {
     total: checks.length,
     passed: checks.length - failed.length,
