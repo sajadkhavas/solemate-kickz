@@ -1,0 +1,107 @@
+name: F11 stabilize F7 visual once
+
+on:
+  push:
+    branches:
+      - phase/sole-f11-technical-seo
+
+permissions:
+  contents: write
+
+concurrency:
+  group: f11-stabilize-f7-visual-once
+  cancel-in-progress: true
+
+jobs:
+  verify-and-fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out F11 branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase/sole-f11-technical-seo
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.23.1"
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+          no-cache: true
+
+      - name: Install from lockfile
+        run: bun install --frozen-lockfile
+
+      - name: Stabilize F7 visual state and harden F11 proof
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          visual_path = Path('scripts/visual-qa-f7-cart-checkout.mjs')
+          visual = visual_path.read_text()
+          anchor = '''async function inspect(client, rootSelector) {\n'''
+          helper = '''async function seedCheckoutState(client, baseUrl) {\n  await navigate(client, `${baseUrl}/`);\n  await evaluate(\n    client,\n    `(() => {\n      localStorage.setItem('sole-store', JSON.stringify({ state: { cart: [{ id: 1, size: 40, qty: 2 }] } }));\n      sessionStorage.removeItem('sole-checkout-draft-v1');\n      return true;\n    })()`,\n  );\n}\n\n'''
+          if 'async function seedCheckoutState' not in visual:
+              if anchor not in visual:
+                  raise SystemExit('inspect anchor missing')
+              visual = visual.replace(anchor, helper + anchor, 1)
+
+          initial = '''    await navigate(client, `${baseUrl}/`);\n    await evaluate(\n      client,\n      `(() => {\n        localStorage.setItem('sole-store', JSON.stringify({ state: { cart: [{ id: 1, size: 40, qty: 2 }] } }));\n        sessionStorage.removeItem('sole-checkout-draft-v1');\n        return true;\n      })()`,\n    );\n'''
+          if initial in visual:
+              visual = visual.replace(initial, '    await seedCheckoutState(client, baseUrl);\n', 1)
+
+          final_anchor = '''    await viewport(client, 390, 844, true);\n    await navigate(client, `${baseUrl}/checkout`);\n    await waitForExpression(client, `document.querySelector('[data-testid="checkout-form"]')`);\n    await setField(client, "#checkout-firstName", "سجاد");\n'''
+          final_new = '''    await viewport(client, 390, 844, true);\n    await seedCheckoutState(client, baseUrl);\n    await navigate(client, `${baseUrl}/checkout`);\n    await waitForExpression(client, `document.querySelector('[data-testid="checkout-form"]')`);\n    await setField(client, "#checkout-firstName", "سجاد");\n'''
+          if '    await seedCheckoutState(client, baseUrl);\n    await navigate(client, `${baseUrl}/checkout`);\n    await waitForExpression(client, `document.querySelector(\'[data-testid="checkout-form"]\')`);' not in visual:
+              if final_anchor not in visual:
+                  raise SystemExit('long review anchor missing')
+              visual = visual.replace(final_anchor, final_new, 1)
+          visual_path.write_text(visual)
+
+          audit_path = Path('scripts/audit-f11-technical-seo.mjs')
+          audit = audit_path.read_text()
+          phase_anchor = '  "scripts/visual-qa-f6-product-detail.mjs",\n'
+          phase_line = '  "scripts/visual-qa-f7-cart-checkout.mjs",\n'
+          phase_section = audit.split('const FORMAT_CLEANUP_FILES', 1)[0]
+          if phase_line not in phase_section:
+              if phase_anchor not in audit:
+                  raise SystemExit('phase anchor missing')
+              audit = audit.replace(phase_anchor, phase_anchor + phase_line, 1)
+
+          read_anchor = 'const f6Visual = read("scripts/visual-qa-f6-product-detail.mjs");\n'
+          read_line = 'const f7Visual = read("scripts/visual-qa-f7-cart-checkout.mjs");\n'
+          if read_line not in audit:
+              if read_anchor not in audit:
+                  raise SystemExit('read anchor missing')
+              audit = audit.replace(read_anchor, read_anchor + read_line, 1)
+
+          record_anchor = '''record(\n  "F6 fallback visual QA deterministically exercises image-error fallback",'''
+          proof = '''record(\n  "F7 visual QA reseeds cart and checkout draft before stateful review capture",\n  f7Visual.includes("async function seedCheckoutState") &&\n    f7Visual.includes("sessionStorage.removeItem('sole-checkout-draft-v1')") &&\n    (f7Visual.match(/await seedCheckoutState\\(client, baseUrl\\)/g) ?? []).length >= 2,\n  null,\n);\n\n'''
+          if 'F7 visual QA reseeds cart and checkout draft before stateful review capture' not in audit:
+              if record_anchor not in audit:
+                  raise SystemExit('record anchor missing')
+              audit = audit.replace(record_anchor, proof + record_anchor, 1)
+          audit_path.write_text(audit)
+          PY
+
+          bunx prettier --write scripts/visual-qa-f7-cart-checkout.mjs scripts/audit-f11-technical-seo.mjs
+
+      - name: Prove F7 Visual QA before commit
+        run: bun run qa:visual:f7
+
+      - name: Commit verified F7 visual stabilization and remove helper
+        shell: bash
+        run: |
+          rm -f .github/workflows/f11-stabilize-f7-visual-once.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m "Stabilize F7 visual checkout state"
+          git push origin HEAD:phase/sole-f11-technical-seo
