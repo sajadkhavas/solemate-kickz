@@ -473,7 +473,9 @@ record(
 record(
   "F6 fallback visual QA deterministically exercises image-error fallback",
   f6Visual.includes("async function ensureMainImageFallback") &&
-    f6Visual.includes("image.dispatchEvent(new Event('error'))") &&
+    f6Visual.includes("aria-selected") &&
+    f6Visual.includes("Product gallery did not hydrate before fallback QA") &&
+    f6Visual.includes("data:image/png;base64,@@@") &&
     f6Visual.includes("await ensureMainImageFallback(client)") &&
     f6Visual.includes("product-main-image-fallback"),
   null,

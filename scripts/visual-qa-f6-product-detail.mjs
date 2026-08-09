@@ -82,17 +82,69 @@ async function click(client, selector) {
 }
 
 async function ensureMainImageFallback(client) {
-  const triggered = await evaluate(
+  const alreadyFallback = await evaluate(
+    client,
+    `Boolean(document.querySelector('[data-testid="product-main-image-fallback"]'))`,
+  );
+  if (alreadyFallback) return;
+
+  const targetLabel = await evaluate(
     client,
     `(() => {
-      if (document.querySelector('[data-testid="product-main-image-fallback"]')) return true;
-      const image = document.querySelector('[data-testid="product-main-image"]');
-      if (!(image instanceof HTMLImageElement)) return false;
-      image.dispatchEvent(new Event('error'));
-      return true;
+      const target = [...document.querySelectorAll('[data-testid="product-thumbnail"]')].find(
+        (element) => element.getAttribute('aria-selected') === 'false',
+      );
+      return target?.getAttribute('aria-label') ?? null;
     })()`,
   );
-  if (!triggered) throw new Error("Main product image or fallback was not found");
+  if (!targetLabel) throw new Error("Hydration probe thumbnail was not found");
+
+  const deadline = Date.now() + 5000;
+  let hydrated = false;
+  while (Date.now() < deadline) {
+    await evaluate(
+      client,
+      `(() => {
+        const target = [...document.querySelectorAll('[data-testid="product-thumbnail"]')].find(
+          (element) => element.getAttribute('aria-label') === ${JSON.stringify(targetLabel)},
+        );
+        if (!(target instanceof HTMLElement)) return false;
+        target.click();
+        return true;
+      })()`,
+    );
+    await sleep(120);
+    hydrated = await evaluate(
+      client,
+      `(() => {
+        const target = [...document.querySelectorAll('[data-testid="product-thumbnail"]')].find(
+          (element) => element.getAttribute('aria-label') === ${JSON.stringify(targetLabel)},
+        );
+        return target?.getAttribute('aria-selected') === 'true';
+      })()`,
+    );
+    if (hydrated) break;
+  }
+  if (!hydrated) throw new Error("Product gallery did not hydrate before fallback QA");
+
+  await sleep(180);
+  const naturalFallback = await evaluate(
+    client,
+    `Boolean(document.querySelector('[data-testid="product-main-image-fallback"]'))`,
+  );
+  if (!naturalFallback) {
+    const triggered = await evaluate(
+      client,
+      `(() => {
+        const image = document.querySelector('[data-testid="product-main-image"]');
+        if (!(image instanceof HTMLImageElement)) return false;
+        image.src = 'data:image/png;base64,@@@';
+        return true;
+      })()`,
+    );
+    if (!triggered) throw new Error("Hydrated main product image was not found");
+  }
+
   await waitForExpression(
     client,
     `document.querySelector('[data-testid="product-main-image-fallback"]')`,
