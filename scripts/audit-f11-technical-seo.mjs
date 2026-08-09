@@ -116,6 +116,7 @@ const rootRoute = read("src/routes/__root.tsx");
 const catalogBehavior = read("scripts/test-f4-f5-catalog-product-card.mjs");
 const f7Audit = read("scripts/audit-f7-cart-checkout.mjs");
 const f7Behavior = read("scripts/test-f7-cart-checkout.mjs");
+const f9Behavior = read("scripts/test-f9-wishlist-account-orders.mjs");
 const handoff = exists("docs/handoffs/F11-TECHNICAL-SEO.md")
   ? read("docs/handoffs/F11-TECHNICAL-SEO.md")
   : "";
@@ -128,9 +129,11 @@ record(
   "Site URL is environment configured normalized and rejects local origins",
   config.includes('SITE_URL_ENV_NAME = "VITE_SITE_URL"') &&
     config.includes("import.meta.env.VITE_SITE_URL") &&
+    config.includes("normalizeHostname") &&
     config.includes('hostname.endsWith(".localhost")') &&
     config.includes('hostname.endsWith(".local")') &&
     config.includes("isPrivateIpv4") &&
+    config.includes("isNonPublicIpv6") &&
     !config.includes("example.com"),
   null,
 );
@@ -275,6 +278,14 @@ record(
   null,
 );
 record(
+  "inherited F9 keyboard assertion keeps trusted CDP activation without shared harness changes",
+  f9Behavior.includes('type: "keyDown"') &&
+    f9Behavior.includes("windowsVirtualKeyCode") &&
+    f9Behavior.includes('const text = key === "Enter" ? "\\r"') &&
+    f9Behavior.includes("Wishlist clear action works from keyboard and persists"),
+  null,
+);
+record(
   "F11 package commands and aggregate check are registered",
   packageJson.includes('"audit:f11": "node scripts/audit-f11-technical-seo.mjs"') &&
     packageJson.includes('"test:f11": "node scripts/test-f11-technical-seo.mjs"') &&
@@ -320,6 +331,7 @@ const allowed = new Set([
   "scripts/test-f11-technical-seo.mjs",
   "scripts/test-f4-f5-catalog-product-card.mjs",
   "scripts/test-f7-cart-checkout.mjs",
+  "scripts/test-f9-wishlist-account-orders.mjs",
   "scripts/verify-cumulative-quality.mjs",
   "src/router.tsx",
   "src/server.ts",
