@@ -151,11 +151,17 @@ function ProductPage() {
           aria-label="مسیر صفحه"
           className="mb-7 flex flex-wrap items-center gap-2 font-fa text-xs text-muted-foreground"
         >
-          <Link to="/" className="inline-flex min-h-11 items-center hover:text-foreground">
+          <Link
+            to="/"
+            className="inline-flex min-h-11 min-w-6 items-center justify-center hover:text-foreground"
+          >
             خانه
           </Link>
           <span aria-hidden="true">/</span>
-          <Link to="/products" className="inline-flex min-h-11 items-center hover:text-foreground">
+          <Link
+            to="/products"
+            className="inline-flex min-h-11 min-w-6 items-center justify-center hover:text-foreground"
+          >
             فروشگاه
           </Link>
           <span aria-hidden="true">/</span>

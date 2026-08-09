@@ -84,7 +84,17 @@ async function inspect(client) {
       }).length;
       const clippedControls = controls.filter((element) => {
         const rect = element.getBoundingClientRect();
-        return rect.left < -1 || rect.right > innerWidth + 1;
+        if (!(rect.left < -1 || rect.right > innerWidth + 1)) return false;
+        let ancestor = element.parentElement;
+        while (ancestor && ancestor !== main) {
+          const ancestorStyle = getComputedStyle(ancestor);
+          if (
+            (ancestorStyle.overflowX === 'auto' || ancestorStyle.overflowX === 'scroll') &&
+            ancestor.scrollWidth > ancestor.clientWidth + 1
+          ) return false;
+          ancestor = ancestor.parentElement;
+        }
+        return true;
       }).slice(0, 20).map((element) => {
         const rect = element.getBoundingClientRect();
         return { tag: element.tagName, label: element.getAttribute('aria-label') || element.textContent?.trim().slice(0, 50), left: Math.round(rect.left), right: Math.round(rect.right) };
@@ -105,7 +115,7 @@ async function inspect(client) {
         viewport: { width: innerWidth, height: innerHeight },
         documentWidth: document.documentElement.scrollWidth,
         overflow: document.documentElement.scrollWidth > innerWidth + 1,
-        h1: document.querySelectorAll('main h1').length,
+        h1: document.querySelectorAll('h1').length,
         belowAbsoluteMinimum,
         belowPreferredTouch,
         clippedControls,
@@ -126,7 +136,7 @@ async function capture(client, baseUrl, name, url, width, height, options = {}) 
   await navigate(client, `${baseUrl}${url}`);
   await waitForExpression(
     client,
-    `document.querySelector('main h1') || document.querySelector('[data-testid="home-hero"] h1')`,
+    `document.querySelector('main') || document.querySelector('#main-content')`,
   );
   await waitForExpression(client, `document.fonts.status === 'loaded'`);
   await sleep(options.wait ?? 450);

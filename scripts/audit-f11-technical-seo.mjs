@@ -30,6 +30,7 @@ const PHASE_FILES = new Set([
   "scripts/test-f7-cart-checkout.mjs",
   "scripts/visual-qa-f6-product-detail.mjs",
   "scripts/visual-qa-f7-cart-checkout.mjs",
+  "scripts/visual-qa-f10-motion-3d.mjs",
   "scripts/test-f9-wishlist-account-orders.mjs",
   "scripts/verify-cumulative-quality.mjs",
   "src/router.tsx",
@@ -287,6 +288,7 @@ const catalogBehavior = read("scripts/test-f4-f5-catalog-product-card.mjs");
 const f7Audit = read("scripts/audit-f7-cart-checkout.mjs");
 const f6Visual = read("scripts/visual-qa-f6-product-detail.mjs");
 const f7Visual = read("scripts/visual-qa-f7-cart-checkout.mjs");
+const f10Visual = read("scripts/visual-qa-f10-motion-3d.mjs");
 const f7Behavior = read("scripts/test-f7-cart-checkout.mjs");
 const f9Behavior = read("scripts/test-f9-wishlist-account-orders.mjs");
 const handoff = read("docs/handoffs/F11-TECHNICAL-SEO.md");
@@ -472,6 +474,21 @@ record(
     f7Audit.includes('git("merge-base", "--is-ancestor", BASELINE, "HEAD")'),
   null,
 );
+record(
+  "F10 visual QA distinguishes page clipping from intentional horizontal rails and preserves document-wide h1 checks",
+  f10Visual.includes("document.querySelector('main') || document.querySelector('#main-content')") &&
+    f10Visual.includes("document.querySelectorAll('h1').length") &&
+    f10Visual.includes("ancestorStyle.overflowX === 'auto'") &&
+    f10Visual.includes("ancestor.scrollWidth > ancestor.clientWidth + 1") &&
+    f10Visual.includes("if (metrics.h1 !== 1) findings.push(`h1-count-${metrics.h1}`)"),
+  null,
+);
+record(
+  "PDP breadcrumb links meet the 24px absolute target floor",
+  productRoute.includes("inline-flex min-h-11 min-w-6 items-center justify-center"),
+  null,
+);
+
 record(
   "F7 visual QA reseeds cart and checkout draft before stateful review capture",
   f7Visual.includes("async function seedCheckoutState") &&
