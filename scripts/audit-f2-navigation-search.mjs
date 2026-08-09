@@ -40,7 +40,7 @@ function extractFullPathRegistrations(source) {
     /export interface FileRoutesByFullPath \{([\s\S]*?)\n\}\nexport interface FileRoutesByTo/,
   );
   if (!match) return [];
-  return [...match[1].matchAll(/^  '([^']+)': typeof /gm)].map((entry) => entry[1]).sort();
+  return [...match[1].matchAll(/^ {2}'([^']+)': typeof /gm)].map((entry) => entry[1]).sort();
 }
 
 const files = {
