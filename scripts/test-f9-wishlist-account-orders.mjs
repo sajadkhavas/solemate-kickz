@@ -89,8 +89,24 @@ async function fill(client, selector, value) {
 }
 
 async function pressKey(client, key, code = key) {
-  await client.send("Input.dispatchKeyEvent", { type: "rawKeyDown", key, code });
-  await client.send("Input.dispatchKeyEvent", { type: "keyUp", key, code });
+  const virtualKeyCode = key === "Enter" ? 13 : key === " " ? 32 : undefined;
+  const text = key === "Enter" ? "\r" : key === " " ? " " : undefined;
+  await client.send("Input.dispatchKeyEvent", {
+    type: "keyDown",
+    key,
+    code,
+    windowsVirtualKeyCode: virtualKeyCode,
+    nativeVirtualKeyCode: virtualKeyCode,
+    text,
+    unmodifiedText: text,
+  });
+  await client.send("Input.dispatchKeyEvent", {
+    type: "keyUp",
+    key,
+    code,
+    windowsVirtualKeyCode: virtualKeyCode,
+    nativeVirtualKeyCode: virtualKeyCode,
+  });
   await sleep(140);
 }
 
