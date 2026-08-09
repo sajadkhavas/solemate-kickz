@@ -28,7 +28,7 @@ Git commit IDs are content-addressed, so a tracked file cannot contain the SHA o
 
 ## Files changed
 
-F11 keeps SEO implementation centralized while retaining only the regression-test corrections and catalog URL normalization required by exact-head review:
+F11 keeps SEO implementation centralized while retaining only the regression-test, lint-only inherited corrections and catalog URL normalization required by exact-head review:
 
 - `src/seo/seo-config.ts`
 - `src/seo/seo-head.ts`
@@ -42,8 +42,10 @@ F11 keeps SEO implementation centralized while retaining only the regression-tes
 - `scripts/test-f11-technical-seo.mjs`
 - `scripts/seo-qa-f11.mjs`
 - `scripts/test-f4-f5-catalog-product-card.mjs`
+- `scripts/audit-f2-navigation-search.mjs` (lint-only regex normalization)
 - `scripts/audit-f7-cart-checkout.mjs`
 - `scripts/test-f7-cart-checkout.mjs`
+- `scripts/diagnose-f7-checkout-submit.mjs` (diagnostic error-scope fix only)
 - `scripts/test-f9-wishlist-account-orders.mjs`
 - `scripts/verify-cumulative-quality.mjs`
 - `package.json`
@@ -105,9 +107,9 @@ Rules:
 
 The current `/products` content is demo Dataset content, so the catalog base and every query variant are `noindex, follow`. When a valid Site URL is configured they canonicalize to the single clean `/products` URL.
 
-TanStack Router search validation still provides application defaults (`sort=newest`, `quick=all`, `view=grid`), but F11 adds the official `stripSearchParams` middleware for those defaults. This keeps the canonical catalog URL clean instead of redirecting `/products` to a URL whose only parameters reproduce default UI state. Real filter state such as brand/category/size/search remains URL-addressable. Default-only or unknown query noise may be normalized through an internal Router redirect; the runtime gate follows only bounded same-origin redirects, rejects cross-origin redirects, and verifies the final clean policy.
+TanStack Router search validation still provides application defaults (`sort=newest`, `quick=all`, `view=grid`), but F11 adds the official `stripSearchParams` middleware for those defaults. This keeps the canonical catalog URL clean instead of redirecting `/products` to a URL whose only parameters reproduce default UI state. Real filter state such as brand/category/size/search remains URL-addressable. Default-only query state may be normalized through an internal Router redirect. Unknown query noise may remain in the raw request URL, but it stays on the `noindex, follow` catalog state and is excluded from the canonical target, so it cannot become an independent SEO landing URL.
 
-No SEO landing page is invented for filter/search/sort state.
+The runtime gate follows only bounded same-origin redirects, rejects cross-origin redirects and verifies the clean canonical/indexation policy. No SEO landing page is invented for filter/search/sort state.
 
 ## robots.txt policy
 
@@ -173,7 +175,7 @@ TanStack Router may normalize a malformed/trailing route with an internal 3xx be
 
 F11 validation uses actual HTTP responses from the TanStack Start development server, not source grep alone. It checks initial HTML `<head>`, final response status/headers, JSON-LD, crawlable anchors, robots.txt and sitemap.xml before any client hydration.
 
-Redirect handling is explicit rather than hidden: at most five same-origin redirects are followed and recorded; any cross-origin redirect fails the test. The clean `/products` URL is specifically required to return final 200 without a redirect, while default/unknown query normalization must remain on the catalog route and resolve to the expected final URL policy.
+Redirect handling is explicit rather than hidden: at most five same-origin redirects are followed and recorded; any cross-origin redirect fails the test. The clean `/products` URL is specifically required to return final 200 without a redirect. Default query normalization is checked against the final URL, while unknown query noise is required to remain on `/products`, `noindex, follow` and canonicalized to the clean `/products` target.
 
 The configured suite runs with `VITE_SITE_URL=https://sole.test`, a reserved test origin used only as deterministic acceptance configuration. A separate QA server runs with a rejected localhost Site URL to prove fail-safe behavior. Source/audit coverage additionally locks the non-public IPv6 rejection added during supervisor review.
 
@@ -220,9 +222,12 @@ Supervisor review found CI-only interaction drift in inherited browser automatio
 
 - F4/F5 mobile filter activation uses visible target activation without weakening catalog assertions.
 - F7 post-dialog product/cart activation is scoped to its behavior test; functional assertions remain intact.
+- F7 variant selection now waits until the selected size reports `aria-pressed=true` before Add to Cart; this removed a race that could add a third quantity to the previous size instead of exercising a second variant. ProductPurchasePanel and Cart domain logic were not changed.
 - F9 Wishlist clear still must receive keyboard focus, activate through a trusted CDP Enter event, render the empty state and persist an empty wishlist.
-- F9 ProductCard synchronization still requires `aria-pressed=true`; the test now waits for the final hydrated store-derived state instead of reading a premature snapshot.
+- F9 ProductCard synchronization still requires `aria-pressed=true`; the test waits for the final hydrated store-derived state instead of reading a premature snapshot.
 - The shared browser harness is restored exactly to the accepted F10 baseline.
+
+Global lint also surfaced two inherited static-code errors outside F11 behavior: the F2 route-registration regex used literal repeated spaces and the F7 checkout diagnostic referenced `before`/`after` outside their scope on fatal errors. Those were repaired without changing application runtime behavior or weakening any quality gate.
 
 ## Known limitations
 
@@ -258,6 +263,7 @@ These are truth boundaries, not incomplete F11 implementation.
 - SSR head and crawlable links tested over HTTP.
 - F11 gates registered in package, Frontend CI and cumulative evidence.
 - Inherited browser regressions corrected locally without altering the accepted shared harness or weakening behavioral assertions.
+- Global lint errors discovered by exact-head CI were fixed rather than suppressed.
 - No prior quality gate removed or weakened.
 - No direct main or Integration write performed by the phase implementation.
 - PR #12 is only eligible for Ready for Review and supervisor merge after exact final-head quality evidence is green.
