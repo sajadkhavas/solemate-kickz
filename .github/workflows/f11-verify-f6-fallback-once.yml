@@ -1,0 +1,77 @@
+name: F11 verify F6 fallback once
+
+on:
+  push:
+    branches:
+      - phase/sole-f11-technical-seo
+
+permissions:
+  contents: write
+
+concurrency:
+  group: f11-verify-f6-fallback-once
+  cancel-in-progress: true
+
+jobs:
+  verify-and-fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out F11 branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase/sole-f11-technical-seo
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.23.1"
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+          no-cache: true
+
+      - name: Install from lockfile
+        run: bun install --frozen-lockfile
+
+      - name: Use a real browser image decode failure
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          visual_path = Path('scripts/visual-qa-f6-product-detail.mjs')
+          visual = visual_path.read_text()
+          old = "image.dispatchEvent(new Event('error'));"
+          new = "image.src = 'data:image/png;base64,invalid-f6-visual-fallback';"
+          if old not in visual:
+              raise SystemExit('old synthetic error trigger missing')
+          visual = visual.replace(old, new, 1)
+          visual_path.write_text(visual)
+
+          audit_path = Path('scripts/audit-f11-technical-seo.mjs')
+          audit = audit_path.read_text()
+          old_audit = '''f6Visual.includes("image.dispatchEvent(new Event('error'))")'''
+          new_audit = '''f6Visual.includes("data:image/png;base64,invalid-f6-visual-fallback")'''
+          if old_audit not in audit:
+              raise SystemExit('old F6 audit trigger proof missing')
+          audit = audit.replace(old_audit, new_audit, 1)
+          audit_path.write_text(audit)
+          PY
+          bunx prettier --write scripts/visual-qa-f6-product-detail.mjs scripts/audit-f11-technical-seo.mjs
+
+      - name: Prove F6 Visual QA before commit
+        run: bun run qa:visual:f6
+
+      - name: Commit verified deterministic fallback QA
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/visual-qa-f6-product-detail.mjs scripts/audit-f11-technical-seo.mjs
+          git diff --cached --quiet && exit 0
+          git commit -m "Verify F6 fallback with real image error"
+          git push origin HEAD:phase/sole-f11-technical-seo
