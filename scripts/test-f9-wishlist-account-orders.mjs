@@ -205,7 +205,8 @@ async function run(baseUrl) {
     await navigate(client, `${baseUrl}/products`);
     await waitForExpression(
       client,
-      `document.querySelector('a[href="/product/1"]')?.closest('[data-testid="product-card"]')`,
+      `document.querySelector('a[href="/product/1"]')?.closest('[data-testid="product-card"]')?.querySelector('button[aria-pressed]')?.getAttribute('aria-pressed') === 'true'`,
+      10_000,
     );
     const cardPressed = await evaluate(
       client,
