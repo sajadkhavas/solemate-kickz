@@ -105,6 +105,7 @@ jobs:
       - name: F10 motion 3D interaction browser behavior tests
         run: bun run test:f10
 
+      # F11 audit also proves inherited formatter cleanup equals the Prettier-formatted accepted baseline.
       - name: F11 technical SEO completion audit
         run: bun run audit:f11
 
