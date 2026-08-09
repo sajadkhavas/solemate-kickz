@@ -37,6 +37,7 @@ const requiredFiles = [
   "src/seo/seo-head.ts",
   "src/seo/seo-server.ts",
   "src/server.ts",
+  "src/routes/products.tsx",
   "scripts/f11-browser-runner.mjs",
   "scripts/f11-seo-test-utils.mjs",
   "scripts/audit-f11-technical-seo.mjs",
@@ -48,10 +49,7 @@ for (const file of requiredFiles) record(`${file} exists`, exists(file), file);
 
 const branchResult = git("branch", "--show-current");
 const branch =
-  process.env.GITHUB_HEAD_REF ||
-  branchResult.stdout ||
-  process.env.GITHUB_REF_NAME ||
-  "detached";
+  process.env.GITHUB_HEAD_REF || branchResult.stdout || process.env.GITHUB_REF_NAME || "detached";
 record(
   "controlled F11 or Integration branch",
   branch === OWNER_BRANCH || branch === INTEGRATION_BRANCH || process.env.CI === "true",
@@ -107,19 +105,21 @@ const head = read("src/seo/seo-head.ts");
 const serverSeo = read("src/seo/seo-server.ts");
 const serverEntry = read("src/server.ts");
 const router = read("src/router.tsx");
-const packageJson = read("package.json");
-const workflow = read(".github/workflows/frontend-ci.yml");
-const cumulative = read("scripts/verify-cumulative-quality.mjs");
+const catalogRoute = read("src/routes/products.tsx");
 const productRoute = read("src/routes/product.$id.tsx");
 const shoeCard = read("src/components/ShoeCard.tsx");
 const rootRoute = read("src/routes/__root.tsx");
+const packageJson = read("package.json");
+const workflow = read(".github/workflows/frontend-ci.yml");
+const cumulative = read("scripts/verify-cumulative-quality.mjs");
+const f11TestUtils = read("scripts/f11-seo-test-utils.mjs");
+const f11Runtime = read("scripts/test-f11-technical-seo.mjs");
 const catalogBehavior = read("scripts/test-f4-f5-catalog-product-card.mjs");
 const f7Audit = read("scripts/audit-f7-cart-checkout.mjs");
 const f7Behavior = read("scripts/test-f7-cart-checkout.mjs");
 const f9Behavior = read("scripts/test-f9-wishlist-account-orders.mjs");
-const handoff = exists("docs/handoffs/F11-TECHNICAL-SEO.md")
-  ? read("docs/handoffs/F11-TECHNICAL-SEO.md")
-  : "";
+const handoff = read("docs/handoffs/F11-TECHNICAL-SEO.md");
+
 const utilityStart = head.indexOf("function utilityHead");
 const utilityEnd = head.indexOf("function productHead");
 const utilitySegment =
@@ -164,6 +164,15 @@ record(
   head.includes('pathname !== "/products"') &&
     head.includes('{ name: "robots", content: "noindex, follow" }') &&
     serverSeo.includes('SITEMAP_PATHS = ["/", "/about", "/brands"]'),
+  null,
+);
+record(
+  "catalog strips default search values from generated URLs",
+  catalogRoute.includes("stripSearchParams") &&
+    catalogRoute.includes('sort: "newest"') &&
+    catalogRoute.includes('quick: "all"') &&
+    catalogRoute.includes('view: "grid"') &&
+    catalogRoute.includes("middlewares: [stripSearchParams(DEFAULT_CATALOG_SEARCH)]"),
   null,
 );
 record(
@@ -251,6 +260,23 @@ record(
   null,
 );
 record(
+  "F11 SSR helper only follows bounded same-origin redirects",
+  f11TestUtils.includes('target.origin !== base.origin') &&
+    f11TestUtils.includes("Unsafe cross-origin redirect") &&
+    f11TestUtils.includes("maxRedirects = 5") &&
+    f11TestUtils.includes("redirect: \"manual\"") &&
+    f11TestUtils.includes("redirects.push"),
+  null,
+);
+record(
+  "F11 runtime verifies clean catalog URLs and safe redirect normalization",
+  f11Runtime.includes("clean catalog URL is direct 200") &&
+    f11Runtime.includes("default sort is removed from final URL") &&
+    f11Runtime.includes("unknown query is removed from final URL") &&
+    f11Runtime.includes("redirect chain never masquerades as homepage"),
+  null,
+);
+record(
   "inherited mobile catalog gate uses scoped visible-event activation",
   catalogBehavior.includes("async function activateVisibleText") &&
     catalogBehavior.includes("await activateVisible(client, '[data-testid=\"mobile-filter-trigger\"]')") &&
@@ -278,11 +304,13 @@ record(
   null,
 );
 record(
-  "inherited F9 keyboard assertion keeps trusted CDP activation without shared harness changes",
+  "inherited F9 keyboard and hydration assertions remain strict",
   f9Behavior.includes('type: "keyDown"') &&
     f9Behavior.includes("windowsVirtualKeyCode") &&
     f9Behavior.includes('const text = key === "Enter" ? "\\r"') &&
-    f9Behavior.includes("Wishlist clear action works from keyboard and persists"),
+    f9Behavior.includes("Wishlist clear action works from keyboard and persists") &&
+    f9Behavior.includes("getAttribute('aria-pressed') === 'true'") &&
+    f9Behavior.includes("ProductCard reflects PDP wishlist state"),
   null,
 );
 record(
@@ -335,6 +363,7 @@ const allowed = new Set([
   "scripts/verify-cumulative-quality.mjs",
   "src/router.tsx",
   "src/server.ts",
+  "src/routes/products.tsx",
   "src/seo/seo-config.ts",
   "src/seo/seo-head.ts",
   "src/seo/seo-server.ts",
