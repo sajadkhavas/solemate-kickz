@@ -73,7 +73,7 @@ jobs:
                   raise SystemExit('read anchor missing')
               audit = audit.replace(read_anchor, read_line + read_anchor, 1)
 
-          record_anchor = '''record(\n  "F7 behavior test verifies selected-size commit before add",'''
+          record_anchor = '''record(\n  "inherited F7 variant selection remains committed before add",'''
           proof = '''record(\n  "F6 fallback visual QA deterministically exercises image-error fallback",\n  f6Visual.includes("async function ensureMainImageFallback") &&\n    f6Visual.includes("image.dispatchEvent(new Event('error'))") &&\n    f6Visual.includes("await ensureMainImageFallback(client)") &&\n    f6Visual.includes('product-main-image-fallback'),\n  null,\n);\n\n'''
           if 'F6 fallback visual QA deterministically exercises image-error fallback' not in audit:
               if record_anchor not in audit:
