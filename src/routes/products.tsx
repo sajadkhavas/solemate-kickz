@@ -1,6 +1,6 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { Flame, Grid3x3, LayoutList, SlidersHorizontal, Sparkles, Tag, X } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
@@ -23,8 +23,17 @@ import { Button } from "@/components/ui/button";
 import { EmptyState, IconButton, SearchInput } from "@/components/ui/commerce-primitives";
 import { CATEGORIES, SHOES, type Shoe } from "@/data/shoes";
 
+const DEFAULT_CATALOG_SEARCH = {
+  sort: "newest",
+  quick: "all",
+  view: "grid",
+} as const;
+
 export const Route = createFileRoute("/products")({
   validateSearch: zodValidator(catalogSearchSchema),
+  search: {
+    middlewares: [stripSearchParams(DEFAULT_CATALOG_SEARCH)],
+  },
   head: () => ({
     meta: [
       { title: "کاتالوگ کفش — SOLE" },
