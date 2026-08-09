@@ -28,13 +28,14 @@ Git commit IDs are content-addressed, so a tracked file cannot contain the SHA o
 
 ## Files changed
 
-F11 keeps SEO implementation centralized while retaining only the regression-test corrections required by exact-head CI:
+F11 keeps SEO implementation centralized while retaining only the regression-test corrections and catalog URL normalization required by exact-head review:
 
 - `src/seo/seo-config.ts`
 - `src/seo/seo-head.ts`
 - `src/seo/seo-server.ts`
 - `src/server.ts`
 - `src/router.tsx`
+- `src/routes/products.tsx`
 - `scripts/f11-browser-runner.mjs`
 - `scripts/f11-seo-test-utils.mjs`
 - `scripts/audit-f11-technical-seo.mjs`
@@ -61,7 +62,7 @@ F11 keeps SEO implementation centralized while retaining only the regression-tes
 | `/products` | `noindex, follow` | Current catalog is a demo/local Dataset rather than authoritative production commerce data |
 | `/products?...` | `noindex, follow`; canonical `/products` when Site URL is valid | Prevents faceted/search/sort/query crawl expansion |
 | `/product/$id` valid | `noindex, follow` | Current product records, price/review flags and availability are demo Dataset data |
-| `/product/$id` invalid | HTTP 404 + `X-Robots-Tag: noindex, follow`; no canonical | Prevents soft 404 indexing |
+| `/product/$id` invalid | final HTTP 404 + `X-Robots-Tag: noindex, follow`; no canonical | Prevents soft 404 indexing, including Router-normalized malformed paths |
 | `/auth` | `noindex, follow` | Utility/local-state route |
 | `/cart` | `noindex, follow` | Transaction/local-state route |
 | `/checkout` | `noindex, follow` | Transaction/local-state route |
@@ -76,7 +77,7 @@ F11 keeps SEO implementation centralized while retaining only the regression-tes
 - `/products` always canonicalizes to the clean catalog path when Site URL is valid; query state never becomes canonical.
 - Valid demo Product pages self-canonicalize for deterministic sharing/reference while remaining `noindex`.
 - Utility routes emit no homepage canonical.
-- 404/invalid-product responses emit no canonical.
+- 404/invalid-product final responses emit no canonical.
 - TanStack Router `HeadContent` provides head-level deduplication; F11 runtime gates require exactly one critical tag.
 
 ## Site URL configuration
@@ -102,9 +103,11 @@ Rules:
 
 ## Query/facet policy
 
-The current `/products` content is demo Dataset content, so the catalog base and every query variant are `noindex, follow`. When a valid Site URL is configured they canonicalize to the single clean `/products` URL. Existing filter/search/sort state behavior is not changed by F11.
+The current `/products` content is demo Dataset content, so the catalog base and every query variant are `noindex, follow`. When a valid Site URL is configured they canonicalize to the single clean `/products` URL.
 
-This covers known filter parameters and unknown query strings without creating SEO landing pages that the project has not approved.
+TanStack Router search validation still provides application defaults (`sort=newest`, `quick=all`, `view=grid`), but F11 adds the official `stripSearchParams` middleware for those defaults. This keeps the canonical catalog URL clean instead of redirecting `/products` to a URL whose only parameters reproduce default UI state. Real filter state such as brand/category/size/search remains URL-addressable. Default-only or unknown query noise may be normalized through an internal Router redirect; the runtime gate follows only bounded same-origin redirects, rejects cross-origin redirects, and verifies the final clean policy.
+
+No SEO landing page is invented for filter/search/sort state.
 
 ## robots.txt policy
 
@@ -156,7 +159,7 @@ Product routes remain `noindex, follow` until authoritative product data replace
 
 ## 404/invalid-product behavior
 
-The custom server entry preserves framework status codes and adds `X-Robots-Tag: noindex, follow` to every response with status 400 or greater. It does not rewrite 404s to the homepage.
+The custom server entry preserves framework status codes and adds `X-Robots-Tag: noindex, follow` to every final response with status 400 or greater. It does not rewrite 404s to the homepage.
 
 Permanent SSR tests cover:
 
@@ -164,11 +167,13 @@ Permanent SSR tests cover:
 - `/product/`
 - `/this-route-does-not-exist`
 
-They require real HTTP 404 and absence of canonical metadata.
+TanStack Router may normalize a malformed/trailing route with an internal 3xx before resolving it. F11 therefore validates the complete bounded same-origin redirect chain and requires the **final** response to be real HTTP 404 with `X-Robots-Tag: noindex, follow`, no canonical, and no hop to the homepage. Cross-origin redirects fail the suite immediately.
 
 ## SSR validation
 
-F11 validation uses actual HTTP responses from the TanStack Start development server, not source grep alone. It checks initial HTML `<head>`, response status/headers, JSON-LD, crawlable anchors, robots.txt and sitemap.xml before any client hydration.
+F11 validation uses actual HTTP responses from the TanStack Start development server, not source grep alone. It checks initial HTML `<head>`, final response status/headers, JSON-LD, crawlable anchors, robots.txt and sitemap.xml before any client hydration.
+
+Redirect handling is explicit rather than hidden: at most five same-origin redirects are followed and recorded; any cross-origin redirect fails the test. The clean `/products` URL is specifically required to return final 200 without a redirect, while default/unknown query normalization must remain on the catalog route and resolve to the expected final URL policy.
 
 The configured suite runs with `VITE_SITE_URL=https://sole.test`, a reserved test origin used only as deterministic acceptance configuration. A separate QA server runs with a rejected localhost Site URL to prove fail-safe behavior. Source/audit coverage additionally locks the non-public IPv6 rejection added during supervisor review.
 
@@ -188,7 +193,7 @@ The configured suite runs with `VITE_SITE_URL=https://sole.test`, a reserved tes
 
 ## Tests passed
 
-The authoritative pass/fail evidence is the exact final-head Frontend CI run attached to PR #12. The supervisor report records its exact run ID, head SHA and gate results before merge. Earlier failing exact-head runs are retained as evidence rather than hidden; their discovered regression was corrected before final acceptance.
+The authoritative pass/fail evidence is the exact final-head Frontend CI run attached to PR #12. The supervisor report records its exact run ID, head SHA and gate results before merge. Earlier failing exact-head runs are retained as evidence rather than hidden; their discovered regressions and test-contract issues were corrected before final acceptance.
 
 ## Tests unavailable + exact reason
 
@@ -196,7 +201,7 @@ No test is intentionally skipped by F11. Conditional diagnostic steps may be ski
 
 ## Regression audit
 
-F11 does not change route generation, cart/account state, Product selection, search/filter behavior, motion/3D implementation, or deployment scripts. Regression protection is inherited through Frontend CI and cumulative verification for:
+F11 does not change route generation, cart/account state, Product selection, motion/3D implementation, or deployment scripts. Functional catalog filtering/search/sort semantics are preserved; F11 only removes default search-state noise from generated catalog URLs. Regression protection is inherited through Frontend CI and cumulative verification for:
 
 - Homepage
 - Products + filter/search/sort
@@ -215,7 +220,9 @@ Supervisor review found CI-only interaction drift in inherited browser automatio
 
 - F4/F5 mobile filter activation uses visible target activation without weakening catalog assertions.
 - F7 post-dialog product/cart activation is scoped to its behavior test; functional assertions remain intact.
-- F9 Wishlist clear still must receive keyboard focus, activate through a trusted CDP Enter event, render the empty state and persist an empty wishlist. The shared browser harness is restored exactly to the accepted F10 baseline.
+- F9 Wishlist clear still must receive keyboard focus, activate through a trusted CDP Enter event, render the empty state and persist an empty wishlist.
+- F9 ProductCard synchronization still requires `aria-pressed=true`; the test now waits for the final hydrated store-derived state instead of reading a premature snapshot.
+- The shared browser harness is restored exactly to the accepted F10 baseline.
 
 ## Known limitations
 
@@ -235,6 +242,7 @@ These are truth boundaries, not incomplete F11 implementation.
 - No fake seller, address, phone or social profile.
 - No utility-route indexing.
 - No canonical-to-home shortcut for unrelated routes.
+- No cross-origin redirect is accepted by SSR SEO tests.
 
 ## Final acceptance checklist
 
@@ -242,11 +250,11 @@ These are truth boundaries, not incomplete F11 implementation.
 - Route surface preserved and generated route tree untouched.
 - Central Site URL validation implemented, including non-public IPv4/IPv6 rejection.
 - Route-aware metadata and indexation policy implemented.
-- Catalog facet/query policy deterministic.
+- Catalog facet/query policy deterministic and default URL noise stripped.
 - Product demo boundary explicit.
 - robots.txt and sitemap.xml implemented server-side.
 - Minimal truth-safe structured data implemented.
-- Real 404 semantics and noindex response header tested.
+- Final 404 semantics and noindex response header tested through bounded same-origin normalization.
 - SSR head and crawlable links tested over HTTP.
 - F11 gates registered in package, Frontend CI and cumulative evidence.
 - Inherited browser regressions corrected locally without altering the accepted shared harness or weakening behavioral assertions.
