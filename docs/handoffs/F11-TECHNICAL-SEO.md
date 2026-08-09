@@ -28,7 +28,7 @@ Git commit IDs are content-addressed, so a tracked file cannot contain the SHA o
 
 ## Files changed
 
-F11 is intentionally centralized and low-conflict:
+F11 keeps SEO implementation centralized while retaining only the regression-test corrections required by exact-head CI:
 
 - `src/seo/seo-config.ts`
 - `src/seo/seo-head.ts`
@@ -40,12 +40,16 @@ F11 is intentionally centralized and low-conflict:
 - `scripts/audit-f11-technical-seo.mjs`
 - `scripts/test-f11-technical-seo.mjs`
 - `scripts/seo-qa-f11.mjs`
+- `scripts/test-f4-f5-catalog-product-card.mjs`
+- `scripts/audit-f7-cart-checkout.mjs`
+- `scripts/test-f7-cart-checkout.mjs`
+- `scripts/test-f9-wishlist-account-orders.mjs`
 - `scripts/verify-cumulative-quality.mjs`
 - `package.json`
 - `.github/workflows/frontend-ci.yml`
 - this handoff
 
-`src/routeTree.gen.ts` is not manually edited.
+`src/routeTree.gen.ts`, `scripts/browser-harness.mjs`, Product purchase behavior, cart/account state, motion/3D implementation and deployment scripts remain at the accepted baseline unless explicitly listed above.
 
 ## Route indexation matrix
 
@@ -67,7 +71,7 @@ F11 is intentionally centralized and low-conflict:
 ## Canonical policy
 
 - Canonicals are generated only from the validated central Site URL.
-- No request host, localhost, `example.com`, or guessed SOLE domain becomes a production canonical.
+- No request host, localhost, `example.com`, private/link-local IP, or guessed SOLE domain becomes a production canonical.
 - `/`, `/about`, `/brands` self-canonicalize when Site URL is valid.
 - `/products` always canonicalizes to the clean catalog path when Site URL is valid; query state never becomes canonical.
 - Valid demo Product pages self-canonicalize for deterministic sharing/reference while remaining `noindex`.
@@ -85,10 +89,16 @@ Rules:
 
 - HTTP/HTTPS only.
 - origin only; credentials, query, hash and non-root path are rejected.
-- localhost, `.localhost`, `.local`, loopback, link-local and RFC1918 IPv4 are rejected.
+- hostname normalization strips IPv6 brackets/trailing-dot ambiguity before safety checks.
+- localhost, `.localhost`, `.local`, loopback, private, link-local, carrier-grade NAT, documentation/reserved IPv4 ranges and non-public IPv6 ranges are rejected.
+- IPv6 loopback, unspecified, IPv4-mapped, ULA, link-local, multicast and documentation ranges are rejected.
 - normalized value is the URL origin with deterministic trailing-slash behavior.
 - missing/invalid value triggers fail-safe `noindex` and omits absolute canonical/`og:url`.
 - the value is public configuration, not a secret.
+
+### Deployment timing
+
+`VITE_SITE_URL` is consumed through Vite `import.meta.env`, so it is **build-time public configuration**. Production deployment must set the verified public origin before `bun run build` / `bun run build:vps`. Changing only a systemd/runtime environment value after an artifact is already built is not sufficient to change compiled canonical/metadata values; rebuild the artifact when the production Site URL changes.
 
 ## Query/facet policy
 
@@ -160,7 +170,7 @@ They require real HTTP 404 and absence of canonical metadata.
 
 F11 validation uses actual HTTP responses from the TanStack Start development server, not source grep alone. It checks initial HTML `<head>`, response status/headers, JSON-LD, crawlable anchors, robots.txt and sitemap.xml before any client hydration.
 
-The configured suite runs with `VITE_SITE_URL=https://sole.test`, a reserved test origin used only as deterministic acceptance configuration. A separate QA server runs with a rejected localhost Site URL to prove fail-safe behavior.
+The configured suite runs with `VITE_SITE_URL=https://sole.test`, a reserved test origin used only as deterministic acceptance configuration. A separate QA server runs with a rejected localhost Site URL to prove fail-safe behavior. Source/audit coverage additionally locks the non-public IPv6 rejection added during supervisor review.
 
 ## Commands executed by permanent gates
 
@@ -178,11 +188,11 @@ The configured suite runs with `VITE_SITE_URL=https://sole.test`, a reserved tes
 
 ## Tests passed
 
-The authoritative pass/fail evidence is the exact-head Frontend CI run attached to PR #12. The PR remains Draft until every required step is green; after that run, the supervisor report records its exact run ID, head SHA and gate results before merge.
+The authoritative pass/fail evidence is the exact final-head Frontend CI run attached to PR #12. The supervisor report records its exact run ID, head SHA and gate results before merge. Earlier failing exact-head runs are retained as evidence rather than hidden; their discovered regression was corrected before final acceptance.
 
 ## Tests unavailable + exact reason
 
-No test is intentionally skipped by F11. If GitHub Actions refuses to start a job because of account Billing/Spending state, that platform annotation is recorded separately; the permanent gates remain unchanged and are not marked green by substitution.
+No test is intentionally skipped by F11. Conditional diagnostic steps may be skipped when their parent behavioral gate passes. If GitHub Actions refuses to start a job because of an external account Billing/Spending state, that platform annotation is recorded separately; the permanent gates remain unchanged and are not marked green by substitution.
 
 ## Regression audit
 
@@ -201,9 +211,15 @@ F11 does not change route generation, cart/account state, Product selection, sea
 - SSR
 - VPS deployment audit and Node-server build
 
+Supervisor review found CI-only interaction drift in inherited browser automation. Corrections were intentionally scoped to the affected phase tests:
+
+- F4/F5 mobile filter activation uses visible target activation without weakening catalog assertions.
+- F7 post-dialog product/cart activation is scoped to its behavior test; functional assertions remain intact.
+- F9 Wishlist clear still must receive keyboard focus, activate through a trusted CDP Enter event, render the empty state and persist an empty wishlist. The shared browser harness is restored exactly to the accepted F10 baseline.
+
 ## Known limitations
 
-- Production SOLE domain is intentionally not provided in the mission; deployment must set `VITE_SITE_URL` to the verified public origin before public pages can become indexable.
+- Production SOLE domain is intentionally not provided in the mission; deployment must set `VITE_SITE_URL` to the verified public origin **before building the production/VPS artifact** before public pages can become indexable.
 - Product/catalog commerce data is still a demo Dataset, so F11 deliberately keeps catalog/Product routes out of the search index and sitemap.
 - No verified business identity/contact data exists for Organization schema.
 
@@ -224,7 +240,7 @@ These are truth boundaries, not incomplete F11 implementation.
 
 - Exact required baseline ancestry enforced by audit.
 - Route surface preserved and generated route tree untouched.
-- Central Site URL validation implemented.
+- Central Site URL validation implemented, including non-public IPv4/IPv6 rejection.
 - Route-aware metadata and indexation policy implemented.
 - Catalog facet/query policy deterministic.
 - Product demo boundary explicit.
@@ -233,6 +249,7 @@ These are truth boundaries, not incomplete F11 implementation.
 - Real 404 semantics and noindex response header tested.
 - SSR head and crawlable links tested over HTTP.
 - F11 gates registered in package, Frontend CI and cumulative evidence.
+- Inherited browser regressions corrected locally without altering the accepted shared harness or weakening behavioral assertions.
 - No prior quality gate removed or weakened.
 - No direct main or Integration write performed by the phase implementation.
-- PR #12 is only eligible for Ready for Review and supervisor merge after exact-head quality evidence is green.
+- PR #12 is only eligible for Ready for Review and supervisor merge after exact final-head quality evidence is green.
