@@ -10,7 +10,7 @@ function normalizeHostname(hostname: string) {
   return normalized.endsWith(".") ? normalized.slice(0, -1) : normalized;
 }
 
-function isNonPublicIpv4(hostname: string) {
+function isPrivateIpv4(hostname: string) {
   const parts = hostname.split(".").map(Number);
   if (parts.length !== 4 || parts.some((part) => !Number.isInteger(part) || part < 0 || part > 255)) {
     return false;
@@ -63,7 +63,7 @@ export function normalizeSiteUrl(value: string | undefined | null): string | nul
       LOCAL_HOSTNAMES.has(hostname) ||
       hostname.endsWith(".localhost") ||
       hostname.endsWith(".local") ||
-      isNonPublicIpv4(hostname) ||
+      isPrivateIpv4(hostname) ||
       isNonPublicIpv6(hostname)
     ) {
       return null;
