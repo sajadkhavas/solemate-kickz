@@ -30,6 +30,9 @@ function record(name, pass, evidence = null) {
   checks.push({ name, pass: Boolean(pass), evidence });
   if (!pass) console.error(`FAIL ${name}: ${JSON.stringify(evidence)}`);
 }
+function normalizeSourceText(source) {
+  return source.replace(/\s+/g, " ");
+}
 
 const requiredFiles = [
   "src/cart/cart-domain.ts",
@@ -85,6 +88,9 @@ const visual = read("scripts/visual-qa-f7-cart-checkout.mjs");
 const behavior = read("scripts/test-f7-cart-checkout.mjs");
 const styles = `${read("src/styles.css")}\n${read("src/foundation.css")}`;
 const handoff = read("docs/handoffs/F7-CART-CHECKOUT.md");
+const drawerText = normalizeSourceText(drawer);
+const cartRouteText = normalizeSourceText(cartRoute);
+const checkoutRouteText = normalizeSourceText(checkoutRoute);
 
 record(
   "cart persistence is hydration-safe and storage failures are contained",
@@ -238,9 +244,9 @@ record(
 );
 record(
   "truthfulness boundary is explicit across F7",
-  drawer.includes("سفارش، ارسال و پرداخت واقعی متصل نیستند") &&
-    cartRoute.includes("سفارش، ارسال یا پرداخت واقعی متصل نیست") &&
-    checkoutRoute.includes("هیچ سفارش واقعی ایجاد نمی‌شود"),
+  drawerText.includes("سفارش، ارسال و پرداخت واقعی متصل نیستند") &&
+    cartRouteText.includes("سفارش، ارسال یا پرداخت واقعی متصل نیست") &&
+    checkoutRouteText.includes("هیچ سفارش واقعی ایجاد نمی‌شود"),
 );
 record(
   "44px forced-colors and reduced-motion foundations are retained",
