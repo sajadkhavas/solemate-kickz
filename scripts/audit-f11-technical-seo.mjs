@@ -212,8 +212,8 @@ const forbiddenSchema = [
 ];
 record(
   "no fake merchant or review structured data",
-  forbiddenSchema.every((key) => !head.includes(`\"${key}\"`)),
-  forbiddenSchema.filter((key) => head.includes(`\"${key}\"`)),
+  forbiddenSchema.every((key) => !head.includes(`"${key}"`)),
+  forbiddenSchema.filter((key) => head.includes(`"${key}"`)),
 );
 record(
   "robots and sitemap are server-served without route-tree additions",
@@ -264,7 +264,7 @@ record(
   f11TestUtils.includes('target.origin !== base.origin') &&
     f11TestUtils.includes("Unsafe cross-origin redirect") &&
     f11TestUtils.includes("maxRedirects = 5") &&
-    f11TestUtils.includes("redirect: \"manual\"") &&
+    f11TestUtils.includes('redirect: "manual"') &&
     f11TestUtils.includes("redirects.push"),
   null,
 );
@@ -351,8 +351,10 @@ const allowed = new Set([
   ".github/workflows/frontend-ci.yml",
   "docs/handoffs/F11-TECHNICAL-SEO.md",
   "package.json",
+  "scripts/audit-f2-navigation-search.mjs",
   "scripts/audit-f7-cart-checkout.mjs",
   "scripts/audit-f11-technical-seo.mjs",
+  "scripts/diagnose-f7-checkout-submit.mjs",
   "scripts/f11-browser-runner.mjs",
   "scripts/f11-seo-test-utils.mjs",
   "scripts/seo-qa-f11.mjs",
