@@ -101,7 +101,42 @@ function git(...args) {
 }
 
 function lines(value) {
-  return value.split("\n").map((item) => item.trim()).filter(Boolean);
+  return value
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function formatBaselineFile(relativePath) {
+  const baseline = spawnSync("git", ["show", `${BASELINE}:${relativePath}`], {
+    cwd: ROOT,
+    encoding: "utf8",
+  });
+  if (baseline.status !== 0) {
+    return { pass: false, reason: baseline.stderr.trim() || "baseline file unavailable" };
+  }
+
+  const prettierBin = path.join(
+    ROOT,
+    "node_modules",
+    ".bin",
+    process.platform === "win32" ? "prettier.cmd" : "prettier",
+  );
+  const formatted = spawnSync(prettierBin, ["--stdin-filepath", relativePath], {
+    cwd: ROOT,
+    encoding: "utf8",
+    input: baseline.stdout,
+  });
+  if (formatted.status !== 0) {
+    return { pass: false, reason: formatted.stderr.trim() || "Prettier failed" };
+  }
+
+  const current = read(relativePath);
+  return {
+    pass: formatted.stdout === current,
+    reason:
+      formatted.stdout === current ? null : "final file differs from formatted accepted baseline",
+  };
 }
 
 const requiredFiles = [
@@ -137,7 +172,10 @@ record(
   git("diff", "--name-only", BASELINE, "HEAD", "--", "src/routeTree.gen.ts").stdout === "",
   git("diff", "--name-only", BASELINE, "HEAD", "--", "src/routeTree.gen.ts").stdout,
 );
-record("lockfile is untouched", git("diff", "--name-only", BASELINE, "HEAD", "--", "bun.lock").stdout === "");
+record(
+  "lockfile is untouched",
+  git("diff", "--name-only", BASELINE, "HEAD", "--", "bun.lock").stdout === "",
+);
 record(
   "shared browser harness remains exactly at the accepted baseline",
   git("diff", "--name-only", BASELINE, "HEAD", "--", "scripts/browser-harness.mjs").stdout === "",
@@ -167,20 +205,23 @@ record(
 );
 
 const inheritedFormatFiles = [...FORMAT_CLEANUP_FILES].filter((file) => !PHASE_FILES.has(file));
-const inheritedFormatViolations = inheritedFormatFiles.filter((file) => {
-  const subjects = lines(git("log", "--format=%s", `${BASELINE}..HEAD`, "--", file).stdout);
-  return subjects.length !== 1 || subjects[0] !== FORMAT_COMMIT_MESSAGE;
-});
+const inheritedFormatComparisons = inheritedFormatFiles.map((file) => ({
+  file,
+  ...formatBaselineFile(file),
+}));
+const inheritedFormatViolations = inheritedFormatComparisons.filter((entry) => !entry.pass);
 record(
-  "inherited cumulative-format files have no behavioral F11 edits",
+  "inherited cumulative-format files equal the Prettier-formatted accepted baseline",
   inheritedFormatViolations.length === 0,
   inheritedFormatViolations,
 );
+const purchasePanelComparison = inheritedFormatComparisons.find(
+  (entry) => entry.file === "src/components/product/ProductPurchasePanel.tsx",
+);
 record(
-  "ProductPurchasePanel changed only through automated cumulative formatting",
-  !inheritedFormatViolations.includes("src/components/product/ProductPurchasePanel.tsx") &&
-    FORMAT_CLEANUP_FILES.has("src/components/product/ProductPurchasePanel.tsx"),
-  null,
+  "ProductPurchasePanel final content is formatting-only versus the accepted baseline",
+  purchasePanelComparison?.pass === true,
+  purchasePanelComparison ?? null,
 );
 record(
   "one-time formatting workflow is absent from final tree",
@@ -361,7 +402,10 @@ record(
   shoeCard.includes("<Link") && shoeCard.includes('to: "/product/$id"'),
   null,
 );
-record("Persian RTL document contract remains intact", rootRoute.includes('<html lang="fa" dir="rtl"'));
+record(
+  "Persian RTL document contract remains intact",
+  rootRoute.includes('<html lang="fa" dir="rtl"'),
+);
 record(
   "F11 SSR helper only follows bounded same-origin redirects",
   f11TestUtils.includes("target.origin !== base.origin") &&
