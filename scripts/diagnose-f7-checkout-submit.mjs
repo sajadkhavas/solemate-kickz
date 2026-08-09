@@ -16,6 +16,8 @@ const ROOT = process.cwd();
 const REPORT = path.join(ROOT, "artifacts/reports/f7-checkout-submit-diagnostic.json");
 const CHROME_LOG = path.join(ROOT, "artifacts/runtime/f7-checkout-submit-diagnostic-chrome.txt");
 const browserErrors = [];
+let before = null;
+let after = null;
 
 async function run(baseUrl) {
   fs.mkdirSync(path.dirname(REPORT), { recursive: true });
@@ -31,8 +33,6 @@ async function run(baseUrl) {
     if (event.type === "error") browserErrors.push(event.args.map(serialiseArgument).join(" "));
   });
 
-  let before = null;
-  let after = null;
   try {
     await navigate(client, `${baseUrl}/`);
     await evaluate(
