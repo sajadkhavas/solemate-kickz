@@ -155,8 +155,8 @@ async function run(baseUrl) {
   const jsonText = JSON.stringify(allJsonLd);
   record(
     "structured data has no fake merchant/review fields",
-    bannedSchemaKeys.every((key) => !jsonText.includes(`\"${key}\"`)),
-    bannedSchemaKeys.filter((key) => jsonText.includes(`\"${key}\"`)),
+    bannedSchemaKeys.every((key) => !jsonText.includes(`"${key}"`)),
+    bannedSchemaKeys.filter((key) => jsonText.includes(`"${key}"`)),
   );
   record(
     "home exposes WebSite JSON-LD",
