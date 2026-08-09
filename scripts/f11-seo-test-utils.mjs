@@ -42,10 +42,51 @@ export function hrefValues(html) {
   return [...html.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>/gi)].map((match) => match[1]);
 }
 
-export async function fetchPage(baseUrl, pathname) {
-  const response = await fetch(`${baseUrl}${pathname}`, { redirect: "manual" });
-  const body = await response.text();
-  return { response, body, head: extractHead(body) };
+function relativeUrl(url) {
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
+export async function fetchPage(baseUrl, pathname, { maxRedirects = 5 } = {}) {
+  const base = new URL(baseUrl);
+  let current = new URL(pathname, base);
+  const redirects = [];
+
+  for (let index = 0; index <= maxRedirects; index += 1) {
+    const response = await fetch(current, { redirect: "manual" });
+    const location = response.headers.get("location");
+    const isRedirect = response.status >= 300 && response.status < 400 && Boolean(location);
+
+    if (isRedirect) {
+      if (index === maxRedirects) {
+        throw new Error(`Too many redirects while fetching ${pathname}`);
+      }
+      const target = new URL(location, current);
+      if (target.origin !== base.origin) {
+        throw new Error(
+          `Unsafe cross-origin redirect while fetching ${pathname}: ${current.toString()} -> ${target.toString()}`,
+        );
+      }
+      redirects.push({
+        status: response.status,
+        from: relativeUrl(current),
+        to: relativeUrl(target),
+      });
+      current = target;
+      continue;
+    }
+
+    const body = await response.text();
+    return {
+      response,
+      body,
+      head: extractHead(body),
+      redirects,
+      finalUrl: current.toString(),
+      finalPath: relativeUrl(current),
+    };
+  }
+
+  throw new Error(`Redirect resolution failed for ${pathname}`);
 }
 
 export function createRecorder() {
