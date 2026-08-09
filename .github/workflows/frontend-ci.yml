@@ -1,5 +1,6 @@
 name: Frontend CI
 
+# F11 exact-head acceptance.
 on:
   pull_request:
   push:
