@@ -97,10 +97,13 @@ async function run(baseUrl) {
       );
     }
     if (path.includes("unknown=seo-probe")) {
+      const canonicals = canonicalValues(page.head);
       record(
-        "/products?unknown=seo-probe: unknown query is removed from final URL",
-        !new URL(page.finalUrl).searchParams.has("unknown"),
-        page.finalPath,
+        "/products?unknown=seo-probe: unknown query cannot create an SEO landing URL",
+        new URL(page.finalUrl).pathname === "/products" &&
+          canonicals.length === 1 &&
+          canonicals[0] === `${SITE_URL}/products`,
+        { finalPath: page.finalPath, canonical: canonicals },
       );
     }
     checkHead(path, page, { robots: "noindex, follow", canonical: `${SITE_URL}/products` });
