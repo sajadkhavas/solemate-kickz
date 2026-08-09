@@ -47,26 +47,19 @@ const requiredFiles = [
 
 const branchResult = git("branch", "--show-current");
 const branch =
-  process.env.GITHUB_HEAD_REF ||
-  branchResult.stdout ||
-  process.env.GITHUB_REF_NAME ||
-  "detached";
+  process.env.GITHUB_HEAD_REF || branchResult.stdout || process.env.GITHUB_REF_NAME || "detached";
 const controlledBranch =
   branch === OWNER_BRANCH ||
   branch === INTEGRATION_BRANCH ||
   branch === SUPERVISOR_BRANCH ||
   CONTROLLED_PHASE.test(branch);
-record(
-  "branch is controlled",
-  controlledBranch,
-  {
-    owner: OWNER_BRANCH,
-    integration: INTEGRATION_BRANCH,
-    supervisor: SUPERVISOR_BRANCH,
-    phasePattern: String(CONTROLLED_PHASE),
-    actual: branch,
-  },
-);
+record("branch is controlled", controlledBranch, {
+  owner: OWNER_BRANCH,
+  integration: INTEGRATION_BRANCH,
+  supervisor: SUPERVISOR_BRANCH,
+  phasePattern: String(CONTROLLED_PHASE),
+  actual: branch,
+});
 record(
   "accepted Integration baseline is an ancestor",
   git("merge-base", "--is-ancestor", BASELINE, "HEAD").status === 0,
@@ -126,8 +119,7 @@ record(
 );
 record(
   "quantity does not invent an inventory maximum",
-  !purchase.includes("max={10}") &&
-    commerce.includes('typeof max !== "number" || safeValue < max'),
+  !purchase.includes("max={10}") && commerce.includes('typeof max !== "number" || safeValue < max'),
 );
 record(
   "stale persisted states stay visible and block review",

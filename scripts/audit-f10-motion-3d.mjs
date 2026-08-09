@@ -53,7 +53,11 @@ for (const file of requiredFiles) record(`${file} exists`, exists(file), file);
 const modelFactoryBytes = exists("src/lib/create-shoe-model.ts")
   ? fs.statSync(path.join(ROOT, "src/lib/create-shoe-model.ts")).size
   : Number.POSITIVE_INFINITY;
-record("oversized baseline GLB is removed", !exists("public/models/shoe.glb"), "public/models/shoe.glb");
+record(
+  "oversized baseline GLB is removed",
+  !exists("public/models/shoe.glb"),
+  "public/models/shoe.glb",
+);
 record(
   "lazy procedural 3D source stays far below the preferred 3MB budget",
   modelFactoryBytes <= 3 * 1024 * 1024,
@@ -102,10 +106,7 @@ record(
     viewer.includes('document.addEventListener("visibilitychange"') &&
     viewer.includes("!documentVisible"),
 );
-record(
-  "3D touch keeps vertical page scrolling available",
-  viewer.includes('touchAction: "pan-y"'),
-);
+record("3D touch keeps vertical page scrolling available", viewer.includes('touchAction: "pan-y"'));
 record(
   "legacy custom pointer is retired rather than hiding native input",
   cursor.includes("return null") &&
@@ -141,9 +142,14 @@ record(
 );
 record(
   "legacy ambient infinite loops are disabled",
-  [".animate-marquee", ".animate-float", ".animate-pulse-glow", ".animate-spin-slow", ".hero-particle"].every(
-    (selector) => motionCss.includes(selector),
-  ) && motionCss.includes("animation: none !important"),
+  [
+    ".animate-marquee",
+    ".animate-float",
+    ".animate-pulse-glow",
+    ".animate-spin-slow",
+    ".hero-particle",
+  ].every((selector) => motionCss.includes(selector)) &&
+    motionCss.includes("animation: none !important"),
 );
 record(
   "dialog drawer product cart and reduced-motion contracts exist",

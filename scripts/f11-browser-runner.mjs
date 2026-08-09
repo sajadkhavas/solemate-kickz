@@ -31,15 +31,11 @@ export async function withF11Server({ envName, port, logPath, env = {} }, callba
   const absoluteLogPath = path.join(ROOT, logPath);
   fs.mkdirSync(path.dirname(absoluteLogPath), { recursive: true });
   const log = fs.openSync(absoluteLogPath, "w");
-  const server = spawn(
-    "bun",
-    ["run", "dev", "--", "--host", "127.0.0.1", "--port", String(port)],
-    {
-      cwd: ROOT,
-      env: { ...process.env, ...env },
-      stdio: ["ignore", log, log],
-    },
-  );
+  const server = spawn("bun", ["run", "dev", "--", "--host", "127.0.0.1", "--port", String(port)], {
+    cwd: ROOT,
+    env: { ...process.env, ...env },
+    stdio: ["ignore", log, log],
+  });
 
   try {
     await waitForHttp(baseUrl, 60_000);

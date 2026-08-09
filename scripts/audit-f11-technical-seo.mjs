@@ -77,8 +77,22 @@ record(
 );
 record(
   "ProductPurchasePanel remains exactly at the accepted baseline",
-  git("diff", "--name-only", BASELINE, "HEAD", "--", "src/components/product/ProductPurchasePanel.tsx").stdout === "",
-  git("diff", "--name-only", BASELINE, "HEAD", "--", "src/components/product/ProductPurchasePanel.tsx").stdout,
+  git(
+    "diff",
+    "--name-only",
+    BASELINE,
+    "HEAD",
+    "--",
+    "src/components/product/ProductPurchasePanel.tsx",
+  ).stdout === "",
+  git(
+    "diff",
+    "--name-only",
+    BASELINE,
+    "HEAD",
+    "--",
+    "src/components/product/ProductPurchasePanel.tsx",
+  ).stdout,
 );
 
 const routeTree = read("src/routeTree.gen.ts");
@@ -261,7 +275,7 @@ record(
 );
 record(
   "F11 SSR helper only follows bounded same-origin redirects",
-  f11TestUtils.includes('target.origin !== base.origin') &&
+  f11TestUtils.includes("target.origin !== base.origin") &&
     f11TestUtils.includes("Unsafe cross-origin redirect") &&
     f11TestUtils.includes("maxRedirects = 5") &&
     f11TestUtils.includes('redirect: "manual"') &&
@@ -279,11 +293,15 @@ record(
 record(
   "inherited mobile catalog gate uses scoped visible-event activation",
   catalogBehavior.includes("async function activateVisibleText") &&
-    catalogBehavior.includes("await activateVisible(client, '[data-testid=\"mobile-filter-trigger\"]')") &&
     catalogBehavior.includes(
-      "await activateVisibleText(client, '[data-testid=\"mobile-filter-dialog\"] button', \"Nike\")",
+      "await activateVisible(client, '[data-testid=\"mobile-filter-trigger\"]')",
     ) &&
-    catalogBehavior.includes("await activateVisible(client, '[data-testid=\"apply-mobile-filters\"]')"),
+    catalogBehavior.includes(
+      'await activateVisibleText(client, \'[data-testid="mobile-filter-dialog"] button\', "Nike")',
+    ) &&
+    catalogBehavior.includes(
+      "await activateVisible(client, '[data-testid=\"apply-mobile-filters\"]')",
+    ),
   null,
 );
 record(
@@ -297,9 +315,7 @@ record(
   "inherited F7 post-dialog activation correction is scoped to behavior test",
   f7Behavior.includes("async function activateVisible(client, selector)") &&
     f7Behavior.includes("target.dispatchEvent(new MouseEvent('click'") &&
-    f7Behavior.includes(
-      "await activateVisible(client, '[data-testid=\"product-add-to-cart\"]')",
-    ) &&
+    f7Behavior.includes("await activateVisible(client, '[data-testid=\"product-add-to-cart\"]')") &&
     f7Behavior.includes("Duplicate product and size merge into one line"),
   null,
 );
@@ -330,7 +346,11 @@ record(
     workflow.includes("F11 SEO safety QA"),
   null,
 );
-record("cumulative verifier requires F11 evidence", cumulative.includes('"f11-technical-seo"'), null);
+record(
+  "cumulative verifier requires F11 evidence",
+  cumulative.includes('"f11-technical-seo"'),
+  null,
+);
 record(
   "handoff records required F11 policies and validation sections",
   /Baseline SHA/.test(handoff) &&
@@ -379,7 +399,8 @@ record(
 );
 record(
   "no temporary F11 workflow is tracked",
-  git("ls-files", ".github/workflows/*f11*dev*", ".github/workflows/*acceptance*dev*").stdout === "",
+  git("ls-files", ".github/workflows/*f11*dev*", ".github/workflows/*acceptance*dev*").stdout ===
+    "",
   null,
 );
 

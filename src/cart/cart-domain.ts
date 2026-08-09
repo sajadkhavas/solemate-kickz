@@ -110,7 +110,8 @@ export function getCartQuantityCount(cart: CartItem[]) {
 
 export function getCartSubtotal(cart: CartItem[]) {
   return resolveCart(cart).reduce(
-    (total, item) => total + (item.status === "ready" && item.unitPrice ? item.unitPrice * item.qty : 0),
+    (total, item) =>
+      total + (item.status === "ready" && item.unitPrice ? item.unitPrice * item.qty : 0),
     0,
   );
 }

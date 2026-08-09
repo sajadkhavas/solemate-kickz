@@ -34,16 +34,16 @@ F10 treats transaction surfaces differently from editorial surfaces.
 
 `src/lib/motion-system.ts` and `src/motion.css` define the shared grammar.
 
-| Category | Runtime duration | Rule |
-| --- | ---: | --- |
-| feedback | 140ms | short state/color response |
-| navigation | 220ms | non-blocking route feedback |
-| content reveal | 360ms | max 18px shared travel |
-| product | 320ms | restrained media transition |
-| cart | 100ms | immediate transaction feedback |
-| dialog/drawer | 240ms | never delays Escape/focus behavior |
-| storytelling | 640ms ceiling | reserved for intentional editorial use |
-| 3D | direct manipulation | opt-in; no idle auto-rotation |
+| Category       |    Runtime duration | Rule                                   |
+| -------------- | ------------------: | -------------------------------------- |
+| feedback       |               140ms | short state/color response             |
+| navigation     |               220ms | non-blocking route feedback            |
+| content reveal |               360ms | max 18px shared travel                 |
+| product        |               320ms | restrained media transition            |
+| cart           |               100ms | immediate transaction feedback         |
+| dialog/drawer  |               240ms | never delays Escape/focus behavior     |
+| storytelling   |       640ms ceiling | reserved for intentional editorial use |
+| 3D             | direct manipulation | opt-in; no idle auto-rotation          |
 
 Reduced motion removes spatial choreography rather than merely shortening it.
 

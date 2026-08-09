@@ -124,7 +124,10 @@ async function inspect(client) {
 async function capture(client, baseUrl, name, url, width, height, options = {}) {
   await viewport(client, width, height, options.mobile ?? width < 768);
   await navigate(client, `${baseUrl}${url}`);
-  await waitForExpression(client, `document.querySelector('main h1') || document.querySelector('[data-testid="home-hero"] h1')`);
+  await waitForExpression(
+    client,
+    `document.querySelector('main h1') || document.querySelector('[data-testid="home-hero"] h1')`,
+  );
   await waitForExpression(client, `document.fonts.status === 'loaded'`);
   await sleep(options.wait ?? 450);
   const metrics = await inspect(client);
@@ -133,12 +136,16 @@ async function capture(client, baseUrl, name, url, width, height, options = {}) 
   if (metrics.overflow) findings.push("horizontal-overflow");
   if (metrics.h1 !== 1) findings.push(`h1-count-${metrics.h1}`);
   if (metrics.unnamedButtons) findings.push(`unnamed-buttons-${metrics.unnamedButtons}`);
-  if (metrics.belowAbsoluteMinimum.length) findings.push(`targets-below-24-${metrics.belowAbsoluteMinimum.length}`);
-  if (metrics.clippedControls.length) findings.push(`horizontally-clipped-controls-${metrics.clippedControls.length}`);
+  if (metrics.belowAbsoluteMinimum.length)
+    findings.push(`targets-below-24-${metrics.belowAbsoluteMinimum.length}`);
+  if (metrics.clippedControls.length)
+    findings.push(`horizontally-clipped-controls-${metrics.clippedControls.length}`);
   if (!metrics.focusProbe) findings.push("focus-probe-failed");
-  if (metrics.customCursor || metrics.bodyCursor === "none") findings.push("custom-pointer-interference");
+  if (metrics.customCursor || metrics.bodyCursor === "none")
+    findings.push("custom-pointer-interference");
   if (name === "home" && metrics.modelMounted) findings.push("eager-3d-model");
-  if (name.startsWith("home") && metrics.runningInfinite) findings.push(`continuous-animations-${metrics.runningInfinite}`);
+  if (name.startsWith("home") && metrics.runningInfinite)
+    findings.push(`continuous-animations-${metrics.runningInfinite}`);
   if (findings.length) criticalFindings.push({ name, width, height, findings, metrics });
   captures.push({ name, url, width, height, file, metrics, findings });
 }
@@ -151,7 +158,9 @@ async function run(baseUrl) {
 
   client.on("Runtime.exceptionThrown", (event) => {
     browserErrors.push(
-      event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception",
+      event.exceptionDetails?.exception?.description ??
+        event.exceptionDetails?.text ??
+        "Runtime exception",
     );
   });
   client.on("Runtime.consoleAPICalled", (event) => {
@@ -200,7 +209,10 @@ async function run(baseUrl) {
     await viewport(client, 1440, 900, false);
     await navigate(client, `${baseUrl}/`);
     await waitForExpression(client, `document.querySelector('[data-testid="home-hero"]')`);
-    await evaluate(client, `window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }); true`);
+    await evaluate(
+      client,
+      `window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }); true`,
+    );
     await sleep(500);
     const offscreenInfinite = await evaluate(
       client,

@@ -12,7 +12,10 @@ function normalizeHostname(hostname: string) {
 
 function isPrivateIpv4(hostname: string) {
   const parts = hostname.split(".").map(Number);
-  if (parts.length !== 4 || parts.some((part) => !Number.isInteger(part) || part < 0 || part > 255)) {
+  if (
+    parts.length !== 4 ||
+    parts.some((part) => !Number.isInteger(part) || part < 0 || part > 255)
+  ) {
     return false;
   }
 

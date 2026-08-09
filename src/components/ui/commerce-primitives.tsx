@@ -184,7 +184,8 @@ function QuantityStepper({
   className,
 }: QuantityStepperProps) {
   const minimumSafeValue = Math.max(min, value);
-  const safeValue = typeof max === "number" ? Math.min(max, Math.max(min, value)) : minimumSafeValue;
+  const safeValue =
+    typeof max === "number" ? Math.min(max, Math.max(min, value)) : minimumSafeValue;
   const canDecrease = !disabled && safeValue > min;
   const canIncrease = !disabled && (typeof max !== "number" || safeValue < max);
 
@@ -219,7 +220,9 @@ function QuantityStepper({
         size="sm"
         variant="ghost"
         disabled={!canIncrease}
-        onClick={() => onChange(typeof max === "number" ? Math.min(max, safeValue + 1) : safeValue + 1)}
+        onClick={() =>
+          onChange(typeof max === "number" ? Math.min(max, safeValue + 1) : safeValue + 1)
+        }
         className="rounded-full"
       >
         <span aria-hidden="true">+</span>

@@ -33,9 +33,11 @@ export function titleValues(head) {
 }
 
 export function jsonLdValues(head) {
-  return [...head.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)].map(
-    (match) => match[1].trim(),
-  );
+  return [
+    ...head.matchAll(
+      /<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
+    ),
+  ].map((match) => match[1].trim());
 }
 
 export function hrefValues(html) {
@@ -106,7 +108,11 @@ export function writeReport(relativePath, suite, results, extra = {}) {
     suite,
     generatedAt: new Date().toISOString(),
     results,
-    summary: { total: results.length, passed: results.length - failed.length, failed: failed.length },
+    summary: {
+      total: results.length,
+      passed: results.length - failed.length,
+      failed: failed.length,
+    },
     pass: failed.length === 0,
     ...extra,
   };

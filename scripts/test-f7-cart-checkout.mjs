@@ -161,7 +161,9 @@ async function run(baseUrl) {
 
   client.on("Runtime.exceptionThrown", (event) => {
     browserErrors.push(
-      event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception",
+      event.exceptionDetails?.exception?.description ??
+        event.exceptionDetails?.text ??
+        "Runtime exception",
     );
   });
   client.on("Runtime.consoleAPICalled", (event) => {
@@ -171,9 +173,15 @@ async function run(baseUrl) {
   try {
     await viewport(client, 1280, 900);
     await navigate(client, `${baseUrl}/product/1`);
-    await evaluate(client, `localStorage.removeItem('sole-store'); sessionStorage.removeItem('sole-checkout-draft-v1'); true`);
+    await evaluate(
+      client,
+      `localStorage.removeItem('sole-store'); sessionStorage.removeItem('sole-checkout-draft-v1'); true`,
+    );
     await navigate(client, `${baseUrl}/product/1`);
-    await waitForExpression(client, `document.querySelector('[data-testid="product-purchase-panel"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="product-purchase-panel"]')`,
+    );
 
     await selectProductSize(client, 0);
     await activateVisible(client, '[data-testid="product-add-to-cart"]');
@@ -231,7 +239,10 @@ async function run(baseUrl) {
 
     await navigate(client, `${baseUrl}/cart`);
     await waitForExpression(client, `document.querySelector('[data-testid="f7-cart-page"]')`);
-    await waitForExpression(client, `!document.querySelector('[data-testid="cart-page-hydrating"]')`);
+    await waitForExpression(
+      client,
+      `!document.querySelector('[data-testid="cart-page-hydrating"]')`,
+    );
     const cartPage = await evaluate(
       client,
       `({
@@ -243,12 +254,18 @@ async function run(baseUrl) {
     );
     record(
       "Dedicated cart shares persisted state and is noindex",
-      cartPage.items === 2 && cartPage.count === "3" && /noindex/.test(cartPage.noindex ?? "") && cartPage.cta,
+      cartPage.items === 2 &&
+        cartPage.count === "3" &&
+        /noindex/.test(cartPage.noindex ?? "") &&
+        cartPage.cta,
       cartPage,
     );
 
     await navigate(client, `${baseUrl}/cart`);
-    await waitForExpression(client, `document.querySelectorAll('[data-testid="cart-page-item"]').length === 2`);
+    await waitForExpression(
+      client,
+      `document.querySelectorAll('[data-testid="cart-page-item"]').length === 2`,
+    );
     record("Cart survives a hard refresh", true, await readPersistedCart(client));
 
     const firstQtyBefore = await evaluate(
@@ -309,7 +326,10 @@ async function run(baseUrl) {
       client,
       `document.querySelector('[data-testid="cart-page-image"]')?.dispatchEvent(new Event('error')); true`,
     );
-    await waitForExpression(client, `document.querySelector('[data-testid="cart-page-image-fallback"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="cart-page-image-fallback"]')`,
+    );
     record("Cart product image has a designed fallback", true, null);
 
     await navigate(client, `${baseUrl}/checkout`);
@@ -331,7 +351,10 @@ async function run(baseUrl) {
     );
 
     await activateVisible(client, '[data-testid="checkout-review-submit"]');
-    await waitForExpression(client, `document.querySelector('[data-testid="checkout-error-summary"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="checkout-error-summary"]')`,
+    );
     const invalid = await evaluate(
       client,
       `({
@@ -345,11 +368,15 @@ async function run(baseUrl) {
       invalid,
     );
 
-    await setField(client, '#checkout-firstName', 'سجاد');
-    await setField(client, '#checkout-phone', '۰۹۱۲۱۲۳۴۵۶۷');
-    await setField(client, '#checkout-province', 'تهران');
-    await setField(client, '#checkout-city', 'تهران');
-    await setField(client, '#checkout-address', 'خیابان نمونه، کوچه نمونه، ساختمان نمونه برای بررسی فرانت‌اند');
+    await setField(client, "#checkout-firstName", "سجاد");
+    await setField(client, "#checkout-phone", "۰۹۱۲۱۲۳۴۵۶۷");
+    await setField(client, "#checkout-province", "تهران");
+    await setField(client, "#checkout-city", "تهران");
+    await setField(
+      client,
+      "#checkout-address",
+      "خیابان نمونه، کوچه نمونه، ساختمان نمونه برای بررسی فرانت‌اند",
+    );
     await activateVisible(client, '[data-testid="checkout-review-submit"]');
     await waitForExpression(client, `document.querySelector('[data-testid="checkout-review"]')`);
     const review = await evaluate(
@@ -389,7 +416,10 @@ async function run(baseUrl) {
 
     await setPersistedCart(client, []);
     await navigate(client, `${baseUrl}/checkout`);
-    await waitForExpression(client, `document.querySelector('[data-testid="checkout-empty-state"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="checkout-empty-state"]')`,
+    );
     record("Checkout handles an empty cart without runtime failure", true, null);
 
     await client.send("Page.addScriptToEvaluateOnNewDocument", {
@@ -404,9 +434,15 @@ async function run(baseUrl) {
     record("Cart stays usable when localStorage operations fail", true, null);
 
     const meaningfulErrors = browserErrors.filter((text) =>
-      /hydration|server rendered html|did not match|uncaught|typeerror|referenceerror|syntaxerror/i.test(text),
+      /hydration|server rendered html|did not match|uncaught|typeerror|referenceerror|syntaxerror/i.test(
+        text,
+      ),
     );
-    record("No hydration or runtime errors across Cart and Checkout", meaningfulErrors.length === 0, meaningfulErrors);
+    record(
+      "No hydration or runtime errors across Cart and Checkout",
+      meaningfulErrors.length === 0,
+      meaningfulErrors,
+    );
   } finally {
     await browser.close();
   }
@@ -418,7 +454,11 @@ async function run(baseUrl) {
     generatedAt: new Date().toISOString(),
     results,
     browserErrors,
-    summary: { total: results.length, passed: results.length - failed.length, failed: failed.length },
+    summary: {
+      total: results.length,
+      passed: results.length - failed.length,
+      failed: failed.length,
+    },
     pass: failed.length === 0,
   };
   fs.writeFileSync(REPORT, `${JSON.stringify(report, null, 2)}\n`);

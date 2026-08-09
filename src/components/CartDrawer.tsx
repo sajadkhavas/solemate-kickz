@@ -81,7 +81,8 @@ export function CartDrawer() {
                 سبد خرید نمایشی
               </DialogPrimitive.Title>
               <DialogPrimitive.Description className="mt-1 font-fa text-xs leading-5 text-muted-foreground">
-                کالاهای انتخاب‌شده روی همین دستگاه نگهداری می‌شوند؛ سفارش، ارسال و پرداخت واقعی متصل نیستند.
+                کالاهای انتخاب‌شده روی همین دستگاه نگهداری می‌شوند؛ سفارش، ارسال و پرداخت واقعی متصل
+                نیستند.
               </DialogPrimitive.Description>
             </div>
             <DialogPrimitive.Close asChild>
@@ -138,9 +139,13 @@ export function CartDrawer() {
                     className="flex gap-3 rounded-xl border border-warning/50 bg-warning/10 p-3 font-fa text-xs leading-6"
                     data-testid="cart-drawer-stale-warning"
                   >
-                    <AlertTriangle aria-hidden="true" className="mt-1 size-4 shrink-0 text-warning" />
+                    <AlertTriangle
+                      aria-hidden="true"
+                      className="mt-1 size-4 shrink-0 text-warning"
+                    />
                     <p>
-                      بعضی اقلام ذخیره‌شده با Dataset فعلی هماهنگ نیستند. آن‌ها را حذف یا در صفحه سبد بررسی کنید؛ Checkout تا رفع مشکل غیرفعال می‌ماند.
+                      بعضی اقلام ذخیره‌شده با Dataset فعلی هماهنگ نیستند. آن‌ها را حذف یا در صفحه
+                      سبد بررسی کنید؛ Checkout تا رفع مشکل غیرفعال می‌ماند.
                     </p>
                   </div>
                 ) : null}
@@ -191,12 +196,20 @@ export function CartDrawer() {
                           <p className="eyebrow text-muted-foreground">
                             {item.shoe?.brand ?? "Stale item"}
                           </p>
-                          <p className="break-words font-display text-sm font-bold leading-5" dir="auto">
+                          <p
+                            className="break-words font-display text-sm font-bold leading-5"
+                            dir="auto"
+                          >
                             {item.shoe?.name ?? label}
                           </p>
                           <p className="mt-1 text-xs text-muted-foreground">
                             سایز <bdi dir="ltr">{item.size}</bdi>
-                            {item.shoe ? <> · <bdi dir="ltr">{item.shoe.colorway}</bdi></> : null}
+                            {item.shoe ? (
+                              <>
+                                {" "}
+                                · <bdi dir="ltr">{item.shoe.colorway}</bdi>
+                              </>
+                            ) : null}
                           </p>
 
                           {item.blockingMessage ? (
@@ -244,7 +257,9 @@ export function CartDrawer() {
                                 {formatPrice(item.unitPrice * item.qty)}
                               </div>
                             ) : (
-                              <span className="font-fa text-xs text-muted-foreground">قیمت قابل بررسی نیست</span>
+                              <span className="font-fa text-xs text-muted-foreground">
+                                قیمت قابل بررسی نیست
+                              </span>
                             )}
                           </div>
                         </div>
@@ -266,7 +281,10 @@ export function CartDrawer() {
               <div className="safe-area-bottom space-y-3 border-t border-border p-4 sm:p-5">
                 <div className="flex items-center justify-between gap-3 text-sm">
                   <span className="text-muted-foreground">جمع جزء اقلام قابل بررسی</span>
-                  <span className="font-mono-num text-lg font-bold" data-testid="cart-drawer-subtotal">
+                  <span
+                    className="font-mono-num text-lg font-bold"
+                    data-testid="cart-drawer-subtotal"
+                  >
                     {formatPrice(subtotal)}
                   </span>
                 </div>

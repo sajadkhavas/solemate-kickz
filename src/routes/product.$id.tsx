@@ -150,8 +150,15 @@ function ProductPage() {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      <main id="main-content" tabIndex={-1} className="mx-auto max-w-[1400px] px-4 pb-36 pt-8 sm:px-6 md:pb-16 lg:px-8">
-        <nav aria-label="مسیر صفحه" className="mb-7 flex flex-wrap items-center gap-2 font-fa text-xs text-muted-foreground">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto max-w-[1400px] px-4 pb-36 pt-8 sm:px-6 md:pb-16 lg:px-8"
+      >
+        <nav
+          aria-label="مسیر صفحه"
+          className="mb-7 flex flex-wrap items-center gap-2 font-fa text-xs text-muted-foreground"
+        >
           <Link to="/" className="inline-flex min-h-11 items-center hover:text-foreground">
             خانه
           </Link>

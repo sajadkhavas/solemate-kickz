@@ -16,10 +16,7 @@ async function stopProcess(child) {
   if (!child || child.exitCode !== null) return;
   const exited = waitForExit(child);
   child.kill("SIGTERM");
-  const graceful = await Promise.race([
-    exited.then(() => true),
-    sleep(3_000).then(() => false),
-  ]);
+  const graceful = await Promise.race([exited.then(() => true), sleep(3_000).then(() => false)]);
   if (!graceful && child.exitCode === null) {
     child.kill("SIGKILL");
     await Promise.race([exited, sleep(1_000)]);
@@ -34,15 +31,11 @@ export async function withF7Server({ envName, port, logPath }, callback) {
   const absoluteLogPath = path.join(ROOT, logPath);
   fs.mkdirSync(path.dirname(absoluteLogPath), { recursive: true });
   const log = fs.openSync(absoluteLogPath, "w");
-  const server = spawn(
-    "bun",
-    ["run", "dev", "--", "--host", "127.0.0.1", "--port", String(port)],
-    {
-      cwd: ROOT,
-      env: process.env,
-      stdio: ["ignore", log, log],
-    },
-  );
+  const server = spawn("bun", ["run", "dev", "--", "--host", "127.0.0.1", "--port", String(port)], {
+    cwd: ROOT,
+    env: process.env,
+    stdio: ["ignore", log, log],
+  });
 
   try {
     await waitForHttp(baseUrl, 60_000);

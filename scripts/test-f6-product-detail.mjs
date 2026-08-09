@@ -12,14 +12,8 @@ import {
 import { withF6Server } from "./f6-browser-runner.mjs";
 
 const ROOT = process.cwd();
-const REPORT = path.join(
-  ROOT,
-  "artifacts/reports/f6-product-detail-behavior.json",
-);
-const CHROME_LOG = path.join(
-  ROOT,
-  "artifacts/runtime/f6-product-detail-chrome.txt",
-);
+const REPORT = path.join(ROOT, "artifacts/reports/f6-product-detail-behavior.json");
+const CHROME_LOG = path.join(ROOT, "artifacts/runtime/f6-product-detail-chrome.txt");
 const results = [];
 const browserErrors = [];
 
@@ -154,10 +148,7 @@ async function run(baseUrl) {
       cart,
     );
     await key(client, "Escape", "Escape", 27);
-    await waitForExpression(
-      client,
-      `!document.querySelector('[role="dialog"]')`,
-    );
+    await waitForExpression(client, `!document.querySelector('[role="dialog"]')`);
 
     const first = await selectedThumbnail(client);
     await click(client, '[data-testid="product-gallery-next"]');
@@ -180,9 +171,7 @@ async function run(baseUrl) {
     const afterSwipe = await selectedThumbnail(client);
     record(
       "Gallery supports controls, keyboard and swipe",
-      first !== afterControl &&
-        afterControl !== afterKeyboard &&
-        afterKeyboard !== afterSwipe,
+      first !== afterControl && afterControl !== afterKeyboard && afterKeyboard !== afterSwipe,
       { first, afterControl, afterKeyboard, afterSwipe },
     );
 
@@ -208,28 +197,18 @@ async function run(baseUrl) {
     record("Main image has a designed fallback", true, null);
 
     await click(client, '[data-testid="size-guide-trigger"]');
-    await waitForExpression(
-      client,
-      `document.querySelector('[data-testid="size-guide-dialog"]')`,
-    );
+    await waitForExpression(client, `document.querySelector('[data-testid="size-guide-dialog"]')`);
     const guide = await evaluate(
       client,
       `document.querySelector('[data-testid="size-guide-dialog"]')?.textContent`,
     );
     await key(client, "Escape", "Escape", 27);
-    await waitForExpression(
-      client,
-      `!document.querySelector('[data-testid="size-guide-dialog"]')`,
-    );
+    await waitForExpression(client, `!document.querySelector('[data-testid="size-guide-dialog"]')`);
     await waitForExpression(
       client,
       `document.activeElement === document.querySelector('[data-testid="size-guide-trigger"]')`,
     );
-    record(
-      "Size guide is truthful and restores focus",
-      /نمودار رسمی/.test(guide ?? ""),
-      guide,
-    );
+    record("Size guide is truthful and restores focus", /نمودار رسمی/.test(guide ?? ""), guide);
 
     const wishlistBefore = await evaluate(
       client,
@@ -291,10 +270,7 @@ async function run(baseUrl) {
       `document.querySelector('[data-testid="product-purchase-panel"]')`,
     );
     await navigate(client, `${baseUrl}/product/1`);
-    await waitForExpression(
-      client,
-      `document.querySelector('[data-testid="related-products"]')`,
-    );
+    await waitForExpression(client, `document.querySelector('[data-testid="related-products"]')`);
     await waitForExpression(
       client,
       `document.querySelector('[data-testid="recently-viewed-products"]')`,
@@ -317,11 +293,7 @@ async function run(baseUrl) {
         text,
       ),
     );
-    record(
-      "No hydration or runtime errors",
-      meaningfulErrors.length === 0,
-      meaningfulErrors,
-    );
+    record("No hydration or runtime errors", meaningfulErrors.length === 0, meaningfulErrors);
   } finally {
     await browser.close();
   }
@@ -361,8 +333,7 @@ withF6Server(
         schemaVersion: 1,
         suite: "f6-product-detail-browser-behavior",
         pass: false,
-        fatalError:
-          error instanceof Error ? (error.stack ?? error.message) : String(error),
+        fatalError: error instanceof Error ? (error.stack ?? error.message) : String(error),
       },
       null,
       2,

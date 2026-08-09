@@ -338,7 +338,11 @@ async function run(baseUrl) {
       client,
       `document.activeElement?.getAttribute('data-testid')`,
     );
-    record("Quick View Escape restores trigger focus", restoredFocus === "quick-view-trigger", restoredFocus);
+    record(
+      "Quick View Escape restores trigger focus",
+      restoredFocus === "quick-view-trigger",
+      restoredFocus,
+    );
 
     await client.send("Emulation.setDeviceMetricsOverride", {
       width: 390,

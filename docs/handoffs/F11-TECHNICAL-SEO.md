@@ -56,20 +56,20 @@ F11 keeps SEO implementation centralized while retaining only the regression-tes
 
 ## Route indexation matrix
 
-| Route | Policy | Reason |
-| --- | --- | --- |
-| `/` | `index, follow` only with valid configured Site URL; otherwise `noindex, follow` | Truthful frontend-prototype landing content, but no production canonical may be inferred |
-| `/about` | `index, follow` only with valid configured Site URL; otherwise `noindex, follow` | Truthful project-scope content independent of commerce backend |
-| `/brands` | `index, follow` only with valid configured Site URL; otherwise `noindex, follow` | Truthful list of names present in the repository Dataset with explicit non-affiliation disclosure |
-| `/products` | `noindex, follow` | Current catalog is a demo/local Dataset rather than authoritative production commerce data |
-| `/products?...` | `noindex, follow`; canonical `/products` when Site URL is valid | Prevents faceted/search/sort/query crawl expansion |
-| `/product/$id` valid | `noindex, follow` | Current product records, price/review flags and availability are demo Dataset data |
-| `/product/$id` invalid | final HTTP 404 + `X-Robots-Tag: noindex, follow`; no canonical | Prevents soft 404 indexing, including Router-normalized malformed paths |
-| `/auth` | `noindex, follow` | Utility/local-state route |
-| `/cart` | `noindex, follow` | Transaction/local-state route |
-| `/checkout` | `noindex, follow` | Transaction/local-state route |
-| `/wishlist` | `noindex, follow` | Local-state route |
-| `/account` | `noindex, follow` | Local/private-style route |
+| Route                  | Policy                                                                           | Reason                                                                                            |
+| ---------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `/`                    | `index, follow` only with valid configured Site URL; otherwise `noindex, follow` | Truthful frontend-prototype landing content, but no production canonical may be inferred          |
+| `/about`               | `index, follow` only with valid configured Site URL; otherwise `noindex, follow` | Truthful project-scope content independent of commerce backend                                    |
+| `/brands`              | `index, follow` only with valid configured Site URL; otherwise `noindex, follow` | Truthful list of names present in the repository Dataset with explicit non-affiliation disclosure |
+| `/products`            | `noindex, follow`                                                                | Current catalog is a demo/local Dataset rather than authoritative production commerce data        |
+| `/products?...`        | `noindex, follow`; canonical `/products` when Site URL is valid                  | Prevents faceted/search/sort/query crawl expansion                                                |
+| `/product/$id` valid   | `noindex, follow`                                                                | Current product records, price/review flags and availability are demo Dataset data                |
+| `/product/$id` invalid | final HTTP 404 + `X-Robots-Tag: noindex, follow`; no canonical                   | Prevents soft 404 indexing, including Router-normalized malformed paths                           |
+| `/auth`                | `noindex, follow`                                                                | Utility/local-state route                                                                         |
+| `/cart`                | `noindex, follow`                                                                | Transaction/local-state route                                                                     |
+| `/checkout`            | `noindex, follow`                                                                | Transaction/local-state route                                                                     |
+| `/wishlist`            | `noindex, follow`                                                                | Local-state route                                                                                 |
+| `/account`             | `noindex, follow`                                                                | Local/private-style route                                                                         |
 
 ## Canonical policy
 

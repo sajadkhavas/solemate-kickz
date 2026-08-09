@@ -30,16 +30,32 @@ function checkHead(name, page, { robots, canonical, requireSocial = true }) {
   const canonicals = canonicalValues(page.head);
   const ogUrls = metaValues(page.head, "property", "og:url");
   record(`${name}: one title`, titles.length === 1 && Boolean(titles[0]), titles);
-  record(`${name}: one description`, descriptions.length === 1 && Boolean(descriptions[0]), descriptions);
-  record(`${name}: robots policy`, robotsValues.length === 1 && robotsValues[0] === robots, robotsValues);
+  record(
+    `${name}: one description`,
+    descriptions.length === 1 && Boolean(descriptions[0]),
+    descriptions,
+  );
+  record(
+    `${name}: robots policy`,
+    robotsValues.length === 1 && robotsValues[0] === robots,
+    robotsValues,
+  );
   record(
     `${name}: canonical policy`,
     canonical ? canonicals.length === 1 && canonicals[0] === canonical : canonicals.length === 0,
     canonicals,
   );
   if (requireSocial) {
-    record(`${name}: Open Graph title`, metaValues(page.head, "property", "og:title").length === 1, null);
-    record(`${name}: Twitter card`, metaValues(page.head, "name", "twitter:card").length === 1, null);
+    record(
+      `${name}: Open Graph title`,
+      metaValues(page.head, "property", "og:title").length === 1,
+      null,
+    );
+    record(
+      `${name}: Twitter card`,
+      metaValues(page.head, "name", "twitter:card").length === 1,
+      null,
+    );
   }
   if (canonical)
     record(`${name}: matching og:url`, ogUrls.length === 1 && ogUrls[0] === canonical, ogUrls);
@@ -51,7 +67,9 @@ function checkHead(name, page, { robots, canonical, requireSocial = true }) {
 }
 
 function redirectPathsStayOn(page, pathname) {
-  return page.redirects.every((redirect) => new URL(redirect.to, "http://sole.test").pathname === pathname);
+  return page.redirects.every(
+    (redirect) => new URL(redirect.to, "http://sole.test").pathname === pathname,
+  );
 }
 
 async function run(baseUrl) {
@@ -63,7 +81,11 @@ async function run(baseUrl) {
   for (const [name, path, canonical] of publicPages) {
     const page = await fetchPage(baseUrl, path);
     record(`${name}: HTTP 200`, page.response.status === 200, page.response.status);
-    record(`${name}: direct canonical route has no redirect`, page.redirects.length === 0, page.redirects);
+    record(
+      `${name}: direct canonical route has no redirect`,
+      page.redirects.length === 0,
+      page.redirects,
+    );
     checkHead(name, page, { robots: "index, follow", canonical });
     record(
       `${name}: Persian RTL document`,
@@ -85,9 +107,17 @@ async function run(baseUrl) {
       redirects: page.redirects,
       finalPath: page.finalPath,
     });
-    record(`${path}: redirects stay on catalog route`, redirectPathsStayOn(page, "/products"), page.redirects);
+    record(
+      `${path}: redirects stay on catalog route`,
+      redirectPathsStayOn(page, "/products"),
+      page.redirects,
+    );
     if (path === "/products") {
-      record("/products: clean catalog URL is direct 200", page.redirects.length === 0, page.redirects);
+      record(
+        "/products: clean catalog URL is direct 200",
+        page.redirects.length === 0,
+        page.redirects,
+      );
     }
     if (path.includes("sort=newest")) {
       record(
@@ -177,7 +207,11 @@ async function run(baseUrl) {
       redirects: page.redirects,
       finalPath: page.finalPath,
     });
-    record(`${path}: redirects stay on same utility route`, redirectPathsStayOn(page, path), page.redirects);
+    record(
+      `${path}: redirects stay on same utility route`,
+      redirectPathsStayOn(page, path),
+      page.redirects,
+    );
     checkHead(path, page, { robots: "noindex, follow", canonical: null });
     record(
       `${path}: not canonicalized to homepage`,
@@ -195,8 +229,9 @@ async function run(baseUrl) {
     });
     record(
       `${path}: redirect chain never masquerades as homepage`,
-      !page.redirects.some((redirect) => new URL(redirect.to, "http://sole.test").pathname === "/") &&
-        new URL(page.finalUrl).pathname !== "/",
+      !page.redirects.some(
+        (redirect) => new URL(redirect.to, "http://sole.test").pathname === "/",
+      ) && new URL(page.finalUrl).pathname !== "/",
       page.redirects,
     );
     record(
@@ -204,7 +239,11 @@ async function run(baseUrl) {
       /noindex/i.test(page.response.headers.get("x-robots-tag") ?? ""),
       page.response.headers.get("x-robots-tag"),
     );
-    record(`${path}: no canonical`, canonicalValues(page.head).length === 0, canonicalValues(page.head));
+    record(
+      `${path}: no canonical`,
+      canonicalValues(page.head).length === 0,
+      canonicalValues(page.head),
+    );
   }
 
   const robots = await fetch(`${baseUrl}/robots.txt`);
@@ -232,7 +271,8 @@ async function run(baseUrl) {
   );
   record(
     "sitemap contains only canonical indexable routes",
-    JSON.stringify(locs) === JSON.stringify([`${SITE_URL}/`, `${SITE_URL}/about`, `${SITE_URL}/brands`]),
+    JSON.stringify(locs) ===
+      JSON.stringify([`${SITE_URL}/`, `${SITE_URL}/about`, `${SITE_URL}/brands`]),
     locs,
   );
   record(
@@ -242,7 +282,11 @@ async function run(baseUrl) {
   );
   record("sitemap has no duplicate URLs", new Set(locs).size === locs.length, locs);
 
-  writeReport("artifacts/reports/f11-technical-seo-runtime.json", "f11-technical-seo-runtime", results);
+  writeReport(
+    "artifacts/reports/f11-technical-seo-runtime.json",
+    "f11-technical-seo-runtime",
+    results,
+  );
 }
 
 withF11Server(
@@ -257,7 +301,11 @@ withF11Server(
   record(
     "F11 runtime suite completed",
     false,
-    error instanceof Error ? error.stack ?? error.message : String(error),
+    error instanceof Error ? (error.stack ?? error.message) : String(error),
   );
-  writeReport("artifacts/reports/f11-technical-seo-runtime.json", "f11-technical-seo-runtime", results);
+  writeReport(
+    "artifacts/reports/f11-technical-seo-runtime.json",
+    "f11-technical-seo-runtime",
+    results,
+  );
 });
