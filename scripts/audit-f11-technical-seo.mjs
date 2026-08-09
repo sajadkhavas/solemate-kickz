@@ -32,6 +32,7 @@ const PHASE_FILES = new Set([
   "scripts/verify-cumulative-quality.mjs",
   "src/router.tsx",
   "src/server.ts",
+  "src/routes/product.$id.tsx",
   "src/routes/products.tsx",
   "src/seo/seo-config.ts",
   "src/seo/seo-head.ts",
@@ -413,6 +414,17 @@ record(
 record(
   "invalid products use TanStack notFound semantics",
   productRoute.includes("throw notFound()") && productRoute.includes("SHOES.find"),
+  null,
+);
+record(
+  "global skip target is unique and PDP keeps semantic main landmarks",
+  rootRoute.includes('href="#main-content"') &&
+    rootRoute.includes('id="main-content"') &&
+    !productRoute.includes('id="main-content"') &&
+    !productRoute.includes("tabIndex={-1}") &&
+    productRoute.includes("function ProductNotFound") &&
+    productRoute.includes("function ProductPage") &&
+    (productRoute.match(/<main/g) ?? []).length >= 2,
   null,
 );
 record(
