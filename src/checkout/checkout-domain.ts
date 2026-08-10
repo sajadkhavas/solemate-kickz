@@ -65,7 +65,9 @@ export function sanitizeCheckoutDraft(value: unknown): CheckoutDraft {
   return Object.fromEntries(
     Object.keys(EMPTY_CHECKOUT_DRAFT).map((field) => [
       field,
-      typeof record[field] === "string" ? record[field].slice(0, field === "address" ? 600 : 160) : "",
+      typeof record[field] === "string"
+        ? record[field].slice(0, field === "address" ? 600 : 160)
+        : "",
     ]),
   ) as unknown as CheckoutDraft;
 }

@@ -56,10 +56,7 @@ if (exitCode !== 0) {
 }
 
 try {
-  const [entryStats] = await Promise.all([
-    stat(serverEntry),
-    access(publicDir, constants.R_OK),
-  ]);
+  const [entryStats] = await Promise.all([stat(serverEntry), access(publicDir, constants.R_OK)]);
 
   if (!entryStats.isFile() || entryStats.size === 0) {
     fail(".output/server/index.mjs is missing or empty.");

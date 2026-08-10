@@ -15,10 +15,7 @@ import { withF6Server } from "./f6-browser-runner.mjs";
 const ROOT = process.cwd();
 const OUTPUT = path.join(ROOT, "artifacts/visual-qa/f6-product-detail");
 const REPORT = path.join(OUTPUT, "f6-product-detail.json");
-const CHROME_LOG = path.join(
-  ROOT,
-  "artifacts/runtime/f6-product-detail-visual-chrome.txt",
-);
+const CHROME_LOG = path.join(ROOT, "artifacts/runtime/f6-product-detail-visual-chrome.txt");
 const captures = [];
 const criticalFindings = [];
 const browserErrors = [];
@@ -36,7 +33,10 @@ const VIEWPORTS = [
 ];
 
 const safeName = (value) =>
-  value.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
+  value
+    .replace(/[^a-z0-9]+/gi, "-")
+    .replace(/^-|-$/g, "")
+    .toLowerCase();
 
 async function viewport(client, width, height, mobile = width < 768) {
   await client.send("Emulation.setDeviceMetricsOverride", {
@@ -79,6 +79,76 @@ async function click(client, selector) {
   );
   if (!clicked) throw new Error(`Visible target not found: ${selector}`);
   await sleep(180);
+}
+
+async function ensureMainImageFallback(client) {
+  const alreadyFallback = await evaluate(
+    client,
+    `Boolean(document.querySelector('[data-testid="product-main-image-fallback"]'))`,
+  );
+  if (alreadyFallback) return;
+
+  const targetLabel = await evaluate(
+    client,
+    `(() => {
+      const target = [...document.querySelectorAll('[data-testid="product-thumbnail"]')].find(
+        (element) => element.getAttribute('aria-selected') === 'false',
+      );
+      return target?.getAttribute('aria-label') ?? null;
+    })()`,
+  );
+  if (!targetLabel) throw new Error("Hydration probe thumbnail was not found");
+
+  const deadline = Date.now() + 5000;
+  let hydrated = false;
+  while (Date.now() < deadline) {
+    await evaluate(
+      client,
+      `(() => {
+        const target = [...document.querySelectorAll('[data-testid="product-thumbnail"]')].find(
+          (element) => element.getAttribute('aria-label') === ${JSON.stringify(targetLabel)},
+        );
+        if (!(target instanceof HTMLElement)) return false;
+        target.click();
+        return true;
+      })()`,
+    );
+    await sleep(120);
+    hydrated = await evaluate(
+      client,
+      `(() => {
+        const target = [...document.querySelectorAll('[data-testid="product-thumbnail"]')].find(
+          (element) => element.getAttribute('aria-label') === ${JSON.stringify(targetLabel)},
+        );
+        return target?.getAttribute('aria-selected') === 'true';
+      })()`,
+    );
+    if (hydrated) break;
+  }
+  if (!hydrated) throw new Error("Product gallery did not hydrate before fallback QA");
+
+  await sleep(180);
+  const naturalFallback = await evaluate(
+    client,
+    `Boolean(document.querySelector('[data-testid="product-main-image-fallback"]'))`,
+  );
+  if (!naturalFallback) {
+    const triggered = await evaluate(
+      client,
+      `(() => {
+        const image = document.querySelector('[data-testid="product-main-image"]');
+        if (!(image instanceof HTMLImageElement)) return false;
+        image.src = 'data:image/png;base64,@@@';
+        return true;
+      })()`,
+    );
+    if (!triggered) throw new Error("Hydrated main product image was not found");
+  }
+
+  await waitForExpression(
+    client,
+    `document.querySelector('[data-testid="product-main-image-fallback"]')`,
+  );
 }
 
 async function inspect(client) {
@@ -141,6 +211,7 @@ async function capture(client, baseUrl, name, url, width, height, setup) {
   );
   await waitForExpression(client, `document.fonts.status === 'loaded'`);
   if (setup) await setup();
+  await ensureMainImageFallback(client);
   await sleep(650);
 
   const metrics = await inspect(client);
@@ -186,14 +257,7 @@ async function run(baseUrl) {
 
   try {
     for (const [width, height] of VIEWPORTS) {
-      await capture(
-        client,
-        baseUrl,
-        "product-default",
-        "/product/1",
-        width,
-        height,
-      );
+      await capture(client, baseUrl, "product-default", "/product/1", width, height);
     }
 
     await capture(
@@ -205,66 +269,33 @@ async function run(baseUrl) {
       800,
       async () => {
         await click(client, '[data-testid="product-size-option"]');
-        await click(
-          client,
-          '[aria-label="تعداد برای افزودن به سبد"] button:last-of-type',
-        );
+        await click(client, '[aria-label="تعداد برای افزودن به سبد"] button:last-of-type');
       },
     );
 
-    await capture(
-      client,
-      baseUrl,
-      "product-size-guide",
-      "/product/1",
-      390,
-      844,
-      async () => {
-        await click(client, '[data-testid="size-guide-trigger"]');
-        await waitForExpression(
-          client,
-          `document.querySelector('[data-testid="size-guide-dialog"]')`,
-        );
-      },
-    );
+    await capture(client, baseUrl, "product-size-guide", "/product/1", 390, 844, async () => {
+      await click(client, '[data-testid="size-guide-trigger"]');
+      await waitForExpression(
+        client,
+        `document.querySelector('[data-testid="size-guide-dialog"]')`,
+      );
+    });
 
-    await capture(
-      client,
-      baseUrl,
-      "product-gallery-zoom",
-      "/product/1",
-      1280,
-      800,
-      async () => {
-        await click(client, '[data-testid="product-gallery-zoom"]');
-        await waitForExpression(
-          client,
-          `document.querySelector('[data-testid="product-gallery-dialog"]')`,
-        );
-      },
-    );
+    await capture(client, baseUrl, "product-gallery-zoom", "/product/1", 1280, 800, async () => {
+      await click(client, '[data-testid="product-gallery-zoom"]');
+      await waitForExpression(
+        client,
+        `document.querySelector('[data-testid="product-gallery-dialog"]')`,
+      );
+    });
 
-    await capture(
-      client,
-      baseUrl,
-      "product-sold-out",
-      "/product/7",
-      390,
-      844,
-    );
+    await capture(client, baseUrl, "product-sold-out", "/product/7", 390, 844);
 
     await client.send("Emulation.setEmulatedMedia", {
       media: "screen",
       features: [{ name: "prefers-reduced-motion", value: "reduce" }],
     });
-    await capture(
-      client,
-      baseUrl,
-      "product-reduced-motion",
-      "/product/1",
-      390,
-      844,
-    );
+    await capture(client, baseUrl, "product-reduced-motion", "/product/1", 390, 844);
   } finally {
     await browser.close();
   }
@@ -322,8 +353,7 @@ withF6Server(
         suite: "f6-product-detail-visual",
         generatedAt: new Date().toISOString(),
         pass: false,
-        fatalError:
-          error instanceof Error ? (error.stack ?? error.message) : String(error),
+        fatalError: error instanceof Error ? (error.stack ?? error.message) : String(error),
       },
       null,
       2,

@@ -174,15 +174,11 @@ function main() {
     viewerSource.includes("prefersReducedMotion") &&
     viewerSource.includes("hydrated") &&
     viewerSource.includes("const reduced = hydrated && prefersReducedMotion === true");
-  record(
-    "Reduced motion hooks",
-    hydrationSafeReducedMotion && reducedMotionCss,
-    {
-      componentHook: viewerSource.includes("useReducedMotion"),
-      hydrationSafe: hydrationSafeReducedMotion,
-      cssHook: reducedMotionCss,
-    },
-  );
+  record("Reduced motion hooks", hydrationSafeReducedMotion && reducedMotionCss, {
+    componentHook: viewerSource.includes("useReducedMotion"),
+    hydrationSafe: hydrationSafeReducedMotion,
+    cssHook: reducedMotionCss,
+  });
 
   const touchContractCount = count(combined, /data-f3-touch-target="true"/g);
   record("Touch target contract", touchContractCount >= 12, {

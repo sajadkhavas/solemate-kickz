@@ -33,7 +33,10 @@ const VIEWPORTS = [
 ];
 
 const safeName = (value) =>
-  value.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
+  value
+    .replace(/[^a-z0-9]+/gi, "-")
+    .replace(/^-|-$/g, "")
+    .toLowerCase();
 
 async function viewport(client, width, height, mobile = width < 768) {
   await client.send("Emulation.setDeviceMetricsOverride", {
@@ -92,6 +95,18 @@ async function setField(client, selector, value) {
     })()`,
   );
   await sleep(70);
+}
+
+async function seedCheckoutState(client, baseUrl) {
+  await navigate(client, `${baseUrl}/`);
+  await evaluate(
+    client,
+    `(() => {
+      localStorage.setItem('sole-store', JSON.stringify({ state: { cart: [{ id: 1, size: 40, qty: 2 }] } }));
+      sessionStorage.removeItem('sole-checkout-draft-v1');
+      return true;
+    })()`,
+  );
 }
 
 async function inspect(client, rootSelector) {
@@ -182,19 +197,27 @@ async function run(baseUrl) {
   });
 
   try {
-    await navigate(client, `${baseUrl}/`);
-    await evaluate(
-      client,
-      `(() => {
-        localStorage.setItem('sole-store', JSON.stringify({ state: { cart: [{ id: 1, size: 40, qty: 2 }] } }));
-        sessionStorage.removeItem('sole-checkout-draft-v1');
-        return true;
-      })()`,
-    );
+    await seedCheckoutState(client, baseUrl);
 
     for (const [width, height] of VIEWPORTS) {
-      await capture(client, baseUrl, "cart-populated", "/cart", '[data-testid="f7-cart-page"]', width, height);
-      await capture(client, baseUrl, "checkout-form", "/checkout", '[data-testid="f7-checkout-page"]', width, height);
+      await capture(
+        client,
+        baseUrl,
+        "cart-populated",
+        "/cart",
+        '[data-testid="f7-cart-page"]',
+        width,
+        height,
+      );
+      await capture(
+        client,
+        baseUrl,
+        "checkout-form",
+        "/checkout",
+        '[data-testid="f7-checkout-page"]',
+        width,
+        height,
+      );
     }
 
     await viewport(client, 320, 568, true);
@@ -225,20 +248,51 @@ async function run(baseUrl) {
     const drawerFindings = [];
     if (drawer.clipped) drawerFindings.push("drawer-clipped");
     if (drawer.tiny) drawerFindings.push(`drawer-targets-below-44-${drawer.tiny}`);
-    if (drawerFindings.length) criticalFindings.push({ name: "cart-drawer", width: 320, height: 568, findings: drawerFindings, metrics: drawer });
-    captures.push({ name: "cart-drawer", url: "/cart", width: 320, height: 568, file: drawerFile, metrics: drawer, findings: drawerFindings });
+    if (drawerFindings.length)
+      criticalFindings.push({
+        name: "cart-drawer",
+        width: 320,
+        height: 568,
+        findings: drawerFindings,
+        metrics: drawer,
+      });
+    captures.push({
+      name: "cart-drawer",
+      url: "/cart",
+      width: 320,
+      height: 568,
+      file: drawerFile,
+      metrics: drawer,
+      findings: drawerFindings,
+    });
 
     await client.send("Emulation.setEmulatedMedia", {
       media: "screen",
       features: [{ name: "prefers-reduced-motion", value: "reduce" }],
     });
-    await capture(client, baseUrl, "checkout-reduced-motion", "/checkout", '[data-testid="f7-checkout-page"]', 390, 844);
+    await capture(
+      client,
+      baseUrl,
+      "checkout-reduced-motion",
+      "/checkout",
+      '[data-testid="f7-checkout-page"]',
+      390,
+      844,
+    );
 
     await client.send("Emulation.setEmulatedMedia", {
       media: "screen",
       features: [{ name: "forced-colors", value: "active" }],
     });
-    await capture(client, baseUrl, "checkout-forced-colors", "/checkout", '[data-testid="f7-checkout-page"]', 390, 844);
+    await capture(
+      client,
+      baseUrl,
+      "checkout-forced-colors",
+      "/checkout",
+      '[data-testid="f7-checkout-page"]',
+      390,
+      844,
+    );
 
     await client.send("Emulation.setEmulatedMedia", { media: "screen", features: [] });
     await viewport(client, 390, 844, true);
@@ -249,24 +303,51 @@ async function run(baseUrl) {
     const zoomFile = await screenshot(client, "checkout-200-percent-zoom-390x844");
     const zoomFindings = [];
     if (zoomMetrics.overflow) zoomFindings.push("horizontal-overflow-at-200-percent-zoom");
-    if (zoomMetrics.tinyTargets.length) zoomFindings.push(`targets-below-44-${zoomMetrics.tinyTargets.length}`);
-    if (zoomFindings.length) criticalFindings.push({ name: "checkout-200-percent-zoom", findings: zoomFindings, metrics: zoomMetrics });
-    captures.push({ name: "checkout-200-percent-zoom", url: "/checkout", width: 390, height: 844, file: zoomFile, metrics: zoomMetrics, findings: zoomFindings });
+    if (zoomMetrics.tinyTargets.length)
+      zoomFindings.push(`targets-below-44-${zoomMetrics.tinyTargets.length}`);
+    if (zoomFindings.length)
+      criticalFindings.push({
+        name: "checkout-200-percent-zoom",
+        findings: zoomFindings,
+        metrics: zoomMetrics,
+      });
+    captures.push({
+      name: "checkout-200-percent-zoom",
+      url: "/checkout",
+      width: 390,
+      height: 844,
+      file: zoomFile,
+      metrics: zoomMetrics,
+      findings: zoomFindings,
+    });
     await client.send("Emulation.setPageScaleFactor", { pageScaleFactor: 1 });
 
-    await capture(client, baseUrl, "checkout-keyboard-viewport", "/checkout", '[data-testid="f7-checkout-page"]', 390, 500);
+    await capture(
+      client,
+      baseUrl,
+      "checkout-keyboard-viewport",
+      "/checkout",
+      '[data-testid="f7-checkout-page"]',
+      390,
+      500,
+    );
 
     await viewport(client, 390, 844, true);
+    await seedCheckoutState(client, baseUrl);
     await navigate(client, `${baseUrl}/checkout`);
     await waitForExpression(client, `document.querySelector('[data-testid="checkout-form"]')`);
-    await setField(client, '#checkout-firstName', 'سجاد');
-    await setField(client, '#checkout-phone', '09121234567');
-    await setField(client, '#checkout-province', 'استان با نام بسیار طولانی برای آزمون واکنش‌گرایی');
-    await setField(client, '#checkout-city', 'شهر آزمایشی');
+    await setField(client, "#checkout-firstName", "سجاد");
+    await setField(client, "#checkout-phone", "09121234567");
     await setField(
       client,
-      '#checkout-address',
-      'این یک آدرس فارسی بسیار طولانی برای بررسی شکست خطوط، جهت راست به چپ، عدم ایجاد اسکرول افقی و رفتار صحیح صفحه در عرض موبایل است؛ پلاک نمونه و توضیحات تکمیلی نیز در ادامه همین متن قرار می‌گیرند.',
+      "#checkout-province",
+      "استان با نام بسیار طولانی برای آزمون واکنش‌گرایی",
+    );
+    await setField(client, "#checkout-city", "شهر آزمایشی");
+    await setField(
+      client,
+      "#checkout-address",
+      "این یک آدرس فارسی بسیار طولانی برای بررسی شکست خطوط، جهت راست به چپ، عدم ایجاد اسکرول افقی و رفتار صحیح صفحه در عرض موبایل است؛ پلاک نمونه و توضیحات تکمیلی نیز در ادامه همین متن قرار می‌گیرند.",
     );
     await click(client, '[data-testid="checkout-review-submit"]');
     await waitForExpression(client, `document.querySelector('[data-testid="checkout-review"]')`);
@@ -274,9 +355,23 @@ async function run(baseUrl) {
     const longFile = await screenshot(client, "checkout-long-persian-review-390x844");
     const longFindings = [];
     if (longMetrics.overflow) longFindings.push("long-persian-horizontal-overflow");
-    if (longMetrics.tinyTargets.length) longFindings.push(`targets-below-44-${longMetrics.tinyTargets.length}`);
-    if (longFindings.length) criticalFindings.push({ name: "checkout-long-persian-review", findings: longFindings, metrics: longMetrics });
-    captures.push({ name: "checkout-long-persian-review", url: "/checkout", width: 390, height: 844, file: longFile, metrics: longMetrics, findings: longFindings });
+    if (longMetrics.tinyTargets.length)
+      longFindings.push(`targets-below-44-${longMetrics.tinyTargets.length}`);
+    if (longFindings.length)
+      criticalFindings.push({
+        name: "checkout-long-persian-review",
+        findings: longFindings,
+        metrics: longMetrics,
+      });
+    captures.push({
+      name: "checkout-long-persian-review",
+      url: "/checkout",
+      width: 390,
+      height: 844,
+      file: longFile,
+      metrics: longMetrics,
+      findings: longFindings,
+    });
   } finally {
     await browser.close();
   }

@@ -33,7 +33,12 @@ async function click(client, selector) {
 
 async function run(baseUrl) {
   fs.mkdirSync(path.dirname(REPORT), { recursive: true });
-  const browser = await openBrowser({ debugPort: 9260, logPath: CHROME_LOG, width: 1280, height: 800 });
+  const browser = await openBrowser({
+    debugPort: 9260,
+    logPath: CHROME_LOG,
+    width: 1280,
+    height: 800,
+  });
   const { client } = browser;
   await client.send("Network.enable");
   await client.send("Emulation.setDeviceMetricsOverride", {
@@ -47,7 +52,9 @@ async function run(baseUrl) {
 
   client.on("Runtime.exceptionThrown", (event) => {
     browserErrors.push(
-      event.exceptionDetails?.exception?.description ?? event.exceptionDetails?.text ?? "Runtime exception",
+      event.exceptionDetails?.exception?.description ??
+        event.exceptionDetails?.text ??
+        "Runtime exception",
     );
   });
   client.on("Runtime.consoleAPICalled", (event) => {
@@ -76,19 +83,32 @@ async function run(baseUrl) {
 
     const activated = await click(client, '[data-testid="shoe-viewer-enable-3d"]');
     await waitForExpression(client, `document.querySelector('[data-testid="hero-model-viewer"]')`);
-    await waitForExpression(client, `document.querySelector('[data-testid="shoe-viewer"]')?.getAttribute('data-3d-active') === 'true'`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="shoe-viewer"]')?.getAttribute('data-3d-active') === 'true'`,
+    );
     await sleep(500);
     record(
       "3D activates only on demand",
-      activated && (await evaluate(client, `Boolean(document.querySelector('[data-testid="hero-model-viewer"]'))`)),
+      activated &&
+        (await evaluate(
+          client,
+          `Boolean(document.querySelector('[data-testid="hero-model-viewer"]'))`,
+        )),
       { activated, modelDataRequests: [...modelDataRequests] },
     );
 
-    await evaluate(client, `window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }); true`);
+    await evaluate(
+      client,
+      `window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }); true`,
+    );
     await waitForExpression(client, `!document.querySelector('[data-testid="hero-model-viewer"]')`);
     record(
       "3D unmounts while offscreen",
-      !(await evaluate(client, `Boolean(document.querySelector('[data-testid="hero-model-viewer"]'))`)),
+      !(await evaluate(
+        client,
+        `Boolean(document.querySelector('[data-testid="hero-model-viewer"]'))`,
+      )),
     );
 
     await evaluate(client, `window.scrollTo({ top: 0, behavior: 'instant' }); true`);
@@ -111,13 +131,18 @@ async function run(baseUrl) {
     );
     if (cartTrigger) {
       await waitForExpression(client, `document.querySelector('[data-testid="cart-drawer"]')`);
-      await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape" });
+      await client.send("Input.dispatchKeyEvent", {
+        type: "keyDown",
+        key: "Escape",
+        code: "Escape",
+      });
       await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape" });
       await waitForExpression(client, `!document.querySelector('[data-testid="cart-drawer"]')`);
     }
     record(
       "Cart drawer Escape remains immediate",
-      cartTrigger && !(await evaluate(client, `Boolean(document.querySelector('[data-testid="cart-drawer"]'))`)),
+      cartTrigger &&
+        !(await evaluate(client, `Boolean(document.querySelector('[data-testid="cart-drawer"]'))`)),
       { cartTrigger },
     );
 
@@ -134,7 +159,11 @@ async function run(baseUrl) {
     );
     record(
       "Reduced motion keeps the static product poster",
-      reduced.media && reduced.poster && !reduced.model && !reduced.activate && reduced.routeFeedback === "none",
+      reduced.media &&
+        reduced.poster &&
+        !reduced.model &&
+        !reduced.activate &&
+        reduced.routeFeedback === "none",
       reduced,
     );
 
@@ -154,7 +183,11 @@ async function run(baseUrl) {
       client,
       `({ coarse: matchMedia('(pointer: coarse)').matches, customCursor: Boolean(document.querySelector('[data-foundation-cursor]')), overflow: document.documentElement.scrollWidth > innerWidth + 1 })`,
     );
-    record("Touch mode has no custom pointer or horizontal overflow", !touch.customCursor && !touch.overflow, touch);
+    record(
+      "Touch mode has no custom pointer or horizontal overflow",
+      !touch.customCursor && !touch.overflow,
+      touch,
+    );
 
     const relevantErrors = browserErrors.filter(
       (error) => !/favicon|ResizeObserver loop limit exceeded/i.test(error),
@@ -177,7 +210,11 @@ async function run(baseUrl) {
     suite: "f10-motion-3d-behavior",
     generatedAt: new Date().toISOString(),
     baseUrl,
-    summary: { total: results.length, passed: results.length - failed.length, failed: failed.length },
+    summary: {
+      total: results.length,
+      passed: results.length - failed.length,
+      failed: failed.length,
+    },
     results,
     browserErrors,
     modelDataRequests,

@@ -119,18 +119,16 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
         </div>
 
         <p data-testid="product-size-status" className="mt-3 font-fa text-xs text-muted-foreground">
-          {selectedSize === null ? "هنوز سایزی انتخاب نشده است." : `سایز انتخابی: EU ${selectedSize}`}
+          {selectedSize === null
+            ? "هنوز سایزی انتخاب نشده است."
+            : `سایز انتخابی: EU ${selectedSize}`}
         </p>
       </div>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface p-4">
         <StockState
           status={shoe.isSoldOut ? "out-of-stock" : "in-stock"}
-          label={
-            shoe.isSoldOut
-              ? "در Dataset ناموجود ثبت شده"
-              : "در Dataset برای افزودن فعال است"
-          }
+          label={shoe.isSoldOut ? "در Dataset ناموجود ثبت شده" : "در Dataset برای افزودن فعال است"}
         />
         <QuantityStepper
           value={quantity}
@@ -204,22 +202,17 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
           </div>
           <div>
             <dt className="font-fa text-xs text-muted-foreground">برچسب‌ها</dt>
-            <dd className="mt-1">
-              {shoe.tags.length ? shoe.tags.join("، ") : "برچسبی ثبت نشده"}
-            </dd>
+            <dd className="mt-1">{shoe.tags.length ? shoe.tags.join("، ") : "برچسبی ثبت نشده"}</dd>
           </div>
         </dl>
 
         <div className="mt-4 border-t border-border pt-4">
           <p className="font-fa text-xs leading-6 text-muted-foreground">
-            Dataset فعلی اطلاعاتی درباره موجودی هر سایز، جنس، کشور سازنده،
-            اصالت، زمان ارسال یا شرایط بازگشت ندارد؛ بنابراین این صفحه چنین
-            ادعاهایی نمایش نمی‌دهد.
+            Dataset فعلی اطلاعاتی درباره موجودی هر سایز، جنس، کشور سازنده، اصالت، زمان ارسال یا
+            شرایط بازگشت ندارد؛ بنابراین این صفحه چنین ادعاهایی نمایش نمی‌دهد.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2" aria-label="پالت رنگ ثبت‌شده">
-            <span className="font-fa text-xs text-muted-foreground">
-              پالت رنگ ثبت‌شده:
-            </span>
+            <span className="font-fa text-xs text-muted-foreground">پالت رنگ ثبت‌شده:</span>
             {shoe.colors.map((color, index) => (
               <span
                 key={`${color}-${index}`}

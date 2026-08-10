@@ -1,18 +1,6 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Expand,
-  ImageOff,
-  X,
-} from "lucide-react";
-import {
-  useEffect,
-  useRef,
-  useState,
-  type KeyboardEvent,
-  type PointerEvent,
-} from "react";
+import { ChevronLeft, ChevronRight, Expand, ImageOff, X } from "lucide-react";
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 
 import { IconButton } from "@/components/ui/commerce-primitives";
 import type { Shoe } from "@/data/shoes";
@@ -25,13 +13,7 @@ type SafeImageProps = {
   onFailure?: () => void;
 };
 
-function SafeImage({
-  src,
-  alt,
-  className,
-  testId,
-  onFailure,
-}: SafeImageProps) {
+function SafeImage({ src, alt, className, testId, onFailure }: SafeImageProps) {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => setFailed(false), [src]);
@@ -187,11 +169,7 @@ export function ProductGallery({ shoe }: ProductGalleryProps) {
         نمای {activeIndex + 1} از {imageCount}
       </p>
 
-      <div
-        role="tablist"
-        aria-label="انتخاب نمای محصول"
-        className="mt-4 grid grid-cols-4 gap-3"
-      >
+      <div role="tablist" aria-label="انتخاب نمای محصول" className="mt-4 grid grid-cols-4 gap-3">
         {shoe.images.map((image, index) => {
           const selected = activeIndex === index;
           return (
@@ -206,11 +184,7 @@ export function ProductGallery({ shoe }: ProductGalleryProps) {
               onClick={() => goTo(index)}
               className="relative aspect-square min-h-11 overflow-hidden rounded-xl border-2 border-border bg-surface outline-none transition-colors hover:border-border-strong focus-visible:ring-2 focus-visible:ring-focus aria-selected:border-primary"
             >
-              <SafeImage
-                src={image}
-                alt=""
-                className="h-full w-full object-cover"
-              />
+              <SafeImage src={image} alt="" className="h-full w-full object-cover" />
             </button>
           );
         })}

@@ -272,9 +272,7 @@ export const useStore = create<Store>()(
           wishlist: Array.isArray(persisted.wishlist)
             ? [
                 ...new Set(
-                  persisted.wishlist.filter(
-                    (id): id is number => Number.isInteger(id) && id > 0,
-                  ),
+                  persisted.wishlist.filter((id): id is number => Number.isInteger(id) && id > 0),
                 ),
               ]
             : [],

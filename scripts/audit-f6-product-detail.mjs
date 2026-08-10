@@ -51,11 +51,7 @@ record(
 );
 
 const ancestry = git("merge-base", "--is-ancestor", BASELINE, "HEAD");
-record(
-  "accepted Integration baseline is an ancestor",
-  ancestry.status === 0,
-  ancestry,
-);
+record("accepted Integration baseline is an ancestor", ancestry.status === 0, ancestry);
 
 for (const file of requiredFiles) {
   record(`${file} exists`, exists(file), file);
@@ -129,8 +125,7 @@ record(
 record(
   "gallery exposes image fallback and zoom dialog",
   gallery.includes("product-main-image-fallback") ||
-    (gallery.includes("SafeImage") &&
-      gallery.includes("product-gallery-dialog")),
+    (gallery.includes("SafeImage") && gallery.includes("product-gallery-dialog")),
   null,
 );
 record(
@@ -166,12 +161,8 @@ const forbiddenClaims = [
 ];
 record(
   "unsupported commerce and specification claims are absent",
-  forbiddenClaims.every(
-    (claim) => !route.includes(claim) && !purchase.includes(claim),
-  ),
-  forbiddenClaims.filter(
-    (claim) => route.includes(claim) || purchase.includes(claim),
-  ),
+  forbiddenClaims.every((claim) => !route.includes(claim) && !purchase.includes(claim)),
+  forbiddenClaims.filter((claim) => route.includes(claim) || purchase.includes(claim)),
 );
 record(
   "dataset boundary is explicit",

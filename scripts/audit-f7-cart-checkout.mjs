@@ -8,7 +8,7 @@ const BASELINE = "e870dfe7ea06e5967810391f67ce083035d34ad1";
 const OWNER_BRANCH = "phase/sole-f7-cart-checkout";
 const INTEGRATION_BRANCH = "integration/sole-frontend-v2";
 const SUPERVISOR_BRANCH = "supervisor/sole-f7-f9-integration";
-const F10_BRANCH = "phase/sole-f10-motion-3d-interaction";
+const CONTROLLED_PHASE = /^phase\/sole-f(?:\d+)(?:-f\d+)?-[a-z0-9-]+$/;
 const REPORT = path.join(ROOT, "artifacts/audits/f7-cart-checkout.json");
 const checks = [];
 
@@ -30,6 +30,9 @@ function record(name, pass, evidence = null) {
   checks.push({ name, pass: Boolean(pass), evidence });
   if (!pass) console.error(`FAIL ${name}: ${JSON.stringify(evidence)}`);
 }
+function normalizeSourceText(source) {
+  return source.replace(/\s+/g, " ");
+}
 
 const requiredFiles = [
   "src/cart/cart-domain.ts",
@@ -47,16 +50,19 @@ const requiredFiles = [
 
 const branchResult = git("branch", "--show-current");
 const branch =
-  process.env.GITHUB_HEAD_REF ||
-  branchResult.stdout ||
-  process.env.GITHUB_REF_NAME ||
-  "detached";
-const controlledBranches = [OWNER_BRANCH, INTEGRATION_BRANCH, SUPERVISOR_BRANCH, F10_BRANCH];
-record(
-  "branch is controlled",
-  controlledBranches.includes(branch),
-  { expected: controlledBranches, actual: branch },
-);
+  process.env.GITHUB_HEAD_REF || branchResult.stdout || process.env.GITHUB_REF_NAME || "detached";
+const controlledBranch =
+  branch === OWNER_BRANCH ||
+  branch === INTEGRATION_BRANCH ||
+  branch === SUPERVISOR_BRANCH ||
+  CONTROLLED_PHASE.test(branch);
+record("branch is controlled", controlledBranch, {
+  owner: OWNER_BRANCH,
+  integration: INTEGRATION_BRANCH,
+  supervisor: SUPERVISOR_BRANCH,
+  phasePattern: String(CONTROLLED_PHASE),
+  actual: branch,
+});
 record(
   "accepted Integration baseline is an ancestor",
   git("merge-base", "--is-ancestor", BASELINE, "HEAD").status === 0,
@@ -82,6 +88,9 @@ const visual = read("scripts/visual-qa-f7-cart-checkout.mjs");
 const behavior = read("scripts/test-f7-cart-checkout.mjs");
 const styles = `${read("src/styles.css")}\n${read("src/foundation.css")}`;
 const handoff = read("docs/handoffs/F7-CART-CHECKOUT.md");
+const drawerText = normalizeSourceText(drawer);
+const cartRouteText = normalizeSourceText(cartRoute);
+const checkoutRouteText = normalizeSourceText(checkoutRoute);
 
 record(
   "cart persistence is hydration-safe and storage failures are contained",
@@ -116,8 +125,7 @@ record(
 );
 record(
   "quantity does not invent an inventory maximum",
-  !purchase.includes("max={10}") &&
-    commerce.includes('typeof max !== "number" || safeValue < max'),
+  !purchase.includes("max={10}") && commerce.includes('typeof max !== "number" || safeValue < max'),
 );
 record(
   "stale persisted states stay visible and block review",
@@ -236,9 +244,9 @@ record(
 );
 record(
   "truthfulness boundary is explicit across F7",
-  drawer.includes("سفارش، ارسال و پرداخت واقعی متصل نیستند") &&
-    cartRoute.includes("سفارش، ارسال یا پرداخت واقعی متصل نیست") &&
-    checkoutRoute.includes("هیچ سفارش واقعی ایجاد نمی‌شود"),
+  drawerText.includes("سفارش، ارسال و پرداخت واقعی متصل نیستند") &&
+    cartRouteText.includes("سفارش، ارسال یا پرداخت واقعی متصل نیست") &&
+    checkoutRouteText.includes("هیچ سفارش واقعی ایجاد نمی‌شود"),
 );
 record(
   "44px forced-colors and reduced-motion foundations are retained",

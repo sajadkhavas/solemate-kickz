@@ -21,9 +21,7 @@ async function probe(pathname) {
       throw new Error(`${pathname} returned HTTP ${response.status}`);
     }
 
-    console.log(
-      `[smoke:vps] ${pathname} HTTP 200 in ${elapsedMs}ms (${body.byteLength} bytes)`,
-    );
+    console.log(`[smoke:vps] ${pathname} HTTP 200 in ${elapsedMs}ms (${body.byteLength} bytes)`);
     return elapsedMs;
   } finally {
     clearTimeout(timer);

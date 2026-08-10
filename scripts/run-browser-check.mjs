@@ -126,7 +126,9 @@ async function runWithStartupRecovery(baseUrl) {
   const first = await runBrowserScript(baseUrl);
   if (!isRetryableChromeStartup(first)) return first;
 
-  console.warn("Foundation Chrome startup failed; retrying once without masking behavior failures.");
+  console.warn(
+    "Foundation Chrome startup failed; retrying once without masking behavior failures.",
+  );
   await sleep(1_000);
   return runBrowserScript(baseUrl);
 }

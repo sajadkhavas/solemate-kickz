@@ -14,10 +14,7 @@ import { useStore } from "@/store";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
-    meta: [
-      { title: "سبد خرید نمایشی — SOLE" },
-      { name: "robots", content: "noindex, follow" },
-    ],
+    meta: [{ title: "سبد خرید نمایشی — SOLE" }, { name: "robots", content: "noindex, follow" }],
   }),
   component: CartPage,
 });
@@ -73,13 +70,16 @@ function CartPage() {
               سبد خرید
             </h1>
             <p className="mt-3 max-w-2xl font-fa text-sm leading-7 text-muted-foreground">
-              این سبد روی همین دستگاه ذخیره می‌شود. Checkout این فاز فقط برای بررسی اطلاعات است و به سفارش، ارسال یا پرداخت واقعی متصل نیست.
+              این سبد روی همین دستگاه ذخیره می‌شود. Checkout این فاز فقط برای بررسی اطلاعات است و به
+              سفارش، ارسال یا پرداخت واقعی متصل نیست.
             </p>
           </div>
           {hasHydrated && items.length > 0 ? (
             <div className="rounded-full border border-border bg-surface px-4 py-2 font-fa text-sm">
               <span className="text-muted-foreground">تعداد: </span>
-              <span className="font-mono-num" data-testid="cart-page-count">{itemCount}</span>
+              <span className="font-mono-num" data-testid="cart-page-count">
+                {itemCount}
+              </span>
             </div>
           ) : null}
         </div>
@@ -135,7 +135,8 @@ function CartPage() {
                   <div>
                     <p className="font-bold">سبد ذخیره‌شده نیاز به بازبینی دارد.</p>
                     <p className="mt-1 text-muted-foreground">
-                      حداقل یک محصول، سایز یا وضعیت دسترس‌پذیری با Dataset فعلی هماهنگ نیست. مورد مشکل‌دار را حذف کنید؛ تا آن زمان ورود به Review مسدود است.
+                      حداقل یک محصول، سایز یا وضعیت دسترس‌پذیری با Dataset فعلی هماهنگ نیست. مورد
+                      مشکل‌دار را حذف کنید؛ تا آن زمان ورود به Review مسدود است.
                     </p>
                   </div>
                 </div>
@@ -204,7 +205,12 @@ function CartPage() {
                               )}
                               <p className="mt-1 font-fa text-xs text-muted-foreground">
                                 سایز <bdi dir="ltr">{item.size}</bdi>
-                                {item.shoe ? <> · <bdi dir="ltr">{item.shoe.colorway}</bdi></> : null}
+                                {item.shoe ? (
+                                  <>
+                                    {" "}
+                                    · <bdi dir="ltr">{item.shoe.colorway}</bdi>
+                                  </>
+                                ) : null}
                               </p>
                             </div>
                             <button
@@ -241,7 +247,10 @@ function CartPage() {
                               >
                                 <Minus aria-hidden="true" className="size-4" />
                               </button>
-                              <output aria-live="polite" className="min-w-10 text-center font-mono-num text-sm">
+                              <output
+                                aria-live="polite"
+                                className="min-w-10 text-center font-mono-num text-sm"
+                              >
                                 {item.qty}
                               </output>
                               <button
@@ -265,7 +274,9 @@ function CartPage() {
                                 </p>
                               </div>
                             ) : (
-                              <span className="font-fa text-xs text-muted-foreground">قیمت قابل بررسی نیست</span>
+                              <span className="font-fa text-xs text-muted-foreground">
+                                قیمت قابل بررسی نیست
+                              </span>
                             )}
                           </div>
                         </div>
@@ -308,7 +319,8 @@ function CartPage() {
                 <div className="border-t border-border pt-4">
                   <dt className="font-bold">مبلغ نهایی</dt>
                   <dd className="mt-1 text-xs leading-6 text-muted-foreground">
-                    بدون قوانین معتبر ارسال، مالیات احتمالی و سرویس سفارش، مبلغ نهایی محاسبه نمی‌شود.
+                    بدون قوانین معتبر ارسال، مالیات احتمالی و سرویس سفارش، مبلغ نهایی محاسبه
+                    نمی‌شود.
                   </dd>
                 </div>
               </dl>

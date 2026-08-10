@@ -34,7 +34,9 @@ export function KineticText({
       variants={{
         hidden: {},
         visible: {
-          transition: reduced ? { duration: 0 } : { staggerChildren: stagger, delayChildren: delay },
+          transition: reduced
+            ? { duration: 0 }
+            : { staggerChildren: stagger, delayChildren: delay },
         },
       }}
       className={className}

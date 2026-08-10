@@ -19,12 +19,60 @@ const PARTS: BoxPart[] = [
 ];
 
 const FACE_DEFINITIONS = [
-  { normal: [1, 0, 0], corners: [[1, -1, -1], [1, -1, 1], [1, 1, 1], [1, 1, -1]] },
-  { normal: [-1, 0, 0], corners: [[-1, -1, 1], [-1, -1, -1], [-1, 1, -1], [-1, 1, 1]] },
-  { normal: [0, 1, 0], corners: [[-1, 1, -1], [1, 1, -1], [1, 1, 1], [-1, 1, 1]] },
-  { normal: [0, -1, 0], corners: [[-1, -1, 1], [1, -1, 1], [1, -1, -1], [-1, -1, -1]] },
-  { normal: [0, 0, 1], corners: [[1, -1, 1], [-1, -1, 1], [-1, 1, 1], [1, 1, 1]] },
-  { normal: [0, 0, -1], corners: [[-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1]] },
+  {
+    normal: [1, 0, 0],
+    corners: [
+      [1, -1, -1],
+      [1, -1, 1],
+      [1, 1, 1],
+      [1, 1, -1],
+    ],
+  },
+  {
+    normal: [-1, 0, 0],
+    corners: [
+      [-1, -1, 1],
+      [-1, -1, -1],
+      [-1, 1, -1],
+      [-1, 1, 1],
+    ],
+  },
+  {
+    normal: [0, 1, 0],
+    corners: [
+      [-1, 1, -1],
+      [1, 1, -1],
+      [1, 1, 1],
+      [-1, 1, 1],
+    ],
+  },
+  {
+    normal: [0, -1, 0],
+    corners: [
+      [-1, -1, 1],
+      [1, -1, 1],
+      [1, -1, -1],
+      [-1, -1, -1],
+    ],
+  },
+  {
+    normal: [0, 0, 1],
+    corners: [
+      [1, -1, 1],
+      [-1, -1, 1],
+      [-1, 1, 1],
+      [1, 1, 1],
+    ],
+  },
+  {
+    normal: [0, 0, -1],
+    corners: [
+      [-1, -1, -1],
+      [1, -1, -1],
+      [1, 1, -1],
+      [-1, 1, -1],
+    ],
+  },
 ] as const;
 
 function align4(value: number) {
@@ -79,52 +127,58 @@ export function createShoeModelBlob() {
 
     const positionChunk = appendChunk(chunks, bytes(geometry.positions), offset);
     offset = positionChunk.nextOffset;
-    const positionView = bufferViews.push({
-      buffer: 0,
-      byteOffset: positionChunk.byteOffset,
-      byteLength: geometry.positions.byteLength,
-      target: 34962,
-    }) - 1;
-    const positionAccessor = accessors.push({
-      bufferView: positionView,
-      componentType: 5126,
-      count: geometry.positions.length / 3,
-      type: "VEC3",
-      min: geometry.min,
-      max: geometry.max,
-    }) - 1;
+    const positionView =
+      bufferViews.push({
+        buffer: 0,
+        byteOffset: positionChunk.byteOffset,
+        byteLength: geometry.positions.byteLength,
+        target: 34962,
+      }) - 1;
+    const positionAccessor =
+      accessors.push({
+        bufferView: positionView,
+        componentType: 5126,
+        count: geometry.positions.length / 3,
+        type: "VEC3",
+        min: geometry.min,
+        max: geometry.max,
+      }) - 1;
 
     const normalChunk = appendChunk(chunks, bytes(geometry.normals), offset);
     offset = normalChunk.nextOffset;
-    const normalView = bufferViews.push({
-      buffer: 0,
-      byteOffset: normalChunk.byteOffset,
-      byteLength: geometry.normals.byteLength,
-      target: 34962,
-    }) - 1;
-    const normalAccessor = accessors.push({
-      bufferView: normalView,
-      componentType: 5126,
-      count: geometry.normals.length / 3,
-      type: "VEC3",
-    }) - 1;
+    const normalView =
+      bufferViews.push({
+        buffer: 0,
+        byteOffset: normalChunk.byteOffset,
+        byteLength: geometry.normals.byteLength,
+        target: 34962,
+      }) - 1;
+    const normalAccessor =
+      accessors.push({
+        bufferView: normalView,
+        componentType: 5126,
+        count: geometry.normals.length / 3,
+        type: "VEC3",
+      }) - 1;
 
     const indexChunk = appendChunk(chunks, bytes(geometry.indices), offset);
     offset = indexChunk.nextOffset;
-    const indexView = bufferViews.push({
-      buffer: 0,
-      byteOffset: indexChunk.byteOffset,
-      byteLength: geometry.indices.byteLength,
-      target: 34963,
-    }) - 1;
-    const indexAccessor = accessors.push({
-      bufferView: indexView,
-      componentType: 5123,
-      count: geometry.indices.length,
-      type: "SCALAR",
-      min: [0],
-      max: [23],
-    }) - 1;
+    const indexView =
+      bufferViews.push({
+        buffer: 0,
+        byteOffset: indexChunk.byteOffset,
+        byteLength: geometry.indices.byteLength,
+        target: 34963,
+      }) - 1;
+    const indexAccessor =
+      accessors.push({
+        bufferView: indexView,
+        componentType: 5123,
+        count: geometry.indices.length,
+        type: "SCALAR",
+        min: [0],
+        max: [23],
+      }) - 1;
 
     primitives.push({
       attributes: { POSITION: positionAccessor, NORMAL: normalAccessor },

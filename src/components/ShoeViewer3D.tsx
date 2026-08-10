@@ -246,7 +246,10 @@ export function ShoeViewer3D({ fallbackImage, alt, priority = false }: Props) {
         </div>
       </motion.div>
 
-      <div className="mt-3 min-h-6 text-center font-fa text-xs text-muted-foreground" aria-live="polite">
+      <div
+        className="mt-3 min-h-6 text-center font-fa text-xs text-muted-foreground"
+        aria-live="polite"
+      >
         {reduced
           ? "برای احترام به تنظیم کاهش حرکت، تصویر ثابت نمایش داده می‌شود."
           : !supported

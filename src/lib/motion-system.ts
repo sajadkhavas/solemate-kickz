@@ -44,9 +44,6 @@ export const motionTransitions: Record<MotionCategory, Transition> = {
   },
 };
 
-export function motionTransition(
-  reduced: boolean | null,
-  transition: Transition,
-): Transition {
+export function motionTransition(reduced: boolean | null, transition: Transition): Transition {
   return reduced ? { duration: 0 } : transition;
 }

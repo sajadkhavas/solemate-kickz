@@ -23,7 +23,7 @@ async function stopProcess(child) {
   }
 }
 
-export async function withF7Server({ envName, port, logPath }, callback) {
+export async function withF11Server({ envName, port, logPath, env = {} }, callback) {
   const externalBaseUrl = process.env[envName];
   if (externalBaseUrl) return callback(externalBaseUrl);
 
@@ -33,7 +33,7 @@ export async function withF7Server({ envName, port, logPath }, callback) {
   const log = fs.openSync(absoluteLogPath, "w");
   const server = spawn("bun", ["run", "dev", "--", "--host", "127.0.0.1", "--port", String(port)], {
     cwd: ROOT,
-    env: process.env,
+    env: { ...process.env, ...env },
     stdio: ["ignore", log, log],
   });
 
