@@ -98,14 +98,19 @@ export function QuickShopPaths() {
                     <span className="grid size-11 place-items-center rounded-full border border-border bg-ink text-neon">
                       <Icon aria-hidden="true" size={19} />
                     </span>
-                    <span className="font-mono-num text-sm font-bold text-muted-foreground" dir="ltr">
+                    <span
+                      className="font-mono-num text-sm font-bold text-muted-foreground"
+                      dir="ltr"
+                    >
                       {item.count} models
                     </span>
                   </div>
 
                   <div className="mt-auto pt-7">
                     <p className="eyebrow text-neon">{item.eyebrow}</p>
-                    <h3 className="mt-2 font-fa text-xl font-black text-foreground">{item.label}</h3>
+                    <h3 className="mt-2 font-fa text-xl font-black text-foreground">
+                      {item.label}
+                    </h3>
                     <p className="mt-2 font-fa text-sm leading-6 text-muted-foreground">
                       {item.description}
                     </p>

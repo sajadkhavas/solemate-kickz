@@ -264,9 +264,7 @@ function main() {
   );
   record(
     "Product-first information architecture",
-    !indexSource.includes("Marquee") &&
-      !indexSource.includes("RevealOnScroll") &&
-      orderedFlow,
+    !indexSource.includes("Marquee") && !indexSource.includes("RevealOnScroll") && orderedFlow,
     {
       marqueeRemoved: !indexSource.includes("Marquee"),
       revealDependencyRemoved: !indexSource.includes("RevealOnScroll"),

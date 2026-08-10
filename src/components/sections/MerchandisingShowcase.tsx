@@ -128,7 +128,9 @@ function MerchandisingCard({
             </div>
           ) : null}
 
-          <div className={`mt-auto flex items-end justify-between gap-4 ${featured ? "pt-7" : "pt-5"}`}>
+          <div
+            className={`mt-auto flex items-end justify-between gap-4 ${featured ? "pt-7" : "pt-5"}`}
+          >
             <div>
               <p className="font-mono-num text-base font-bold text-foreground" dir="ltr">
                 {formatPrice(currentPrice)}
@@ -247,7 +249,10 @@ export function MerchandisingShowcase() {
               <MerchandisingCard shoe={products[0]} mode={mode} featured />
               <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 lg:grid-rows-3">
                 {products.slice(1).map((shoe) => (
-                  <div key={shoe.id} className="lg:[&>article]:grid lg:[&>article]:grid-cols-[170px_1fr]">
+                  <div
+                    key={shoe.id}
+                    className="lg:[&>article]:grid lg:[&>article]:grid-cols-[170px_1fr]"
+                  >
                     <MerchandisingCard shoe={shoe} mode={mode} />
                   </div>
                 ))}
