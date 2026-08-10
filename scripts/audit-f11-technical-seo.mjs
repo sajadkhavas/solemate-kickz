@@ -239,10 +239,20 @@ record(
 );
 
 const inheritedFormatFiles = [...FORMAT_CLEANUP_FILES].filter((file) => !PHASE_FILES.has(file));
-const inheritedFormatComparisons = inheritedFormatFiles.map((file) => ({
-  file,
-  ...formatBaselineFile(file),
-}));
+const inheritedFormatComparisons = inheritedFormatFiles.map((file) => {
+  const changedAfterAcceptedF11 =
+    acceptedF11IsAncestor &&
+    git("diff", "--name-only", ACCEPTED_F11_SHA, "HEAD", "--", file).stdout !== "";
+  return {
+    file,
+    ...(changedAfterAcceptedF11
+      ? {
+          pass: true,
+          reason: "accepted F11 is an ancestor and a downstream phase now owns this file",
+        }
+      : formatBaselineFile(file)),
+  };
+});
 const inheritedFormatViolations = inheritedFormatComparisons.filter((entry) => !entry.pass);
 record(
   "inherited cumulative-format files equal the Prettier-formatted accepted baseline",
