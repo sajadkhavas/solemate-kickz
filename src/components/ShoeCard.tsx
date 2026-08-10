@@ -30,11 +30,13 @@ function ProductImage({
   source,
   imageRef,
   className,
+  priority,
 }: {
   shoe: Shoe;
   source: string;
   imageRef: RefObject<HTMLImageElement | null>;
   className: string;
+  priority: boolean;
 }) {
   const [failed, setFailed] = useState(false);
 
@@ -58,7 +60,9 @@ function ProductImage({
       ref={imageRef}
       src={source}
       alt={`${shoe.brand} ${shoe.name}`}
-      loading="lazy"
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : "auto"}
+      decoding="async"
       width={640}
       height={640}
       onError={() => setFailed(true)}
@@ -117,6 +121,7 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
             source={activeImage}
             imageRef={imageRef}
             className={`h-full w-full object-cover transition-transform duration-500 hover:scale-105 motion-reduce:transition-none ${shoe.isSoldOut ? "grayscale opacity-60" : ""}`}
+            priority={index < 2}
           />
           {shoe.isSoldOut ? (
             <span className="absolute inset-x-2 bottom-2 rounded-full bg-ink/85 px-2 py-1 text-center font-fa text-xs text-white">
@@ -206,6 +211,7 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
             source={activeImage}
             imageRef={imageRef}
             className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none ${shoe.isSoldOut ? "grayscale opacity-60" : ""}`}
+            priority={index < 2}
           />
         </Link>
 

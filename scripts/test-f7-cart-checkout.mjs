@@ -62,8 +62,13 @@ async function selectProductSize(client, index) {
       const style = getComputedStyle(target);
       if (rect.width <= 0 || rect.height <= 0 || style.visibility === 'hidden' || style.display === 'none') return false;
       target.scrollIntoView({ block: 'center', inline: 'center' });
-      target?.click();
-      return Boolean(target);
+      target.focus({ preventScroll: true });
+      target.dispatchEvent(new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      }));
+      return true;
     })()`,
   );
   if (!selected) throw new Error(`Product size option ${index} was not selectable`);

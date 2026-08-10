@@ -18,6 +18,7 @@ const expectedReportFragments = [
   "f9-wishlist-account-orders",
   "f10-motion-3d",
   "f11-technical-seo",
+  "f12-performance-media",
 ];
 
 function walk(directory) {
