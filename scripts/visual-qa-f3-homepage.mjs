@@ -34,7 +34,9 @@ const VIEWPORTS = [
 const CHECKPOINTS = [
   ["fold", null],
   ["hero", '[data-testid="home-hero"]'],
+  ["quick-shop", '[data-testid="home-quick-shop"]'],
   ["products", '[data-testid="home-featured"]'],
+  ["merchandising", '[data-testid="home-merchandising"]'],
   ["brands", '[data-testid="home-brands"]'],
   ["editorial", '[data-testid="home-editorial"]'],
   ["end", '[data-testid="home-final-cta"]'],
@@ -102,7 +104,7 @@ async function inspect(client) {
       const touchTargets = [...document.querySelectorAll('[data-f3-touch-target="true"]')]
         .filter(visible)
         .map((el) => { const r = el.getBoundingClientRect(); return { name: el.getAttribute('aria-label') || el.textContent?.trim().slice(0, 50), width: Math.round(r.width * 10) / 10, height: Math.round(r.height * 10) / 10 }; });
-      const sections = ['home-hero','home-featured','home-categories','home-brands','home-editorial','home-trust','home-final-cta'];
+      const sections = ['home-hero','home-quick-shop','home-featured','home-merchandising','home-categories','home-brands','home-editorial','home-trust','home-final-cta'];
       const heroCta = document.querySelector('[data-testid="hero-primary-cta"]')?.getBoundingClientRect();
       const fixed = [...document.querySelectorAll('header, nav')].filter((el) => ['fixed','sticky'].includes(getComputedStyle(el).position) && visible(el)).map((el) => { const r = el.getBoundingClientRect(); return { bottom: r.bottom, top: r.top }; });
       return {

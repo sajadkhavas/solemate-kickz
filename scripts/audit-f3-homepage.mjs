@@ -12,7 +12,9 @@ const HOME_FILES = [
   "src/components/ShoeViewer3D.tsx",
   "src/components/sections/HomeImage.tsx",
   "src/components/sections/Hero.tsx",
+  "src/components/sections/QuickShopPaths.tsx",
   "src/components/sections/FeaturedDrops.tsx",
+  "src/components/sections/MerchandisingShowcase.tsx",
   "src/components/sections/Categories.tsx",
   "src/components/sections/BrandWall.tsx",
   "src/components/sections/HypeSection.tsx",
@@ -54,7 +56,9 @@ function main() {
   const indexSource = sources["src/routes/index.tsx"] ?? "";
   const heroSource = sources["src/components/sections/Hero.tsx"] ?? "";
   const viewerSource = sources["src/components/ShoeViewer3D.tsx"] ?? "";
+  const quickShopSource = sources["src/components/sections/QuickShopPaths.tsx"] ?? "";
   const featuredSource = sources["src/components/sections/FeaturedDrops.tsx"] ?? "";
+  const merchandisingSource = sources["src/components/sections/MerchandisingShowcase.tsx"] ?? "";
   const stylesSource = read("src/styles.css");
   const motionStylesSource = fs.existsSync(path.join(ROOT, "src/motion.css"))
     ? read("src/motion.css")
@@ -78,7 +82,9 @@ function main() {
   record("Exactly one h1", h1Count === 1, { h1Count });
 
   const sectionIds = [
+    "home-quick-shop-title",
     "home-featured-title",
+    "home-merchandising-title",
     "home-categories-title",
     "home-brands-title",
     "home-editorial-title",
@@ -114,6 +120,7 @@ function main() {
     /limited stock|موجودی محدود/i,
     /countdown|شمارش معکوس/i,
     /customer count|تعداد مشتری/i,
+    /پرفروش|best\s*seller/i,
   ];
   const claimMatches = forbiddenClaims.flatMap((pattern) => {
     const match = combined.match(pattern);
@@ -133,12 +140,42 @@ function main() {
     },
   );
 
+  const verifiedSaleGuard = (source) =>
+    source.includes("shoe.sale_price < shoe.price") &&
+    source.includes("shoe.sale_price > 0") &&
+    source.includes("shoe.price > 0");
   record(
     "Sale truthfulness",
-    featuredSource.includes("shoe.sale_price < shoe.price") &&
-      featuredSource.includes("shoe.sale_price > 0") &&
-      featuredSource.includes("shoe.price > 0"),
-    { guardedByVerifiedComparison: true },
+    verifiedSaleGuard(featuredSource) &&
+      verifiedSaleGuard(quickShopSource) &&
+      verifiedSaleGuard(merchandisingSource),
+    {
+      featuredGuard: verifiedSaleGuard(featuredSource),
+      quickShopGuard: verifiedSaleGuard(quickShopSource),
+      merchandisingGuard: verifiedSaleGuard(merchandisingSource),
+    },
+  );
+
+  record(
+    "Commercial discovery contracts",
+    quickShopSource.includes('quick: "new"') &&
+      quickShopSource.includes('quick: "sale"') &&
+      quickShopSource.includes('quick: "limited"') &&
+      quickShopSource.includes('category: "lifestyle"') &&
+      merchandisingSource.includes('role="tablist"') &&
+      merchandisingSource.includes('role="tabpanel"') &&
+      merchandisingSource.includes("aria-selected={selected}") &&
+      merchandisingSource.includes("setMode(item.id)"),
+    {
+      quickNew: quickShopSource.includes('quick: "new"'),
+      quickSale: quickShopSource.includes('quick: "sale"'),
+      quickLimited: quickShopSource.includes('quick: "limited"'),
+      lifestylePath: quickShopSource.includes('category: "lifestyle"'),
+      accessibleTabs:
+        merchandisingSource.includes('role="tablist"') &&
+        merchandisingSource.includes('role="tabpanel"') &&
+        merchandisingSource.includes("aria-selected={selected}"),
+    },
   );
 
   const imageTags = [...combined.matchAll(/<img\b[\s\S]*?>/g)].map((match) => match[0]);
@@ -181,7 +218,7 @@ function main() {
   });
 
   const touchContractCount = count(combined, /data-f3-touch-target="true"/g);
-  record("Touch target contract", touchContractCount >= 12, {
+  record("Touch target contract", touchContractCount >= 18, {
     declaredTargets: touchContractCount,
     minimumClassPresent: /min-h-11|size-11/.test(combined),
   });
@@ -210,22 +247,29 @@ function main() {
     },
   );
 
+  const homeFlow = [
+    "<Hero />",
+    "<QuickShopPaths />",
+    "<FeaturedDrops />",
+    "<MerchandisingShowcase />",
+    "<Categories />",
+    "<BrandWall />",
+    "<HypeSection />",
+    "<TrustBadges />",
+    "<Newsletter />",
+  ];
+  const flowPositions = homeFlow.map((token) => indexSource.indexOf(token));
+  const orderedFlow = flowPositions.every(
+    (position, index) => position >= 0 && (index === 0 || position > flowPositions[index - 1]),
+  );
   record(
     "Product-first information architecture",
-    !indexSource.includes("Marquee") &&
-      !indexSource.includes("RevealOnScroll") &&
-      [
-        "<Hero />",
-        "<FeaturedDrops />",
-        "<Categories />",
-        "<BrandWall />",
-        "<HypeSection />",
-        "<TrustBadges />",
-        "<Newsletter />",
-      ].every((token) => indexSource.includes(token)),
+    !indexSource.includes("Marquee") && !indexSource.includes("RevealOnScroll") && orderedFlow,
     {
       marqueeRemoved: !indexSource.includes("Marquee"),
       revealDependencyRemoved: !indexSource.includes("RevealOnScroll"),
+      orderedFlow,
+      flowPositions,
     },
   );
 
@@ -235,7 +279,7 @@ function main() {
       featuredSource.includes("FEATURED_IDS") &&
       featuredSource.includes("[2, 3, 16, 22]"),
     {
-      remoteHomepageMedia: combined.includes("images.unsplash.com"),
+      remoteHomepageMediaLiteral: combined.includes("images.unsplash.com"),
       localFeaturedIds: [2, 3, 16, 22],
     },
   );
