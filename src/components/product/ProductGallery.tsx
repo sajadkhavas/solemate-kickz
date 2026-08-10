@@ -11,9 +11,23 @@ type SafeImageProps = {
   className: string;
   testId?: string;
   onFailure?: () => void;
+  loading?: "eager" | "lazy";
+  fetchPriority?: "high" | "low" | "auto";
+  width?: number;
+  height?: number;
 };
 
-function SafeImage({ src, alt, className, testId, onFailure }: SafeImageProps) {
+function SafeImage({
+  src,
+  alt,
+  className,
+  testId,
+  onFailure,
+  loading = "lazy",
+  fetchPriority = "auto",
+  width,
+  height,
+}: SafeImageProps) {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => setFailed(false), [src]);
@@ -37,6 +51,11 @@ function SafeImage({ src, alt, className, testId, onFailure }: SafeImageProps) {
       data-testid={testId}
       src={src}
       alt={alt}
+      loading={loading}
+      fetchPriority={fetchPriority}
+      decoding="async"
+      width={width}
+      height={height}
       className={className}
       onError={() => {
         setFailed(true);
@@ -119,6 +138,10 @@ export function ProductGallery({ shoe }: ProductGalleryProps) {
           src={activeImage}
           alt={`${shoe.brand} ${shoe.name}، نمای ${activeIndex + 1}`}
           testId="product-main-image"
+          loading="eager"
+          fetchPriority="high"
+          width={900}
+          height={900}
           className="h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-300 group-hover:scale-[1.02]"
         />
 
@@ -184,7 +207,15 @@ export function ProductGallery({ shoe }: ProductGalleryProps) {
               onClick={() => goTo(index)}
               className="relative aspect-square min-h-11 overflow-hidden rounded-xl border-2 border-border bg-surface outline-none transition-colors hover:border-border-strong focus-visible:ring-2 focus-visible:ring-focus aria-selected:border-primary"
             >
-              <SafeImage src={image} alt="" className="h-full w-full object-cover" />
+              <SafeImage
+                src={image}
+                alt=""
+                loading="lazy"
+                fetchPriority="low"
+                width={220}
+                height={220}
+                className="h-full w-full object-cover"
+              />
             </button>
           );
         })}

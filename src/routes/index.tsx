@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import type { ReactNode } from "react";
 
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Navbar } from "@/components/Navbar";
@@ -27,6 +28,17 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+function PerfSection({ children }: { children: ReactNode }) {
+  return (
+    <div
+      data-f12-content-visibility="auto"
+      className="[contain-intrinsic-size:auto_900px] [content-visibility:auto]"
+    >
+      {children}
+    </div>
+  );
+}
+
 function Home() {
   return (
     <div className="min-h-screen bg-ink text-foreground">
@@ -35,12 +47,24 @@ function Home() {
         <Hero />
         <QuickShopPaths />
         <FeaturedDrops />
-        <MerchandisingShowcase />
-        <Categories />
-        <BrandWall />
-        <HypeSection />
-        <TrustBadges />
-        <Newsletter />
+        <PerfSection>
+          <MerchandisingShowcase />
+        </PerfSection>
+        <PerfSection>
+          <Categories />
+        </PerfSection>
+        <PerfSection>
+          <BrandWall />
+        </PerfSection>
+        <PerfSection>
+          <HypeSection />
+        </PerfSection>
+        <PerfSection>
+          <TrustBadges />
+        </PerfSection>
+        <PerfSection>
+          <Newsletter />
+        </PerfSection>
       </main>
       <Footer />
       <MobileBottomNav />

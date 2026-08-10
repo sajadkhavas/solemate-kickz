@@ -54,7 +54,7 @@ const SNEAKER_PHOTOS = [
 ];
 
 const usp = (i: number, crop = "entropy") =>
-  `https://images.unsplash.com/photo-${SNEAKER_PHOTOS[i % SNEAKER_PHOTOS.length]}?w=900&h=900&fit=crop&crop=${crop}&q=80`;
+  `https://images.unsplash.com/photo-${SNEAKER_PHOTOS[i % SNEAKER_PHOTOS.length]}?w=900&h=900&fit=crop&crop=${crop}&auto=format&q=78`;
 
 // 4 "angles" per shoe by rotating crop + offset through the pool
 const angles = (start: number): string[] => [

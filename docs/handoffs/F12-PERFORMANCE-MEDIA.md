@@ -1,6 +1,6 @@
 # F12 — Performance & Media Optimization
 
-Status: In progress
+Status: Candidate — exact-head CI pending
 
 Baseline branch: `integration/sole-frontend-v2`
 Baseline SHA: `4e08af6f1b0ac6bde85f400601c27a22fd69506f`
