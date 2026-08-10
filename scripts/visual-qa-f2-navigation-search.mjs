@@ -216,7 +216,14 @@ async function main() {
 
       let eventStart = browserEvents.length;
       await navigate(client, `${BASE_URL}/`);
-      await evaluate(client, `window.scrollTo(0, 900); true`);
+      await waitForExpression(
+        client,
+        `document.querySelector('[data-testid="global-header"]')?.dataset.hydrated === 'true'`,
+      );
+      await evaluate(
+        client,
+        `window.scrollTo(0, 900); window.dispatchEvent(new Event('scroll')); true`,
+      );
       await waitForExpression(
         client,
         `document.querySelector('[data-testid="global-header"]')?.dataset.scrolled === 'true'`,
