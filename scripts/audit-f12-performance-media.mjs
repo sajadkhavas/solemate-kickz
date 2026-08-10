@@ -24,7 +24,9 @@ const branch =
 
 record(
   "F12 runs on a controlled phase or Integration branch",
-  /^phase\/sole-f12-/.test(branch) || branch === "integration/sole-frontend-v2" || process.env.CI === "true",
+  /^phase\/sole-f12-/.test(branch) ||
+    branch === "integration/sole-frontend-v2" ||
+    process.env.CI === "true",
   branch,
 );
 record(
@@ -96,19 +98,13 @@ record("local raster media stays under 180 kB per file", oversized.length === 0,
   oversized,
 });
 
-record(
-  "F12 scripts are registered",
-  pkg.includes('"audit:f12"') && pkg.includes('"qa:perf:f12"'),
-);
+record("F12 scripts are registered", pkg.includes('"audit:f12"') && pkg.includes('"qa:perf:f12"'));
 record(
   "Frontend CI enforces F12 source and build budgets",
   workflow.includes("F12 performance/media source audit") &&
     workflow.includes("F12 build performance budgets"),
 );
-record(
-  "cumulative verifier requires F12 evidence",
-  cumulative.includes('"f12-performance-media"'),
-);
+record("cumulative verifier requires F12 evidence", cumulative.includes('"f12-performance-media"'));
 record(
   "handoff records baseline and budgets",
   handoff.includes("Baseline SHA") && handoff.includes("F12 budgets") && handoff.includes(BASELINE),
