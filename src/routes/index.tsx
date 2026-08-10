@@ -8,7 +8,9 @@ import { FeaturedDrops } from "@/components/sections/FeaturedDrops";
 import { Footer } from "@/components/sections/Footer";
 import { Hero } from "@/components/sections/Hero";
 import { HypeSection } from "@/components/sections/HypeSection";
+import { MerchandisingShowcase } from "@/components/sections/MerchandisingShowcase";
 import { Newsletter } from "@/components/sections/Newsletter";
+import { QuickShopPaths } from "@/components/sections/QuickShopPaths";
 import { TrustBadges } from "@/components/sections/TrustBadges";
 
 export const Route = createFileRoute("/")({
@@ -31,7 +33,9 @@ function Home() {
       <Navbar />
       <main data-testid="home-main">
         <Hero />
+        <QuickShopPaths />
         <FeaturedDrops />
+        <MerchandisingShowcase />
         <Categories />
         <BrandWall />
         <HypeSection />
