@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, BadgePercent, Flame, Sparkles, StreetView } from "lucide-react";
+import { ArrowLeft, BadgePercent, Flame, Grid3x3, Sparkles } from "lucide-react";
 
 import { SHOES } from "@/data/shoes";
 
@@ -45,7 +45,7 @@ const PATHS = [
     label: "استایل روزمره",
     eyebrow: "LIFESTYLE",
     description: "ورود مستقیم به انتخاب‌های روزمره و خیابانی موجود در کاتالوگ.",
-    icon: StreetView,
+    icon: Grid3x3,
     count: SHOES.filter((shoe) => shoe.category === "lifestyle").length,
     search: { category: "lifestyle" as const, sort: "newest" as const },
   },
