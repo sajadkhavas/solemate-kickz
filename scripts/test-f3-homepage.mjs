@@ -156,6 +156,41 @@ async function main() {
     );
 
     await openHome(client);
+    await click(client, '[data-testid="home-quick-shop-sale"]');
+    await waitForExpression(
+      client,
+      `location.pathname === '/products' && new URLSearchParams(location.search).get('quick') === 'sale'`,
+    );
+    const quickSale = await evaluate(
+      client,
+      `({ pathname: location.pathname, quick: new URLSearchParams(location.search).get('quick') })`,
+    );
+    record(
+      "Quick shop price-drop navigation",
+      quickSale.pathname === "/products" && quickSale.quick === "sale",
+      quickSale,
+    );
+
+    await openHome(client);
+    await click(client, '[data-testid="home-merch-tab-sale"]');
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="home-merch-tab-sale"]')?.getAttribute('aria-selected') === 'true'`,
+    );
+    const merchandising = await evaluate(
+      client,
+      `(() => { const tab = document.querySelector('[data-testid="home-merch-tab-sale"]'); const panel = document.querySelector('[data-testid="home-merch-panel"]'); return { selected: tab?.getAttribute('aria-selected'), labelledBy: panel?.getAttribute('aria-labelledby'), cards: panel?.querySelectorAll('article').length ?? 0, text: panel?.textContent?.slice(0, 240) ?? '' }; })()`,
+    );
+    record(
+      "Merchandising tab behavior",
+      merchandising.selected === "true" &&
+        merchandising.labelledBy === "home-merch-tab-sale" &&
+        merchandising.cards >= 1 &&
+        /کاهش|PRICE DROP/.test(merchandising.text),
+      merchandising,
+    );
+
+    await openHome(client);
     const railBefore = await evaluate(
       client,
       `(() => { const rail = document.querySelector('[data-testid="home-product-rail"]'); rail.focus(); return { left: rail.scrollLeft, scrollWidth: rail.scrollWidth, clientWidth: rail.clientWidth, direction: getComputedStyle(rail).direction, active: document.activeElement === rail }; })()`,
@@ -242,7 +277,7 @@ async function main() {
     );
     record(
       "Mobile touch behavior",
-      targets.length >= 8 && targets.every((target) => target.width >= 44 && target.height >= 44),
+      targets.length >= 12 && targets.every((target) => target.width >= 44 && target.height >= 44),
       targets,
     );
 
