@@ -17,12 +17,10 @@ jobs:
         with:
           ref: phase/sole-f12-performance-media
           fetch-depth: 0
-      - name: Apply and commit
+      - name: Apply source changes and commit
         run: |
           python scripts/f12-apply-retry.py
-          rm -f .github/workflows/f12-implementation-once.yml
-          rm -f .github/workflows/f12-implementation-retry.yml
-          rm -f .github/workflows/f12-apply-simple.yml
+          git checkout HEAD -- .github/workflows/frontend-ci.yml
           rm -f scripts/f12-apply-retry.py
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
