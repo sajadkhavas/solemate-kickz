@@ -40,9 +40,15 @@ This prevents malformed or manually modified localStorage from becoming an unbou
 
 Catalog query and free-text filter parameters now have explicit maximum lengths before filtering. Oversized URL input falls back through the existing validated search contract instead of entering product filtering state.
 
-### Search control stability
+### Search control and browser-gate stability
 
-The global search field no longer exposes Chromium's native `type=search` cancel sub-control alongside the product-owned clear button. Search semantics remain owned by the surrounding search form, accessible label, keyboard handling and the single 44px custom clear control. This removes an intermittent hit-testing race observed by the inherited F2 browser gate without weakening that gate or modifying the shared F11-owned browser harness.
+The global search field no longer exposes Chromium's native `type=search` cancel sub-control alongside the product-owned clear button. Search semantics remain owned by the surrounding search form, accessible label, keyboard handling and the single 44px custom clear control.
+
+Repeated CI runs also proved that the inherited F2 test's local `visibleClick` helper could single-sample the DOM between React render frames after the target had first appeared. F13 therefore makes that F2-local helper wait for a visible, enabled target and perform the click in the same evaluation. The behavioral assertion remains unchanged: the real control must still cause the expected UI transition. The shared `scripts/browser-harness.mjs` remains exactly under its accepted F11 ownership and is not modified by this stabilization.
+
+### Touch-target rendering margin
+
+A later exact-head Visual QA run exposed a fractional-layout edge on product color-preview swatches that were specified at exactly 44px. One runner measured the raw target infinitesimally below the 44px release threshold. The swatches and their row are now 48px, preserving the permanent 44px gate while adding deterministic accessibility margin instead of weakening the threshold.
 
 ### Catastrophic SSR fallback
 
@@ -67,7 +73,7 @@ The server-entry lazy import also clears its cached promise after an import reje
 
 Its hard gates cover high-risk source escape hatches, SSR fallback semantics, server-entry recovery, cart/state boundaries, bounded catalog search, F13 CI registration, cumulative evidence registration, baseline ancestry and artifact hygiene.
 
-The final code-head report contains:
+The code-final audit report contains:
 
 - 221 tracked files;
 - 168 tracked code files;
@@ -90,9 +96,11 @@ These are cleanup candidates, not release blockers. Generated/config/tooling own
 
 ## Validation evidence
 
-The code-final precursor head is `df9fae26ca1dc4ef5113d6142c371721f8722384`.
+The first code-final precursor head was `df9fae26ca1dc4ef5113d6142c371721f8722384`.
 
-Frontend CI run `#841` / workflow run `31585391796` completed successfully on that exact SHA. It passed every inherited and F13 gate, including:
+Frontend CI run `#841` / workflow run `31585391796` completed successfully on that exact SHA. The finalized initial handoff head `599db55e1bb35c1cfff084c1fbb715dc7373f288` also completed the full suite successfully in Frontend CI run `#842` / workflow run `31596256631`.
+
+Those successful runs covered every inherited and F13 gate, including:
 
 - F0/F1 foundation source and browser behavior;
 - Homepage source and browser behavior;
@@ -110,14 +118,18 @@ Frontend CI run `#841` / workflow run `31585391796` completed successfully on th
 - aggregate cumulative evidence verification;
 - clean working-tree verification.
 
-The uploaded cumulative evidence artifact for that run reports zero F13 critical findings. The final documentation/PR head is intentionally not self-referenced inside this content-addressed Git document; its exact SHA, CI and Integration merge SHA are authoritative in GitHub PR/merge metadata.
+Subsequent repeated exact-head/PR executions surfaced the two nondeterministic boundary conditions described above: the exact-44px swatch and F2 single-sample click readiness. Both are corrected in the final PR tree. The authoritative final head SHA, final PR-event CI, PR number and Integration merge SHA are intentionally recorded in GitHub metadata/final registration rather than self-referenced inside this content-addressed Git document.
+
+The cumulative evidence artifact from the fully successful code-final runs reports zero F13 critical findings.
 
 ## Residual work boundary
 
-F13 closes release-blocking frontend code hardening. The 56 review-only architecture findings may be handled in a later cleanup phase, but they are not required before frontend deployment because all cumulative runtime, build, SEO, accessibility-sensitive and visual gates pass.
+F13 closes release-blocking frontend code hardening. The 56 review-only architecture findings may be handled in a later cleanup phase, but they are not required before frontend deployment once the final PR tree passes the same cumulative runtime, build, SEO, accessibility-sensitive and visual gates.
 
 Real authentication, authoritative inventory, order creation, payment, shipping, tax and transactional account/order synchronization remain Backend integration work and are not fabricated by F13.
 
 ## Repository-history note
 
-During F13 execution, one connector write used the contents API without the explicit `branch` field and therefore created a single file on the default branch. The mistake was detected immediately. A normal follow-up commit removed exactly that file; the resulting `main` tree SHA returned to the pre-write tree `b366d8b1dec1884be472f0c264aa38dc2bb5d490`. No force-push, reset, rebase or history rewrite was used. All F13 delivery changes after that correction are explicitly scoped to the F13 branch.
+During F13 execution, one connector write used the contents API without the explicit `branch` field and therefore created a single file on the default branch. The mistake was detected immediately. A normal follow-up commit removed exactly that file; the resulting `main` tree SHA returned to the pre-write tree `b366d8b1dec1884be472f0c264aa38dc2bb5d490`. No force-push, reset, rebase or history rewrite was used.
+
+Two later empty no-op files were accidentally created only on the F13 phase branch while invoking the GitHub connector and were immediately removed by normal follow-up commits. They produce no final tree/diff change and never targeted Integration or main. All F13 delivery changes are scoped to the controlled phase branch and PR into Integration.
