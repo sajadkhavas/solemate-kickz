@@ -283,7 +283,7 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
           <div
             role="group"
             aria-label={`تغییر پیش‌نمایش تصویر ${shoe.name}`}
-            className="mt-3 flex min-h-11 items-center gap-2"
+            className="mt-3 flex min-h-12 items-center gap-2"
           >
             {previews.map((preview, previewIndex) => (
               <button
@@ -292,7 +292,7 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
                 aria-label={preview.label}
                 aria-pressed={previewIndex === activePreview}
                 onClick={() => setActivePreview(previewIndex)}
-                className={`size-11 rounded-full border-2 transition-transform ${
+                className={`size-12 rounded-full border-2 transition-transform ${
                   previewIndex === activePreview
                     ? "scale-105 border-neon"
                     : "border-border hover:border-muted-foreground"
