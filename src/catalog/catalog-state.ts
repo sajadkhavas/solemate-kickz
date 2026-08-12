@@ -8,11 +8,16 @@ export const CATALOG_MAX_PRICE = 20_000_000;
 export const CATALOG_MIN_PRICE = 1_000_000;
 export const CATALOG_PRICE_STEP = 500_000;
 export const CATALOG_SIZES = [39, 40, 41, 42, 43, 44, 45, 46] as const;
+export const CATALOG_QUERY_MAX_LENGTH = 120;
+const CATALOG_FILTER_TEXT_MAX_LENGTH = 80;
 
 export const catalogSearchSchema = z.object({
-  brand: fallback(z.string().trim().min(1).optional(), undefined),
-  category: fallback(z.string().trim().min(1).optional(), undefined),
-  q: fallback(z.string().trim().optional(), undefined),
+  brand: fallback(z.string().trim().min(1).max(CATALOG_FILTER_TEXT_MAX_LENGTH).optional(), undefined),
+  category: fallback(
+    z.string().trim().min(1).max(CATALOG_FILTER_TEXT_MAX_LENGTH).optional(),
+    undefined,
+  ),
+  q: fallback(z.string().trim().max(CATALOG_QUERY_MAX_LENGTH).optional(), undefined),
   sort: fallback(z.enum(["newest", "price-asc", "price-desc", "popular"]), "newest").default(
     "newest",
   ),
