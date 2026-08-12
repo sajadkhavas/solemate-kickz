@@ -230,7 +230,10 @@ export async function evaluate(client, expression) {
   let point = null;
   while (Date.now() - started < 2_000) {
     point = await evaluateRaw(client, coordinateExpression);
-    if (!point) return false;
+    if (!point) {
+      await sleep(50);
+      continue;
+    }
     if (point.actionable && !point.disabled) break;
     await sleep(50);
   }
