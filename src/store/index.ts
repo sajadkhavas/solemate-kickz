@@ -1,9 +1,5 @@
 import { create } from "zustand";
-import {
-  createJSONStorage,
-  persist,
-  type StateStorage,
-} from "zustand/middleware";
+import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
 
 import {
   getCartQuantityCount,
@@ -155,10 +151,7 @@ const sanitizeDemoProfile = (value: unknown): DemoAccountProfile => {
 const sanitizeDemoAddresses = (value: unknown): DemoAddress[] => {
   if (!Array.isArray(value)) return [];
   return value
-    .filter(
-      (item): item is Record<string, unknown> =>
-        Boolean(item) && typeof item === "object",
-    )
+    .filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object")
     .map((item) => ({
       id: cleanText(item.id) || nextDemoAddressId(),
       recipient: cleanText(item.recipient),
@@ -173,10 +166,7 @@ const sanitizeProductIds = (value: unknown, limit: number) => {
   if (!Array.isArray(value)) return [];
   return [
     ...new Set(
-      value.filter(
-        (id): id is number =>
-          Number.isInteger(id) && id > 0 && knownProductIds.has(id),
-      ),
+      value.filter((id): id is number => Number.isInteger(id) && id > 0 && knownProductIds.has(id)),
     ),
   ].slice(0, limit);
 };
@@ -214,9 +204,7 @@ export const useStore = create<Store>()(
         const safeQty = normalizeQuantity(qty);
         if (safeQty === null || !isCartSelectionValid(id, size)) return false;
 
-        const existing = get().cart.find(
-          (item) => item.id === id && item.size === size,
-        );
+        const existing = get().cart.find((item) => item.id === id && item.size === size);
         if (existing) {
           const nextQty = Math.min(MAX_CART_ITEM_QUANTITY, existing.qty + safeQty);
           if (nextQty === existing.qty) return false;
@@ -232,9 +220,7 @@ export const useStore = create<Store>()(
       },
       removeFromCart: (id, size) =>
         set({
-          cart: get().cart.filter(
-            (item) => !(item.id === id && item.size === size),
-          ),
+          cart: get().cart.filter((item) => !(item.id === id && item.size === size)),
         }),
       updateQty: (id, size, qty) => {
         const safeQty = normalizeQuantity(qty);
@@ -262,10 +248,7 @@ export const useStore = create<Store>()(
       addRecentlyViewed: (id) => {
         if (!knownProductIds.has(id)) return;
         set({
-          recentlyViewed: [
-            id,
-            ...get().recentlyViewed.filter((item) => item !== id),
-          ].slice(0, 8),
+          recentlyViewed: [id, ...get().recentlyViewed.filter((item) => item !== id)].slice(0, 8),
         });
       },
 
@@ -311,12 +294,9 @@ export const useStore = create<Store>()(
       startDemoSession: () => set({ demoAccountMode: "active" }),
       expireDemoSession: () => set({ demoAccountMode: "expired" }),
       resetDemoSession: () => set({ demoAccountMode: "guest" }),
-      updateDemoProfile: (profile) =>
-        set({ demoProfile: sanitizeDemoProfile(profile) }),
+      updateDemoProfile: (profile) => set({ demoProfile: sanitizeDemoProfile(profile) }),
       addDemoAddress: (address) => {
-        const safeAddress = sanitizeDemoAddresses([
-          { id: nextDemoAddressId(), ...address },
-        ])[0];
+        const safeAddress = sanitizeDemoAddresses([{ id: nextDemoAddressId(), ...address }])[0];
         if (!safeAddress) return;
         set({ demoAddresses: [...get().demoAddresses, safeAddress].slice(-25) });
       },
@@ -363,5 +343,4 @@ export const useStore = create<Store>()(
   ),
 );
 
-export const useCartCount = () =>
-  useStore((state) => getCartQuantityCount(state.cart));
+export const useCartCount = () => useStore((state) => getCartQuantityCount(state.cart));
