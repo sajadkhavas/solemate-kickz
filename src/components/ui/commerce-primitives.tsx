@@ -74,7 +74,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
         {onClear ? (
           <button
             type="button"
-            aria-label={hasValue ? clearLabel : undefined}
+            aria-label={hasValue ? clearLabel : "کنترل پاک‌کردن جستجو غیرفعال"}
             aria-hidden={!hasValue || undefined}
             disabled={!hasValue}
             tabIndex={hasValue ? undefined : -1}

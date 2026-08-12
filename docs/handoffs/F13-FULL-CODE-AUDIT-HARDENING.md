@@ -44,7 +44,7 @@ Catalog query and free-text filter parameters now have explicit maximum lengths 
 
 The global search field no longer exposes Chromium's native `type=search` cancel sub-control alongside the product-owned clear button. Search semantics remain owned by the surrounding search form, accessible label, keyboard handling and the single 44px custom clear control.
 
-Repeated CI runs proved that conditionally mounting and unmounting the clear button could expose a narrow React render-frame race to the inherited F2 physical-click gate. The final product fix keeps that button node mounted, but removes its accessible label and makes it disabled, unfocusable and invisible while the input is empty. When a value exists, the same stable node becomes the labeled actionable clear control. This preserves the Foundation expectation that no clear control is exposed for an empty input while removing the remount race. `scripts/test-f2-navigation-search.mjs` is restored exactly to its accepted Integration blob, and the shared F11-owned `scripts/browser-harness.mjs` is also unchanged.
+Repeated CI runs proved that conditionally mounting and unmounting the clear button could expose a narrow React render-frame race to the inherited F2 physical-click gate. The final product fix keeps that button node mounted. While the input is empty it carries a distinct dormant label, is `aria-hidden`, disabled, unfocusable and invisible; when a value exists, the same stable node switches to the requested clear label and becomes actionable. This preserves the Foundation expectation that the active clear control is absent for an empty input, avoids an unnamed dormant button in repository-wide Visual QA, and removes the remount race. `scripts/test-f2-navigation-search.mjs` is restored exactly to its accepted Integration blob, and the shared F11-owned `scripts/browser-harness.mjs` is also unchanged.
 
 ### Touch-target rendering margin
 
@@ -118,7 +118,7 @@ Those successful runs covered every inherited and F13 gate, including:
 - aggregate cumulative evidence verification;
 - clean working-tree verification.
 
-Subsequent repeated exact-head/PR executions surfaced the two nondeterministic boundary conditions described above: the exact-44px swatch and conditional clear-control remount race. Both are corrected in the final PR tree without weakening the inherited test or Visual QA thresholds. The authoritative final head SHA, final PR-event CI, PR number and Integration merge SHA are intentionally recorded in GitHub metadata/final registration rather than self-referenced inside this content-addressed Git document.
+Subsequent repeated exact-head/PR executions surfaced three nondeterministic or cross-suite boundary conditions: the exact-44px swatch, conditional clear-control remount race, and a repository-wide unnamed-button check for the dormant clear node. The final PR tree resolves all three in product code without weakening inherited tests or Visual QA thresholds. The authoritative final head SHA, final PR-event CI, PR number and Integration merge SHA are intentionally recorded in GitHub metadata/final registration rather than self-referenced inside this content-addressed Git document.
 
 The cumulative evidence artifact from the fully successful code-final runs reports zero F13 critical findings.
 
