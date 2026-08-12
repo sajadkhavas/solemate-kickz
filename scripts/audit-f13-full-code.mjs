@@ -52,7 +52,11 @@ for (const file of shippingCode) {
     if (matches?.length) riskyFindings.push({ file, pattern: pattern.id, count: matches.length });
   }
 }
-record("shipping source has no high-risk escape hatches", riskyFindings.length === 0, riskyFindings);
+record(
+  "shipping source has no high-risk escape hatches",
+  riskyFindings.length === 0,
+  riskyFindings,
+);
 
 const errorPage = read("src/lib/error-page.ts");
 record(
@@ -67,10 +71,7 @@ record(
   "SSR entry import can recover after a transient import rejection",
   server.includes("serverEntryPromise = undefined") && server.includes(".catch((error) =>"),
 );
-record(
-  "catastrophic SSR response is never cached",
-  server.includes('"cache-control": "no-store"'),
-);
+record("catastrophic SSR response is never cached", server.includes('"cache-control": "no-store"'));
 
 const cartDomain = read("src/cart/cart-domain.ts");
 const store = read("src/store/index.ts");
@@ -109,9 +110,12 @@ record(
     catalog.includes("max(CATALOG_QUERY_MAX_LENGTH)"),
 );
 
-const importRegex = /(?:import|export)\s+(?:[^"']*?\s+from\s+)?["']([^"']+)["']|import\(\s*["']([^"']+)["']\s*\)/g;
+const importRegex =
+  /(?:import|export)\s+(?:[^"']*?\s+from\s+)?["']([^"']+)["']|import\(\s*["']([^"']+)["']\s*\)/g;
 const sourceModules = new Set(
-  codeFiles.filter((file) => file.startsWith("src/") && MODULE_EXTENSIONS.includes(path.extname(file))),
+  codeFiles.filter(
+    (file) => file.startsWith("src/") && MODULE_EXTENSIONS.includes(path.extname(file)),
+  ),
 );
 
 function resolveModule(fromFile, specifier) {
@@ -189,7 +193,8 @@ const workflow = read(".github/workflows/frontend-ci.yml");
 const verifier = read("scripts/verify-cumulative-quality.mjs");
 record(
   "F13 permanent audit and runtime gates are registered in Frontend CI",
-  workflow.includes("F13 full-code source audit") && workflow.includes("F13 hardening browser behavior"),
+  workflow.includes("F13 full-code source audit") &&
+    workflow.includes("F13 hardening browser behavior"),
 );
 record(
   "cumulative verifier requires both F13 evidence reports",
