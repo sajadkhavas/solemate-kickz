@@ -1,0 +1,43 @@
+name: F13 Format Diagnostic
+
+on:
+  push:
+    branches:
+      - "phase/sole-f13-full-code-audit-hardening"
+
+permissions:
+  contents: read
+
+jobs:
+  format-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+          no-cache: true
+
+      - name: Install from lockfile
+        run: bun install --frozen-lockfile
+
+      - name: Render exact Prettier outputs
+        shell: bash
+        run: |
+          mkdir -p artifacts/f13-prettier
+          bunx prettier src/catalog/catalog-state.ts > artifacts/f13-prettier/catalog-state.ts
+          bunx prettier src/store/index.ts > artifacts/f13-prettier/store-index.ts
+
+      - name: Upload exact Prettier outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: f13-prettier-exact-output
+          if-no-files-found: error
+          retention-days: 1
+          path: artifacts/f13-prettier/
