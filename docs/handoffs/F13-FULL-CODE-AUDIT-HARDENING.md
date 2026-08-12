@@ -40,6 +40,10 @@ This prevents malformed or manually modified localStorage from becoming an unbou
 
 Catalog query and free-text filter parameters now have explicit maximum lengths before filtering. Oversized URL input falls back through the existing validated search contract instead of entering product filtering state.
 
+### Search control stability
+
+The global search field no longer exposes Chromium's native `type=search` cancel sub-control alongside the product-owned clear button. Search semantics remain owned by the surrounding search form, accessible label, keyboard handling and the single 44px custom clear control. This removes an intermittent hit-testing race observed by the inherited F2 browser gate without weakening that gate or modifying the shared F11-owned browser harness.
+
 ### Catastrophic SSR fallback
 
 The catastrophic fallback is now:
@@ -53,28 +57,66 @@ The catastrophic fallback is now:
 
 The server-entry lazy import also clears its cached promise after an import rejection so a transient module-load failure does not poison every later request until process restart.
 
+### Dead unsafe scaffold removal
+
+`src/components/ui/chart.tsx` was unreachable from the application/server entry graph and contained a `dangerouslySetInnerHTML` escape hatch. Because the graph proved that it was unused shipping scaffold, F13 removes it instead of carrying an unnecessary unsafe surface.
+
 ## Permanent audit evidence
 
 `scripts/audit-f13-full-code.mjs` inventories all tracked code and creates `artifacts/audits/f13-full-code-audit.json`.
 
 Its hard gates cover high-risk source escape hatches, SSR fallback semantics, server-entry recovery, cart/state boundaries, bounded catalog search, F13 CI registration, cumulative evidence registration, baseline ancestry and artifact hygiene.
 
-The report also records review-only architecture evidence instead of deleting code blindly:
+The final code-head report contains:
 
-- unreachable TypeScript/JavaScript source modules from the application/server entry graph;
-- route files that still declare local `head` metadata while centralized F11 SEO ownership exists;
-- largest tracked code files;
-- direct runtime dependency surface not observed from reachable source imports.
+- 221 tracked files;
+- 168 tracked code files;
+- 113 shipping source files;
+- 110 TypeScript/JavaScript source modules;
+- 65 modules reachable from the application/server entry graph;
+- 13 hard F13 audit checks, all passing;
+- zero critical findings.
 
-Review-only findings are evidence for supervised cleanup; they are not silently treated as defects when the generated/imported/config ownership model may explain them.
+The report also records 56 review-only architecture findings instead of deleting code blindly:
+
+- 45 TypeScript/JavaScript modules not reachable from the current application/server entry graph;
+- 11 route files that still declare local `head` metadata while centralized F11 SEO ownership exists.
+
+These are cleanup candidates, not release blockers. Generated/config/tooling ownership and reusable UI scaffolding must be resolved deliberately before removal.
 
 ## Runtime regression evidence
 
 `scripts/test-f13-hardening.mjs` injects malformed persisted state and oversized catalog input through the real browser application. It verifies that quantity arithmetic remains bounded and finite, unknown wishlist IDs are discarded, persisted profile text is bounded, oversized catalog queries fall back safely, and the flow emits no browser runtime errors.
 
-## Validation status
+## Validation evidence
 
-F13 must pass its own audit/runtime gates and every inherited Frontend CI gate on the exact final head before PR acceptance. Final CI run IDs, residual review findings, PR number and Integration merge SHA are recorded at closure rather than predeclared here.
+The code-final precursor head is `df9fae26ca1dc4ef5113d6142c371721f8722384`.
+
+Frontend CI run `#841` / workflow run `31585391796` completed successfully on that exact SHA. It passed every inherited and F13 gate, including:
+
+- F0/F1 foundation source and browser behavior;
+- Homepage source and browser behavior;
+- F2 Navigation/Search source and browser behavior;
+- Content, Catalog, PDP, Cart/Checkout and Wishlist/Account/Orders source/browser suites;
+- F10 Motion/3D source and browser suite;
+- F11 Technical SEO source, SSR runtime and SEO safety QA;
+- F12 performance/media audit and build budgets;
+- F13 full-code audit and malformed-state browser behavior;
+- VPS deployment contract audit;
+- TypeScript, ESLint and all format gates;
+- production build and VPS Node-server build;
+- all permanent Visual QA suites;
+- Foundation completion audit;
+- aggregate cumulative evidence verification;
+- clean working-tree verification.
+
+The uploaded cumulative evidence artifact for that run reports zero F13 critical findings. The final documentation/PR head is intentionally not self-referenced inside this content-addressed Git document; its exact SHA, CI and Integration merge SHA are authoritative in GitHub PR/merge metadata.
+
+## Residual work boundary
+
+F13 closes release-blocking frontend code hardening. The 56 review-only architecture findings may be handled in a later cleanup phase, but they are not required before frontend deployment because all cumulative runtime, build, SEO, accessibility-sensitive and visual gates pass.
+
+Real authentication, authoritative inventory, order creation, payment, shipping, tax and transactional account/order synchronization remain Backend integration work and are not fabricated by F13.
 
 ## Repository-history note
 
