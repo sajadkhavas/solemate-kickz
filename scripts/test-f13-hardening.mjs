@@ -23,7 +23,12 @@ function record(name, pass, evidence = null) {
 
 async function run(baseUrl) {
   fs.mkdirSync(path.dirname(REPORT), { recursive: true });
-  const browser = await openBrowser({ debugPort: 9263, logPath: CHROME_LOG, width: 1280, height: 900 });
+  const browser = await openBrowser({
+    debugPort: 9263,
+    logPath: CHROME_LOG,
+    width: 1280,
+    height: 900,
+  });
   const { client } = browser;
 
   client.on("Runtime.exceptionThrown", (event) => {
@@ -92,7 +97,11 @@ async function run(baseUrl) {
       client,
       `document.querySelectorAll('[data-testid="wishlist-grid"] [data-testid="product-card"]').length`,
     );
-    record("Unknown persisted wishlist product IDs are discarded", wishlistCount === 1, wishlistCount);
+    record(
+      "Unknown persisted wishlist product IDs are discarded",
+      wishlistCount === 1,
+      wishlistCount,
+    );
 
     await navigate(client, `${baseUrl}/account?section=profile`);
     await waitForExpression(client, `document.querySelector('[data-testid="account-profile"]')`);
@@ -125,7 +134,11 @@ async function run(baseUrl) {
       catalogEvidence,
     );
 
-    record("F13 hardening flow emits no browser runtime errors", browserErrors.length === 0, browserErrors);
+    record(
+      "F13 hardening flow emits no browser runtime errors",
+      browserErrors.length === 0,
+      browserErrors,
+    );
   } finally {
     await browser.close();
   }
@@ -142,7 +155,7 @@ try {
     run,
   );
 } catch (error) {
-  fatalError = error instanceof Error ? error.stack ?? error.message : String(error);
+  fatalError = error instanceof Error ? (error.stack ?? error.message) : String(error);
   console.error(fatalError);
 }
 
