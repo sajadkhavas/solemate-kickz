@@ -88,6 +88,9 @@ const visual = read("scripts/visual-qa-f7-cart-checkout.mjs");
 const behavior = read("scripts/test-f7-cart-checkout.mjs");
 const styles = `${read("src/styles.css")}\n${read("src/foundation.css")}`;
 const handoff = read("docs/handoffs/F7-CART-CHECKOUT.md");
+const f13Handoff = exists("docs/handoffs/F13-FULL-CODE-AUDIT-HARDENING.md")
+  ? read("docs/handoffs/F13-FULL-CODE-AUDIT-HARDENING.md")
+  : "";
 const drawerText = normalizeSourceText(drawer);
 const cartRouteText = normalizeSourceText(cartRoute);
 const checkoutRouteText = normalizeSourceText(checkoutRoute);
@@ -111,10 +114,11 @@ record(
     store.includes("demoAddresses: state.demoAddresses"),
 );
 record(
-  "cart identity is variant-aware and duplicate-safe",
+  "cart identity is variant-aware duplicate-safe and bounded after persistence",
   cartDomain.includes("new Map<string, CartItem>()") &&
     cartDomain.includes("`${id}:${size}`") &&
-    cartDomain.includes("qty: (existing?.qty ?? 0) + qty"),
+    cartDomain.includes("MAX_PERSISTED_CART_LINES = 50") &&
+    cartDomain.includes("Math.min(MAX_CART_ITEM_QUANTITY, (existing?.qty ?? 0) + qty)"),
 );
 record(
   "add-to-cart validates product availability and explicit size",
@@ -124,8 +128,12 @@ record(
     purchase.includes("selectedSize === null"),
 );
 record(
-  "quantity does not invent an inventory maximum",
-  !purchase.includes("max={10}") && commerce.includes('typeof max !== "number" || safeValue < max'),
+  "quantity ceiling is documented as client safety rather than inventory",
+  !purchase.includes("max={10}") &&
+    commerce.includes('typeof max !== "number" || safeValue < max') &&
+    purchase.includes("max={MAX_CART_ITEM_QUANTITY}") &&
+    cartDomain.includes("MAX_CART_ITEM_QUANTITY = 99") &&
+    f13Handoff.includes("not inventory claims"),
 );
 record(
   "stale persisted states stay visible and block review",

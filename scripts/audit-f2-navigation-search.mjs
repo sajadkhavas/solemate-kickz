@@ -196,8 +196,11 @@ add(
   /search: \{ q: normalized, sort: "newest" \}/.test(files.search) &&
     /zodValidator\(catalogSearchSchema\)/.test(files.products) &&
     /Route\.useSearch\(\)/.test(files.products) &&
-    /q: fallback\(z\.string\(\)\.trim\(\)\.optional/.test(files.catalogState),
-  "SearchDialog submits q; products route uses catalogSearchSchema; catalog schema validates q",
+    /CATALOG_QUERY_MAX_LENGTH\s*=\s*120/.test(files.catalogState) &&
+    /q:\s*fallback\(\s*z\.string\(\)\.trim\(\)\.max\(CATALOG_QUERY_MAX_LENGTH\)\.optional\(\)/.test(
+      files.catalogState,
+    ),
+  "SearchDialog submits q; products route uses catalogSearchSchema; catalog schema validates and bounds q",
 );
 add(
   "RTL and mixed-direction safety",

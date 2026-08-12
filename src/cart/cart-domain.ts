@@ -1,5 +1,8 @@
 import { SHOES, type Shoe } from "@/data/shoes";
 
+export const MAX_CART_ITEM_QUANTITY = 99;
+export const MAX_PERSISTED_CART_LINES = 50;
+
 export interface CartItem {
   id: number;
   size: number;
@@ -16,10 +19,16 @@ export interface ResolvedCartItem extends CartItem {
   unitPrice: number | null;
 }
 
-const toPositiveInteger = (value: unknown) => {
+const toSafePositiveInteger = (value: unknown) => {
   const numeric = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(numeric) || numeric <= 0) return null;
-  return Math.floor(numeric);
+  const integer = Math.floor(numeric);
+  return Number.isSafeInteger(integer) ? integer : null;
+};
+
+const toQuantity = (value: unknown) => {
+  const integer = toSafePositiveInteger(value);
+  return integer === null ? null : Math.min(integer, MAX_CART_ITEM_QUANTITY);
 };
 
 const toFiniteSize = (value: unknown) => {
@@ -35,14 +44,20 @@ export function sanitizePersistedCart(value: unknown): CartItem[] {
   for (const candidate of value) {
     if (!candidate || typeof candidate !== "object") continue;
     const record = candidate as Record<string, unknown>;
-    const id = toPositiveInteger(record.id);
+    const id = toSafePositiveInteger(record.id);
     const size = toFiniteSize(record.size);
-    const qty = toPositiveInteger(record.qty);
+    const qty = toQuantity(record.qty);
     if (id === null || size === null || qty === null) continue;
 
     const key = `${id}:${size}`;
     const existing = merged.get(key);
-    merged.set(key, { id, size, qty: (existing?.qty ?? 0) + qty });
+    if (!existing && merged.size >= MAX_PERSISTED_CART_LINES) continue;
+
+    merged.set(key, {
+      id,
+      size,
+      qty: Math.min(MAX_CART_ITEM_QUANTITY, (existing?.qty ?? 0) + qty),
+    });
   }
 
   return [...merged.values()];
