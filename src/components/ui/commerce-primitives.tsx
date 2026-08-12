@@ -65,13 +65,10 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
         />
         <Input
           ref={ref}
-          type="search"
+          type="text"
           value={value}
           defaultValue={defaultValue}
-          className={cn(
-            "min-h-11 ps-10 pe-11 [&::-webkit-search-cancel-button]:appearance-none",
-            className,
-          )}
+          className={cn("min-h-11 ps-10 pe-11", className)}
           {...props}
         />
         {onClear && hasValue ? (
