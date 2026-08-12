@@ -197,7 +197,7 @@ add(
     /zodValidator\(catalogSearchSchema\)/.test(files.products) &&
     /Route\.useSearch\(\)/.test(files.products) &&
     /CATALOG_QUERY_MAX_LENGTH\s*=\s*120/.test(files.catalogState) &&
-    /q:\s*fallback\(z\.string\(\)\.trim\(\)\.max\(CATALOG_QUERY_MAX_LENGTH\)\.optional\(\)/.test(
+    /q:\s*fallback\(\s*z\.string\(\)\.trim\(\)\.max\(CATALOG_QUERY_MAX_LENGTH\)\.optional\(\)/.test(
       files.catalogState,
     ),
   "SearchDialog submits q; products route uses catalogSearchSchema; catalog schema validates and bounds q",
