@@ -19,6 +19,8 @@ const expectedReportFragments = [
   "f10-motion-3d",
   "f11-technical-seo",
   "f12-performance-media",
+  "f13-full-code-audit",
+  "f13-hardening",
 ];
 
 function walk(directory) {
