@@ -1,199 +1,210 @@
 # F10 — Motion, 3D & Interaction Polish
 
-## Repository and baseline
+## Final status
+
+F10 is complete and registered in `integration/sole-frontend-v2`.
 
 - Repository: `sajadkhavas/solemate-kickz`
-- Phase branch: `phase/sole-f10-motion-3d-interaction`
-- Accepted Integration baseline: `integration/sole-frontend-v2@f1bd39e348d4fb4774874ccfdabe491bc9b2d0a4`
-- Target for registration: `integration/sole-frontend-v2`
-- `main` is not an F10 target.
+- Original accepted baseline: `integration/sole-frontend-v2@f1bd39e348d4fb4774874ccfdabe491bc9b2d0a4`
+- Original phase branch: `phase/sole-f10-motion-3d-interaction`
+- Final original F10 phase SHA: `d3a48c7ac47edfe8fe9677dbc1f84bf8347a9eaa`
+- Original PR: `#11 — F10: Motion, 3D & Interaction Polish`
+- Original Integration merge SHA: `6da6036da3b7825ff7fa11bcd191d8872ddeb85c`
+- Original merge date: 2026-08-08
+- Final registration-cleanup baseline: `integration/sole-frontend-v2@30b44421ba7b30c0e8f64ae11c3cafcc75980d61`
+- Registration-cleanup branch: `phase/sole-f10-final-registration-cleanup`
+- Clean cumulative validation precursor SHA: `b6a236fb7e1e2c61a1387d6529d5129067d795d5`
+- Clean cumulative CI run: Frontend CI `#804`, run `31573603726`, conclusion `success`
+- Target: `integration/sole-frontend-v2`
+- `main` was not changed by F10 or the final registration cleanup.
 
-F10 was branched from the accepted Integration head after the combined F7 + F9 registration. The baseline commit is `Integrate F7 + F9 frontend wave`.
-
-## Motion audit summary
-
-F10 treats transaction surfaces differently from editorial surfaces.
-
-### Removed or normalized
-
-- The legacy magnetic cursor hid the native cursor and owned a continuous `requestAnimationFrame` loop. F10 retires it and restores the platform cursor.
-- The old pointer parallax perpetual RAF is replaced by event-driven scheduling with at most one queued frame per pointer update and complete cleanup.
-- Legacy ambient loops (`marquee`, float, pulse-glow, slow-spin and hero particles) are disabled because they created continuous decorative GPU work.
-- Shared reveal travel is capped at 18px and uses a 360ms emphasized-out transition instead of large/slow component-local entrances.
-- Kinetic text no longer performs a large 3D flip; it uses a compact 10px reveal only when motion is allowed.
-- Product media timing is normalized to 320ms.
-- Cart mutation feedback is non-spatial and deliberately short.
-
-### Deliberately retained
-
-- Radix owns focus trap, Escape, focus restoration and scroll lock for dialogs/drawers.
-- Catalog/PDP/cart/wishlist/account state remains authoritative and truth-safe; F10 does not fabricate backend synchronization.
-- Homepage storytelling is limited to one controlled hero entrance plus direct product/media interaction rather than universal fade-up animation.
+The Integration branch advanced through later accepted frontend work after the F10 merge. The F10 merge commit remains in the ancestry of the current Integration line.
 
 ## Motion architecture
 
-`src/lib/motion-system.ts` and `src/motion.css` define the shared grammar.
+F10 established one reusable motion grammar instead of component-local animation choices. The shared implementation lives in `src/lib/motion-system.ts` and `src/motion.css`.
 
-| Category       |    Runtime duration | Rule                                   |
-| -------------- | ------------------: | -------------------------------------- |
-| feedback       |               140ms | short state/color response             |
-| navigation     |               220ms | non-blocking route feedback            |
-| content reveal |               360ms | max 18px shared travel                 |
-| product        |               320ms | restrained media transition            |
-| cart           |               100ms | immediate transaction feedback         |
-| dialog/drawer  |               240ms | never delays Escape/focus behavior     |
-| storytelling   |       640ms ceiling | reserved for intentional editorial use |
-| 3D             | direct manipulation | opt-in; no idle auto-rotation          |
+| Category | Runtime target | Rule |
+| --- | ---: | --- |
+| feedback | 140ms | immediate state/color feedback |
+| navigation | 220ms | non-blocking route feedback |
+| content reveal | 360ms | restrained travel, maximum 18px in shared reveal |
+| product | 320ms | controlled media/product transition |
+| cart | 100ms | transaction-first feedback |
+| dialog/drawer | 240ms ceiling | never blocks Escape/focus behavior |
+| storytelling | 640ms ceiling | only for intentional editorial choreography |
+| 3D | direct manipulation | explicit opt-in; no idle auto-rotation |
 
-Reduced motion removes spatial choreography rather than merely shortening it.
+Reduced motion is semantic: spatial travel, parallax, idle 3D motion and decorative choreography are removed rather than merely accelerated.
 
-## Navigation, commerce and accessibility
+## Removed and normalized effects
 
-- Route changes use a 2px non-interactive feedback line and do not delay navigation.
-- Search/Mobile Navigation/Cart retain Radix keyboard and focus semantics.
-- Checkout receives no cinematic treatment beyond global non-blocking navigation feedback.
-- Wishlist/Profile/Address controls use short feedback timing only.
-- `MotionConfig reducedMotion="user"` remains at the application root.
-- Native cursor is restored.
-- 3D is `aria-hidden`; the meaningful static poster retains the product alternative text.
-- The 3D activation control is a native button with a minimum 44px height.
+F10 deliberately removed effects that were decorative, wasteful or interaction-hostile:
 
-## 3D strategy
+- retired the legacy magnetic/custom cursor and restored the native platform pointer;
+- removed the cursor's continuous `requestAnimationFrame` ownership;
+- replaced perpetual pointer-parallax RAF work with event-driven scheduling and cleanup;
+- disabled legacy continuous decorative loops such as marquee, float, pulse-glow, slow-spin and hero particles;
+- reduced shared reveal travel from large component-local values to a controlled maximum of 18px;
+- removed the large kinetic-text 3D flip and replaced it with a small reveal only when motion is allowed;
+- removed Search content lifecycle animation after it proved capable of delaying Radix interaction/focus lifecycle;
+- reduced Cart Drawer lifecycle motion to a short functional cue so Commerce remains immediate;
+- avoided universal fade-up, scroll-jacking, cinematic Checkout, excessive blur/glow and always-on GPU work.
 
-The accepted baseline shipped `public/models/shoe.glb` at `8,094,868` bytes, above the Constitution's 5MB hard-review threshold. F10 removes that asset.
+## Interaction polish
 
-The replacement is `src/lib/create-shoe-model.ts`, a compact procedural GLB builder imported only after user activation. The 3D path is progressive enhancement:
+The retained and added motion is product-first and functional:
 
-1. the static poster is always primary;
-2. `@google/model-viewer` is not imported on initial render;
-3. activation is explicit;
-4. the component must be near the viewport and the document visible before mounting;
-5. leaving the viewport or hiding the document unmounts active 3D;
-6. reduced motion disables activation/runtime and keeps the poster;
-7. WebGL failure/model failure falls back truthfully to the poster;
-8. `auto-rotate` is removed;
-9. touch keeps `pan-y`, so vertical scrolling is not trapped;
-10. 3D is never required to understand, select or purchase a product.
+- route transition feedback is non-interactive and does not delay navigation;
+- Homepage uses restrained Hero/editorial choreography rather than uniform section animation;
+- Product Cards retain concise hover/image/wishlist/pressed feedback while mobile remains fully usable without hover;
+- PDP feedback covers media, selected size, quantity, wishlist and add-to-cart without delaying purchase actions;
+- Cart/Checkout use only state-change feedback needed for add/remove/quantity/drawer/error/progress clarity;
+- Wishlist/Account interactions remain truth-safe and do not imply backend synchronization for local-only state;
+- Radix remains authoritative for focus trap, Escape, focus restoration and scroll locking.
 
-## Performance and lifecycle cleanup
+## Progressive 3D decision
 
-- Removed shipped 8.09MB GLB.
-- `model-viewer` and procedural model code are dynamically imported after activation.
-- Legacy custom-cursor RAF removed.
-- Perpetual parallax RAF removed.
-- IntersectionObserver, visibility listeners and model event listeners are cleaned up.
-- Continuous decorative CSS loops are disabled.
-- One-shot RAFs used for accessibility/focus work are retained because they do not create continuous animation work.
+The accepted F10 baseline contained `public/models/shoe.glb` at approximately `8,094,868` bytes, which exceeded the Constitution hard-review threshold of 5MB. F10 removed that shipped asset.
 
-## F10 permanent quality gates
+The replacement is a compact procedural GLB path in `src/lib/create-shoe-model.ts`, loaded only after explicit user activation. `@google/model-viewer` is also dynamically imported only when needed.
 
-Added:
+The final 3D contract is:
+
+1. the static product poster is always primary and meaningful;
+2. 3D is never required to understand, select or purchase the product;
+3. no 3D runtime is imported on the initial route solely for decoration;
+4. activation is explicit through a native control;
+5. WebGL/model failure falls back to the static poster;
+6. reduced-motion keeps the static experience and avoids 3D motion;
+7. offscreen work is stopped/unmounted;
+8. `document.hidden` stops active work;
+9. observers, listeners and object URLs are cleaned up;
+10. `auto-rotate` is not used;
+11. touch keeps `pan-y`, preserving page scrolling;
+12. the 3D layer is not exposed as duplicate semantic product content to assistive technology.
+
+## Performance decisions
+
+F10 reduced continuous and initial-route work rather than trading usability for spectacle:
+
+- removed the ~8.09MB baseline GLB from the shipped asset path;
+- lazy-loaded both model-viewer and procedural model generation;
+- removed continuous custom-cursor RAF;
+- removed perpetual pointer-parallax RAF;
+- disabled unnecessary infinite CSS animation loops;
+- retained only one-shot RAF work needed for focus/accessibility timing;
+- added IntersectionObserver/document-visibility lifecycle controls;
+- added explicit event/listener/object-URL cleanup;
+- kept Commerce animation short and non-cinematic;
+- preserved transform/opacity-oriented animation instead of animation that depends on repeated layout mutation.
+
+A real private VPS preview later exposed CPU/runtime compatibility constraints. The repository therefore also retains the deployment hardening added during the F10 line: exact project-local Node runtime support, CPU-aware local Bun bootstrap, Node-server production build helpers, loopback-safe service defaults and `audit:deploy`. These helpers do not alter global Node/Bun, firewall, Nginx, Xray or x-ui configuration.
+
+## Accessibility decisions
+
+F10 keeps motion subordinate to the accessibility contract:
+
+- `prefers-reduced-motion` is respected across the shared grammar and 3D path;
+- focus is never intentionally hidden by animation;
+- native pointer remains available;
+- dialogs/drawers retain keyboard, focus trap, Escape and focus restoration semantics;
+- 3D activation uses a native control with a minimum usable touch target;
+- static poster alternative text remains the meaningful product representation;
+- 3D is treated as progressive visual enhancement rather than duplicate semantic content;
+- touch scrolling is preserved;
+- no flashing/seizure-risk effect was introduced;
+- route/browser QA includes hydration/runtime-error detection and interaction readiness.
+
+## Permanent F10 quality gates
+
+Permanent files:
 
 - `scripts/audit-f10-motion-3d.mjs`
 - `scripts/test-f10-motion-3d.mjs`
 - `scripts/visual-qa-f10-motion-3d.mjs`
 - `scripts/f10-browser-runner.mjs`
 
-Registered commands:
+Permanent commands:
 
 - `bun run audit:f10`
 - `bun run test:f10`
 - `bun run qa:visual:f10`
 
-F10 is registered in `check`, `verify:cumulative` and Frontend CI. Inherited F0/F1, F2, F3, F4/F5, F6, F7, F8 and F9 gates remain present.
+They are registered in the repository quality workflow together with inherited regression gates. F10 did not delete or weaken F0/F1, F2, F3, F4/F5, F6, F7, F8 or F9 coverage.
 
-Behavior coverage includes lazy 3D, opt-in activation, offscreen pause/resume, native pointer, Cart Escape, reduced-motion static fallback, touch overflow, hydration mismatch and runtime exception detection.
+## Visual QA coverage
 
-Visual QA permanently covers widths `320, 375, 390, 430, 768, 1024, 1280, 1440, 1920` plus reduced-motion, touch, slow-device and offscreen-infinite-animation probes.
+F10 Visual QA permanently covers the required widths:
 
-## Real VPS preview findings — 2026-08-08
+`320`, `375`, `390`, `430`, `768`, `1024`, `1280`, `1440`, `1920`.
 
-A private preview was run on a constrained VPS that also hosts critical VPN services. The preview was bound only to `127.0.0.1:4173`; x-ui, Xray, Nginx and firewall configuration were not modified.
+It also covers reduced-motion, touch, slow-device behavior and offscreen/infinite-animation checks. The cumulative Frontend CI additionally runs inherited route/browser/Visual QA for Foundation, Navigation/Search, Content, Homepage, Catalog, PDP, Cart/Checkout, Wishlist/Account/Orders, plus later F11/F12 gates on the current Integration line.
 
-Observed deployment facts:
+## Validation evidence
 
-- server Node was `v24.19.0`, while the project requires Node `22.23.1`;
-- the server CPU exposed SSE4.2 + AVX but not AVX2;
-- standard Bun 1.3.14 x64 terminated with `Illegal instruction` (exit 132);
-- Bun 1.3.13 x64-baseline executed successfully on that CPU;
-- dependency installation succeeded inside a constrained systemd cgroup;
-- Vite development preview ran only on loopback;
-- static/Vite client checks returned HTTP 200;
-- the first successful home SSR request returned HTTP 200 with 102,101 bytes and took about 9.26s while development dependency optimization was occurring;
-- VPN listeners stayed unchanged throughout preview and cleanup;
-- `/opt/sole-demo` was removed and port 4173 was closed after review.
+### Historical original F10 PR validation
 
-The slow first request was a development-server/Vite optimizer observation, not a production Node-server target.
+The final original F10 phase head was `d3a48c7ac47edfe8fe9677dbc1f84bf8347a9eaa`. Historical Frontend CI run `#568` (`31277241309`) did not complete green: it stopped at an inherited F4/F5 browser behavior failure before reaching the later F10 steps. This handoff does not rewrite that historical result.
 
-## Deployment hardening added after the VPS preview
+PR #11 was subsequently supervisor-reviewed and merged into Integration on 2026-08-08 as merge commit `6da6036da3b7825ff7fa11bcd191d8872ddeb85c`.
 
-The preview exposed deployment-path risks that are now encoded permanently rather than left as manual knowledge.
+### Final cumulative closure validation
 
-### Exact and isolated runtimes
+A final cleanup branch was created from the then-current accepted Integration SHA `30b44421ba7b30c0e8f64ae11c3cafcc75980d61`. It removed only temporary F7 debugging infrastructure left from the original stabilization work:
 
-- `.nvmrc` and `.node-version` pin Node `22.23.1`.
-- `scripts/deployment/bootstrap-node-vps.sh` downloads Node `22.23.1`, verifies `SHASUMS256.txt`, and installs it only under `.runtime/node`.
-- `scripts/deployment/node-vps.sh` refuses the wrong local Node version.
-- Global Node does not need to be replaced on a shared server.
-- `scripts/deployment/bootstrap-bun-vps.sh` selects standard x64 only when AVX2 is present, otherwise x64-baseline on SSE4.2-capable CPUs.
-- The Bun bootstrap disables core dumps during compatibility probing and has an isolated fallback to the VPS-validated 1.3.13 baseline if the pinned 1.3.14 baseline cannot execute on an older CPU.
-- Global Bun is not installed/replaced.
+- removed `scripts/diagnose-f7-checkout-submit.mjs`;
+- removed `scripts/diagnose-f7-product-add.mjs`;
+- removed their conditional diagnostic steps from `.github/workflows/frontend-ci.yml`.
 
-### Correct production artifact
+No product/runtime component was changed by this cleanup.
 
-Normal Lovable behavior remains unchanged. `vite.config.ts` only selects Nitro `node-server` when `SOLE_DEPLOY_TARGET=node-server`.
+On cleanup precursor SHA `b6a236fb7e1e2c61a1387d6529d5129067d795d5`, Frontend CI run `#804` (`31573603726`) completed successfully. The run passed:
 
-Deployment commands:
+- Foundation source-contract and browser behavior;
+- Homepage audit/browser behavior;
+- Navigation/Search audit/browser behavior;
+- Content pages audit/browser behavior;
+- F4/F5 catalog audit/browser behavior;
+- F6 PDP audit/browser behavior;
+- F7 Cart/Checkout audit/browser behavior;
+- F9 Wishlist/Account/Orders audit/browser behavior;
+- F10 audit/browser behavior;
+- F11 audit, SSR SEO tests and SEO safety QA;
+- F12 source/performance audit;
+- deployment readiness audit;
+- TypeScript typecheck;
+- lint;
+- format checks;
+- production build;
+- F12 build performance budgets;
+- VPS Node-server build;
+- Foundation Visual QA;
+- Navigation/Search Visual QA;
+- Content Visual QA;
+- Homepage Visual QA;
+- F4/F5 Visual QA;
+- F6 Visual QA;
+- F7 Visual QA;
+- F9 Visual QA;
+- F10 Visual QA;
+- Foundation completion audit;
+- aggregate cumulative evidence verification;
+- clean working-tree verification.
 
-- `bun run build:vps` -> exact Node-server builder;
-- `bun run start:vps` -> `.output/server/index.mjs` on an exact development/build runtime;
-- `bun run smoke:vps` -> loopback smoke test;
-- `bun run audit:deploy` -> permanent deployment source contract.
+This provides a full green cumulative validation of the F10 implementation on the current accepted frontend lineage after removal of temporary diagnostics.
 
-For a shared VPS, `scripts/deployment/build-vps-safe.sh` uses the project-local Node instead of system Node and applies cgroup limits.
+## Registration record
 
-### Shared-server containment
+F10 registration is complete:
 
-- `scripts/deployment/vps-preflight.sh` is read-only and checks CPU, memory, disk, utilities, local/system Node and port availability.
-- `scripts/deployment/install-vps-safe.sh` applies CPU/RAM/swap/task limits and isolates `HOME` plus Bun cache inside `.home`/`.bun-cache`.
-- `scripts/deployment/build-vps-safe.sh` applies build limits and isolates build `HOME`.
-- `.runtime`, `.home` and `.bun-cache` are ignored by Git.
-- No SOLE deployment helper changes firewall, Nginx, Xray or x-ui.
-- The reviewed systemd template runs the local Node production output on `127.0.0.1:4173` with CPU/memory/swap/task limits and hardening.
-- Production must not run `vite dev` or `vite preview`.
-- Private preview remains loopback + SSH tunnel until a deliberate reverse-proxy configuration is approved.
+- original accepted baseline: `f1bd39e348d4fb4774874ccfdabe491bc9b2d0a4`;
+- final original phase SHA: `d3a48c7ac47edfe8fe9677dbc1f84bf8347a9eaa`;
+- PR: `#11`;
+- Integration merge SHA: `6da6036da3b7825ff7fa11bcd191d8872ddeb85c`;
+- merge date: 2026-08-08;
+- F10 remains in the ancestry of the later Integration line;
+- final cleanup removes temporary debugging workflow/scripts without changing product behavior;
+- `main` remains outside the F10 registration path.
 
-The full contract is in `docs/frontend/SOLE_VPS_DEPLOYMENT.md`.
-
-## Deployment quality gate
-
-`scripts/audit-deployment-readiness.mjs` verifies that:
-
-- Node/Bun pins remain intentional;
-- node-server is opt-in so Lovable behavior is not overwritten;
-- Node/Bun bootstrap remains local and CPU-aware;
-- checksum verification and core-dump protection remain present;
-- install/build cgroup and local-HOME/cache isolation remain present;
-- production service uses local Node, loopback and hard memory limits;
-- no Vite development process is used as the production service;
-- Frontend CI keeps both the deployment contract audit and VPS Node-server build step.
-
-## Validation and acceptance model
-
-GitHub Actions is useful evidence when runners execute, but external Actions billing/runner availability is not an acceptance prerequisite for this repository workflow.
-
-Supervisor acceptance is based on the combination of:
-
-- exact branch ancestry and controlled diff review;
-- F10 source-contract audit design and browser/visual regression gates retained in-repo;
-- code-level review of Motion, 3D, reduced-motion, pointer, lifecycle and Commerce interactions;
-- the real loopback VPS preview described above;
-- deployment source-contract and exact-runtime hardening added after that preview;
-- no unresolved PR review threads/comments;
-- mergeability against the accepted Integration baseline.
-
-No claim is made that the post-preview production Node-server helper scripts were executed on the VPN server after cleanup. They are deliberately designed so the next real deployment can use an exact, isolated runtime and production artifact without altering the server's global Node/Bun or VPN stack.
-
-## Registration rule
-
-F10 may be registered only into `integration/sole-frontend-v2` after supervisor review of the final immutable PR head. `main` remains unchanged. The Integration merge SHA becomes the baseline for the next phase.
+The final registration-cleanup PR records the documentation/CI hygiene closure on top of the later accepted Integration head. Its exact final head and merge SHA are recorded by GitHub history and the final completion report rather than self-referentially rewriting this document after merge.
