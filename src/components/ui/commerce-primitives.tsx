@@ -53,9 +53,25 @@ type SearchInputProps = Omit<React.ComponentProps<typeof Input>, "type"> & {
 };
 
 const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
-  ({ className, value, defaultValue, clearLabel = "پاک‌کردن جستجو", onClear, ...props }, ref) => {
-    const hasValue =
+  (
+    {
+      className,
+      value,
+      defaultValue,
+      clearLabel = "پاک‌کردن جستجو",
+      onClear,
+      onInput,
+      ...props
+    },
+    ref,
+  ) => {
+    const hasValueFromProps =
       value !== undefined ? String(value).length > 0 : String(defaultValue ?? "").length > 0;
+    const [hasInputValue, setHasInputValue] = React.useState(hasValueFromProps);
+
+    React.useEffect(() => {
+      setHasInputValue(hasValueFromProps);
+    }, [hasValueFromProps]);
 
     return (
       <div className="relative" role="search">
@@ -68,20 +84,27 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
           type="text"
           value={value}
           defaultValue={defaultValue}
+          onInput={(event) => {
+            setHasInputValue(event.currentTarget.value.length > 0);
+            onInput?.(event);
+          }}
           className={cn("min-h-11 ps-10 pe-11", className)}
           {...props}
         />
         {onClear ? (
           <button
             type="button"
-            aria-label={hasValue ? clearLabel : "کنترل پاک‌کردن جستجو غیرفعال"}
-            aria-hidden={!hasValue || undefined}
-            disabled={!hasValue}
-            tabIndex={hasValue ? undefined : -1}
-            onClick={onClear}
+            aria-label={hasInputValue ? clearLabel : "کنترل پاک‌کردن جستجو غیرفعال"}
+            aria-hidden={!hasInputValue || undefined}
+            disabled={!hasInputValue}
+            tabIndex={hasInputValue ? undefined : -1}
+            onClick={() => {
+              setHasInputValue(false);
+              onClear();
+            }}
             className={cn(
               "absolute inset-inline-end-1 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-interactive hover:text-foreground",
-              !hasValue && "invisible pointer-events-none",
+              !hasInputValue && "invisible pointer-events-none",
             )}
           >
             <X aria-hidden="true" className="size-4" />
