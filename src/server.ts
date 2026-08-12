@@ -12,11 +12,24 @@ let serverEntryPromise: Promise<ServerEntry> | undefined;
 
 async function getServerEntry(): Promise<ServerEntry> {
   if (!serverEntryPromise) {
-    serverEntryPromise = import("@tanstack/react-start/server-entry").then(
-      (m) => (m.default ?? m) as ServerEntry,
-    );
+    serverEntryPromise = import("@tanstack/react-start/server-entry")
+      .then((m) => (m.default ?? m) as ServerEntry)
+      .catch((error) => {
+        serverEntryPromise = undefined;
+        throw error;
+      });
   }
   return serverEntryPromise;
+}
+
+function createCatastrophicErrorResponse() {
+  return new Response(renderErrorPage(), {
+    status: 500,
+    headers: {
+      "cache-control": "no-store",
+      "content-type": "text/html; charset=utf-8",
+    },
+  });
 }
 
 // h3 swallows in-handler throws into a normal 500 Response with body
@@ -32,10 +45,7 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   }
 
   console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
-  return new Response(renderErrorPage(), {
-    status: 500,
-    headers: { "content-type": "text/html; charset=utf-8" },
-  });
+  return createCatastrophicErrorResponse();
 }
 
 export default {
@@ -50,12 +60,7 @@ export default {
       return withErrorNoindex(normalized);
     } catch (error) {
       console.error(error);
-      return withErrorNoindex(
-        new Response(renderErrorPage(), {
-          status: 500,
-          headers: { "content-type": "text/html; charset=utf-8" },
-        }),
-      );
+      return withErrorNoindex(createCatastrophicErrorResponse());
     }
   },
 };
