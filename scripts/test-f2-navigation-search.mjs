@@ -37,22 +37,20 @@ function record(name, pass, evidence) {
 }
 
 async function visibleClick(client, selector) {
-  await waitForExpression(
+  const clicked = await evaluate(
     client,
     `(() => {
       const candidates = [...document.querySelectorAll(${JSON.stringify(selector)})];
       const target = candidates.find((element) => {
         const style = getComputedStyle(element);
         const rect = element.getBoundingClientRect();
-        const enabled = !(element instanceof HTMLButtonElement) || !element.disabled;
-        return enabled && style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+        return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
       });
-      if (!target) return false;
-      target.click();
-      return true;
+      target?.click();
+      return Boolean(target);
     })()`,
-    10_000,
   );
+  if (!clicked) throw new Error(`Visible target not found: ${selector}`);
 }
 
 async function key(client, value, { code = value, keyCode = 0, shift = false } = {}) {
