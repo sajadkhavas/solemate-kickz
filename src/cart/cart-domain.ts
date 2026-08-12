@@ -1,5 +1,8 @@
 import { SHOES, type Shoe } from "@/data/shoes";
 
+export const MAX_CART_ITEM_QUANTITY = 99;
+export const MAX_PERSISTED_CART_LINES = 50;
+
 export interface CartItem {
   id: number;
   size: number;
@@ -19,7 +22,9 @@ export interface ResolvedCartItem extends CartItem {
 const toPositiveInteger = (value: unknown) => {
   const numeric = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(numeric) || numeric <= 0) return null;
-  return Math.floor(numeric);
+  const integer = Math.floor(numeric);
+  if (!Number.isSafeInteger(integer)) return null;
+  return Math.min(integer, MAX_CART_ITEM_QUANTITY);
 };
 
 const toFiniteSize = (value: unknown) => {
@@ -42,7 +47,13 @@ export function sanitizePersistedCart(value: unknown): CartItem[] {
 
     const key = `${id}:${size}`;
     const existing = merged.get(key);
-    merged.set(key, { id, size, qty: (existing?.qty ?? 0) + qty });
+    if (!existing && merged.size >= MAX_PERSISTED_CART_LINES) continue;
+
+    merged.set(key, {
+      id,
+      size,
+      qty: Math.min(MAX_CART_ITEM_QUANTITY, (existing?.qty ?? 0) + qty),
+    });
   }
 
   return [...merged.values()];
