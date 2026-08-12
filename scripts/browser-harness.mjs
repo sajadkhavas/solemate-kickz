@@ -228,24 +228,19 @@ export async function evaluate(client, expression) {
 
   const started = Date.now();
   let point = null;
-  while (Date.now() - started < 2_000) {
+  let stableSamples = 0;
+  while (Date.now() - started < 10_000) {
     point = await evaluateRaw(client, coordinateExpression);
-    if (!point) {
-      await sleep(50);
-      continue;
+    if (point?.actionable && !point.disabled) {
+      stableSamples += 1;
+      if (stableSamples >= 2) break;
+    } else {
+      stableSamples = 0;
     }
-    if (point.actionable && !point.disabled) break;
     await sleep(50);
   }
 
-  if (!point?.actionable || point.disabled) return false;
-
-  // Re-measure once more after the target is actually topmost. This prevents
-  // physical CDP clicks from landing on an exiting Radix overlay or stale
-  // pre-scroll coordinates while preserving a real user-like pointer event.
-  await sleep(50);
-  point = await evaluateRaw(client, coordinateExpression);
-  if (!point?.actionable || point.disabled) return false;
+  if (stableSamples < 2 || !point?.actionable || point.disabled) return false;
 
   await dispatchPointerActivation(client, point);
   return true;
