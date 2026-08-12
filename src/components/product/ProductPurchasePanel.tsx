@@ -2,6 +2,7 @@ import { Heart, Share2, ShoppingBag } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { MAX_CART_ITEM_QUANTITY } from "@/cart/cart-domain";
 import { SizeGuideDialog } from "@/components/product/SizeGuideDialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,7 +43,7 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
     }
 
     if (!addToCart(shoe.id, selectedSize, quantity)) {
-      toast.error("این انتخاب دیگر با Dataset فعلی قابل افزودن نیست.");
+      toast.error("این انتخاب دیگر با Dataset فعلی قابل افزودن نیست یا به سقف سبد محلی رسیده است.");
       return;
     }
     toast.success(`${quantity} عدد به سبد محلی اضافه شد.`);
@@ -134,6 +135,7 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
           value={quantity}
           onChange={setQuantity}
           min={1}
+          max={MAX_CART_ITEM_QUANTITY}
           disabled={shoe.isSoldOut}
           label="تعداد برای افزودن به سبد"
           className="bg-background"
