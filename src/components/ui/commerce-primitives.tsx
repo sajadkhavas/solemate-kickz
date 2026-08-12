@@ -53,8 +53,9 @@ type SearchInputProps = Omit<React.ComponentProps<typeof Input>, "type"> & {
 };
 
 const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
-  ({ className, value, defaultValue, clearLabel = "پاک‌کردن جستجو", onClear, onInput, ...props },
-  ref,
+  (
+    { className, value, defaultValue, clearLabel = "پاک‌کردن جستجو", onClear, onInput, ...props },
+    ref,
   ) => {
     const hasValueFromProps =
       value !== undefined ? String(value).length > 0 : String(defaultValue ?? "").length > 0;
