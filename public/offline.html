@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>SOLE — بدون اتصال</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Vazirmatn, system-ui, sans-serif;
+        background: #0a0a0a;
+        color: #f7f7f2;
+      }
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+      .card {
+        max-width: 560px;
+        border: 1px solid #343434;
+        border-radius: 24px;
+        padding: 32px;
+        background: #141414;
+        text-align: center;
+      }
+      .mark {
+        font: 900 48px/1 system-ui;
+        color: #c8f135;
+        letter-spacing: -3px;
+      }
+      h1 {
+        font-size: 24px;
+        margin: 24px 0 10px;
+      }
+      p {
+        color: #b7b7b7;
+        line-height: 1.9;
+        margin: 0 0 24px;
+      }
+      .note {
+        font-size: 14px;
+        border: 1px solid #343434;
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 24px;
+      }
+      a,
+      button {
+        font: inherit;
+        border-radius: 999px;
+        padding: 11px 18px;
+        border: 1px solid #c8f135;
+        background: #c8f135;
+        color: #0a0a0a;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      a.secondary {
+        background: transparent;
+        color: #f7f7f2;
+        border-color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="mark" aria-hidden="true">SOLE</div>
+      <h1>فعلاً به اینترنت دسترسی ندارید</h1>
+      <p>
+        اگر قبلاً یکی از صفحات عمومی محصولات را دیده باشید، از بازگشت مرورگر برای مشاهده نسخه
+        ذخیره‌شده استفاده کنید.
+      </p>
+      <p class="note">
+        اطلاعات ذخیره‌شده قطعی نیست؛ قیمت، تخفیف، موجودی و امکان خرید بعد از اتصال دوباره بررسی
+        می‌شود.
+      </p>
+      <div class="actions">
+        <button type="button" onclick="location.reload()">تلاش دوباره</button
+        ><a class="secondary" href="/">صفحه اصلی</a>
+      </div>
+    </main>
+  </body>
+</html>

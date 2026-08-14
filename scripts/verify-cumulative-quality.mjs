@@ -21,6 +21,8 @@ const expectedReportFragments = [
   "f12-performance-media",
   "f13-full-code-audit",
   "f13-hardening",
+  "f14-pwa-foundation",
+  "f14-pwa-contracts",
 ];
 
 function walk(directory) {

@@ -16,6 +16,7 @@ import appCss from "../styles.css?url";
 import motionCss from "../motion.css?url";
 import { CartDrawer } from "@/components/CartDrawer";
 import { MagneticCursor } from "@/components/MagneticCursor";
+import { PwaExperience } from "@/components/pwa/PwaExperience";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { useStore } from "@/store";
@@ -105,6 +106,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: foundationCss },
       { rel: "stylesheet", href: motionCss },
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icons/sole-192.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -212,6 +215,7 @@ function RootComponent() {
         <RouteAccessibility />
         <CartDrawer />
         <MagneticCursor />
+        <PwaExperience />
         <Toaster dir="rtl" theme="dark" position="bottom-left" closeButton />
       </MotionConfig>
     </QueryClientProvider>
