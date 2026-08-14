@@ -23,6 +23,8 @@ const expectedReportFragments = [
   "f13-hardening",
   "f14-pwa-foundation",
   "f14-pwa-contracts",
+  "f15-push-consent",
+  "f15-push-contracts",
 ];
 
 function walk(directory) {
