@@ -66,7 +66,8 @@
     "format:f14": "prettier --write .github/workflows/frontend-ci.yml docs/handoffs/F14-PWA-FOUNDATION.md package.json public/manifest.webmanifest public/offline.html public/sw.js scripts/audit-f14-pwa.mjs scripts/test-f14-pwa.mjs scripts/verify-cumulative-quality.mjs src/components/pwa/PwaExperience.tsx src/routes/__root.tsx src/styles.css",
     "audit:f15": "node scripts/audit-f15-push-consent.mjs",
     "test:f15": "node scripts/test-f15-push-consent.mjs",
-    "format:f15": "prettier --write .github/workflows/frontend-ci.yml docs/handoffs/F15-PUSH-CONSENT.md package.json public/sw.js scripts/audit-f15-push-consent.mjs scripts/test-f15-push-consent.mjs scripts/verify-cumulative-quality.mjs src/components/Navbar.tsx src/components/notifications/NotificationCenter.tsx src/notifications/client.ts src/notifications/contracts.ts"
+    "format:f15": "prettier --write .github/workflows/frontend-ci.yml docs/handoffs/F15-PUSH-CONSENT.md package.json public/sw.js scripts/audit-f15-push-consent.mjs scripts/test-f15-push-consent.mjs scripts/verify-cumulative-quality.mjs src/components/Navbar.tsx src/components/notifications/NotificationCenter.tsx src/notifications/client.ts src/notifications/contracts.ts",
+    "audit:f16": "node scripts/audit-f16-commerce-contract.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^3.5.0",
