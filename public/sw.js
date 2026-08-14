@@ -1,5 +1,6 @@
-/* SOLE F14 service worker: public-shell resilience only; commerce truth remains network-owned. */
-const VERSION = "sole-f14-v1";
+/* global self, caches, fetch, URL */
+/* SOLE PWA worker: public-shell resilience and push display; commerce truth stays network-owned. */
+const VERSION = "sole-f15-v1";
 const STATIC_CACHE = `${VERSION}-static`;
 const PAGE_CACHE = `${VERSION}-pages`;
 const CORE = [
@@ -82,4 +83,56 @@ self.addEventListener("fetch", (event) => {
       ),
     );
   }
+});
+
+const safeNotificationPath = (candidate) => {
+  try {
+    const url = new URL(candidate || "/", self.location.origin);
+    if (url.origin !== self.location.origin) return "/";
+    const allowed =
+      url.pathname.startsWith("/product/") ||
+      url.pathname === "/products" ||
+      url.pathname === "/account";
+    return allowed ? `${url.pathname}${url.search}` : "/";
+  } catch {
+    return "/";
+  }
+};
+
+self.addEventListener("push", (event) => {
+  let payload = {};
+  try {
+    payload = event.data?.json() || {};
+  } catch {
+    payload = {};
+  }
+  const title = typeof payload.title === "string" ? payload.title.slice(0, 120) : "SOLE";
+  const body = typeof payload.body === "string" ? payload.body.slice(0, 240) : "اعلان جدیدی دارید.";
+  const path = safeNotificationPath(payload.deepLink);
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon: "/icons/sole-192.png",
+      badge: "/icons/sole-192.png",
+      data: { path },
+      tag: typeof payload.id === "string" ? payload.id.slice(0, 120) : undefined,
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const path = safeNotificationPath(event.notification.data?.path);
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(async (clients) => {
+      for (const client of clients) {
+        const current = new URL(client.url);
+        if (current.origin === self.location.origin && "focus" in client) {
+          await client.navigate(path);
+          return client.focus();
+        }
+      }
+      return self.clients.openWindow(path);
+    }),
+  );
 });

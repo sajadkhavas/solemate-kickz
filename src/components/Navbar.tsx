@@ -3,6 +3,7 @@ import { Heart, Search, ShoppingBag, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { DesktopNavigation } from "@/components/navigation/DesktopNavigation";
+import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { MobileNavigation } from "@/components/navigation/MobileNavigation";
 import { SearchDialog } from "@/components/navigation/SearchDialog";
 import { SoleLogo } from "@/components/navigation/SoleLogo";
@@ -68,6 +69,7 @@ export function Navbar() {
           <DesktopNavigation />
 
           <div className="ms-auto flex shrink-0 items-center gap-1">
+            <NotificationCenter />
             <IconButton
               label="بازکردن جستجو"
               variant="ghost"
