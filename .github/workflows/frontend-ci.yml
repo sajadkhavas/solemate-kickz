@@ -124,6 +124,9 @@ jobs:
       - name: F15 push consent contracts
         run: bun run test:f15
 
+      - name: F16 commerce backend contract audit
+        run: bun run audit:f16
+
       - name: VPS deployment contract audit
         run: bun run audit:deploy
 

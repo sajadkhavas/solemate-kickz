@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "machines": {
+    "reservation": {
+      "initial": "pending",
+      "terminal": ["consumed", "expired", "released"],
+      "transitions": {
+        "pending": ["active", "released"],
+        "active": ["consumed", "expired", "released"]
+      }
+    },
+    "checkout": {
+      "initial": "draft",
+      "terminal": ["completed", "expired", "cancelled", "failed"],
+      "transitions": {
+        "draft": ["validated", "cancelled"],
+        "validated": ["reserved", "failed"],
+        "reserved": ["payment_pending", "expired", "cancelled"],
+        "payment_pending": ["completed", "expired", "failed"]
+      }
+    },
+    "order": {
+      "initial": "pending_payment",
+      "terminal": ["cancelled", "refunded"],
+      "transitions": {
+        "pending_payment": ["paid", "payment_failed", "cancelled"],
+        "paid": ["processing", "cancelled", "partially_refunded", "refunded"],
+        "processing": ["ready_to_ship", "cancelled", "partially_refunded", "refunded"],
+        "ready_to_ship": ["shipped", "cancelled"],
+        "shipped": ["delivered", "partially_refunded", "refunded"],
+        "delivered": ["partially_refunded", "refunded"],
+        "partially_refunded": ["refunded"]
+      }
+    },
+    "payment": {
+      "initial": "created",
+      "terminal": ["failed", "expired", "cancelled", "refunded"],
+      "transitions": {
+        "created": ["pending_provider", "cancelled"],
+        "pending_provider": ["authorized", "failed", "expired"],
+        "authorized": ["captured", "failed"],
+        "captured": ["partially_refunded", "refunded"],
+        "partially_refunded": ["refunded"]
+      }
+    },
+    "shipment": {
+      "initial": "pending",
+      "terminal": ["delivered", "returned_to_sender", "cancelled"],
+      "transitions": {
+        "pending": ["preparing", "cancelled"],
+        "preparing": ["handed_to_carrier", "cancelled"],
+        "handed_to_carrier": ["in_transit", "delivery_failed", "returned_to_sender"],
+        "in_transit": ["delivered", "delivery_failed", "returned_to_sender"],
+        "delivery_failed": ["in_transit", "returned_to_sender"]
+      }
+    },
+    "return": {
+      "initial": "requested",
+      "terminal": ["cancelled", "rejected", "resolved"],
+      "transitions": {
+        "requested": ["under_review", "cancelled"],
+        "under_review": ["approved", "rejected"],
+        "approved": ["received"],
+        "received": ["inspected"],
+        "inspected": ["resolved"]
+      }
+    },
+    "refund": {
+      "initial": "requested",
+      "terminal": ["succeeded", "failed"],
+      "transitions": {
+        "requested": ["pending_provider", "failed"],
+        "pending_provider": ["succeeded", "failed"]
+      }
+    }
+  }
+}
