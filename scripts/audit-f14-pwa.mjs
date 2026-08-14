@@ -59,7 +59,7 @@ const sw = read("public/sw.js");
 record(
   "service worker excludes sensitive commerce routes",
   ["/api", "/auth", "/account", "/checkout", "/cart", "/wishlist"].every((route) =>
-    sw.includes(`\"${route}\"`),
+    sw.includes(`"${route}"`),
   ),
 );
 record(

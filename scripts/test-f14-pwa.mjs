@@ -14,7 +14,7 @@ const record = (name, pass, evidence = null) =>
 const privateRoutes = ["/api", "/auth", "/account", "/checkout", "/cart", "/wishlist"];
 record(
   "all sensitive prefixes are denylisted",
-  privateRoutes.every((route) => sw.includes(`\"${route}\"`)),
+  privateRoutes.every((route) => sw.includes(`"${route}"`)),
   privateRoutes,
 );
 record(

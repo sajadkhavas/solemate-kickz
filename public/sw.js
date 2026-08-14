@@ -1,5 +1,6 @@
-/* SOLE F14 service worker: public-shell resilience only; commerce truth remains network-owned. */
-const VERSION = "sole-f14-v1";
+/* global self, caches, fetch, URL */
+/* SOLE PWA worker: public-shell resilience and push display; commerce truth stays network-owned. */
+const VERSION = "sole-f15-v1";
 const STATIC_CACHE = `${VERSION}-static`;
 const PAGE_CACHE = `${VERSION}-pages`;
 const CORE = [
