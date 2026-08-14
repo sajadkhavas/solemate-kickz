@@ -112,6 +112,12 @@ jobs:
       - name: F13 hardening browser behavior
         run: node scripts/test-f13-hardening.mjs
 
+      - name: F14 PWA source audit
+        run: bun run audit:f14
+
+      - name: F14 PWA behavior contracts
+        run: bun run test:f14
+
       - name: VPS deployment contract audit
         run: bun run audit:deploy
 
@@ -174,6 +180,22 @@ jobs:
           src/server.ts
           src/store/index.ts
 
+      - name: F14 format check
+        run: >-
+          bunx prettier --check
+          .github/workflows/frontend-ci.yml
+          docs/handoffs/F14-PWA-FOUNDATION.md
+          package.json
+          public/manifest.webmanifest
+          public/offline.html
+          public/sw.js
+          scripts/audit-f14-pwa.mjs
+          scripts/test-f14-pwa.mjs
+          scripts/verify-cumulative-quality.mjs
+          src/components/pwa/PwaExperience.tsx
+          src/routes/__root.tsx
+          src/styles.css
+
       - name: Production build
         run: bun run build
 
@@ -232,7 +254,7 @@ jobs:
             echo "- Exact commit: \`${GITHUB_SHA}\`"
             echo "- Node: \`22.23.1\`"
             echo "- Bun: \`1.3.14\`"
-            echo "- Included phases: F0/F1, F3 + commercial homepage upgrade, F2, F8, F4/F5, F6, F7, F9, F10, F11, F12 and F13"
+            echo "- Included phases: F0/F1, F3 + commercial homepage upgrade, F2, F8, F4/F5, F6, F7, F9, F10, F11, F12, F13 and F14"
             echo "- F12 source contracts and deterministic client build budgets are enforced."
             echo "- F13 full-code inventory, hardening contracts and malformed-state browser regression are enforced."
             echo "- Deployment contract audit + Node-server build are also enforced."
