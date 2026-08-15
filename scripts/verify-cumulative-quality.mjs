@@ -26,6 +26,7 @@ const expectedReportFragments = [
   "f15-push-consent",
   "f15-push-contracts",
   "f16-commerce-contract",
+  "f17-production-content",
 ];
 
 function walk(directory) {

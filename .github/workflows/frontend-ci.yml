@@ -127,6 +127,9 @@ jobs:
       - name: F16 commerce backend contract audit
         run: bun run audit:f16
 
+      - name: F17 production content contract audit
+        run: bun run audit:f17
+
       - name: VPS deployment contract audit
         run: bun run audit:deploy
 
@@ -219,6 +222,18 @@ jobs:
           src/components/notifications/NotificationCenter.tsx
           src/notifications/client.ts
           src/notifications/contracts.ts
+
+      - name: F17 format check
+        run: >-
+          bunx prettier --check
+          .github/workflows/frontend-ci.yml
+          content/production-content.json
+          contracts/production-content.schema.json
+          docs/content/PRODUCTION-CONTENT-CONTRACT.md
+          docs/handoffs/F17-PRODUCTION-CONTENT-CONTRACT.md
+          package.json
+          scripts/audit-f17-production-content.mjs
+          scripts/verify-cumulative-quality.mjs
 
       - name: Production build
         run: bun run build

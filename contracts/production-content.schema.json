@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sole.example/contracts/production-content.schema.json",
+  "title": "SOLE production content manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "environment", "sources", "entries"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "environment": { "enum": ["review", "production"] },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "authority", "productionEligible"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "kind": { "enum": ["commerce-api", "cms", "licensed-media", "demo-fixture"] },
+          "authority": { "type": "string", "minLength": 1 },
+          "productionEligible": { "type": "boolean" }
+        }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reference", "verifiedAt", "verifiedBy"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "ownership",
+            "license",
+            "product-authority",
+            "price-authority",
+            "inventory-authority",
+            "legal-approval",
+            "editorial-approval"
+          ]
+        },
+        "reference": { "type": "string", "minLength": 1 },
+        "verifiedAt": { "type": "string", "format": "date-time" },
+        "verifiedBy": { "type": "string", "minLength": 1 }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "locale",
+        "status",
+        "revision",
+        "sourceIds",
+        "evidence",
+        "claims",
+        "media"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "type": {
+          "enum": ["product", "collection", "drop", "lookbook", "journal", "page", "campaign"]
+        },
+        "locale": { "enum": ["fa-IR", "en"] },
+        "status": { "enum": ["draft", "in_review", "approved", "published", "archived"] },
+        "revision": { "type": "integer", "minimum": 1 },
+        "sourceIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "publishAt": { "type": ["string", "null"], "format": "date-time" },
+        "unpublishAt": { "type": ["string", "null"], "format": "date-time" },
+        "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } },
+        "claims": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "media": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["assetId", "alt", "rightsEvidence"],
+            "properties": {
+              "assetId": { "type": "string", "minLength": 1 },
+              "alt": { "type": "string", "minLength": 1 },
+              "rightsEvidence": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}
