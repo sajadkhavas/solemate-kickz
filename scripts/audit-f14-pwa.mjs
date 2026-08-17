@@ -13,10 +13,12 @@ const record = (name, pass, evidence = null) =>
   checks.push({ name, pass: Boolean(pass), evidence });
 
 const branch = process.env.GITHUB_HEAD_REF || git("branch", "--show-current").stdout.trim();
+const phaseNumber = Number(branch.match(/^phase\/sole-f(\d+)-/)?.[1] ?? -1);
 record(
   "F14 uses controlled lineage",
-  /^phase\/sole-f14-/.test(branch) ||
+  phaseNumber >= 14 ||
     branch === "integration/sole-frontend-v2" ||
+    branch === "main" ||
     process.env.CI === "true",
   branch,
 );

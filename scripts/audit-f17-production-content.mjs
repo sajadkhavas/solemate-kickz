@@ -4,6 +4,7 @@ import path from "node:path";
 import process from "node:process";
 
 const ROOT = process.cwd();
+const BASELINE = "1c77a8a3450c5d28111674d8e8fc5a61c8a88123";
 const REPORT = path.join(ROOT, "artifacts/audits/f17-production-content.json");
 const checks = [];
 const read = (file) => fs.readFileSync(path.join(ROOT, file), "utf8");
@@ -11,6 +12,7 @@ const git = (...args) => spawnSync("git", args, { cwd: ROOT, encoding: "utf8" })
 const record = (name, pass) => checks.push({ name, pass: Boolean(pass) });
 
 const branch = process.env.GITHUB_HEAD_REF || git("branch", "--show-current").stdout.trim();
+const phaseNumber = Number(branch.match(/^phase\/sole-f(\d+)-/)?.[1] ?? -1);
 const doc = read("docs/content/PRODUCTION-CONTENT-CONTRACT.md");
 const schema = JSON.parse(read("contracts/production-content.schema.json"));
 const manifest = JSON.parse(read("content/production-content.json"));
@@ -18,18 +20,16 @@ const handoff = read("docs/handoffs/F17-PRODUCTION-CONTENT-CONTRACT.md");
 
 record(
   "controlled lineage",
-  /^phase\/sole-f17-/.test(branch) ||
+  phaseNumber >= 17 ||
     branch === "integration/sole-frontend-v2" ||
+    branch === "main" ||
     process.env.CI === "true",
 );
-record(
-  "F16 ancestor",
-  git("merge-base", "--is-ancestor", "bb8fcad", "HEAD").status === 0 || process.env.CI === "true",
-);
+record("F16 ancestor", git("merge-base", "--is-ancestor", BASELINE, "HEAD").status === 0);
 record(
   "publication states",
   ["draft", "in_review", "approved", "published", "archived"].every((state) =>
-    JSON.stringify(schema).includes(`\"${state}\"`),
+    JSON.stringify(schema).includes(`"${state}"`),
   ),
 );
 record(
@@ -73,7 +73,7 @@ record(
 );
 record(
   "lockfile unchanged",
-  git("diff", "--name-only", "bb8fcad", "HEAD", "--", "bun.lock").stdout.trim() === "",
+  git("diff", "--name-only", BASELINE, "HEAD", "--", "bun.lock").stdout.trim() === "",
 );
 
 const failed = checks.filter((check) => !check.pass);

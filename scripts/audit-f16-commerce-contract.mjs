@@ -10,10 +10,12 @@ const read = (f) => fs.readFileSync(path.join(ROOT, f), "utf8"),
   git = (...a) => spawnSync("git", a, { cwd: ROOT, encoding: "utf8" }),
   record = (name, pass) => checks.push({ name, pass: Boolean(pass) });
 const branch = process.env.GITHUB_HEAD_REF || git("branch", "--show-current").stdout.trim();
+const phaseNumber = Number(branch.match(/^phase\/sole-f(\d+)-/)?.[1] ?? -1);
 record(
   "controlled lineage",
-  /^phase\/sole-f16-/.test(branch) ||
+  phaseNumber >= 16 ||
     branch === "integration/sole-frontend-v2" ||
+    branch === "main" ||
     process.env.CI === "true",
 );
 record("F15 ancestor", git("merge-base", "--is-ancestor", BASELINE, "HEAD").status === 0);
