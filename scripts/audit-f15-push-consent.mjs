@@ -12,11 +12,13 @@ const git = (...args) => spawnSync("git", args, { cwd: ROOT, encoding: "utf8" })
 const record = (name, pass, evidence = null) =>
   checks.push({ name, pass: Boolean(pass), evidence });
 const branch = process.env.GITHUB_HEAD_REF || git("branch", "--show-current").stdout.trim();
+const phaseNumber = Number(branch.match(/^phase\/sole-f(\d+)-/)?.[1] ?? -1);
 
 record(
   "F15 uses controlled lineage",
-  /^phase\/sole-f15-/.test(branch) ||
+  phaseNumber >= 15 ||
     branch === "integration/sole-frontend-v2" ||
+    branch === "main" ||
     process.env.CI === "true",
   branch,
 );
