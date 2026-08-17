@@ -1,176 +1,336 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Link } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertTriangle, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+
+import { getCartQuantityCount, resolveCart } from "@/cart/cart-domain";
+import { CartProductImage } from "@/components/cart/CartProductImage";
+import { Spinner } from "@/components/ui/commerce-primitives";
+import { formatPrice } from "@/data/shoes";
 import { useStore } from "@/store";
-import { SHOES, formatPrice } from "@/data/shoes";
-import { useMemo } from "react";
+
+function restoreCartTriggerFocus() {
+  const triggers = Array.from(document.querySelectorAll<HTMLElement>('[data-cart-trigger="true"]'));
+  const visibleTrigger = triggers.find((element) => {
+    const style = window.getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return (
+      style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0
+    );
+  });
+  (visibleTrigger ?? triggers[0])?.focus({ preventScroll: true });
+}
 
 export function CartDrawer() {
-  const isOpen = useStore((s) => s.isCartOpen);
-  const setOpen = useStore((s) => s.setCartOpen);
-  const cart = useStore((s) => s.cart);
-  const updateQty = useStore((s) => s.updateQty);
-  const removeFromCart = useStore((s) => s.removeFromCart);
+  const isOpen = useStore((state) => state.isCartOpen);
+  const setOpen = useStore((state) => state.setCartOpen);
+  const cart = useStore((state) => state.cart);
+  const hasHydrated = useStore((state) => state.hasHydrated);
+  const updateQty = useStore((state) => state.updateQty);
+  const removeFromCart = useStore((state) => state.removeFromCart);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
+  const closeRef = useRef<HTMLButtonElement | null>(null);
+  const [announcement, setAnnouncement] = useState("");
 
-  const items = useMemo(
-    () =>
-      cart
-        .map((c) => {
-          const shoe = SHOES.find((s) => s.id === c.id);
-          return shoe ? { ...c, shoe } : null;
-        })
-        .filter(Boolean) as Array<{ id: number; size: number; qty: number; shoe: (typeof SHOES)[number] }>,
-    [cart],
-  );
-
+  const items = useMemo(() => resolveCart(cart), [cart]);
+  const itemCount = getCartQuantityCount(cart);
   const subtotal = items.reduce(
-    (acc, i) => acc + (i.shoe.sale_price ?? i.shoe.price) * i.qty,
+    (total, item) =>
+      total + (item.status === "ready" && item.unitPrice ? item.unitPrice * item.qty : 0),
     0,
   );
+  const hasBlockingIssues = items.some((item) => item.status !== "ready");
+
+  const removeItem = (id: number, size: number, label: string) => {
+    removeFromCart(id, size);
+    setAnnouncement(`${label} از سبد حذف شد.`);
+    window.requestAnimationFrame(() => titleRef.current?.focus({ preventScroll: true }));
+  };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setOpen(false)}
-            className="fixed inset-0 z-[60] bg-ink/70 backdrop-blur-sm"
-          />
-          <motion.aside
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 320, damping: 36 }}
-            className="fixed top-0 right-0 bottom-0 z-[61] w-full sm:w-[420px] bg-surface border-l border-border flex flex-col"
-          >
-            <div className="flex items-center justify-between p-5 border-b border-border">
-              <div>
-                <div className="eyebrow text-neon">Your Bag</div>
-                <div className="font-display font-black text-2xl">
-                  {items.length} <span className="text-muted-foreground text-base font-normal">آیتم</span>
-                </div>
-              </div>
-              <button
-                onClick={() => setOpen(false)}
-                className="w-9 h-9 rounded-full bg-ink hover:bg-neon hover:text-ink flex items-center justify-center transition"
-                aria-label="Close"
+    <DialogPrimitive.Root open={isOpen} onOpenChange={setOpen}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay
+          data-foundation-overlay="cart"
+          className="fixed inset-0 z-[var(--z-overlay)] bg-overlay backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 motion-reduce:animate-none"
+        />
+        <DialogPrimitive.Content
+          data-foundation-dialog="cart"
+          data-foundation-shared
+          data-testid="cart-drawer"
+          dir="rtl"
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            closeRef.current?.focus({ preventScroll: true });
+          }}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            restoreCartTriggerFocus();
+          }}
+          className="fixed inset-y-0 inset-inline-end-0 z-[var(--z-modal)] flex w-full max-w-full flex-col border-s border-border bg-surface shadow-[var(--shadow-overlay)] outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left motion-reduce:animate-none sm:w-[28rem]"
+        >
+          <div className="flex items-start justify-between gap-3 border-b border-border p-4 sm:p-5">
+            <div className="min-w-0">
+              <p className="eyebrow text-primary">Frontend Cart</p>
+              <DialogPrimitive.Title
+                ref={titleRef}
+                tabIndex={-1}
+                className="mt-1 font-display text-2xl font-black outline-none"
               >
-                <X size={16} />
-              </button>
+                سبد خرید نمایشی
+              </DialogPrimitive.Title>
+              <DialogPrimitive.Description className="mt-1 font-fa text-xs leading-5 text-muted-foreground">
+                کالاهای انتخاب‌شده روی همین دستگاه نگهداری می‌شوند؛ سفارش، ارسال و پرداخت واقعی متصل
+                نیستند.
+              </DialogPrimitive.Description>
             </div>
+            <DialogPrimitive.Close asChild>
+              <button
+                ref={closeRef}
+                type="button"
+                className="flex size-11 shrink-0 items-center justify-center rounded-full bg-background transition-colors hover:bg-primary hover:text-primary-foreground"
+                aria-label="بستن سبد خرید"
+              >
+                <X aria-hidden="true" size={18} />
+              </button>
+            </DialogPrimitive.Close>
+          </div>
 
-            {items.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center px-8 gap-4">
-                <div className="w-20 h-20 rounded-full bg-ink flex items-center justify-center">
-                  <ShoppingBag size={32} className="text-muted-foreground" />
-                </div>
-                <div>
-                  <div className="font-display font-bold text-xl mb-1">کیفت خالیه!</div>
-                  <div className="text-muted-foreground text-sm">برو یه چیز باحال پیدا کن</div>
-                </div>
-                <Link
-                  to="/products"
-                  onClick={() => setOpen(false)}
-                  className="btn-hype mt-2"
-                >
-                  Shop Now →
-                </Link>
+          <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+            {announcement}
+          </div>
+
+          {!hasHydrated ? (
+            <div
+              data-testid="cart-drawer-hydrating"
+              className="flex flex-1 items-center justify-center p-8"
+            >
+              <Spinner label="در حال بازیابی سبد ذخیره‌شده" />
+            </div>
+          ) : items.length === 0 ? (
+            <div className="flex flex-1 flex-col items-center justify-center gap-4 px-8 py-12 text-center">
+              <div className="flex size-20 items-center justify-center rounded-full bg-background">
+                <ShoppingBag aria-hidden="true" size={32} className="text-muted-foreground" />
               </div>
-            ) : (
-              <>
-                <div className="flex-1 overflow-y-auto p-5 space-y-4">
-                  <AnimatePresence initial={false}>
-                    {items.map((i) => (
-                      <motion.div
-                        key={`${i.id}-${i.size}`}
+              <div>
+                <h2 className="mb-1 font-display text-xl font-bold">سبد خالی است</h2>
+                <p className="text-sm text-muted-foreground">
+                  برای شروع یکی از محصولات Dataset فعلی را انتخاب کنید.
+                </p>
+              </div>
+              <Link to="/products" onClick={() => setOpen(false)} className="btn-hype mt-2">
+                مشاهده محصولات
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-3 text-sm">
+                  <span className="text-muted-foreground">تعداد کالا</span>
+                  <span className="font-mono-num" data-testid="cart-drawer-count">
+                    {itemCount}
+                  </span>
+                </div>
+
+                {hasBlockingIssues ? (
+                  <div
+                    role="status"
+                    className="flex gap-3 rounded-xl border border-warning/50 bg-warning/10 p-3 font-fa text-xs leading-6"
+                    data-testid="cart-drawer-stale-warning"
+                  >
+                    <AlertTriangle
+                      aria-hidden="true"
+                      className="mt-1 size-4 shrink-0 text-warning"
+                    />
+                    <p>
+                      بعضی اقلام ذخیره‌شده با Dataset فعلی هماهنگ نیستند. آن‌ها را حذف یا در صفحه
+                      سبد بررسی کنید؛ Checkout تا رفع مشکل غیرفعال می‌ماند.
+                    </p>
+                  </div>
+                ) : null}
+
+                <AnimatePresence initial={false}>
+                  {items.map((item) => {
+                    const label = item.shoe
+                      ? `${item.shoe.brand} ${item.shoe.name}`
+                      : `محصول با شناسه ${item.id}`;
+                    return (
+                      <motion.article
+                        key={item.key}
+                        data-testid="cart-drawer-item"
+                        data-cart-status={item.status}
                         layout
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, x: 80 }}
-                        className="flex gap-3 bg-ink rounded-2xl p-3 border border-border"
+                        exit={{ opacity: 0, x: 32 }}
+                        transition={{ duration: 0.2 }}
+                        className="relative flex min-w-0 gap-3 rounded-2xl border border-border bg-background p-3 motion-reduce:transform-none"
                       >
-                        <Link
-                          to="/product/$id"
-                          params={{ id: String(i.id) }}
-                          onClick={() => setOpen(false)}
-                          className="shrink-0"
-                        >
-                          <img
-                            src={i.shoe.image}
-                            alt={i.shoe.name}
-                            className="w-20 h-20 rounded-xl object-cover bg-surface-2"
-                          />
-                        </Link>
-                        <div className="flex-1 min-w-0">
-                          <div className="eyebrow text-muted-foreground">{i.shoe.brand}</div>
-                          <div className="font-display font-bold text-sm leading-tight truncate">
-                            {i.shoe.name}
+                        {item.shoe ? (
+                          <Link
+                            to="/product/$id"
+                            params={{ id: String(item.id) }}
+                            onClick={() => setOpen(false)}
+                            className="size-20 shrink-0 overflow-hidden rounded-xl bg-surface-elevated"
+                            aria-label={`مشاهده ${label}`}
+                          >
+                            <CartProductImage
+                              src={item.shoe.image}
+                              alt={label}
+                              testId="cart-drawer-image"
+                              className="size-20 object-cover"
+                            />
+                          </Link>
+                        ) : (
+                          <div
+                            role="img"
+                            aria-label="تصویر محصول در دسترس نیست"
+                            className="grid size-20 shrink-0 place-items-center rounded-xl bg-surface-elevated font-display text-xs font-black text-muted-foreground"
+                          >
+                            SOLE
                           </div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            سایز {i.size} · {i.shoe.colorway}
-                          </div>
-                          <div className="flex items-center justify-between mt-2">
-                            <div className="flex items-center gap-1 bg-surface rounded-full p-1">
+                        )}
+
+                        <div className="min-w-0 flex-1 pe-10">
+                          <p className="eyebrow text-muted-foreground">
+                            {item.shoe?.brand ?? "Stale item"}
+                          </p>
+                          <p
+                            className="break-words font-display text-sm font-bold leading-5"
+                            dir="auto"
+                          >
+                            {item.shoe?.name ?? label}
+                          </p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            سایز <bdi dir="ltr">{item.size}</bdi>
+                            {item.shoe ? (
+                              <>
+                                {" "}
+                                · <bdi dir="ltr">{item.shoe.colorway}</bdi>
+                              </>
+                            ) : null}
+                          </p>
+
+                          {item.blockingMessage ? (
+                            <p
+                              className="mt-2 rounded-lg border border-warning/40 bg-warning/10 p-2 font-fa text-xs leading-5 text-warning"
+                              data-testid="cart-item-issue"
+                            >
+                              {item.blockingMessage}
+                            </p>
+                          ) : null}
+
+                          <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                            <div
+                              className="flex items-center rounded-full bg-surface p-1"
+                              role="group"
+                              aria-label={`تعداد ${label}`}
+                            >
                               <button
-                                onClick={() => updateQty(i.id, i.size, i.qty - 1)}
-                                className="w-6 h-6 rounded-full hover:bg-neon hover:text-ink flex items-center justify-center"
-                                aria-label="Decrease"
+                                type="button"
+                                onClick={() => updateQty(item.id, item.size, item.qty - 1)}
+                                className="flex size-11 items-center justify-center rounded-full hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
+                                aria-label={`کاهش تعداد ${label}`}
+                                disabled={item.status !== "ready" || item.qty <= 1}
                               >
-                                <Minus size={12} />
+                                <Minus aria-hidden="true" size={14} />
                               </button>
-                              <span className="w-6 text-center font-mono-num text-sm">{i.qty}</span>
-                              <button
-                                onClick={() => updateQty(i.id, i.size, i.qty + 1)}
-                                className="w-6 h-6 rounded-full hover:bg-neon hover:text-ink flex items-center justify-center"
-                                aria-label="Increase"
+                              <output
+                                aria-live="polite"
+                                className="min-w-9 text-center font-mono-num text-sm"
                               >
-                                <Plus size={12} />
+                                {item.qty}
+                              </output>
+                              <button
+                                type="button"
+                                onClick={() => updateQty(item.id, item.size, item.qty + 1)}
+                                className="flex size-11 items-center justify-center rounded-full hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
+                                aria-label={`افزایش تعداد ${label}`}
+                                disabled={item.status !== "ready"}
+                              >
+                                <Plus aria-hidden="true" size={14} />
                               </button>
                             </div>
-                            <div className="font-mono-num font-semibold text-sm">
-                              {formatPrice((i.shoe.sale_price ?? i.shoe.price) * i.qty)}
-                            </div>
+                            {item.status === "ready" && item.unitPrice ? (
+                              <div className="font-mono-num text-sm font-semibold">
+                                {formatPrice(item.unitPrice * item.qty)}
+                              </div>
+                            ) : (
+                              <span className="font-fa text-xs text-muted-foreground">
+                                قیمت قابل بررسی نیست
+                              </span>
+                            )}
                           </div>
                         </div>
-                        <button
-                          onClick={() => removeFromCart(i.id, i.size)}
-                          className="self-start text-muted-foreground hover:text-destructive transition"
-                          aria-label="Remove"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </div>
 
-                <div className="border-t border-border p-5 space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">جمع کل</span>
-                    <span className="font-mono-num font-bold text-lg">{formatPrice(subtotal)}</span>
-                  </div>
+                        <button
+                          type="button"
+                          onClick={() => removeItem(item.id, item.size, label)}
+                          className="absolute inset-inline-end-1.5 top-1.5 flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-danger/10 hover:text-danger"
+                          aria-label={`حذف ${label} از سبد`}
+                        >
+                          <Trash2 aria-hidden="true" size={16} />
+                        </button>
+                      </motion.article>
+                    );
+                  })}
+                </AnimatePresence>
+              </div>
+
+              <div className="safe-area-bottom space-y-3 border-t border-border p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-3 text-sm">
+                  <span className="text-muted-foreground">جمع جزء اقلام قابل بررسی</span>
+                  <span
+                    className="font-mono-num text-lg font-bold"
+                    data-testid="cart-drawer-subtotal"
+                  >
+                    {formatPrice(subtotal)}
+                  </span>
+                </div>
+                <p className="font-fa text-[11px] leading-5 text-muted-foreground">
+                  هزینه/روش ارسال، مالیات احتمالی و مبلغ نهایی بدون سرویس‌های واقعی محاسبه نمی‌شوند.
+                </p>
+
+                {!hasBlockingIssues ? (
                   <Link
-                    to="/cart"
+                    to="/checkout"
                     onClick={() => setOpen(false)}
                     className="btn-hype w-full justify-center"
+                    data-testid="cart-drawer-checkout"
                   >
-                    مشاهده سبد →
+                    ادامه به Checkout نمایشی
                   </Link>
+                ) : (
                   <button
-                    onClick={() => setOpen(false)}
-                    className="block w-full text-center text-xs text-muted-foreground hover:text-neon transition"
+                    type="button"
+                    disabled
+                    className="min-h-11 w-full rounded-full border border-border bg-interactive px-4 font-fa text-sm text-muted-foreground"
                   >
-                    ادامه خرید
+                    رفع مشکل سبد برای ادامه
                   </button>
-                </div>
-              </>
-            )}
-          </motion.aside>
-        </>
-      )}
-    </AnimatePresence>
+                )}
+
+                <Link
+                  to="/cart"
+                  onClick={() => setOpen(false)}
+                  className="flex min-h-11 w-full items-center justify-center rounded-full border border-border px-4 font-fa text-sm font-bold transition-colors hover:border-primary"
+                >
+                  مشاهده صفحه سبد
+                </Link>
+                <DialogPrimitive.Close asChild>
+                  <button
+                    type="button"
+                    className="block min-h-11 w-full rounded-md text-center font-fa text-xs text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    ادامه مشاهده محصولات
+                  </button>
+                </DialogPrimitive.Close>
+              </div>
+            </>
+          )}
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }

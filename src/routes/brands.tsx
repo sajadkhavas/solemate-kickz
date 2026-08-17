@@ -1,161 +1,214 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { SearchX, Shapes } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/sections/Footer";
-import { MobileBottomNav } from "@/components/MobileBottomNav";
-import { BRANDS, BRAND_LOGO_SLUGS, SHOES } from "@/data/shoes";
+import { Button } from "@/components/ui/button";
+import { EmptyState, SearchInput } from "@/components/ui/commerce-primitives";
+import { BRANDS, SHOES } from "@/data/shoes";
 
 export const Route = createFileRoute("/brands")({
   head: () => ({
     meta: [
-      { title: "Brands — SOLE" },
-      { name: "description", content: "همه برندهای SOLE — از Nike و Jordan تا Off-White و Stone Island." },
-      { property: "og:title", content: "Brands — SOLE" },
-      { property: "og:description", content: "تمام برندهای موجود در فروشگاه SOLE." },
+      { title: "برندهای Dataset — SOLE" },
+      {
+        name: "description",
+        content:
+          "فهرست یکتای برندهای موجود در داده نمایشی SOLE همراه با تعداد رکوردهای واقعی Dataset.",
+      },
+      { property: "og:title", content: "برندهای Dataset — SOLE" },
+      {
+        property: "og:description",
+        content: "مرور برندهایی که واقعاً در Dataset نمایشی Repository حضور دارند.",
+      },
     ],
   }),
   component: BrandsPage,
 });
 
-function BrandsPage() {
-  const [q, setQ] = useState("");
-  const list = useMemo(() => {
-    const term = q.trim().toLowerCase();
-    return BRANDS
-      .map((b) => ({
-        name: b,
-        count: SHOES.filter((s) => s.brand === b).length,
-        slug: BRAND_LOGO_SLUGS[b],
-        sample: SHOES.find((s) => s.brand === b)?.image,
-      }))
-      .filter((b) => !term || b.name.toLowerCase().includes(term))
-      .sort((a, b) => b.count - a.count);
-  }, [q]);
+const BRAND_RECORDS = [...new Set(BRANDS)]
+  .map((name) => {
+    const products = SHOES.filter((shoe) => shoe.brand === name);
+    return {
+      name,
+      count: products.length,
+      sample: products[0]?.image,
+    };
+  })
+  .sort((first, second) => second.count - first.count || first.name.localeCompare(second.name));
 
-  const featured = list.slice(0, 4);
-  const rest = list.slice(4);
+function BrandsPage() {
+  const [query, setQuery] = useState("");
+  const filteredBrands = useMemo(() => {
+    const term = query.trim().toLocaleLowerCase("en");
+    if (!term) return BRAND_RECORDS;
+    return BRAND_RECORDS.filter((brand) => brand.name.toLocaleLowerCase("en").includes(term));
+  }, [query]);
 
   return (
-    <div className="bg-ink text-foreground min-h-screen">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      <section className="px-6 pt-12 pb-10 border-b border-border relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.06] [background-image:radial-gradient(circle_at_1px_1px,#c8f135_1px,transparent_0)] [background-size:24px_24px]" />
-        <div className="max-w-[1400px] mx-auto relative">
-          <div className="eyebrow text-neon mb-3">The Family</div>
-          <h1 className="font-display font-black uppercase text-5xl md:text-7xl leading-none">
-            Our <span className="text-neon">Brands</span>
-          </h1>
-          <p className="font-fa text-muted-foreground mt-3 max-w-xl">
-            از کلاسیک‌های Nike و Jordan تا تکنیکال‌های Salomon و لاکچری‌های Off-White — همه زیر یک سقف.
-          </p>
+      <main className="outline-none">
+        <section className="border-b border-border px-[var(--space-page-gutter)] py-12 md:py-16">
+          <div className="mx-auto max-w-[80rem]">
+            <div className="max-w-3xl">
+              <div className="eyebrow mb-3 text-primary">Dataset inventory</div>
+              <h1 className="font-display text-[length:var(--text-h1)] font-black leading-[1.05] tracking-tight">
+                برندهای موجود در داده نمونه
+              </h1>
+              <p className="mt-5 max-w-2xl font-fa leading-8 text-muted-foreground">
+                این صفحه فقط نام‌هایی را نمایش می‌دهد که در Dataset فعلی Repository وجود دارند. حضور
+                یک نام در این فهرست به معنای همکاری، نمایندگی، موجودی تجاری یا اصالت‌سنجی فروشگاه
+                نیست.
+              </p>
+            </div>
 
-          <div className="mt-6 max-w-md flex items-center gap-2 bg-surface border border-border rounded-full px-4 py-2.5 focus-within:border-neon">
-            <Search size={16} className="text-muted-foreground" />
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="جستجوی برند..."
-              className="bg-transparent outline-none flex-1 text-sm font-fa"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Featured */}
-      {featured.length > 0 && (
-        <section className="px-6 py-12">
-          <div className="max-w-[1400px] mx-auto">
-            <div className="eyebrow text-neon mb-4">Featured</div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {featured.map((b, i) => (
-                <motion.div
-                  key={b.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.05 }}
-                >
-                  <Link
-                    to="/products"
-                    search={{ brand: b.name } as never}
-                    className="group block relative overflow-hidden rounded-2xl border border-border bg-surface hover:border-neon transition aspect-[4/5]"
-                  >
-                    {b.sample && (
-                      <img
-                        src={b.sample}
-                        alt=""
-                        className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-700"
-                      />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
-                    <div className="absolute inset-0 p-5 flex flex-col justify-between">
-                      <div className="flex items-center justify-between">
-                        {b.slug ? (
-                          <img src={`https://cdn.simpleicons.org/${b.slug}/ffffff`} alt={`${b.name} logo`} className="h-8" />
-                        ) : (
-                          <div className="font-display font-black text-2xl">{b.name}</div>
-                        )}
-                        <span className="font-mono-num text-xs text-muted-foreground">{b.count} styles</span>
-                      </div>
-                      <div>
-                        <div className="font-display font-black text-3xl group-hover:text-neon transition-colors">{b.name}</div>
-                        <div className="eyebrow text-muted-foreground mt-1 group-hover:text-neon transition-colors">Shop →</div>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
+            <div className="mt-8 max-w-xl">
+              <label htmlFor="brand-search" className="mb-2 block text-sm font-medium">
+                جستجو میان برندهای Dataset
+              </label>
+              <SearchInput
+                id="brand-search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                onClear={() => setQuery("")}
+                clearLabel="پاک‌کردن جستجوی برند"
+                placeholder="برای نمونه: Nike یا Adidas"
+                autoComplete="off"
+                inputMode="search"
+                dir="auto"
+                aria-describedby="brand-search-status"
+              />
+              <p
+                id="brand-search-status"
+                className="mt-2 text-sm text-muted-foreground"
+                aria-live="polite"
+              >
+                {filteredBrands.length} برند از {BRAND_RECORDS.length} برند Dataset نمایش داده
+                می‌شود.
+              </p>
             </div>
           </div>
         </section>
-      )}
 
-      {/* All brands grid */}
-      <section className="px-6 pb-20">
-        <div className="max-w-[1400px] mx-auto">
-          <div className="eyebrow text-neon mb-4">All Brands ({list.length})</div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {rest.map((b, i) => (
-              <motion.div
-                key={b.name}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.35, delay: (i % 12) * 0.03 }}
-              >
-                <Link
-                  to="/products"
-                  search={{ brand: b.name } as never}
-                  className="group relative bg-surface border border-border rounded-2xl p-5 hover:border-neon transition-all flex flex-col items-center justify-center min-h-[130px] text-center"
-                >
-                  {b.slug ? (
-                    <img
-                      src={`https://cdn.simpleicons.org/${b.slug}/ffffff`}
-                      alt={`${b.name} logo`}
-                      loading="lazy"
-                      className="h-10 w-auto max-w-[80%] object-contain opacity-80 group-hover:opacity-100 transition"
-                    />
-                  ) : (
-                    <div className="font-display font-bold text-base md:text-lg leading-tight group-hover:text-neon transition-colors">
-                      {b.name}
-                    </div>
-                  )}
-                  <div className="font-mono-num text-xs text-muted-foreground mt-3">{b.count} styles</div>
-                </Link>
-              </motion.div>
-            ))}
+        <section
+          aria-labelledby="brand-grid-heading"
+          className="px-[var(--space-page-gutter)] py-[var(--space-section)]"
+        >
+          <div className="mx-auto max-w-[80rem]">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <div className="eyebrow mb-2 text-primary">Browse</div>
+                <h2 id="brand-grid-heading" className="text-2xl font-bold md:text-3xl">
+                  فهرست یکتای برندها
+                </h2>
+              </div>
+              <p className="max-w-lg font-fa text-sm leading-6 text-muted-foreground">
+                تعداد مدل هر کارت مستقیماً از رکوردهای فعلی <bdi dir="ltr">SHOES</bdi> محاسبه شده
+                است.
+              </p>
+            </div>
+
+            {BRAND_RECORDS.length === 0 ? (
+              <EmptyState
+                className="mt-8"
+                icon={<Shapes className="size-9" />}
+                title="هیچ برندی در Dataset وجود ندارد"
+                description="برای نمایش این صفحه باید ابتدا داده محصول معتبر به Repository اضافه شود."
+              />
+            ) : filteredBrands.length === 0 ? (
+              <EmptyState
+                className="mt-8"
+                icon={<SearchX className="size-9" />}
+                title="برندی با این عبارت پیدا نشد"
+                description="عبارت جستجو را کوتاه‌تر کنید یا فهرست کامل برندهای Dataset را دوباره نمایش دهید."
+                action={
+                  <Button type="button" variant="outline" onClick={() => setQuery("")}>
+                    پاک‌کردن جستجو
+                  </Button>
+                }
+              />
+            ) : (
+              <div className="mt-8 grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                {filteredBrands.map((brand) => (
+                  <BrandCard key={brand.name} brand={brand} />
+                ))}
+              </div>
+            )}
           </div>
-          {list.length === 0 && (
-            <div className="text-center py-16 text-muted-foreground font-fa">برندی پیدا نشد</div>
-          )}
-        </div>
-      </section>
+        </section>
+      </main>
 
       <Footer />
       <MobileBottomNav />
+    </div>
+  );
+}
+
+type BrandRecord = (typeof BRAND_RECORDS)[number];
+
+function BrandCard({ brand }: { brand: BrandRecord }) {
+  return (
+    <Link
+      to="/products"
+      search={{ brand: brand.name } as never}
+      data-brand-name={brand.name}
+      data-product-count={brand.count}
+      className="group relative isolate flex min-h-56 overflow-hidden rounded-[var(--radius-xl)] border border-border bg-surface p-5 transition-[border-color,background-color,transform] duration-200 hover:-translate-y-0.5 hover:border-primary focus-visible:outline-none motion-reduce:transform-none motion-reduce:transition-none"
+      aria-label={`مشاهده ${brand.count} مدل نمونه از ${brand.name}`}
+    >
+      {brand.sample ? (
+        <img
+          src={brand.sample}
+          alt=""
+          width={640}
+          height={640}
+          loading="lazy"
+          onError={(event) => event.currentTarget.remove()}
+          className="absolute inset-0 -z-10 h-full w-full object-cover opacity-15 transition-opacity duration-200 group-hover:opacity-25 motion-reduce:transition-none"
+        />
+      ) : null}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-background/80 to-transparent" />
+
+      <div className="flex w-full flex-col justify-between gap-8">
+        <BrandMark name={brand.name} />
+        <div>
+          <h3 dir="ltr" className="text-left font-display text-2xl font-black leading-tight">
+            {brand.name}
+          </h3>
+          <p className="mt-2 font-fa text-sm text-muted-foreground">
+            <bdi dir="ltr" className="font-mono-num text-foreground">
+              {brand.count}
+            </bdi>{" "}
+            مدل در داده نمونه
+          </p>
+          <span className="mt-4 inline-flex min-h-11 items-center text-sm font-medium text-primary">
+            مشاهده در کاتالوگ
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function BrandMark({ name }: { name: string }) {
+  const initials = name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 3);
+
+  return (
+    <div
+      dir="ltr"
+      aria-label={`نشان متنی ${name}`}
+      data-brand-mark="text"
+      className="flex min-h-14 w-fit min-w-14 items-center justify-center rounded-[var(--radius-lg)] border border-border bg-background/80 px-3 font-display text-lg font-black text-primary"
+    >
+      {initials}
     </div>
   );
 }

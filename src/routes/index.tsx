@@ -1,40 +1,70 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Navbar } from "@/components/Navbar";
-import { Hero } from "@/components/sections/Hero";
-import { Marquee } from "@/components/sections/Marquee";
-import { FeaturedDrops } from "@/components/sections/FeaturedDrops";
-import { Categories } from "@/components/sections/Categories";
-import { BrandWall } from "@/components/sections/BrandWall";
-import { HypeSection } from "@/components/sections/HypeSection";
-import { TrustBadges } from "@/components/sections/TrustBadges";
-import { Newsletter } from "@/components/sections/Newsletter";
-import { Footer } from "@/components/sections/Footer";
+import type { ReactNode } from "react";
+
 import { MobileBottomNav } from "@/components/MobileBottomNav";
-import { RevealOnScroll } from "@/components/RevealOnScroll";
+import { Navbar } from "@/components/Navbar";
+import { BrandWall } from "@/components/sections/BrandWall";
+import { Categories } from "@/components/sections/Categories";
+import { FeaturedDrops } from "@/components/sections/FeaturedDrops";
+import { Footer } from "@/components/sections/Footer";
+import { Hero } from "@/components/sections/Hero";
+import { HypeSection } from "@/components/sections/HypeSection";
+import { MerchandisingShowcase } from "@/components/sections/MerchandisingShowcase";
+import { Newsletter } from "@/components/sections/Newsletter";
+import { QuickShopPaths } from "@/components/sections/QuickShopPaths";
+import { TrustBadges } from "@/components/sections/TrustBadges";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SOLE — کفش لوکس و استریت‌ویر" },
-      { name: "description", content: "Nike, Jordan, Adidas, Yeezy و بهترین برندهای دنیا. ۲۳۲+ مدل." },
+      { title: "SOLE — ویترین کفش و استریت‌ویر" },
+      {
+        name: "description",
+        content:
+          "تجربه نمایشی فارسی و RTL برای کشف مدل‌ها، دسته‌ها و برندهای موجود در پروژه SOLE. قیمت و موجودی فعلی نمونه هستند.",
+      },
     ],
   }),
   component: Home,
 });
 
+function PerfSection({ children }: { children: ReactNode }) {
+  return (
+    <div
+      data-f12-content-visibility="auto"
+      className="[contain-intrinsic-size:auto_900px] [content-visibility:auto]"
+    >
+      {children}
+    </div>
+  );
+}
+
 function Home() {
   return (
-    <div className="bg-ink text-foreground min-h-screen">
+    <div className="min-h-screen bg-ink text-foreground">
       <Navbar />
-      <main>
+      <main data-testid="home-main">
         <Hero />
-        <Marquee />
-        <RevealOnScroll direction="up"><FeaturedDrops /></RevealOnScroll>
-        <RevealOnScroll direction="scale"><Categories /></RevealOnScroll>
-        <RevealOnScroll direction="left"><HypeSection /></RevealOnScroll>
-        <RevealOnScroll direction="up" delay={0.05}><BrandWall /></RevealOnScroll>
-        <RevealOnScroll direction="up"><TrustBadges /></RevealOnScroll>
-        <RevealOnScroll direction="up"><Newsletter /></RevealOnScroll>
+        <QuickShopPaths />
+        <FeaturedDrops />
+        <PerfSection>
+          <MerchandisingShowcase />
+        </PerfSection>
+        <PerfSection>
+          <Categories />
+        </PerfSection>
+        <PerfSection>
+          <BrandWall />
+        </PerfSection>
+        <PerfSection>
+          <HypeSection />
+        </PerfSection>
+        <PerfSection>
+          <TrustBadges />
+        </PerfSection>
+        <PerfSection>
+          <Newsletter />
+        </PerfSection>
       </main>
       <Footer />
       <MobileBottomNav />

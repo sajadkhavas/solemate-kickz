@@ -1,222 +1,355 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { useMemo, useState } from "react";
-import { Minus, Plus, Trash2, ShoppingBag, Tag, ShieldCheck, Truck, RotateCcw } from "lucide-react";
-import { toast } from "sonner";
+import { AlertTriangle, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+
+import { getCartQuantityCount, resolveCart } from "@/cart/cart-domain";
+import { CartProductImage } from "@/components/cart/CartProductImage";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/sections/Footer";
-import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { EmptyState, Spinner } from "@/components/ui/commerce-primitives";
+import { formatPrice } from "@/data/shoes";
 import { useStore } from "@/store";
-import { SHOES, formatPrice } from "@/data/shoes";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
-    meta: [{ title: "سبد خرید — SOLE" }],
+    meta: [{ title: "سبد خرید نمایشی — SOLE" }, { name: "robots", content: "noindex, follow" }],
   }),
   component: CartPage,
 });
 
 function CartPage() {
-  const cart = useStore((s) => s.cart);
-  const updateQty = useStore((s) => s.updateQty);
-  const removeFromCart = useStore((s) => s.removeFromCart);
+  const cart = useStore((state) => state.cart);
+  const hasHydrated = useStore((state) => state.hasHydrated);
+  const updateQty = useStore((state) => state.updateQty);
+  const removeFromCart = useStore((state) => state.removeFromCart);
+  const clearCart = useStore((state) => state.clearCart);
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
+  const [announcement, setAnnouncement] = useState("");
 
-  const items = useMemo(
-    () =>
-      cart
-        .map((c) => {
-          const shoe = SHOES.find((s) => s.id === c.id);
-          return shoe ? { ...c, shoe } : null;
-        })
-        .filter(Boolean) as Array<{ id: number; size: number; qty: number; shoe: (typeof SHOES)[number] }>,
-    [cart],
-  );
-
-  const subtotal = items.reduce((acc, i) => acc + i.shoe.price * i.qty, 0);
-  const discountTotal = items.reduce(
-    (acc, i) => acc + (i.shoe.sale_price ? (i.shoe.price - i.shoe.sale_price) * i.qty : 0),
+  const items = useMemo(() => resolveCart(cart), [cart]);
+  const itemCount = getCartQuantityCount(cart);
+  const subtotal = items.reduce(
+    (total, item) =>
+      total + (item.status === "ready" && item.unitPrice ? item.unitPrice * item.qty : 0),
     0,
   );
-  const [coupon, setCoupon] = useState("");
-  const [extra, setExtra] = useState(0);
-  const afterDiscount = subtotal - discountTotal - extra;
-  const tax = Math.round(afterDiscount * 0.09);
-  const total = afterDiscount + tax;
+  const hasBlockingIssues = items.some((item) => item.status !== "ready");
 
-  function applyCoupon() {
-    if (coupon.trim().toUpperCase() === "SOLE10") {
-      setExtra(Math.round(afterDiscount * 0.1));
-      toast.success("کد تخفیف اعمال شد -۱۰٪");
-    } else if (coupon.trim()) {
-      toast.error("کد تخفیف نامعتبر است");
-    }
-  }
+  const removeItem = (id: number, size: number, label: string) => {
+    removeFromCart(id, size);
+    setAnnouncement(`${label} از سبد حذف شد.`);
+    window.requestAnimationFrame(() => headingRef.current?.focus({ preventScroll: true }));
+  };
+
+  const clearAll = () => {
+    clearCart();
+    setAnnouncement("همه اقلام از سبد محلی حذف شدند.");
+    window.requestAnimationFrame(() => headingRef.current?.focus({ preventScroll: true }));
+  };
 
   return (
-    <div className="bg-ink min-h-screen">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      <main className="max-w-[1400px] mx-auto px-6 py-12">
-        <div className="eyebrow text-neon mb-2">Your Bag</div>
-        <h1 className="font-display font-black text-4xl md:text-6xl uppercase mb-10">
-          سبد خرید <span className="text-muted-foreground font-mono-num text-3xl">({items.length})</span>
-        </h1>
-
-        {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center py-20 gap-5">
-            <div className="w-24 h-24 rounded-full bg-surface flex items-center justify-center">
-              <ShoppingBag size={40} className="text-muted-foreground" />
-            </div>
-            <div>
-              <h2 className="font-display font-bold text-2xl mb-2">کیفت خالیه!</h2>
-              <p className="text-muted-foreground">برو یه چیز باحال پیدا کن</p>
-            </div>
-            <Link to="/products" className="btn-hype">Shop Now →</Link>
+      <main
+        data-testid="f7-cart-page"
+        className="page-container-wide pb-36 pt-8 md:pb-16"
+        aria-labelledby="cart-page-heading"
+      >
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="eyebrow text-primary">Frontend Cart</p>
+            <h1
+              id="cart-page-heading"
+              ref={headingRef}
+              tabIndex={-1}
+              className="mt-2 font-display text-4xl font-black tracking-tight outline-none sm:text-5xl md:text-6xl"
+            >
+              سبد خرید
+            </h1>
+            <p className="mt-3 max-w-2xl font-fa text-sm leading-7 text-muted-foreground">
+              این سبد روی همین دستگاه ذخیره می‌شود. Checkout این فاز فقط برای بررسی اطلاعات است و به
+              سفارش، ارسال یا پرداخت واقعی متصل نیست.
+            </p>
           </div>
-        ) : (
-          <div className="grid lg:grid-cols-[1.7fr_1fr] gap-8">
-            {/* Items */}
-            <div className="space-y-4">
-              <AnimatePresence initial={false}>
-                {items.map((i) => (
-                  <motion.div
-                    key={`${i.id}-${i.size}`}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: 100 }}
-                    className="bg-surface border border-border rounded-2xl p-4 flex gap-4"
-                  >
-                    <Link
-                      to="/product/$id"
-                      params={{ id: String(i.id) }}
-                      className="shrink-0"
-                    >
-                      <img
-                        src={i.shoe.image}
-                        alt={i.shoe.name}
-                        className="w-28 h-28 md:w-32 md:h-32 rounded-xl object-cover bg-ink"
-                      />
-                    </Link>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start gap-3">
-                        <div className="min-w-0">
-                          <div className="eyebrow text-muted-foreground">{i.shoe.brand}</div>
-                          <Link
-                            to="/product/$id"
-                            params={{ id: String(i.id) }}
-                            className="font-display font-bold text-lg leading-tight hover:text-neon truncate block"
-                          >
-                            {i.shoe.name}
-                          </Link>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {i.shoe.colorway} · سایز {i.size}
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => removeFromCart(i.id, i.size)}
-                          className="text-muted-foreground hover:text-destructive transition shrink-0"
-                          aria-label="Remove"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-
-                      <div className="flex items-end justify-between mt-4">
-                        <div className="flex items-center gap-1 bg-ink rounded-full p-1">
-                          <button
-                            onClick={() => updateQty(i.id, i.size, i.qty - 1)}
-                            className="w-7 h-7 rounded-full hover:bg-neon hover:text-ink flex items-center justify-center"
-                            aria-label="Decrease"
-                          >
-                            <Minus size={12} />
-                          </button>
-                          <span className="w-8 text-center font-mono-num text-sm">{i.qty}</span>
-                          <button
-                            onClick={() => updateQty(i.id, i.size, i.qty + 1)}
-                            className="w-7 h-7 rounded-full hover:bg-neon hover:text-ink flex items-center justify-center"
-                            aria-label="Increase"
-                          >
-                            <Plus size={12} />
-                          </button>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-mono-num font-bold text-lg">
-                            {formatPrice((i.shoe.sale_price ?? i.shoe.price) * i.qty)}
-                          </div>
-                          {i.shoe.sale_price && (
-                            <div className="font-mono-num text-xs text-muted-foreground line-through">
-                              {formatPrice(i.shoe.price * i.qty)}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+          {hasHydrated && items.length > 0 ? (
+            <div className="rounded-full border border-border bg-surface px-4 py-2 font-fa text-sm">
+              <span className="text-muted-foreground">تعداد: </span>
+              <span className="font-mono-num" data-testid="cart-page-count">
+                {itemCount}
+              </span>
             </div>
+          ) : null}
+        </div>
 
-            {/* Summary */}
-            <aside className="lg:sticky lg:top-24 self-start bg-surface border border-border rounded-2xl p-6 space-y-5 h-fit">
-              <div className="eyebrow text-neon">Order Summary</div>
+        <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+          {announcement}
+        </div>
 
-              <div className="space-y-2 text-sm">
-                <Row label="قیمت کالاها" value={formatPrice(subtotal)} />
-                {discountTotal > 0 && (
-                  <Row label="تخفیف" value={`-${formatPrice(discountTotal)}`} accent="text-neon" />
-                )}
-                {extra > 0 && (
-                  <Row label="کد تخفیف" value={`-${formatPrice(extra)}`} accent="text-neon" />
-                )}
-                <Row label="هزینه ارسال" value="رایگان 🎉" accent="text-neon" />
-                <Row label="مالیات ۹٪" value={formatPrice(tax)} />
-              </div>
-
-              <div className="border-t border-border pt-4 flex justify-between items-baseline">
-                <span className="font-display font-bold">جمع کل</span>
-                <span className="font-mono-num font-black text-2xl text-neon">{formatPrice(total)}</span>
-              </div>
-
-              {/* Coupon */}
-              <div className="flex gap-2">
-                <div className="flex-1 relative">
-                  <Tag size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    value={coupon}
-                    onChange={(e) => setCoupon(e.target.value)}
-                    placeholder="کد تخفیف"
-                    className="w-full bg-ink border border-border rounded-full pr-9 pl-3 py-2.5 text-sm focus:border-neon outline-none"
-                  />
-                </div>
+        {!hasHydrated ? (
+          <div
+            data-testid="cart-page-hydrating"
+            className="mt-10 flex min-h-72 items-center justify-center rounded-2xl border border-border bg-surface"
+          >
+            <Spinner label="در حال بازیابی سبد ذخیره‌شده" />
+          </div>
+        ) : items.length === 0 ? (
+          <EmptyState
+            data-testid="cart-empty-state"
+            className="mt-10 min-h-[24rem]"
+            icon={<ShoppingBag className="size-10" />}
+            title="سبد خرید خالی است"
+            description="محصول و سایز موردنظر را انتخاب کنید تا اینجا نمایش داده شود."
+            action={
+              <Link to="/products" className="btn-hype">
+                مشاهده محصولات
+              </Link>
+            }
+          />
+        ) : (
+          <div className="mt-10 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.65fr)_minmax(20rem,0.85fr)]">
+            <section aria-labelledby="cart-items-heading" className="min-w-0">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <h2 id="cart-items-heading" className="font-display text-xl font-bold">
+                  اقلام انتخاب‌شده
+                </h2>
                 <button
-                  onClick={applyCoupon}
-                  className="px-4 rounded-full bg-ink border border-border hover:border-neon text-sm font-display uppercase tracking-wider"
+                  type="button"
+                  onClick={clearAll}
+                  className="min-h-11 rounded-full px-4 font-fa text-xs text-muted-foreground underline underline-offset-4 transition-colors hover:text-danger"
+                  data-testid="cart-clear"
                 >
-                  اعمال
+                  پاک‌کردن سبد محلی
                 </button>
               </div>
 
-              <button className="btn-hype w-full justify-center h-14">
-                تکمیل خرید →
-              </button>
-              <Link
-                to="/products"
-                className="block text-center text-xs text-muted-foreground hover:text-neon"
-              >
-                ادامه خرید
-              </Link>
+              {hasBlockingIssues ? (
+                <div
+                  role="status"
+                  data-testid="cart-stale-warning"
+                  className="mb-4 flex gap-3 rounded-2xl border border-warning/50 bg-warning/10 p-4 font-fa text-sm leading-7"
+                >
+                  <AlertTriangle aria-hidden="true" className="mt-1 size-5 shrink-0 text-warning" />
+                  <div>
+                    <p className="font-bold">سبد ذخیره‌شده نیاز به بازبینی دارد.</p>
+                    <p className="mt-1 text-muted-foreground">
+                      حداقل یک محصول، سایز یا وضعیت دسترس‌پذیری با Dataset فعلی هماهنگ نیست. مورد
+                      مشکل‌دار را حذف کنید؛ تا آن زمان ورود به Review مسدود است.
+                    </p>
+                  </div>
+                </div>
+              ) : null}
 
-              <div className="grid grid-cols-3 gap-2 text-[10px] text-muted-foreground pt-4 border-t border-border">
-                <div className="flex flex-col items-center text-center gap-1">
-                  <ShieldCheck size={14} className="text-neon" /> پرداخت امن
+              <div className="space-y-4">
+                <AnimatePresence initial={false}>
+                  {items.map((item) => {
+                    const label = item.shoe
+                      ? `${item.shoe.brand} ${item.shoe.name}`
+                      : `محصول با شناسه ${item.id}`;
+                    return (
+                      <motion.article
+                        key={item.key}
+                        layout
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: 40 }}
+                        transition={{ duration: 0.2 }}
+                        data-testid="cart-page-item"
+                        data-cart-status={item.status}
+                        className="grid min-w-0 gap-4 rounded-2xl border border-border bg-surface p-4 sm:grid-cols-[8rem_minmax(0,1fr)]"
+                      >
+                        {item.shoe ? (
+                          <Link
+                            to="/product/$id"
+                            params={{ id: String(item.id) }}
+                            className="aspect-square w-full overflow-hidden rounded-xl bg-surface-elevated sm:size-32"
+                            aria-label={`مشاهده ${label}`}
+                          >
+                            <CartProductImage
+                              src={item.shoe.image}
+                              alt={label}
+                              testId="cart-page-image"
+                              className="h-full w-full object-cover"
+                            />
+                          </Link>
+                        ) : (
+                          <div
+                            role="img"
+                            aria-label="تصویر محصول در دسترس نیست"
+                            className="grid aspect-square w-full place-items-center rounded-xl bg-surface-elevated font-display text-sm font-black text-muted-foreground sm:size-32"
+                          >
+                            SOLE
+                          </div>
+                        )}
+
+                        <div className="min-w-0">
+                          <div className="flex min-w-0 items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="eyebrow text-muted-foreground">
+                                {item.shoe?.brand ?? "Stale item"}
+                              </p>
+                              {item.shoe ? (
+                                <Link
+                                  to="/product/$id"
+                                  params={{ id: String(item.id) }}
+                                  className="mt-1 block min-h-11 break-words rounded-sm font-display text-lg font-bold leading-6 hover:text-primary"
+                                >
+                                  <bdi dir="ltr">{item.shoe.name}</bdi>
+                                </Link>
+                              ) : (
+                                <p className="mt-1 min-h-11 break-words font-display text-lg font-bold leading-6">
+                                  {label}
+                                </p>
+                              )}
+                              <p className="mt-1 font-fa text-xs text-muted-foreground">
+                                سایز <bdi dir="ltr">{item.size}</bdi>
+                                {item.shoe ? (
+                                  <>
+                                    {" "}
+                                    · <bdi dir="ltr">{item.shoe.colorway}</bdi>
+                                  </>
+                                ) : null}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeItem(item.id, item.size, label)}
+                              className="flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-danger/10 hover:text-danger"
+                              aria-label={`حذف ${label} از سبد`}
+                            >
+                              <Trash2 aria-hidden="true" className="size-4" />
+                            </button>
+                          </div>
+
+                          {item.blockingMessage ? (
+                            <p
+                              data-testid="cart-item-issue"
+                              className="mt-3 rounded-lg border border-warning/40 bg-warning/10 p-3 font-fa text-xs leading-6 text-warning"
+                            >
+                              {item.blockingMessage}
+                            </p>
+                          ) : null}
+
+                          <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+                            <div
+                              role="group"
+                              aria-label={`تعداد ${label}`}
+                              className="inline-flex min-h-11 items-center rounded-full border border-border bg-background p-1"
+                            >
+                              <button
+                                type="button"
+                                onClick={() => updateQty(item.id, item.size, item.qty - 1)}
+                                disabled={item.status !== "ready" || item.qty <= 1}
+                                aria-label={`کاهش تعداد ${label}`}
+                                className="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
+                              >
+                                <Minus aria-hidden="true" className="size-4" />
+                              </button>
+                              <output
+                                aria-live="polite"
+                                className="min-w-10 text-center font-mono-num text-sm"
+                              >
+                                {item.qty}
+                              </output>
+                              <button
+                                type="button"
+                                onClick={() => updateQty(item.id, item.size, item.qty + 1)}
+                                disabled={item.status !== "ready"}
+                                aria-label={`افزایش تعداد ${label}`}
+                                className="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
+                              >
+                                <Plus aria-hidden="true" className="size-4" />
+                              </button>
+                            </div>
+
+                            {item.status === "ready" && item.unitPrice ? (
+                              <div className="text-end">
+                                <p className="font-mono-num text-lg font-bold">
+                                  {formatPrice(item.unitPrice * item.qty)}
+                                </p>
+                                <p className="font-fa text-[11px] text-muted-foreground">
+                                  قیمت فعلی Dataset × تعداد
+                                </p>
+                              </div>
+                            ) : (
+                              <span className="font-fa text-xs text-muted-foreground">
+                                قیمت قابل بررسی نیست
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </motion.article>
+                    );
+                  })}
+                </AnimatePresence>
+              </div>
+            </section>
+
+            <aside
+              aria-labelledby="cart-summary-heading"
+              className="h-fit min-w-0 rounded-2xl border border-border bg-surface p-5 lg:sticky lg:top-28 sm:p-6"
+              data-testid="cart-summary"
+            >
+              <p className="eyebrow text-primary">Review boundary</p>
+              <h2 id="cart-summary-heading" className="mt-2 font-display text-2xl font-bold">
+                خلاصه سبد
+              </h2>
+
+              <dl className="mt-6 space-y-4 font-fa text-sm">
+                <div className="flex items-start justify-between gap-4">
+                  <dt className="text-muted-foreground">جمع جزء اقلام قابل بررسی</dt>
+                  <dd className="shrink-0 font-mono-num font-bold" data-testid="cart-page-subtotal">
+                    {formatPrice(subtotal)}
+                  </dd>
                 </div>
-                <div className="flex flex-col items-center text-center gap-1">
-                  <Truck size={14} className="text-neon" /> ارسال سریع
+                <div className="border-t border-border pt-4">
+                  <dt className="font-bold">ارسال</dt>
+                  <dd className="mt-1 text-xs leading-6 text-muted-foreground">
+                    روش، هزینه و زمان ارسال هنوز از Backend معتبر دریافت نمی‌شود.
+                  </dd>
                 </div>
-                <div className="flex flex-col items-center text-center gap-1">
-                  <RotateCcw size={14} className="text-neon" /> ۷ روز بازگشت
+                <div className="border-t border-border pt-4">
+                  <dt className="font-bold">پرداخت</dt>
+                  <dd className="mt-1 text-xs leading-6 text-muted-foreground">
+                    هیچ روش یا درگاه پرداخت واقعی در این فاز متصل نیست.
+                  </dd>
                 </div>
+                <div className="border-t border-border pt-4">
+                  <dt className="font-bold">مبلغ نهایی</dt>
+                  <dd className="mt-1 text-xs leading-6 text-muted-foreground">
+                    بدون قوانین معتبر ارسال، مالیات احتمالی و سرویس سفارش، مبلغ نهایی محاسبه
+                    نمی‌شود.
+                  </dd>
+                </div>
+              </dl>
+
+              <div className="mt-6 space-y-3">
+                {!hasBlockingIssues ? (
+                  <Link
+                    to="/checkout"
+                    className="btn-hype w-full justify-center text-center"
+                    data-testid="cart-checkout-cta"
+                  >
+                    ادامه به بررسی Checkout
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    className="min-h-11 w-full rounded-full border border-border bg-interactive px-4 font-fa text-sm text-muted-foreground"
+                    data-testid="cart-checkout-blocked"
+                  >
+                    ابتدا اقلام ناسازگار را رفع کنید
+                  </button>
+                )}
+                <Link
+                  to="/products"
+                  className="flex min-h-11 w-full items-center justify-center rounded-full border border-border px-4 font-fa text-sm font-bold transition-colors hover:border-primary"
+                >
+                  ادامه خرید
+                </Link>
               </div>
             </aside>
           </div>
@@ -225,15 +358,6 @@ function CartPage() {
 
       <Footer />
       <MobileBottomNav />
-    </div>
-  );
-}
-
-function Row({ label, value, accent }: { label: string; value: string; accent?: string }) {
-  return (
-    <div className="flex justify-between">
-      <span className="text-muted-foreground">{label}</span>
-      <span className={`font-mono-num ${accent ?? ""}`}>{value}</span>
     </div>
   );
 }

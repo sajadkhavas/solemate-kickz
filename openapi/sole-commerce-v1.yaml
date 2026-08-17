@@ -1,0 +1,257 @@
+openapi: 3.1.0
+info:
+  {
+    title: SOLE Commerce API,
+    version: 1.0.0,
+    description: Contract only; backend implementation is not implied.,
+  }
+servers: [{ url: /api/v1 }]
+security: [{ sessionCookie: [], csrfToken: [] }]
+paths:
+  /catalog/products:
+    get:
+      {
+        operationId: listProducts,
+        security: [],
+        responses:
+          {
+            "200": { description: Public product projection },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+  /catalog/products/{productId}:
+    get:
+      {
+        operationId: getProduct,
+        security: [],
+        parameters: [{ $ref: "#/components/parameters/ProductId" }],
+        responses:
+          {
+            "200": { description: Product and variant projection },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+  /cart:
+    get:
+      {
+        operationId: getCart,
+        responses:
+          {
+            "200": { description: Server-valued cart },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+    post:
+      {
+        operationId: createCart,
+        responses:
+          { "201": { description: New cart }, default: { $ref: "#/components/responses/Error" } },
+      }
+  /cart/lines:
+    post:
+      {
+        operationId: addCartLine,
+        parameters: [{ $ref: "#/components/parameters/ExpectedRevision" }],
+        responses:
+          {
+            "200": { description: Revalidated cart },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+  /cart/lines/{lineId}:
+    patch:
+      {
+        operationId: updateCartLine,
+        parameters:
+          [
+            { $ref: "#/components/parameters/LineId" },
+            { $ref: "#/components/parameters/ExpectedRevision" },
+          ],
+        responses:
+          {
+            "200": { description: Revalidated cart },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+    delete:
+      {
+        operationId: removeCartLine,
+        parameters:
+          [
+            { $ref: "#/components/parameters/LineId" },
+            { $ref: "#/components/parameters/ExpectedRevision" },
+          ],
+        responses:
+          {
+            "200": { description: Revalidated cart },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+  /checkout:
+    post:
+      {
+        operationId: createCheckout,
+        parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }],
+        responses:
+          {
+            "201": { description: Validated checkout draft },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+  /checkout/{checkoutId}/reserve:
+    post:
+      {
+        operationId: reserveCheckout,
+        parameters:
+          [
+            { $ref: "#/components/parameters/CheckoutId" },
+            { $ref: "#/components/parameters/IdempotencyKey" },
+          ],
+        responses:
+          {
+            "200": { description: Checkout with bounded reservation },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+  /checkout/{checkoutId}/payment-attempts:
+    post:
+      {
+        operationId: initiatePayment,
+        parameters:
+          [
+            { $ref: "#/components/parameters/CheckoutId" },
+            { $ref: "#/components/parameters/IdempotencyKey" },
+          ],
+        responses:
+          {
+            "201": { description: Provider handoff; not payment success },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+  /payments/webhooks/{provider}:
+    post:
+      {
+        operationId: receivePaymentWebhook,
+        security: [],
+        parameters: [{ name: provider, in: path, required: true, schema: { type: string } }],
+        responses:
+          {
+            "204": { description: Verified and deduplicated },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+  /orders:
+    get:
+      {
+        operationId: listOrders,
+        responses:
+          {
+            "200": { description: Authorized order projections },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+  /orders/{orderId}:
+    get:
+      {
+        operationId: getOrder,
+        parameters: [{ $ref: "#/components/parameters/OrderId" }],
+        responses:
+          {
+            "200": { description: Authorized order detail },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+  /orders/{orderId}/cancel:
+    post:
+      {
+        operationId: requestCancellation,
+        parameters:
+          [
+            { $ref: "#/components/parameters/OrderId" },
+            { $ref: "#/components/parameters/IdempotencyKey" },
+          ],
+        responses:
+          {
+            "200": { description: Updated order or policy rejection },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+  /returns:
+    post:
+      {
+        operationId: requestReturn,
+        parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }],
+        responses:
+          {
+            "201": { description: Return request; not approval/refund },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+  /returns/{returnId}:
+    get:
+      {
+        operationId: getReturn,
+        parameters:
+          [{ name: returnId, in: path, required: true, schema: { type: string, format: uuid } }],
+        responses:
+          {
+            "200": { description: Authorized return timeline },
+            default: { $ref: "#/components/responses/Error" },
+          },
+      }
+components:
+  securitySchemes:
+    sessionCookie: { type: apiKey, in: cookie, name: sole_session }
+    csrfToken: { type: apiKey, in: header, name: X-CSRF-Token }
+  parameters:
+    ProductId: { name: productId, in: path, required: true, schema: { type: string, format: uuid } }
+    LineId: { name: lineId, in: path, required: true, schema: { type: string, format: uuid } }
+    CheckoutId:
+      { name: checkoutId, in: path, required: true, schema: { type: string, format: uuid } }
+    OrderId: { name: orderId, in: path, required: true, schema: { type: string, format: uuid } }
+    ExpectedRevision: { name: If-Match, in: header, required: true, schema: { type: string } }
+    IdempotencyKey:
+      {
+        name: Idempotency-Key,
+        in: header,
+        required: true,
+        schema: { type: string, minLength: 16, maxLength: 128 },
+      }
+  schemas:
+    Money:
+      {
+        type: object,
+        additionalProperties: false,
+        required: [amountMinor, currency],
+        properties:
+          { amountMinor: { type: integer }, currency: { type: string, pattern: "^[A-Z]{3}$" } },
+      }
+    ErrorEnvelope:
+      {
+        type: object,
+        additionalProperties: false,
+        required: [error],
+        properties:
+          {
+            error:
+              {
+                type: object,
+                additionalProperties: false,
+                required: [code, message, requestId, retryable],
+                properties:
+                  {
+                    code: { type: string },
+                    message: { type: string },
+                    requestId: { type: string },
+                    retryable: { type: boolean },
+                    fieldErrors: { type: array, items: { type: object } },
+                  },
+              },
+          },
+      }
+  responses:
+    Error:
+      {
+        description: Stable safe error envelope,
+        content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } },
+      }

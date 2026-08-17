@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "environment": "review",
+  "sources": [
+    {
+      "id": "frontend-demo-fixtures",
+      "kind": "demo-fixture",
+      "authority": "src/data/shoes.ts and current static route copy",
+      "productionEligible": false
+    }
+  ],
+  "entries": []
+}

@@ -1,33 +1,50 @@
-import { ArrowRight } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
 
 export function Newsletter() {
   return (
-    <section className="py-24 px-6 bg-neon text-ink relative overflow-hidden">
-      <div className="absolute -top-20 -right-20 text-[20rem] opacity-10 animate-spin-slow">👟</div>
-      <div className="relative max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-10 items-center">
-        <div>
-          <div className="eyebrow opacity-60 mb-3">Newsletter</div>
-          <h2 className="font-display font-black uppercase leading-[0.9] text-5xl md:text-7xl">
-            First to know.<br />
-            Last to miss out.
+    <section
+      data-testid="home-final-cta"
+      aria-labelledby="home-final-cta-title"
+      className="relative overflow-hidden bg-neon py-[var(--space-section)] text-ink"
+    >
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_1px_1px,#0a0a0a_1px,transparent_0)] [background-size:26px_26px]"
+      />
+      <div className="page-container-wide relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div className="max-w-4xl">
+          <p className="eyebrow mb-4 text-ink/65">NEXT STEP</p>
+          <h2
+            id="home-final-cta-title"
+            className="font-fa text-[clamp(2.5rem,7vw,6.5rem)] font-black leading-[1.05] tracking-[-0.04em]"
+          >
+            از کاتالوگ شروع کن.
           </h2>
-          <p className="font-fa text-lg mt-5 max-w-md opacity-80">
-            اول از همه از دراپ‌های جدید باخبر شو. دسترسی زودهنگام به کلکسیون‌های محدود.
+          <p className="mt-5 max-w-2xl font-fa text-base leading-8 text-ink/75 sm:text-lg">
+            مدل‌ها، دسته‌ها و برندهای موجود را بررسی کن. اطلاعات این نسخه برای ارزیابی تجربه
+            Frontend هستند و نباید به‌عنوان پیشنهاد تجاری نهایی تلقی شوند.
           </p>
         </div>
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="flex flex-col sm:flex-row gap-3 bg-ink rounded-full p-2 max-w-lg lg:justify-self-end w-full"
-        >
-          <input
-            type="email"
-            placeholder="ایمیلت رو وارد کن..."
-            className="flex-1 bg-transparent text-white px-5 py-3 outline-none font-fa placeholder:text-white/40"
-          />
-          <button className="bg-neon text-ink font-display font-bold uppercase tracking-wider px-6 py-3 rounded-full hover:bg-white transition-colors inline-flex items-center justify-center gap-2 whitespace-nowrap">
-            Subscribe <ArrowRight size={16} />
-          </button>
-        </form>
+
+        <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+          <Link
+            to="/products"
+            search={{ sort: "newest" }}
+            data-f3-touch-target="true"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-ink px-6 font-fa font-bold text-white transition-colors hover:bg-surface-elevated"
+          >
+            ورود به محصولات
+            <ArrowLeft aria-hidden="true" size={17} />
+          </Link>
+          <Link
+            to="/brands"
+            data-f3-touch-target="true"
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/35 px-6 font-fa font-bold text-ink transition-colors hover:bg-ink hover:text-white"
+          >
+            مشاهده برندها
+          </Link>
+        </div>
       </div>
     </section>
   );
