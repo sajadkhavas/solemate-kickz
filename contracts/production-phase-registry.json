@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "program": "SOLE Production Completion Program",
+  "version": 1,
+  "registeredAt": "2026-08-20",
+  "baseline": {
+    "branch": "main",
+    "sha": "6bb540d84ef3952937e03fee5b657b1446b02f47",
+    "frontendPhases": "F0-F18"
+  },
+  "branchPattern": "^phase/sole-p(0[0-9]|1[0-4])-[a-z0-9-]+$",
+  "requiredPhaseEvidence": [
+    "START_SHA",
+    "END_SHA",
+    "SCOPE",
+    "EXCLUSIONS",
+    "QA_RESULT",
+    "ROLLBACK_IMPACT"
+  ],
+  "requiredReleaseEvidence": [
+    "ENVIRONMENT",
+    "RELEASE_STRATEGY",
+    "CURRENT_SHA",
+    "NEW_SHA",
+    "RELEASE_PATH",
+    "ROLLBACK_TARGET",
+    "HEALTH_CHECK_RESULT",
+    "PUBLIC_REACHABILITY_RESULT",
+    "STARTED_AT",
+    "FINISHED_AT",
+    "ACTOR"
+  ],
+  "phases": [
+    { "id": "P00", "slug": "production-foundation", "dependsOn": ["F18"], "status": "registered" },
+    {
+      "id": "P01",
+      "slug": "backend-admin-product-truth",
+      "dependsOn": ["P00"],
+      "status": "registered"
+    },
+    {
+      "id": "P02",
+      "slug": "media-catalog-ingestion",
+      "dependsOn": ["P01"],
+      "status": "registered"
+    },
+    { "id": "P03", "slug": "auth-customer-security", "dependsOn": ["P01"], "status": "registered" },
+    {
+      "id": "P04",
+      "slug": "size-fit-intelligence",
+      "dependsOn": ["P02", "P03"],
+      "status": "registered"
+    },
+    {
+      "id": "P05",
+      "slug": "discovery-pdp-conversion",
+      "dependsOn": ["P02", "P04"],
+      "status": "registered"
+    },
+    {
+      "id": "P06",
+      "slug": "cart-checkout-orders",
+      "dependsOn": ["P02", "P03"],
+      "status": "registered"
+    },
+    {
+      "id": "P07",
+      "slug": "payment-shipping-returns",
+      "dependsOn": ["P06"],
+      "status": "registered"
+    },
+    {
+      "id": "P08",
+      "slug": "trust-support-postpurchase",
+      "dependsOn": ["P07"],
+      "status": "registered"
+    },
+    {
+      "id": "P09",
+      "slug": "loyalty-crm-notifications",
+      "dependsOn": ["P03", "P07"],
+      "status": "registered"
+    },
+    {
+      "id": "P10",
+      "slug": "seo-content-merchant",
+      "dependsOn": ["P02", "P08"],
+      "status": "registered"
+    },
+    {
+      "id": "P11",
+      "slug": "observability-rum-cro",
+      "dependsOn": ["P07", "P10"],
+      "status": "registered"
+    },
+    {
+      "id": "P12",
+      "slug": "production-readiness",
+      "dependsOn": [
+        "P00",
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P08",
+        "P09",
+        "P10",
+        "P11"
+      ],
+      "status": "registered"
+    },
+    { "id": "P13", "slug": "staging-acceptance", "dependsOn": ["P12"], "status": "registered" },
+    { "id": "P14", "slug": "production-release", "dependsOn": ["P13"], "status": "registered" }
+  ]
+}

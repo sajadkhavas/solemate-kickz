@@ -7,6 +7,7 @@ const FOUNDATION = "a908b2723322dde27699fa4c92fa9c0de95e0c75";
 const OWNER_BRANCH = "phase/sole-f8-content-pages";
 const INTEGRATION_BRANCH = "integration/sole-frontend-v2";
 const CONTROLLED_PHASE = /^phase\/sole-f(?:\d+)(?:-f\d+)?-[a-z0-9-]+$/;
+const CONTROLLED_PRODUCTION_PHASE = /^phase\/sole-p(?:0[0-9]|1[0-4])-[a-z0-9-]+$/;
 const CONTROLLED_RELEASE = /^release\/sole-frontend-v2(?:-|$)/;
 const ROUTES = ["about", "brands", "auth"];
 const REPORT = path.join(ROOT, "artifacts/audits/f8-content-pages.json");
@@ -67,7 +68,9 @@ record("Foundation SHA", git("merge-base", "--is-ancestor", FOUNDATION, "HEAD").
 const controlledBranch =
   branch === OWNER_BRANCH ||
   branch === INTEGRATION_BRANCH ||
+  branch === "phase/sole-p0-production-program" ||
   CONTROLLED_PHASE.test(branch) ||
+  CONTROLLED_PRODUCTION_PHASE.test(branch) ||
   CONTROLLED_RELEASE.test(branch);
 record("Controlled phase or integration branch", controlledBranch, {
   owner: OWNER_BRANCH,

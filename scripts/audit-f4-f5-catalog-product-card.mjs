@@ -16,7 +16,9 @@ const allowedBranch =
   branch === "phase/sole-f4-f5-catalog-product-card" ||
   branch === "integration/sole-frontend-v2" ||
   branch === "release/sole-frontend-v2-rc" ||
-  branch.startsWith("phase/sole-f");
+  branch === "phase/sole-p0-production-program" ||
+  branch.startsWith("phase/sole-f") ||
+  /^phase\/sole-p(?:0[0-9]|1[0-4])-[a-z0-9-]+$/.test(branch);
 
 const products = read("src/routes/products.tsx");
 const card = read("src/components/ShoeCard.tsx");
