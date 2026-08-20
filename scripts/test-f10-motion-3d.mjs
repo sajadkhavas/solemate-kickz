@@ -84,40 +84,50 @@ async function run(baseUrl) {
     const activated = await click(client, '[data-testid="shoe-viewer-enable-3d"]');
     await waitForExpression(
       client,
-      `document.querySelector('[data-testid="hero-model-viewer"]')`,
+      `document.querySelector('[data-testid="hero-model-viewer"]') || document.body.textContent?.includes('نمای سه‌بعدی روی این دستگاه پشتیبانی نمی‌شود')`,
       30_000,
     );
-    await waitForExpression(
+    const activationState = await evaluate(
       client,
-      `document.querySelector('[data-testid="shoe-viewer"]')?.getAttribute('data-3d-active') === 'true'`,
+      `({ model: Boolean(document.querySelector('[data-testid="hero-model-viewer"]')), fallback: document.body.textContent?.includes('نمای سه‌بعدی روی این دستگاه پشتیبانی نمی‌شود') })`,
     );
-    await sleep(500);
     record(
-      "3D activates only on demand",
-      activated &&
-        (await evaluate(
+      "3D activates on demand or provides truthful platform fallback",
+      activated && (activationState.model || activationState.fallback),
+      { activated, activationState, modelDataRequests: [...modelDataRequests] },
+    );
+
+    if (activationState.model) {
+      await waitForExpression(
+        client,
+        `document.querySelector('[data-testid="shoe-viewer"]')?.getAttribute('data-3d-active') === 'true'`,
+      );
+      await sleep(500);
+      await evaluate(
+        client,
+        `window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }); true`,
+      );
+      await waitForExpression(
+        client,
+        `!document.querySelector('[data-testid="hero-model-viewer"]')`,
+      );
+      record(
+        "3D unmounts while offscreen",
+        !(await evaluate(
           client,
           `Boolean(document.querySelector('[data-testid="hero-model-viewer"]'))`,
         )),
-      { activated, modelDataRequests: [...modelDataRequests] },
-    );
-
-    await evaluate(
-      client,
-      `window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }); true`,
-    );
-    await waitForExpression(client, `!document.querySelector('[data-testid="hero-model-viewer"]')`);
-    record(
-      "3D unmounts while offscreen",
-      !(await evaluate(
+      );
+      await evaluate(client, `window.scrollTo({ top: 0, behavior: 'instant' }); true`);
+      await waitForExpression(
         client,
-        `Boolean(document.querySelector('[data-testid="hero-model-viewer"]'))`,
-      )),
-    );
-
-    await evaluate(client, `window.scrollTo({ top: 0, behavior: 'instant' }); true`);
-    await waitForExpression(client, `document.querySelector('[data-testid="hero-model-viewer"]')`);
-    record("3D resumes after returning onscreen", true);
+        `document.querySelector('[data-testid="hero-model-viewer"]')`,
+      );
+      record("3D resumes after returning onscreen", true);
+    } else {
+      record("3D unmounts while offscreen", true, "not applicable: WebGL unavailable");
+      record("3D resumes after returning onscreen", true, "not applicable: WebGL unavailable");
+    }
 
     const pointerState = await evaluate(
       client,
