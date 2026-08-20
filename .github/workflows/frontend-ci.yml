@@ -266,6 +266,9 @@ jobs:
       - name: VPS Node-server build
         run: bun run build:vps
 
+      - name: Production runtime smoke and port-leak gate
+        run: bun run qa:production-runtime
+
       - name: Foundation Visual QA
         run: bun run qa:visual:f0-f1
 

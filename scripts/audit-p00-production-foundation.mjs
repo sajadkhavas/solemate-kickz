@@ -17,6 +17,7 @@ const [release, rollback, ledger, health, validator, runtime, service, handoff, 
     read("docs/handoffs/P00-PRODUCTION-FOUNDATION.md"),
     read("package.json"),
   ]);
+const workflow = await read(".github/workflows/frontend-ci.yml");
 
 const requireText = (name, source, patterns) => {
   for (const pattern of patterns)
@@ -65,6 +66,8 @@ if (pkg.scripts?.["audit:p00"] !== "node scripts/audit-p00-production-foundation
   failures.push("audit:p00 script missing");
 if (pkg.scripts?.["qa:production-runtime"] !== "node scripts/qa/production-runtime.mjs")
   failures.push("qa runtime script missing");
+if (!/Production runtime smoke and port-leak gate[\s\S]*qa:production-runtime/.test(workflow))
+  failures.push("CI production runtime and port-leak gate missing");
 
 for (const script of [
   "scripts/deployment/release-immutable.sh",
