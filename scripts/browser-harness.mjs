@@ -74,11 +74,56 @@ class CdpClient {
   }
 
   send(method, params = {}) {
+    if (method === "Input.insertText" && typeof params.text === "string") {
+      return this.insertText(params.text);
+    }
+    return this.sendRaw(method, params);
+  }
+
+  sendRaw(method, params = {}) {
     const id = ++this.sequence;
     return new Promise((resolve, reject) => {
       this.pending.set(id, { resolve, reject });
       this.socket.send(JSON.stringify({ id, method, params }));
     });
+  }
+
+  async insertText(text) {
+    for (const character of text) {
+      const upper = character.toUpperCase();
+      const isLetter = /^[A-Za-z]$/.test(character);
+      const isDigit = /^\d$/.test(character);
+      const windowsVirtualKeyCode = isLetter
+        ? upper.charCodeAt(0)
+        : isDigit
+          ? character.charCodeAt(0)
+          : character === " "
+            ? 32
+            : 0;
+      const code = isLetter
+        ? `Key${upper}`
+        : isDigit
+          ? `Digit${character}`
+          : character === " "
+            ? "Space"
+            : "";
+
+      await this.sendRaw("Input.dispatchKeyEvent", {
+        type: "keyDown",
+        key: character,
+        code,
+        text: character,
+        unmodifiedText: character,
+        windowsVirtualKeyCode,
+      });
+      await this.sendRaw("Input.dispatchKeyEvent", {
+        type: "keyUp",
+        key: character,
+        code,
+        windowsVirtualKeyCode,
+      });
+    }
+    return {};
   }
 
   on(method, listener) {
