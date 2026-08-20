@@ -6,7 +6,9 @@ import process from "node:process";
 const ROOT = process.cwd();
 const OWNER_BRANCH = "phase/sole-f2-navigation-search";
 const INTEGRATION_BRANCH = "integration/sole-frontend-v2";
+const PRODUCTION_PROGRAM_BRANCH = "phase/sole-p0-production-program";
 const CONTROLLED_PHASE = /^phase\/sole-f(?:\d+)(?:-f\d+)?-[a-z0-9-]+$/;
+const CONTROLLED_PRODUCTION_PHASE = /^phase\/sole-p(?:0[0-9]|1[0-4])-[a-z0-9-]+$/;
 const CONTROLLED_SUPERVISOR = /^supervisor\/sole-f\d+(?:-f\d+)+-[a-z0-9-]+$/;
 const CONTROLLED_RELEASE = /^release\/sole-frontend-v2(?:-|$)/;
 const FOUNDATION_SHA = "a908b2723322dde27699fa4c92fa9c0de95e0c75";
@@ -69,7 +71,9 @@ const head = git(["rev-parse", "HEAD"]);
 const controlledBranch =
   branch === OWNER_BRANCH ||
   branch === INTEGRATION_BRANCH ||
+  branch === PRODUCTION_PROGRAM_BRANCH ||
   CONTROLLED_PHASE.test(branch) ||
+  CONTROLLED_PRODUCTION_PHASE.test(branch) ||
   CONTROLLED_SUPERVISOR.test(branch) ||
   CONTROLLED_RELEASE.test(branch);
 add("controlled phase, supervisor or integration branch", controlledBranch, {
