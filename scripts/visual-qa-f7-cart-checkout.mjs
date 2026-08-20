@@ -222,8 +222,8 @@ async function run(baseUrl) {
 
     await viewport(client, 320, 568, true);
     await navigate(client, `${baseUrl}/cart`);
-    await waitForExpression(client, `document.querySelector('[data-testid="cart-trigger"]')`);
-    await click(client, '[data-testid="cart-trigger"]');
+    await waitForExpression(client, `document.querySelector('[data-cart-trigger="true"]')`);
+    await click(client, '[data-cart-trigger="true"]');
     await waitForExpression(client, `document.querySelector('[data-testid="cart-drawer"]')`);
     const drawer = await evaluate(
       client,
