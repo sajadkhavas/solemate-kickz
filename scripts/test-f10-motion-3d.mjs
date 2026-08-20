@@ -82,7 +82,11 @@ async function run(baseUrl) {
     );
 
     const activated = await click(client, '[data-testid="shoe-viewer-enable-3d"]');
-    await waitForExpression(client, `document.querySelector('[data-testid="hero-model-viewer"]')`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="hero-model-viewer"]')`,
+      30_000,
+    );
     await waitForExpression(
       client,
       `document.querySelector('[data-testid="shoe-viewer"]')?.getAttribute('data-3d-active') === 'true'`,

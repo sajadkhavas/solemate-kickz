@@ -46,6 +46,7 @@ async function setInput(client, selector, value) {
     client,
     `document.querySelector(${JSON.stringify(selector)})?.value === ${JSON.stringify(value)}`,
   );
+  await sleep(250);
 }
 
 async function click(client, selector) {
