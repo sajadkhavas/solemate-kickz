@@ -43,13 +43,17 @@ async function terminateTree(child) {
   for (const pid of pids) {
     try {
       process.kill(pid, "SIGTERM");
-    } catch {}
+    } catch {
+      // The process may have exited between discovery and signaling.
+    }
   }
   for (let attempt = 0; attempt < 30 && child.exitCode === null; attempt += 1) await sleep(100);
   for (const pid of pids) {
     try {
       process.kill(pid, "SIGKILL");
-    } catch {}
+    } catch {
+      // A process already terminated by SIGTERM needs no forced signal.
+    }
   }
 }
 
@@ -59,7 +63,9 @@ async function waitForReady(child) {
     try {
       const response = await fetch(origin, { signal: AbortSignal.timeout(1000) });
       if (response.status === 200) return;
-    } catch {}
+    } catch {
+      // Readiness polling intentionally tolerates connection failures until timeout.
+    }
     await sleep(100);
   }
   throw new Error("production server readiness timed out");
