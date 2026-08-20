@@ -29,24 +29,25 @@ async function press(client, key, code = key) {
 }
 
 async function setInput(client, selector, value) {
-  const focused = await evaluate(
+  const changed = await evaluate(
     client,
     `(() => {
       const input = document.querySelector(${JSON.stringify(selector)});
       if (!(input instanceof HTMLInputElement)) return false;
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+      setter?.call(input, ${JSON.stringify(value)});
       input.focus();
-      input.select();
-      return document.activeElement === input;
+      input.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: ${JSON.stringify(value)} }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      return document.activeElement === input && input.value === ${JSON.stringify(value)};
     })()`,
   );
-  if (!focused) throw new Error(`Input not found: ${selector}`);
-  await press(client, "Backspace", "Backspace");
-  await client.send("Input.insertText", { text: value });
+  if (!changed) throw new Error(`Input not found or not changed: ${selector}`);
   await waitForExpression(
     client,
     `document.querySelector(${JSON.stringify(selector)})?.value === ${JSON.stringify(value)}`,
   );
-  await sleep(250);
+  await sleep(500);
 }
 
 async function click(client, selector) {
