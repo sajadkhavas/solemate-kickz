@@ -139,6 +139,9 @@ jobs:
       - name: Production program contract audit
         run: bun run audit:production-program
 
+      - name: P00 production foundation audit
+        run: bun run audit:p00
+
       - name: Typecheck
         run: bun run typecheck
 
