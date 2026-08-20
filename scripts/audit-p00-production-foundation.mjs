@@ -71,7 +71,7 @@ if (!/Production runtime smoke and port-leak gate[\s\S]*qa:production-runtime/.t
   failures.push("CI production runtime and port-leak gate missing");
 if ((workflow.match(/scripts\/qa\/retry-gate\.mjs/g) ?? []).length < 20)
   failures.push("browser and visual gates must use bounded retry orchestration");
-requireText("retry gate", retryGate, [/attempt <= 2/, /spawnSync/, /attempt === 2/]);
+requireText("retry gate", retryGate, [/attempt <= 3/, /spawnSync/, /attempt === 3/]);
 
 for (const script of [
   "scripts/deployment/release-immutable.sh",
