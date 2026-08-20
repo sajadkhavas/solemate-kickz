@@ -136,6 +136,9 @@ jobs:
       - name: VPS deployment contract audit
         run: bun run audit:deploy
 
+      - name: Production program contract audit
+        run: bun run audit:production-program
+
       - name: Typecheck
         run: bun run typecheck
 

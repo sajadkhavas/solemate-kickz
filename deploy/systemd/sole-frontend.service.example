@@ -19,6 +19,7 @@ Restart=on-failure
 RestartSec=3
 TimeoutStopSec=15
 KillSignal=SIGTERM
+KillMode=control-group
 
 CPUQuota=70%
 CPUWeight=20

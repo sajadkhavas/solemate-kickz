@@ -14,6 +14,7 @@
     "start:vps": "node .output/server/index.mjs",
     "smoke:vps": "node scripts/deployment/smoke-node-server.mjs",
     "audit:deploy": "node scripts/audit-deployment-readiness.mjs",
+    "audit:production-program": "node scripts/audit-production-program.mjs",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
