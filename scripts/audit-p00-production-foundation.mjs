@@ -18,6 +18,7 @@ const [release, rollback, ledger, health, validator, runtime, service, handoff, 
     read("package.json"),
   ]);
 const workflow = await read(".github/workflows/frontend-ci.yml");
+const retryGate = await read("scripts/qa/retry-gate.mjs");
 
 const requireText = (name, source, patterns) => {
   for (const pattern of patterns)
@@ -68,6 +69,9 @@ if (pkg.scripts?.["qa:production-runtime"] !== "node scripts/qa/production-runti
   failures.push("qa runtime script missing");
 if (!/Production runtime smoke and port-leak gate[\s\S]*qa:production-runtime/.test(workflow))
   failures.push("CI production runtime and port-leak gate missing");
+if ((workflow.match(/scripts\/qa\/retry-gate\.mjs/g) ?? []).length < 20)
+  failures.push("browser and visual gates must use bounded retry orchestration");
+requireText("retry gate", retryGate, [/attempt <= 2/, /spawnSync/, /attempt === 2/]);
 
 for (const script of [
   "scripts/deployment/release-immutable.sh",
