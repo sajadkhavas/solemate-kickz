@@ -175,7 +175,7 @@ async function run(baseUrl) {
     record("Catalog renders real dataset cards", initialCount > 10, initialCount);
 
     await setInput(client, "#catalog-search", "Nike");
-    await click(client, "form:has(#catalog-search) button[type=\"submit\"]");
+    await click(client, 'form:has(#catalog-search) button[type="submit"]');
     await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);
     await waitForExpression(
       client,

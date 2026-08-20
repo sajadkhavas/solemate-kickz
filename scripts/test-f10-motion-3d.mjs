@@ -136,7 +136,11 @@ async function run(baseUrl) {
       record("3D resumes after returning onscreen", true);
     } else {
       record("3D unmounts while offscreen", true, "not applicable: truthful 3D fallback active");
-      record("3D resumes after returning onscreen", true, "not applicable: truthful 3D fallback active");
+      record(
+        "3D resumes after returning onscreen",
+        true,
+        "not applicable: truthful 3D fallback active",
+      );
     }
 
     const pointerState = await evaluate(
