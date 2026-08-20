@@ -9,6 +9,7 @@ const OWNER_BRANCH = "phase/sole-f7-cart-checkout";
 const INTEGRATION_BRANCH = "integration/sole-frontend-v2";
 const SUPERVISOR_BRANCH = "supervisor/sole-f7-f9-integration";
 const CONTROLLED_PHASE = /^phase\/sole-f(?:\d+)(?:-f\d+)?-[a-z0-9-]+$/;
+const CONTROLLED_PRODUCTION_PHASE = /^phase\/sole-p(?:0[0-9]|1[0-4])-[a-z0-9-]+$/;
 const REPORT = path.join(ROOT, "artifacts/audits/f7-cart-checkout.json");
 const checks = [];
 
@@ -55,7 +56,9 @@ const controlledBranch =
   branch === OWNER_BRANCH ||
   branch === INTEGRATION_BRANCH ||
   branch === SUPERVISOR_BRANCH ||
-  CONTROLLED_PHASE.test(branch);
+  branch === "phase/sole-p0-production-program" ||
+  CONTROLLED_PHASE.test(branch) ||
+  CONTROLLED_PRODUCTION_PHASE.test(branch);
 record("branch is controlled", controlledBranch, {
   owner: OWNER_BRANCH,
   integration: INTEGRATION_BRANCH,

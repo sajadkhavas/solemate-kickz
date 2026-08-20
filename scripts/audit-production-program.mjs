@@ -20,6 +20,9 @@ const [constitution, roadmap, registryRaw, service, workflow, packageRaw] = awai
   text("package.json"),
 ]);
 const navigationAudit = await text("scripts/audit-f2-navigation-search.mjs");
+const contentAudit = await text("scripts/audit-f8-content-pages.mjs");
+const catalogAudit = await text("scripts/audit-f4-f5-catalog-product-card.mjs");
+const checkoutAudit = await text("scripts/audit-f7-cart-checkout.mjs");
 
 let registry;
 let pkg;
@@ -88,6 +91,15 @@ if (!/KillMode=control-group/.test(service)) {
 }
 if (!/sole-p\(\?:0\[0-9\]\|1\[0-4\]\)/.test(navigationAudit)) {
   failures.push("legacy branch gate must recognize registered P00-P14 branches");
+}
+for (const [name, source] of [
+  ["content", contentAudit],
+  ["catalog", catalogAudit],
+  ["checkout", checkoutAudit],
+]) {
+  if (!/sole-p/.test(source) || !/1\[0-4\]/.test(source)) {
+    failures.push(`${name} branch gate must recognize registered P00-P14 branches`);
+  }
 }
 if (!/Production program contract audit[\s\S]*audit:production-program/.test(workflow)) {
   failures.push("CI must run the production program audit");
