@@ -1,1 +1,7 @@
-FAIL:F4_RUN_2
+FAIL:F4_RUN_1
+$ node scripts/test-f4-f5-catalog-product-card.mjs
+Error: Timed out waiting for expression: new URLSearchParams(location.search).get('q') === 'Nike'
+    at waitForExpression (file:///home/runner/work/solemate-kickz/solemate-kickz/scripts/browser-harness.mjs:329:9)
+    at async run (file:///home/runner/work/solemate-kickz/solemate-kickz/scripts/test-f4-f5-catalog-product-card.mjs:179:5)
+    at async withCatalogServer (file:///home/runner/work/solemate-kickz/solemate-kickz/scripts/f4-f5-browser-runner.mjs:42:12)
+error: script "test:f4-f5" exited with code 1
