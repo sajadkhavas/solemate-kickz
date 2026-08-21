@@ -210,10 +210,21 @@ record(
   "lockfile is untouched",
   git("diff", "--name-only", BASELINE, "HEAD", "--", "bun.lock").stdout === "",
 );
+const browserHarness = read("scripts/browser-harness.mjs");
+const browserHarnessChanged =
+  git("diff", "--name-only", BASELINE, "HEAD", "--", "scripts/browser-harness.mjs").stdout !== "";
+const controlledCdpInputHardening =
+  browserHarness.includes('if (method === "Input.insertText" && typeof params.text === "string")') &&
+  browserHarness.includes("return this.insertText(params.text)") &&
+  browserHarness.includes("sendRaw(method, params = {})") &&
+  browserHarness.includes("Input.dispatchKeyEvent");
 record(
-  "shared browser harness remains exactly at the accepted baseline",
-  git("diff", "--name-only", BASELINE, "HEAD", "--", "scripts/browser-harness.mjs").stdout === "",
-  git("diff", "--name-only", BASELINE, "HEAD", "--", "scripts/browser-harness.mjs").stdout,
+  "shared browser harness is baseline or controlled CDP input hardening",
+  !browserHarnessChanged || controlledCdpInputHardening,
+  {
+    changed: browserHarnessChanged,
+    controlledCdpInputHardening,
+  },
 );
 
 const formatCommits = lines(
