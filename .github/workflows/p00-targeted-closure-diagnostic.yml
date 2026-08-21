@@ -36,11 +36,16 @@ jobs:
         run: |
           set -Eeuo pipefail
           stage=PATCH
+          : > /tmp/p00-stage.log
           fail() {
             code=$?
+            details="$(tail -n 60 /tmp/p00-stage.log 2>/dev/null || true)"
             git reset --hard HEAD >/dev/null 2>&1 || true
             mkdir -p .tmp-p00-diagnostic
-            printf 'FAIL:%s\n' "$stage" > .tmp-p00-diagnostic/closure-status.txt
+            {
+              printf 'FAIL:%s\n' "$stage"
+              printf '%s\n' "$details"
+            } > .tmp-p00-diagnostic/closure-status.txt
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add -- .tmp-p00-diagnostic/closure-status.txt
@@ -82,22 +87,21 @@ jobs:
           ./node_modules/.bin/prettier --write src/routes/products.tsx scripts/audit-f11-technical-seo.mjs
           ./node_modules/.bin/prettier --check src/routes/products.tsx scripts/audit-f11-technical-seo.mjs
 
-          stage=TYPECHECK
-          bun run typecheck
-          stage=F2
-          bun run test:f2
-          stage=F4_RUN_1
-          bun run test:f4-f5
-          stage=F4_RUN_2
-          bun run test:f4-f5
-          stage=F4_RUN_3
-          bun run test:f4-f5
-          stage=F11_AUDIT
-          bun run audit:f11
-          stage=F11_SSR
-          bun run test:f11
-          stage=F11_SEO
-          bun run qa:seo:f11
+          run_stage() {
+            stage="$1"
+            shift
+            : > /tmp/p00-stage.log
+            "$@" 2>&1 | tee /tmp/p00-stage.log
+          }
+
+          run_stage TYPECHECK bun run typecheck
+          run_stage F2 bun run test:f2
+          run_stage F4_RUN_1 bun run test:f4-f5
+          run_stage F4_RUN_2 bun run test:f4-f5
+          run_stage F4_RUN_3 bun run test:f4-f5
+          run_stage F11_AUDIT bun run audit:f11
+          run_stage F11_SSR bun run test:f11
+          run_stage F11_SEO bun run qa:seo:f11
 
           stage=COMMIT
           mkdir -p .tmp-p00-diagnostic
