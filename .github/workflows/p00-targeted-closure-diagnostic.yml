@@ -13,7 +13,7 @@ permissions:
 jobs:
   targeted-closure:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 25
     steps:
       - name: Check out exact head
         uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
           no-cache: true
       - name: Install from lockfile
         run: bun install --frozen-lockfile
-      - name: Validate deterministic closure patches
+      - name: Instrument F4 submit chain
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -39,7 +39,7 @@ jobs:
           : > /tmp/p00-stage.log
           fail() {
             code=$?
-            details="$(tail -n 120 /tmp/p00-stage.log 2>/dev/null || true)"
+            details="$(tail -n 140 /tmp/p00-stage.log 2>/dev/null || true)"
             git reset --hard HEAD >/dev/null 2>&1 || true
             mkdir -p .tmp-p00-diagnostic
             {
@@ -49,7 +49,7 @@ jobs:
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add -- .tmp-p00-diagnostic/closure-status.txt
-            git commit -m "test(p00): record closure failure at $stage" >/dev/null 2>&1 || true
+            git commit -m "test(p00): capture F4 event chain at $stage" >/dev/null 2>&1 || true
             git push origin HEAD:phase/p00-format-diagnostic-20260820 >/dev/null 2>&1 || true
             exit "$code"
           }
@@ -57,87 +57,32 @@ jobs:
 
           python3 - <<'PY'
           from pathlib import Path
-
-          f2 = Path('scripts/test-f2-navigation-search.mjs')
-          source = f2.read_text()
-          desktop_old = '''    await waitForExpression(\n      client,\n      `!document.querySelector('[data-testid="desktop-menu-content"]')`,\n    );\n    const desktopClosed = await evaluate('''
-          desktop_new = '''    await waitForExpression(\n      client,\n      `!document.querySelector('[data-testid="desktop-menu-content"]')`,\n    );\n    await waitForExpression(\n      client,\n      `document.activeElement?.dataset.testid === "desktop-menu-trigger"`,\n    );\n    const desktopClosed = await evaluate('''
-          if desktop_old in source:
-              source = source.replace(desktop_old, desktop_new, 1)
-          elif 'document.activeElement?.dataset.testid === "desktop-menu-trigger"' not in source:
-              raise SystemExit('F2 desktop focus target not found')
-
-          mobile_old = '''    await waitForExpression(client, `!${bodyLockedExpression}`);\n    const mobileClosed = await evaluate('''
-          mobile_new = '''    await waitForExpression(client, `!${bodyLockedExpression}`);\n    await waitForExpression(\n      client,\n      `document.activeElement?.dataset.testid === "mobile-menu-trigger"`,\n    );\n    const mobileClosed = await evaluate('''
-          if mobile_old in source:
-              source = source.replace(mobile_old, mobile_new, 1)
-          elif 'document.activeElement?.dataset.testid === "mobile-menu-trigger"' not in source:
-              raise SystemExit('F2 mobile focus target not found')
-
-          clear_old = '''    await waitForExpression(client, `document.querySelector('[aria-label="پاک‌کردن جستجو"]')`);\n    await visibleClick(client, '[aria-label="پاک‌کردن جستجو"]');'''
-          clear_new = '''    await waitForExpression(\n      client,\n      `(() => {\n        const input = document.querySelector('[data-testid="search-input"]');\n        const target = document.querySelector('[aria-label="پاک‌کردن جستجو"]');\n        if (!(input instanceof HTMLInputElement) || !(target instanceof HTMLButtonElement)) return false;\n        const style = getComputedStyle(target);\n        const rect = target.getBoundingClientRect();\n        return input.value === 'Jordan' && !target.disabled && style.display !== 'none' &&\n          style.visibility !== 'hidden' && style.pointerEvents !== 'none' && rect.width > 0 && rect.height > 0;\n      })()`,\n    );\n    await visibleClick(client, '[aria-label="پاک‌کردن جستجو"]');'''
-          if clear_old in source:
-              source = source.replace(clear_old, clear_new, 1)
-          elif "input.value === 'Jordan'" not in source:
-              raise SystemExit('F2 clear readiness target not found')
-          f2.write_text(source)
-
-          f4 = Path('scripts/test-f4-f5-catalog-product-card.mjs')
-          source = f4.read_text()
-          old_wait = '''    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 0`,\n    );'''
-          new_wait = '''    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 10`,\n    );'''
-          if old_wait in source:
-              source = source.replace(old_wait, new_wait, 1)
-          elif "document.querySelectorAll('[data-testid=\"product-card\"]').length > 10" not in source:
-              raise SystemExit('F4 catalog readiness target not found')
-
-          old_submit = '''    await setInput(client, "#catalog-search", "Nike");\n    await click(client, 'form:has(#catalog-search) button[type="submit"]');\n    await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);'''
-          new_submit = '''    await setInput(client, "#catalog-search", "Nike");\n    await waitForExpression(\n      client,\n      `document.activeElement === document.querySelector('#catalog-search') && document.querySelector('#catalog-search')?.value === 'Nike'`,\n    );\n    await client.send("Input.dispatchKeyEvent", {\n      type: "keyDown",\n      key: "Enter",\n      code: "Enter",\n      windowsVirtualKeyCode: 13,\n    });\n    await client.send("Input.dispatchKeyEvent", {\n      type: "keyUp",\n      key: "Enter",\n      code: "Enter",\n      windowsVirtualKeyCode: 13,\n    });\n    await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);'''
-          if old_submit in source:
-              source = source.replace(old_submit, new_submit, 1)
-          elif 'windowsVirtualKeyCode: 13' not in source:
-              raise SystemExit('F4 keyboard submit target not found')
-          f4.write_text(source)
-
-          f11 = Path('scripts/audit-f11-technical-seo.mjs')
-          source = f11.read_text()
-          old = '''record(\n  "shared browser harness remains exactly at the accepted baseline",\n  git("diff", "--name-only", BASELINE, "HEAD", "--", "scripts/browser-harness.mjs").stdout === "",\n  git("diff", "--name-only", BASELINE, "HEAD", "--", "scripts/browser-harness.mjs").stdout,\n);'''
-          new = '''const browserHarnessDiff = git(\n  "diff",\n  "--name-only",\n  BASELINE,\n  "HEAD",\n  "--",\n  "scripts/browser-harness.mjs",\n).stdout;\nrecord(\n  "shared browser harness is baseline-clean inside F11 or downstream-owned after accepted F11",\n  acceptedF11IsAncestor || browserHarnessDiff === "",\n  acceptedF11IsAncestor\n    ? {\n        mode: "accepted-downstream",\n        acceptedF11: ACCEPTED_F11_SHA,\n        changed: browserHarnessDiff !== "",\n      }\n    : { mode: "phase-isolation", diff: browserHarnessDiff },\n);'''
-          if old in source:
-              source = source.replace(old, new, 1)
-          elif 'shared browser harness is baseline-clean inside F11 or downstream-owned after accepted F11' not in source:
-              raise SystemExit('F11 downstream ownership guard target not found')
-          f11.write_text(source)
+          test = Path('scripts/test-f4-f5-catalog-product-card.mjs')
+          source = test.read_text()
+          source = source.replace(
+              '''    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 0`,\n    );''',
+              '''    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 10`,\n    );''',
+              1,
+          )
+          old = '''    await setInput(client, "#catalog-search", "Nike");\n    await click(client, 'form:has(#catalog-search) button[type="submit"]');\n    await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);'''
+          new = '''    await setInput(client, "#catalog-search", "Nike");\n    await waitForExpression(\n      client,\n      `document.activeElement === document.querySelector('#catalog-search') && document.querySelector('#catalog-search')?.value === 'Nike'`,\n    );\n    await evaluate(\n      client,\n      `(() => {\n        const input = document.querySelector('#catalog-search');\n        const form = input?.closest('form');\n        window.__p00F4 = { keydowns: 0, submits: 0, submitValue: null };\n        input?.addEventListener('keydown', () => { window.__p00F4.keydowns += 1; }, { once: false });\n        form?.addEventListener('submit', () => {\n          window.__p00F4.submits += 1;\n          window.__p00F4.submitValue = input instanceof HTMLInputElement ? input.value : null;\n        }, { once: false });\n        return true;\n      })()`,\n    );\n    await client.send("Input.dispatchKeyEvent", {\n      type: "keyDown",\n      key: "Enter",\n      code: "Enter",\n      windowsVirtualKeyCode: 13,\n    });\n    await client.send("Input.dispatchKeyEvent", {\n      type: "keyUp",\n      key: "Enter",\n      code: "Enter",\n      windowsVirtualKeyCode: 13,\n    });\n    try {\n      await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);\n    } catch (error) {\n      const debug = await evaluate(\n        client,\n        `(() => {\n          const input = document.querySelector('#catalog-search');\n          const form = input?.closest('form');\n          return {\n            inputValue: input instanceof HTMLInputElement ? input.value : null,\n            activeId: document.activeElement?.id ?? null,\n            locationSearch: location.search,\n            events: window.__p00F4 ?? null,\n            formConnected: Boolean(form?.isConnected),\n            hydrated: document.documentElement.dataset.soleHydrated,\n          };\n        })()`,\n      );\n      throw new Error(`${error instanceof Error ? error.message : String(error)} DEBUG=${JSON.stringify(debug)}`);\n    }'''
+          if old not in source:
+              raise SystemExit('F4 original submit block not found')
+          test.write_text(source.replace(old, new, 1))
           PY
 
-          ./node_modules/.bin/prettier --write scripts/test-f2-navigation-search.mjs scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs
-          ./node_modules/.bin/prettier --check scripts/test-f2-navigation-search.mjs scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs
-
-          run_stage() {
-            stage="$1"
-            shift
+          ./node_modules/.bin/prettier --write scripts/test-f4-f5-catalog-product-card.mjs
+          for i in 1 2 3; do
+            stage="F4_EVENT_${i}"
             : > /tmp/p00-stage.log
-            "$@" 2>&1 | tee /tmp/p00-stage.log
-          }
+            bun run test:f4-f5 2>&1 | tee /tmp/p00-stage.log
+          done
 
-          run_stage TYPECHECK bun run typecheck
-          run_stage F2_RUN_1 bun run test:f2
-          run_stage F2_RUN_2 bun run test:f2
-          run_stage F2_RUN_3 bun run test:f2
-          run_stage F2_RUN_4 bun run test:f2
-          run_stage F4_RUN_1 bun run test:f4-f5
-          run_stage F4_RUN_2 bun run test:f4-f5
-          run_stage F4_RUN_3 bun run test:f4-f5
-          run_stage F4_RUN_4 bun run test:f4-f5
-          run_stage F11_AUDIT bun run audit:f11
-          run_stage F11_SSR bun run test:f11
-          run_stage F11_SEO bun run qa:seo:f11
-
-          stage=COMMIT
+          git reset --hard HEAD >/dev/null 2>&1
           mkdir -p .tmp-p00-diagnostic
-          printf 'PASS:DETERMINISTIC_CLOSURE_V2\n' > .tmp-p00-diagnostic/closure-status.txt
+          printf 'PASS:F4_EVENT_3X\n' > .tmp-p00-diagnostic/closure-status.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- scripts/test-f2-navigation-search.mjs scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs .tmp-p00-diagnostic/closure-status.txt
-          git commit -m 'test(p00): stabilize inherited browser readiness contracts'
-          git push origin HEAD:phase/p00-format-diagnostic-20260820
+          git add -- .tmp-p00-diagnostic/closure-status.txt
+          git commit -m 'test(p00): record F4 event-chain pass' >/dev/null 2>&1 || true
+          git push origin HEAD:phase/p00-format-diagnostic-20260820 >/dev/null 2>&1 || true
