@@ -13,7 +13,7 @@ permissions:
 jobs:
   targeted-closure:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     steps:
       - name: Check out exact head
         uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
           no-cache: true
       - name: Install from lockfile
         run: bun install --frozen-lockfile
-      - name: Validate deterministic browser closure
+      - name: Validate deterministic closure patches
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -39,7 +39,7 @@ jobs:
           : > /tmp/p00-stage.log
           fail() {
             code=$?
-            details="$(tail -n 100 /tmp/p00-stage.log 2>/dev/null || true)"
+            details="$(tail -n 120 /tmp/p00-stage.log 2>/dev/null || true)"
             git reset --hard HEAD >/dev/null 2>&1 || true
             mkdir -p .tmp-p00-diagnostic
             {
@@ -49,7 +49,7 @@ jobs:
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add -- .tmp-p00-diagnostic/closure-status.txt
-            git commit -m "test(p00): record deterministic closure failure at $stage" >/dev/null 2>&1 || true
+            git commit -m "test(p00): record closure failure at $stage" >/dev/null 2>&1 || true
             git push origin HEAD:phase/p00-format-diagnostic-20260820 >/dev/null 2>&1 || true
             exit "$code"
           }
@@ -73,6 +73,13 @@ jobs:
               source = source.replace(mobile_old, mobile_new, 1)
           elif 'document.activeElement?.dataset.testid === "mobile-menu-trigger"' not in source:
               raise SystemExit('F2 mobile focus target not found')
+
+          clear_old = '''    await waitForExpression(client, `document.querySelector('[aria-label="پاک‌کردن جستجو"]')`);\n    await visibleClick(client, '[aria-label="پاک‌کردن جستجو"]');'''
+          clear_new = '''    await waitForExpression(\n      client,\n      `(() => {\n        const input = document.querySelector('[data-testid="search-input"]');\n        const target = document.querySelector('[aria-label="پاک‌کردن جستجو"]');\n        if (!(input instanceof HTMLInputElement) || !(target instanceof HTMLButtonElement)) return false;\n        const style = getComputedStyle(target);\n        const rect = target.getBoundingClientRect();\n        return input.value === 'Jordan' && !target.disabled && style.display !== 'none' &&\n          style.visibility !== 'hidden' && style.pointerEvents !== 'none' && rect.width > 0 && rect.height > 0;\n      })()`,\n    );\n    await visibleClick(client, '[aria-label="پاک‌کردن جستجو"]');'''
+          if clear_old in source:
+              source = source.replace(clear_old, clear_new, 1)
+          elif "input.value === 'Jordan'" not in source:
+              raise SystemExit('F2 clear readiness target not found')
           f2.write_text(source)
 
           f4 = Path('scripts/test-f4-f5-catalog-product-card.mjs')
@@ -117,6 +124,7 @@ jobs:
           run_stage F2_RUN_1 bun run test:f2
           run_stage F2_RUN_2 bun run test:f2
           run_stage F2_RUN_3 bun run test:f2
+          run_stage F2_RUN_4 bun run test:f2
           run_stage F4_RUN_1 bun run test:f4-f5
           run_stage F4_RUN_2 bun run test:f4-f5
           run_stage F4_RUN_3 bun run test:f4-f5
@@ -127,7 +135,7 @@ jobs:
 
           stage=COMMIT
           mkdir -p .tmp-p00-diagnostic
-          printf 'PASS:DETERMINISTIC_CLOSURE\n' > .tmp-p00-diagnostic/closure-status.txt
+          printf 'PASS:DETERMINISTIC_CLOSURE_V2\n' > .tmp-p00-diagnostic/closure-status.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- scripts/test-f2-navigation-search.mjs scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs .tmp-p00-diagnostic/closure-status.txt
