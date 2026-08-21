@@ -2,27 +2,9 @@ import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
-import { waitForHttp } from "./browser-harness.mjs";
+import { terminateProcessTree, waitForHttp } from "./browser-harness.mjs";
 
 const ROOT = process.cwd();
-const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
-
-function waitForExit(child) {
-  if (child.exitCode !== null) return Promise.resolve();
-  return new Promise((resolve) => child.once("exit", resolve));
-}
-
-async function stopProcess(child) {
-  if (!child || child.exitCode !== null) return;
-  const exited = waitForExit(child);
-  child.kill("SIGTERM");
-  const graceful = await Promise.race([exited.then(() => true), sleep(3_000).then(() => false)]);
-  if (!graceful && child.exitCode === null) {
-    child.kill("SIGKILL");
-    await Promise.race([exited, sleep(1_000)]);
-  }
-}
-
 export async function withCatalogServer({ envName, port, logPath }, callback) {
   const externalBaseUrl = process.env[envName];
   if (externalBaseUrl) return callback(externalBaseUrl);
@@ -41,7 +23,7 @@ export async function withCatalogServer({ envName, port, logPath }, callback) {
     await waitForHttp(baseUrl, 60_000);
     return await callback(baseUrl);
   } finally {
-    await stopProcess(server);
+    await terminateProcessTree(server);
     fs.closeSync(log);
   }
 }
