@@ -31,66 +31,111 @@
     "ACTOR"
   ],
   "phases": [
-    { "id": "P00", "slug": "production-foundation", "dependsOn": ["F18"], "status": "registered" },
+    {
+      "id": "P00",
+      "slug": "production-foundation",
+      "dependsOn": [
+        "F18"
+      ],
+      "status": "completed",
+      "startSha": "6566bdcb259cae3a853162f2072ce7a700f28845",
+      "endSha": "4a62f760ba4f4dee25075a9e9f39183d6b27d896",
+      "qaResult": "PASS — Frontend CI run 990 (32499055842)",
+      "rollbackImpact": "Foundation-only; rollback target is START_SHA",
+      "acceptedAt": "2026-08-21"
+    },
     {
       "id": "P01",
       "slug": "backend-admin-product-truth",
-      "dependsOn": ["P00"],
+      "dependsOn": [
+        "P00"
+      ],
       "status": "registered"
     },
     {
       "id": "P02",
       "slug": "media-catalog-ingestion",
-      "dependsOn": ["P01"],
+      "dependsOn": [
+        "P01"
+      ],
       "status": "registered"
     },
-    { "id": "P03", "slug": "auth-customer-security", "dependsOn": ["P01"], "status": "registered" },
+    {
+      "id": "P03",
+      "slug": "auth-customer-security",
+      "dependsOn": [
+        "P01"
+      ],
+      "status": "registered"
+    },
     {
       "id": "P04",
       "slug": "size-fit-intelligence",
-      "dependsOn": ["P02", "P03"],
+      "dependsOn": [
+        "P02",
+        "P03"
+      ],
       "status": "registered"
     },
     {
       "id": "P05",
       "slug": "discovery-pdp-conversion",
-      "dependsOn": ["P02", "P04"],
+      "dependsOn": [
+        "P02",
+        "P04"
+      ],
       "status": "registered"
     },
     {
       "id": "P06",
       "slug": "cart-checkout-orders",
-      "dependsOn": ["P02", "P03"],
+      "dependsOn": [
+        "P02",
+        "P03"
+      ],
       "status": "registered"
     },
     {
       "id": "P07",
       "slug": "payment-shipping-returns",
-      "dependsOn": ["P06"],
+      "dependsOn": [
+        "P06"
+      ],
       "status": "registered"
     },
     {
       "id": "P08",
       "slug": "trust-support-postpurchase",
-      "dependsOn": ["P07"],
+      "dependsOn": [
+        "P07"
+      ],
       "status": "registered"
     },
     {
       "id": "P09",
       "slug": "loyalty-crm-notifications",
-      "dependsOn": ["P03", "P07"],
+      "dependsOn": [
+        "P03",
+        "P07"
+      ],
       "status": "registered"
     },
     {
       "id": "P10",
       "slug": "seo-content-merchant",
-      "dependsOn": ["P02", "P08"],
+      "dependsOn": [
+        "P02",
+        "P08"
+      ],
       "status": "registered"
     },
     {
       "id": "P11",
       "slug": "observability-rum-cro",
-      "dependsOn": ["P07", "P10"],
+      "dependsOn": [
+        "P07",
+        "P10"
+      ],
       "status": "registered"
     },
     {
@@ -112,7 +157,21 @@
       ],
       "status": "registered"
     },
-    { "id": "P13", "slug": "staging-acceptance", "dependsOn": ["P12"], "status": "registered" },
-    { "id": "P14", "slug": "production-release", "dependsOn": ["P13"], "status": "registered" }
+    {
+      "id": "P13",
+      "slug": "staging-acceptance",
+      "dependsOn": [
+        "P12"
+      ],
+      "status": "registered"
+    },
+    {
+      "id": "P14",
+      "slug": "production-release",
+      "dependsOn": [
+        "P13"
+      ],
+      "status": "registered"
+    }
   ]
 }

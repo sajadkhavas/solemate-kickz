@@ -222,8 +222,21 @@ async function run(baseUrl) {
 
     await viewport(client, 320, 568, true);
     await navigate(client, `${baseUrl}/cart`);
-    await waitForExpression(client, `document.querySelector('[data-cart-trigger="true"]')`);
-    await click(client, '[data-cart-trigger="true"]');
+    await waitForExpression(
+      client,
+      `(() => {
+        const target = [...document.querySelectorAll('[data-cart-trigger="true"]')].find((element) => {
+          const rect = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          return rect.width > 0 && rect.height > 0 && style.display !== 'none' &&
+            style.visibility !== 'hidden' && style.pointerEvents !== 'none';
+        });
+        if (!(target instanceof HTMLElement)) return false;
+        target.click();
+        return true;
+      })()`,
+    );
+    await sleep(180);
     await waitForExpression(client, `document.querySelector('[data-testid="cart-drawer"]')`);
     const drawer = await evaluate(
       client,

@@ -90,7 +90,9 @@ function ProductsPage() {
 
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    updateSearch({ q: localQuery.trim() || undefined });
+    const submittedQuery =
+      event.currentTarget.querySelector<HTMLInputElement>("#catalog-search")?.value ?? localQuery;
+    updateSearch({ q: submittedQuery.trim() || undefined });
   };
 
   const setSizeFilters = (sizes: number[]) => {

@@ -34,18 +34,24 @@ async function setInput(client, selector, value) {
     `(() => {
       const input = document.querySelector(${JSON.stringify(selector)});
       if (!(input instanceof HTMLInputElement)) return false;
-      input.focus();
+      input.scrollIntoView({ block: 'center', inline: 'center' });
+      input.focus({ preventScroll: true });
       input.select();
       return document.activeElement === input;
     })()`,
   );
-  if (!focused) throw new Error(`Input not found: ${selector}`);
-  await press(client, "Backspace", "Backspace");
+  if (!focused) throw new Error(`Input not found or not focusable: ${selector}`);
+
+  // Use Chrome's real text-input path instead of mutating the DOM value and
+  // dispatching a synthetic event. React 19 tracks controlled values and can
+  // legitimately ignore the latter, leaving component state stale even when
+  // the DOM appears updated.
   await client.send("Input.insertText", { text: value });
   await waitForExpression(
     client,
     `document.querySelector(${JSON.stringify(selector)})?.value === ${JSON.stringify(value)}`,
   );
+  await sleep(150);
 }
 
 async function click(client, selector) {
@@ -169,10 +175,7 @@ async function run(baseUrl) {
     record("Catalog renders real dataset cards", initialCount > 10, initialCount);
 
     await setInput(client, "#catalog-search", "Nike");
-    await evaluate(
-      client,
-      `document.querySelector('#catalog-search')?.closest('form')?.requestSubmit()`,
-    );
+    await click(client, 'form:has(#catalog-search) button[type="submit"]');
     await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);
     await waitForExpression(
       client,

@@ -65,7 +65,13 @@ if (registry?.phases?.length !== 15) failures.push("registry must contain P00-P1
 for (const [index, phase] of (registry?.phases ?? []).entries()) {
   const expected = `P${String(index).padStart(2, "0")}`;
   if (phase.id !== expected) failures.push(`expected ${expected} at registry index ${index}`);
-  if (phase.status !== "registered") failures.push(`${phase.id} must begin as registered`);
+  if (!["registered", "completed"].includes(phase.status))
+    failures.push(`${phase.id} has invalid status ${phase.status}`);
+  if (phase.status === "completed") {
+    for (const field of ["startSha", "endSha", "qaResult", "rollbackImpact", "acceptedAt"]) {
+      if (!phase[field]) failures.push(`${phase.id} completed evidence missing ${field}`);
+    }
+  }
   if (!roadmap.includes(`### ${phase.id}`)) failures.push(`roadmap missing ${phase.id}`);
 }
 

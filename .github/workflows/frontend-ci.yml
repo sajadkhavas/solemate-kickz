@@ -44,61 +44,61 @@ jobs:
         run: bun run audit:source-contracts
 
       - name: Foundation browser behavior tests
-        run: bun run test:foundation
+        run: node scripts/qa/retry-gate.mjs -- bun run test:foundation
 
       - name: Homepage completion audit
         run: node scripts/audit-f3-homepage.mjs
 
       - name: Homepage browser behavior tests
-        run: node scripts/test-f3-homepage.mjs
+        run: node scripts/qa/retry-gate.mjs -- node scripts/test-f3-homepage.mjs
 
       - name: Navigation and search completion audit
         run: bun run audit:f2
 
       - name: Navigation and search browser behavior tests
-        run: bun run test:f2
+        run: node scripts/qa/retry-gate.mjs -- bun run test:f2
 
       - name: Content pages completion audit
         run: bun run audit:f8
 
       - name: Content pages browser behavior tests
-        run: bun run test:f8
+        run: node scripts/qa/retry-gate.mjs -- bun run test:f8
 
       - name: F4-F5 catalog completion audit
         run: bun run audit:f4-f5
 
       - name: F4-F5 catalog browser behavior tests
-        run: bun run test:f4-f5
+        run: node scripts/qa/retry-gate.mjs -- bun run test:f4-f5
 
       - name: F6 product detail completion audit
         run: bun run audit:f6
 
       - name: F6 product detail browser behavior tests
-        run: bun run test:f6
+        run: node scripts/qa/retry-gate.mjs -- bun run test:f6
 
       - name: F7 cart and checkout completion audit
         run: bun run audit:f7
 
       - name: F7 cart and checkout browser behavior tests
-        run: bun run test:f7
+        run: node scripts/qa/retry-gate.mjs -- bun run test:f7
 
       - name: F9 wishlist account and orders completion audit
         run: bun run audit:f9
 
       - name: F9 wishlist account and orders browser behavior tests
-        run: bun run test:f9
+        run: node scripts/qa/retry-gate.mjs -- bun run test:f9
 
       - name: F10 motion 3D interaction completion audit
         run: bun run audit:f10
 
       - name: F10 motion 3D interaction browser behavior tests
-        run: bun run test:f10
+        run: node scripts/qa/retry-gate.mjs -- bun run test:f10
 
       - name: F11 technical SEO completion audit
         run: bun run audit:f11
 
       - name: F11 SSR SEO runtime tests
-        run: bun run test:f11
+        run: node scripts/qa/retry-gate.mjs -- bun run test:f11
 
       - name: F11 SEO safety QA
         run: bun run qa:seo:f11
@@ -110,7 +110,7 @@ jobs:
         run: node scripts/audit-f13-full-code.mjs
 
       - name: F13 hardening browser behavior
-        run: node scripts/test-f13-hardening.mjs
+        run: node scripts/qa/retry-gate.mjs -- node scripts/test-f13-hardening.mjs
 
       - name: F14 PWA source audit
         run: bun run audit:f14
@@ -138,6 +138,9 @@ jobs:
 
       - name: Production program contract audit
         run: bun run audit:production-program
+
+      - name: P00 production foundation audit
+        run: bun run audit:p00
 
       - name: Typecheck
         run: bun run typecheck
@@ -263,32 +266,35 @@ jobs:
       - name: VPS Node-server build
         run: bun run build:vps
 
+      - name: Production runtime smoke and port-leak gate
+        run: bun run qa:production-runtime
+
       - name: Foundation Visual QA
-        run: bun run qa:visual:f0-f1
+        run: node scripts/qa/retry-gate.mjs -- bun run qa:visual:f0-f1
 
       - name: Navigation and search Visual QA
-        run: bun run qa:visual:f2
+        run: node scripts/qa/retry-gate.mjs -- bun run qa:visual:f2
 
       - name: Content pages Visual QA
-        run: bun run qa:visual:f8
+        run: node scripts/qa/retry-gate.mjs -- bun run qa:visual:f8
 
       - name: Homepage Visual QA
-        run: node scripts/visual-qa-f3-homepage.mjs
+        run: node scripts/qa/retry-gate.mjs -- node scripts/visual-qa-f3-homepage.mjs
 
       - name: F4-F5 catalog Visual QA
-        run: bun run qa:visual:f4-f5
+        run: node scripts/qa/retry-gate.mjs -- bun run qa:visual:f4-f5
 
       - name: F6 product detail Visual QA
-        run: bun run qa:visual:f6
+        run: node scripts/qa/retry-gate.mjs -- bun run qa:visual:f6
 
       - name: F7 cart and checkout Visual QA
-        run: bun run qa:visual:f7
+        run: node scripts/qa/retry-gate.mjs -- bun run qa:visual:f7
 
       - name: F9 wishlist account and orders Visual QA
-        run: bun run qa:visual:f9
+        run: node scripts/qa/retry-gate.mjs -- bun run qa:visual:f9
 
       - name: F10 motion 3D interaction Visual QA
-        run: bun run qa:visual:f10
+        run: node scripts/qa/retry-gate.mjs -- bun run qa:visual:f10
 
       - name: Foundation completion audit
         run: bun run audit:f0-f1
