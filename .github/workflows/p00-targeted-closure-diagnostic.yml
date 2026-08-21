@@ -31,7 +31,7 @@ jobs:
           no-cache: true
       - name: Install from lockfile
         run: bun install --frozen-lockfile
-      - name: Validate final closure patches
+      - name: Validate route hydration and inherited gates
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -49,7 +49,7 @@ jobs:
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add -- .tmp-p00-diagnostic/closure-status.txt
-            git commit -m "test(p00): record final closure failure at $stage" >/dev/null 2>&1 || true
+            git commit -m "test(p00): record route hydration failure at $stage" >/dev/null 2>&1 || true
             git push origin HEAD:phase/p00-format-diagnostic-20260820 >/dev/null 2>&1 || true
             exit "$code"
           }
@@ -57,6 +57,28 @@ jobs:
 
           python3 - <<'PY'
           from pathlib import Path
+
+          products = Path('src/routes/products.tsx')
+          source = products.read_text()
+          source = source.replace(
+              'import { useEffect, useMemo, useState, type FormEvent } from "react";',
+              'import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";',
+              1,
+          )
+          anchor = '''  const [quickViewOpener, setQuickViewOpener] = useState<HTMLElement | null>(null);\n  const [localQuery, setLocalQuery] = useState(search.q ?? "");\n\n  useEffect(() => setLocalQuery(search.q ?? ""), [search.q]);'''
+          replacement = '''  const [quickViewOpener, setQuickViewOpener] = useState<HTMLElement | null>(null);\n  const [localQuery, setLocalQuery] = useState(search.q ?? "");\n  const catalogSearchFormRef = useRef<HTMLFormElement>(null);\n\n  useEffect(() => setLocalQuery(search.q ?? ""), [search.q]);\n  useEffect(() => {\n    const form = catalogSearchFormRef.current;\n    if (!form) return;\n    form.dataset.hydrated = "true";\n    return () => {\n      delete form.dataset.hydrated;\n    };\n  }, []);'''
+          if anchor in source:
+              source = source.replace(anchor, replacement, 1)
+          elif 'const catalogSearchFormRef = useRef<HTMLFormElement>(null);' not in source:
+              raise SystemExit('catalog hydration ref target not found')
+          source = source.replace(
+              '''          <form\n            onSubmit={submitSearch}\n            className="mt-6 grid max-w-2xl gap-2 sm:grid-cols-[1fr_auto]"''',
+              '''          <form\n            ref={catalogSearchFormRef}\n            data-testid="catalog-search-form"\n            onSubmit={submitSearch}\n            className="mt-6 grid max-w-2xl gap-2 sm:grid-cols-[1fr_auto]"''',
+              1,
+          )
+          if 'data-testid="catalog-search-form"' not in source:
+              raise SystemExit('catalog hydration form marker missing')
+          products.write_text(source)
 
           f2 = Path('scripts/test-f2-navigation-search.mjs')
           source = f2.read_text()
@@ -86,15 +108,17 @@ jobs:
           f4 = Path('scripts/test-f4-f5-catalog-product-card.mjs')
           source = f4.read_text()
           source = source.replace(
-              '''    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 0`,\n    );''',
-              '''    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 10`,\n    );''',
+              '''    await navigate(client, `${baseUrl}/products`);\n    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 0`,\n    );''',
+              '''    await navigate(client, `${baseUrl}/products`);\n    await waitForExpression(\n      client,\n      `document.querySelector('[data-testid="catalog-search-form"]')?.dataset.hydrated === 'true'`,\n    );\n    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 10`,\n    );''',
               1,
           )
           source = source.replace(
               '''    await setInput(client, "#catalog-search", "Nike");\n    await click(client, 'form:has(#catalog-search) button[type="submit"]');\n    await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);''',
-              '''    await setInput(client, "#catalog-search", "Nike");\n    await waitForExpression(\n      client,\n      `document.querySelector('#catalog-search')?.value === 'Nike'`,\n    );\n    const submitted = await evaluate(\n      client,\n      `(() => {\n        const input = document.querySelector('#catalog-search');\n        const form = input?.closest('form');\n        const button = form?.querySelector('button[type="submit"]');\n        if (!(form instanceof HTMLFormElement) || !(button instanceof HTMLButtonElement)) return false;\n        form.requestSubmit(button);\n        return true;\n      })()`,\n    );\n    if (!submitted) throw new Error("Catalog search form could not be submitted");\n    await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);''',
+              '''    await setInput(client, "#catalog-search", "Nike");\n    await waitForExpression(client, `document.querySelector('#catalog-search')?.value === 'Nike'`);\n    const submitted = await evaluate(\n      client,\n      `(() => {\n        const form = document.querySelector('[data-testid="catalog-search-form"]');\n        const button = form?.querySelector('button[type="submit"]');\n        if (!(form instanceof HTMLFormElement) || !(button instanceof HTMLButtonElement)) return false;\n        form.requestSubmit(button);\n        return true;\n      })()`,\n    );\n    if (!submitted) throw new Error("Catalog search form could not be submitted");\n    await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);''',
               1,
           )
+          if "dataset.hydrated === 'true'" not in source:
+              raise SystemExit('F4 route hydration wait missing')
           if 'form.requestSubmit(button);' not in source:
               raise SystemExit('F4 requestSubmit patch missing')
           f4.write_text(source)
@@ -111,8 +135,8 @@ jobs:
           f11.write_text(source)
           PY
 
-          ./node_modules/.bin/prettier --write scripts/test-f2-navigation-search.mjs scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs
-          ./node_modules/.bin/prettier --check scripts/test-f2-navigation-search.mjs scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs
+          ./node_modules/.bin/prettier --write src/routes/products.tsx scripts/test-f2-navigation-search.mjs scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs
+          ./node_modules/.bin/prettier --check src/routes/products.tsx scripts/test-f2-navigation-search.mjs scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs
 
           run_stage() {
             stage="$1"
@@ -138,9 +162,9 @@ jobs:
 
           stage=COMMIT
           mkdir -p .tmp-p00-diagnostic
-          printf 'PASS:FINAL_TARGETED_CLOSURE\n' > .tmp-p00-diagnostic/closure-status.txt
+          printf 'PASS:ROUTE_HYDRATION_CLOSURE\n' > .tmp-p00-diagnostic/closure-status.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- scripts/test-f2-navigation-search.mjs scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs .tmp-p00-diagnostic/closure-status.txt
-          git commit -m 'test(p00): stabilize inherited browser and F11 contracts'
+          git add -- src/routes/products.tsx scripts/test-f2-navigation-search.mjs scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs .tmp-p00-diagnostic/closure-status.txt
+          git commit -m 'test(p00): stabilize route hydration and inherited browser contracts'
           git push origin HEAD:phase/p00-format-diagnostic-20260820
