@@ -1,6 +1,6 @@
-FAIL:F2
+FAIL:F2_RUN_3
 $ node scripts/test-f2-navigation-search.mjs
-FAIL Desktop Escape close and focus restoration: {"closed":true}
-{"total":21,"passed":20,"failed":1}
-F2 behavior report: artifacts/reports/f2-navigation-search-behavior.json
+Error: Visible target not found: [aria-label="پاک‌کردن جستجو"]
+    at visibleClick (file:///home/runner/work/solemate-kickz/solemate-kickz/scripts/test-f2-navigation-search.mjs:53:23)
+    at async main (file:///home/runner/work/solemate-kickz/solemate-kickz/scripts/test-f2-navigation-search.mjs:362:5)
 error: script "test:f2" exited with code 1
