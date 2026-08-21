@@ -154,14 +154,43 @@ class CdpClient {
   }
 }
 
-async function stopProcess(child) {
-  if (child.exitCode !== null) return;
-  const exited = new Promise((resolve) => child.once("exit", resolve));
-  child.kill("SIGTERM");
-  const graceful = await Promise.race([exited.then(() => true), sleep(3_000).then(() => false)]);
-  if (!graceful && child.exitCode === null) {
-    child.kill("SIGKILL");
-    await Promise.race([exited, sleep(1_000)]);
+function descendants(rootPid) {
+  const result = spawnSync("ps", ["-eo", "pid=,ppid="], { encoding: "utf8" });
+  if (result.status !== 0) return [];
+  const children = new Map();
+  for (const line of result.stdout.trim().split("\\n")) {
+    const [pid, ppid] = line.trim().split(/\\s+/).map(Number);
+    if (!children.has(ppid)) children.set(ppid, []);
+    children.get(ppid).push(pid);
+  }
+  const found = [];
+  const visit = (pid) => {
+    for (const child of children.get(pid) ?? []) {
+      visit(child);
+      found.push(child);
+    }
+  };
+  visit(rootPid);
+  return found;
+}
+
+export async function terminateProcessTree(child) {
+  if (!child || child.exitCode !== null) return;
+  const pids = [...descendants(child.pid), child.pid];
+  for (const pid of pids) {
+    try {
+      process.kill(pid, "SIGTERM");
+    } catch {
+      // The process may have exited between discovery and signaling.
+    }
+  }
+  for (let attempt = 0; attempt < 30 && child.exitCode === null; attempt += 1) await sleep(100);
+  for (const pid of pids) {
+    try {
+      process.kill(pid, "SIGKILL");
+    } catch {
+      // A process already terminated by SIGTERM needs no forced signal.
+    }
   }
 }
 
@@ -207,7 +236,7 @@ export async function openBrowser({ debugPort, logPath, width = 1280, height = 8
     client,
     async close() {
       await client.close();
-      await stopProcess(chrome);
+      await terminateProcessTree(chrome);
       fs.closeSync(log);
     },
   };
