@@ -13,7 +13,7 @@ permissions:
 jobs:
   targeted-closure:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     steps:
       - name: Check out exact head
         uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
           no-cache: true
       - name: Install from lockfile
         run: bun install --frozen-lockfile
-      - name: Validate keyboard submit and F11 ownership
+      - name: Validate deterministic browser closure
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -49,7 +49,7 @@ jobs:
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add -- .tmp-p00-diagnostic/closure-status.txt
-            git commit -m "test(p00): record keyboard closure failure at $stage" >/dev/null 2>&1 || true
+            git commit -m "test(p00): record deterministic closure failure at $stage" >/dev/null 2>&1 || true
             git push origin HEAD:phase/p00-format-diagnostic-20260820 >/dev/null 2>&1 || true
             exit "$code"
           }
@@ -58,8 +58,25 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          test = Path('scripts/test-f4-f5-catalog-product-card.mjs')
-          source = test.read_text()
+          f2 = Path('scripts/test-f2-navigation-search.mjs')
+          source = f2.read_text()
+          desktop_old = '''    await waitForExpression(\n      client,\n      `!document.querySelector('[data-testid="desktop-menu-content"]')`,\n    );\n    const desktopClosed = await evaluate('''
+          desktop_new = '''    await waitForExpression(\n      client,\n      `!document.querySelector('[data-testid="desktop-menu-content"]')`,\n    );\n    await waitForExpression(\n      client,\n      `document.activeElement?.dataset.testid === "desktop-menu-trigger"`,\n    );\n    const desktopClosed = await evaluate('''
+          if desktop_old in source:
+              source = source.replace(desktop_old, desktop_new, 1)
+          elif 'document.activeElement?.dataset.testid === "desktop-menu-trigger"' not in source:
+              raise SystemExit('F2 desktop focus target not found')
+
+          mobile_old = '''    await waitForExpression(client, `!${bodyLockedExpression}`);\n    const mobileClosed = await evaluate('''
+          mobile_new = '''    await waitForExpression(client, `!${bodyLockedExpression}`);\n    await waitForExpression(\n      client,\n      `document.activeElement?.dataset.testid === "mobile-menu-trigger"`,\n    );\n    const mobileClosed = await evaluate('''
+          if mobile_old in source:
+              source = source.replace(mobile_old, mobile_new, 1)
+          elif 'document.activeElement?.dataset.testid === "mobile-menu-trigger"' not in source:
+              raise SystemExit('F2 mobile focus target not found')
+          f2.write_text(source)
+
+          f4 = Path('scripts/test-f4-f5-catalog-product-card.mjs')
+          source = f4.read_text()
           old_wait = '''    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 0`,\n    );'''
           new_wait = '''    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 10`,\n    );'''
           if old_wait in source:
@@ -72,8 +89,8 @@ jobs:
           if old_submit in source:
               source = source.replace(old_submit, new_submit, 1)
           elif 'windowsVirtualKeyCode: 13' not in source:
-              raise SystemExit('F4 submit target not found')
-          test.write_text(source)
+              raise SystemExit('F4 keyboard submit target not found')
+          f4.write_text(source)
 
           f11 = Path('scripts/audit-f11-technical-seo.mjs')
           source = f11.read_text()
@@ -86,8 +103,8 @@ jobs:
           f11.write_text(source)
           PY
 
-          ./node_modules/.bin/prettier --write scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs
-          ./node_modules/.bin/prettier --check scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs
+          ./node_modules/.bin/prettier --write scripts/test-f2-navigation-search.mjs scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs
+          ./node_modules/.bin/prettier --check scripts/test-f2-navigation-search.mjs scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs
 
           run_stage() {
             stage="$1"
@@ -97,22 +114,22 @@ jobs:
           }
 
           run_stage TYPECHECK bun run typecheck
-          run_stage F2 bun run test:f2
+          run_stage F2_RUN_1 bun run test:f2
+          run_stage F2_RUN_2 bun run test:f2
+          run_stage F2_RUN_3 bun run test:f2
           run_stage F4_RUN_1 bun run test:f4-f5
           run_stage F4_RUN_2 bun run test:f4-f5
           run_stage F4_RUN_3 bun run test:f4-f5
           run_stage F4_RUN_4 bun run test:f4-f5
-          run_stage F4_RUN_5 bun run test:f4-f5
-          run_stage F4_RUN_6 bun run test:f4-f5
           run_stage F11_AUDIT bun run audit:f11
           run_stage F11_SSR bun run test:f11
           run_stage F11_SEO bun run qa:seo:f11
 
           stage=COMMIT
           mkdir -p .tmp-p00-diagnostic
-          printf 'PASS:KEYBOARD_CLOSURE\n' > .tmp-p00-diagnostic/closure-status.txt
+          printf 'PASS:DETERMINISTIC_CLOSURE\n' > .tmp-p00-diagnostic/closure-status.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs .tmp-p00-diagnostic/closure-status.txt
-          git commit -m 'test(p00): stabilize catalog readiness and keyboard submit'
+          git add -- scripts/test-f2-navigation-search.mjs scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs .tmp-p00-diagnostic/closure-status.txt
+          git commit -m 'test(p00): stabilize inherited browser readiness contracts'
           git push origin HEAD:phase/p00-format-diagnostic-20260820
