@@ -224,9 +224,19 @@ async function run(baseUrl) {
     await navigate(client, `${baseUrl}/cart`);
     await waitForExpression(
       client,
-      `[...document.querySelectorAll('[data-cart-trigger="true"]')].some((element) => { const rect = element.getBoundingClientRect(); const style = getComputedStyle(element); return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden' && style.pointerEvents !== 'none'; })`,
+      `(() => {
+        const target = [...document.querySelectorAll('[data-cart-trigger="true"]')].find((element) => {
+          const rect = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          return rect.width > 0 && rect.height > 0 && style.display !== 'none' &&
+            style.visibility !== 'hidden' && style.pointerEvents !== 'none';
+        });
+        if (!(target instanceof HTMLElement)) return false;
+        target.click();
+        return true;
+      })()`,
     );
-    await click(client, '[data-cart-trigger="true"]');
+    await sleep(180);
     await waitForExpression(client, `document.querySelector('[data-testid="cart-drawer"]')`);
     const drawer = await evaluate(
       client,
