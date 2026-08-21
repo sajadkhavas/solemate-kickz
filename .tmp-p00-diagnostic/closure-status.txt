@@ -1,1 +1,7 @@
-PASS:F4_INSTRUMENTED
+FAIL:F4_INSTRUMENTED_1
+$ node scripts/test-f4-f5-catalog-product-card.mjs
+FAIL Catalog renders real dataset cards: 3
+Error: Timed out waiting for expression: new URLSearchParams(location.search).get('q') === 'Nike' DEBUG={"inputValue":"","inputAttribute":"","localQuery":"","searchQuery":"","lastSubmittedQuery":null,"locationSearch":"","hydrated":"true","activeId":"","submitDisabled":false}
+    at run (file:///home/runner/work/solemate-kickz/solemate-kickz/scripts/test-f4-f5-catalog-product-card.mjs:201:13)
+    at async withCatalogServer (file:///home/runner/work/solemate-kickz/solemate-kickz/scripts/f4-f5-browser-runner.mjs:42:12)
+error: script "test:f4-f5" exited with code 1
