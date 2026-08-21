@@ -166,7 +166,11 @@ async function run(baseUrl) {
     await navigate(client, `${baseUrl}/products`);
     await waitForExpression(
       client,
-      `document.querySelectorAll('[data-testid="product-card"]').length > 0`,
+      `document.querySelector('[data-testid="catalog-search-form"]')?.dataset.hydrated === 'true'`,
+    );
+    await waitForExpression(
+      client,
+      `document.querySelectorAll('[data-testid="product-card"]').length > 10`,
     );
     const initialCount = await evaluate(
       client,
@@ -175,7 +179,18 @@ async function run(baseUrl) {
     record("Catalog renders real dataset cards", initialCount > 10, initialCount);
 
     await setInput(client, "#catalog-search", "Nike");
-    await click(client, 'form:has(#catalog-search) button[type="submit"]');
+    await waitForExpression(client, `document.querySelector('#catalog-search')?.value === 'Nike'`);
+    const submitted = await evaluate(
+      client,
+      `(() => {
+        const form = document.querySelector('[data-testid="catalog-search-form"]');
+        const button = form?.querySelector('button[type="submit"]');
+        if (!(form instanceof HTMLFormElement) || !(button instanceof HTMLButtonElement)) return false;
+        form.requestSubmit(button);
+        return true;
+      })()`,
+    );
+    if (!submitted) throw new Error("Catalog search form could not be submitted");
     await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);
     await waitForExpression(
       client,

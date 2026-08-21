@@ -204,6 +204,10 @@ async function main() {
       client,
       `!document.querySelector('[data-testid="desktop-menu-content"]')`,
     );
+    await waitForExpression(
+      client,
+      `document.activeElement?.dataset.testid === "desktop-menu-trigger"`,
+    );
     const desktopClosed = await evaluate(
       client,
       `({
@@ -256,6 +260,10 @@ async function main() {
       `!document.querySelector('[data-testid="mobile-menu-content"]')`,
     );
     await waitForExpression(client, `!${bodyLockedExpression}`);
+    await waitForExpression(
+      client,
+      `document.activeElement?.dataset.testid === "mobile-menu-trigger"`,
+    );
     const mobileClosed = await evaluate(
       client,
       `({
@@ -350,7 +358,18 @@ async function main() {
 
     await openSearch(client);
     await setSearchInput(client, "Jordan");
-    await waitForExpression(client, `document.querySelector('[aria-label="پاک‌کردن جستجو"]')`);
+    await waitForExpression(
+      client,
+      `(() => {
+        const input = document.querySelector('[data-testid="search-input"]');
+        const target = document.querySelector('[aria-label="پاک‌کردن جستجو"]');
+        if (!(input instanceof HTMLInputElement) || !(target instanceof HTMLButtonElement)) return false;
+        const style = getComputedStyle(target);
+        const rect = target.getBoundingClientRect();
+        return input.value === 'Jordan' && !target.disabled && style.display !== 'none' &&
+          style.visibility !== 'hidden' && style.pointerEvents !== 'none' && rect.width > 0 && rect.height > 0;
+      })()`,
+    );
     await visibleClick(client, '[aria-label="پاک‌کردن جستجو"]');
     await waitForExpression(
       client,

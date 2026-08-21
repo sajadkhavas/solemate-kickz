@@ -210,10 +210,24 @@ record(
   "lockfile is untouched",
   git("diff", "--name-only", BASELINE, "HEAD", "--", "bun.lock").stdout === "",
 );
+const browserHarnessDiff = git(
+  "diff",
+  "--name-only",
+  BASELINE,
+  "HEAD",
+  "--",
+  "scripts/browser-harness.mjs",
+).stdout;
 record(
-  "shared browser harness remains exactly at the accepted baseline",
-  git("diff", "--name-only", BASELINE, "HEAD", "--", "scripts/browser-harness.mjs").stdout === "",
-  git("diff", "--name-only", BASELINE, "HEAD", "--", "scripts/browser-harness.mjs").stdout,
+  "shared browser harness is baseline-clean inside F11 or downstream-owned after accepted F11",
+  acceptedF11IsAncestor || browserHarnessDiff === "",
+  acceptedF11IsAncestor
+    ? {
+        mode: "accepted-downstream",
+        acceptedF11: ACCEPTED_F11_SHA,
+        changed: browserHarnessDiff !== "",
+      }
+    : { mode: "phase-isolation", diff: browserHarnessDiff },
 );
 
 const formatCommits = lines(

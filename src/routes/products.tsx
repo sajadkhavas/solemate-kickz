@@ -2,7 +2,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { Flame, Grid3x3, LayoutList, SlidersHorizontal, Sparkles, Tag, X } from "lucide-react";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 import {
   CATALOG_MAX_PRICE,
@@ -62,8 +62,17 @@ function ProductsPage() {
   const [quickViewShoe, setQuickViewShoe] = useState<Shoe | null>(null);
   const [quickViewOpener, setQuickViewOpener] = useState<HTMLElement | null>(null);
   const [localQuery, setLocalQuery] = useState(search.q ?? "");
+  const catalogSearchFormRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => setLocalQuery(search.q ?? ""), [search.q]);
+  useEffect(() => {
+    const form = catalogSearchFormRef.current;
+    if (!form) return;
+    form.dataset.hydrated = "true";
+    return () => {
+      delete form.dataset.hydrated;
+    };
+  }, []);
 
   const selectedSizes = useMemo(() => parseSizeParam(search.sizes), [search.sizes]);
   const products = useMemo(() => filterCatalog(SHOES, search), [search]);
@@ -123,6 +132,8 @@ function ProductsPage() {
           </p>
 
           <form
+            ref={catalogSearchFormRef}
+            data-testid="catalog-search-form"
             onSubmit={submitSearch}
             className="mt-6 grid max-w-2xl gap-2 sm:grid-cols-[1fr_auto]"
           >
