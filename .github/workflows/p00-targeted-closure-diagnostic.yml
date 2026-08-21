@@ -13,7 +13,7 @@ permissions:
 jobs:
   targeted-closure:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Check out exact head
         uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
           no-cache: true
       - name: Install from lockfile
         run: bun install --frozen-lockfile
-      - name: Instrument and reproduce catalog submit
+      - name: Stress instrumented catalog submit
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -39,7 +39,7 @@ jobs:
           : > /tmp/p00-stage.log
           fail() {
             code=$?
-            details="$(tail -n 100 /tmp/p00-stage.log 2>/dev/null || true)"
+            details="$(tail -n 120 /tmp/p00-stage.log 2>/dev/null || true)"
             git reset --hard HEAD >/dev/null 2>&1 || true
             mkdir -p .tmp-p00-diagnostic
             {
@@ -91,16 +91,17 @@ jobs:
           PY
 
           ./node_modules/.bin/prettier --write src/routes/products.tsx scripts/test-f4-f5-catalog-product-card.mjs
-          stage=F4_INSTRUMENTED
-          bun run test:f4-f5 2>&1 | tee /tmp/p00-stage.log
+          for i in 1 2 3 4 5 6; do
+            stage="F4_INSTRUMENTED_${i}"
+            : > /tmp/p00-stage.log
+            bun run test:f4-f5 2>&1 | tee /tmp/p00-stage.log
+          done
 
-          mkdir -p .tmp-p00-diagnostic
-          printf 'PASS:F4_INSTRUMENTED\n' > .tmp-p00-diagnostic/closure-status.txt
           git reset --hard HEAD >/dev/null 2>&1
           mkdir -p .tmp-p00-diagnostic
-          printf 'PASS:F4_INSTRUMENTED\n' > .tmp-p00-diagnostic/closure-status.txt
+          printf 'PASS:F4_INSTRUMENTED_6X\n' > .tmp-p00-diagnostic/closure-status.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- .tmp-p00-diagnostic/closure-status.txt
-          git commit -m 'test(p00): record instrumented F4 pass' >/dev/null 2>&1 || true
+          git commit -m 'test(p00): record six stable instrumented F4 runs' >/dev/null 2>&1 || true
           git push origin HEAD:phase/p00-format-diagnostic-20260820 >/dev/null 2>&1 || true
