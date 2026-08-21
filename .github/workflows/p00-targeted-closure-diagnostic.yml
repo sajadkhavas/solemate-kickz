@@ -31,7 +31,7 @@ jobs:
           no-cache: true
       - name: Install from lockfile
         run: bun install --frozen-lockfile
-      - name: Validate final targeted patches
+      - name: Validate keyboard submit and F11 ownership
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -49,7 +49,7 @@ jobs:
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add -- .tmp-p00-diagnostic/closure-status.txt
-            git commit -m "test(p00): record final targeted failure at $stage" >/dev/null 2>&1 || true
+            git commit -m "test(p00): record keyboard closure failure at $stage" >/dev/null 2>&1 || true
             git push origin HEAD:phase/p00-format-diagnostic-20260820 >/dev/null 2>&1 || true
             exit "$code"
           }
@@ -60,12 +60,19 @@ jobs:
 
           test = Path('scripts/test-f4-f5-catalog-product-card.mjs')
           source = test.read_text()
-          old = '''    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 0`,\n    );'''
-          new = '''    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 10`,\n    );'''
-          if old in source:
-              source = source.replace(old, new, 1)
+          old_wait = '''    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 0`,\n    );'''
+          new_wait = '''    await waitForExpression(\n      client,\n      `document.querySelectorAll('[data-testid="product-card"]').length > 10`,\n    );'''
+          if old_wait in source:
+              source = source.replace(old_wait, new_wait, 1)
           elif "document.querySelectorAll('[data-testid=\"product-card\"]').length > 10" not in source:
-              raise SystemExit('F4 initial catalog readiness target not found')
+              raise SystemExit('F4 catalog readiness target not found')
+
+          old_submit = '''    await setInput(client, "#catalog-search", "Nike");\n    await click(client, 'form:has(#catalog-search) button[type="submit"]');\n    await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);'''
+          new_submit = '''    await setInput(client, "#catalog-search", "Nike");\n    await waitForExpression(\n      client,\n      `document.activeElement === document.querySelector('#catalog-search') && document.querySelector('#catalog-search')?.value === 'Nike'`,\n    );\n    await client.send("Input.dispatchKeyEvent", {\n      type: "keyDown",\n      key: "Enter",\n      code: "Enter",\n      windowsVirtualKeyCode: 13,\n    });\n    await client.send("Input.dispatchKeyEvent", {\n      type: "keyUp",\n      key: "Enter",\n      code: "Enter",\n      windowsVirtualKeyCode: 13,\n    });\n    await waitForExpression(client, `new URLSearchParams(location.search).get('q') === 'Nike'`);'''
+          if old_submit in source:
+              source = source.replace(old_submit, new_submit, 1)
+          elif 'windowsVirtualKeyCode: 13' not in source:
+              raise SystemExit('F4 submit target not found')
           test.write_text(source)
 
           f11 = Path('scripts/audit-f11-technical-seo.mjs')
@@ -103,9 +110,9 @@ jobs:
 
           stage=COMMIT
           mkdir -p .tmp-p00-diagnostic
-          printf 'PASS:TARGETED_CLOSURE\n' > .tmp-p00-diagnostic/closure-status.txt
+          printf 'PASS:KEYBOARD_CLOSURE\n' > .tmp-p00-diagnostic/closure-status.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- scripts/test-f4-f5-catalog-product-card.mjs scripts/audit-f11-technical-seo.mjs .tmp-p00-diagnostic/closure-status.txt
-          git commit -m 'test(p00): stabilize catalog readiness and downstream F11 ownership'
+          git commit -m 'test(p00): stabilize catalog readiness and keyboard submit'
           git push origin HEAD:phase/p00-format-diagnostic-20260820
