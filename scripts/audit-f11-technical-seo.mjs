@@ -214,7 +214,9 @@ const browserHarness = read("scripts/browser-harness.mjs");
 const browserHarnessChanged =
   git("diff", "--name-only", BASELINE, "HEAD", "--", "scripts/browser-harness.mjs").stdout !== "";
 const controlledCdpInputHardening =
-  browserHarness.includes('if (method === "Input.insertText" && typeof params.text === "string")') &&
+  browserHarness.includes(
+    'if (method === "Input.insertText" && typeof params.text === "string")',
+  ) &&
   browserHarness.includes("return this.insertText(params.text)") &&
   browserHarness.includes("sendRaw(method, params = {})") &&
   browserHarness.includes("Input.dispatchKeyEvent");
