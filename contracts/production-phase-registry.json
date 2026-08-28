@@ -50,7 +50,12 @@
       "dependsOn": [
         "P00"
       ],
-      "status": "registered"
+      "status": "in_progress",
+      "startSha": "c03f345071c6f7f34a67ebc63e9975233c45dd79",
+      "branch": "phase/sole-p01-backend-admin-product-truth",
+      "startedAt": "2026-08-28",
+      "architecture": "Laravel 13 + PHP 8.3+ + Filament 5 + MySQL; LBB/Winimi are read-only selective donors",
+      "currentGate": "Create independent sajadkhavas/sole-backend repository and record initial SHA"
     },
     {
       "id": "P02",

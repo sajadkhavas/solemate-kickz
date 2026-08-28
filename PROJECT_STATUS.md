@@ -2,7 +2,7 @@
 
 **Repository:** [sajadkhavas/solemate-kickz](https://github.com/sajadkhavas/solemate-kickz)  
 **Status last reconciled:** 2026-08-28  
-**Document baseline:** `main@0881fe19e8c92c36aca61f29f235d99888bf21d6`  
+**Document baseline:** `main@c03f345071c6f7f34a67ebc63e9975233c45dd79`  
 **Purpose:** A new contributor or AI chat must be able to continue SOLE without asking the owner to repeat project history.
 
 ## 1. Reading order and source of truth
@@ -24,7 +24,7 @@ If this document and live GitHub history disagree, GitHub commit/PR history and 
 SOLE is a sneaker commerce product.
 
 - **Frontend:** TanStack Start with React, full-document SSR, streaming/server capabilities, Vite-based build, Node production runtime.
-- **Backend target:** a new independent repository, intended name `sajadkhavas/sole-backend`, using Laravel 12 + Filament, MySQL, and an API consumed by the TanStack SSR frontend.
+- **Backend target:** a new independent repository, intended name `sajadkhavas/sole-backend`, using Laravel 13 + Filament 5, PHP 8.3+, MySQL, and an API consumed by the TanStack SSR frontend.
 - **Primary backend donor:** `sajadkhavas/lbb-backend`, reviewed baseline `integration/backend-final-push-reviewed@bc6f53f9cc9b79d8e089fe35b543ad32f5c33217`.
 - **Selective donor:** `sajadkhavas/winimi-bakery-backend`, reviewed media baseline `phase-21/media-release-v1@19d294d8dd835571ee73b9330dff830ed1dda0ed`.
 - **Rule:** do not fork/copy either donor blindly. Build fresh SOLE migrations and copy only reviewed domain modules. Never copy donor data, secrets, bakery/ToolMaster legacy, prototype routes, or test placeholders.
@@ -84,7 +84,7 @@ P01–P14 remain. The step counts below are the agreed execution breakdown; a ph
 
 | Phase | Scope | Planned steps | Depends on | Server required? |
 |---|---|---:|---|---|
-| P01 | Backend, admin and product truth | 7 | P00 | No |
+| P01 | Backend, admin and product truth | 7 | P00 | No — **In progress** |
 | P02 | Media and catalog ingestion | 6 | P01 | No |
 | P03 | Authentication and customer security | 6 | P01 | No |
 | P04 | Size and fit intelligence | 5 | P02, P03 | No |
@@ -192,7 +192,7 @@ No prototype, mock, test OTP, sandbox gateway or fake product truth may cross in
 
 ## 8. Next action
 
-The next dependency-ready phase is **P01 — Backend, Admin and Product Truth**.
+**P01 — Backend, Admin and Product Truth is in progress.** The frontend start SHA is `c03f345071c6f7f34a67ebc63e9975233c45dd79`; branch `phase/sole-p01-backend-admin-product-truth`. Backend repository creation and its initial SHA are the first open gate.
 
 Before coding P01, verify whether `sajadkhavas/sole-backend` already exists. If it does not, create it as an independent repository and register its initial SHA in the P01 handoff. The frontend repository must retain API/OpenAPI contracts and cross-repository integration evidence.
 
