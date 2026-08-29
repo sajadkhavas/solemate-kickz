@@ -11,9 +11,7 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 const isNodeServerBuild = process.env.SOLE_DEPLOY_TARGET === "node-server";
 const lifecycleEvent = process.env.npm_lifecycle_event;
 const isExplicitProductionBuild =
-  lifecycleEvent === "build" ||
-  lifecycleEvent === "build:vps" ||
-  process.argv.includes("build");
+  lifecycleEvent === "build" || lifecycleEvent === "build:vps" || process.argv.includes("build");
 const isProductionBuild = isNodeServerBuild || isExplicitProductionBuild;
 const productionCatalogModule = fileURLToPath(
   new URL("./src/data/production-shoes.ts", import.meta.url),
