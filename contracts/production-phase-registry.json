@@ -55,7 +55,15 @@
       "branch": "phase/sole-p01-backend-admin-product-truth",
       "startedAt": "2026-08-28",
       "architecture": "Laravel 13 + PHP 8.3+ + Filament 5 + MySQL; LBB/Winimi are read-only selective donors",
-      "currentGate": "Create independent sajadkhavas/sole-backend repository and record initial SHA"
+      "currentGate": "P01.2 admin identity, deny-by-default RBAC, and mutation audit",
+      "backendRepository": "sajadkhavas/sole-backend",
+      "backendStartSha": "c0a1426b4e5ec818cdedce75490e2bcc7b9689c6",
+      "backendCurrentSha": "a55bad8b65e5c2608616053d825055f4be4d62bc",
+      "backendPullRequest": "https://github.com/sajadkhavas/sole-backend/pull/1",
+      "frontendPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/31",
+      "completedParts": [
+        "P01.1"
+      ]
     },
     {
       "id": "P02",
