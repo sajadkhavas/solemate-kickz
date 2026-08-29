@@ -2,13 +2,16 @@
 
 ## Phase record
 
-- STATUS: IN_PROGRESS — repository creation gate
+- STATUS: IN_PROGRESS — P01.1 baseline registered; P01.2 is next
 - FRONTEND_REPOSITORY: `sajadkhavas/solemate-kickz`
 - BACKEND_TARGET: `sajadkhavas/sole-backend`
 - BRANCH: `phase/sole-p01-backend-admin-product-truth`
 - START_SHA: `c03f345071c6f7f34a67ebc63e9975233c45dd79`
+- BACKEND_START_SHA: `c0a1426b4e5ec818cdedce75490e2bcc7b9689c6`
+- BACKEND_CURRENT_SHA: `a55bad8b65e5c2608616053d825055f4be4d62bc`
+- BACKEND_PR: [sole-backend#1](https://github.com/sajadkhavas/sole-backend/pull/1)
 - END_SHA: pending
-- PR: pending
+- PR: [frontend#31](https://github.com/sajadkhavas/solemate-kickz/pull/31)
 - STARTED_AT: 2026-08-28
 - SERVER_REQUIRED: no
 - ROLLBACK_IMPACT: documentation/contract changes roll back to START_SHA; backend rollback target will be its initial accepted SHA
@@ -46,9 +49,11 @@ Create an independent, current, production-oriented backend and one authoritativ
 
 P02 media/import, P03 customer auth/OTP, P04 fit, P05 ranking/conversion, P06 cart/orders, P07 payment/shipping/returns, production server activation and all donor data/secrets.
 
-## Current blocker
+## Current state
 
-The connected GitHub capability can inspect and mutate existing repositories but cannot create a new repository. `sajadkhavas/sole-backend` does not currently exist. The owner must create one empty public repository (no template files required) or provide an existing empty repository. After it exists, execution resumes at P01.1 without changing this START_SHA.
+The independent backend repository exists. P01.1 established the Laravel 13 / Filament 5 / MySQL baseline, Composer lockfile, health endpoint, production guards, immutable release contract, local quality evidence, and MySQL GitHub Actions gate. The backend Draft PR is [#1](https://github.com/sajadkhavas/sole-backend/pull/1).
+
+Next gate: P01.2 admin identity, deny-by-default panel authorization, RBAC, and mutation audit.
 
 ## QA plan
 
@@ -70,4 +75,4 @@ See `docs/backend/P01-ARCHITECTURE-ADR.md`. Decisions were checked against curre
 
 ## Known limitations
 
-No backend repository or backend SHA exists yet. No implementation, test or CI pass is claimed. The phase remains open.
+P01.1 local gates passed: Composer strict validation, Pint, 4 PHPUnit tests / 6 assertions, and production configuration cache. Exact-head GitHub Actions evidence is still pending, so P01 remains open.
