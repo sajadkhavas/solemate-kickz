@@ -34,9 +34,7 @@
     {
       "id": "P00",
       "slug": "production-foundation",
-      "dependsOn": [
-        "F18"
-      ],
+      "dependsOn": ["F18"],
       "status": "completed",
       "startSha": "6566bdcb259cae3a853162f2072ce7a700f28845",
       "endSha": "4a62f760ba4f4dee25075a9e9f39183d6b27d896",
@@ -47,144 +45,34 @@
     {
       "id": "P01",
       "slug": "backend-admin-product-truth",
-      "dependsOn": [
-        "P00"
-      ],
-      "status": "in_progress",
+      "dependsOn": ["P00"],
+      "status": "registered",
       "startSha": "c03f345071c6f7f34a67ebc63e9975233c45dd79",
       "branch": "phase/sole-p01-backend-admin-product-truth",
       "startedAt": "2026-08-28",
       "architecture": "Laravel 13 + PHP 8.3+ + Filament 5 + MySQL; LBB/Winimi are read-only selective donors",
-      "currentGate": "P01.2 admin identity, deny-by-default RBAC, and mutation audit",
+      "currentGate": "P01.7 cross-repository exact-head QA and merge closure",
       "backendRepository": "sajadkhavas/sole-backend",
       "backendStartSha": "c0a1426b4e5ec818cdedce75490e2bcc7b9689c6",
-      "backendCurrentSha": "a55bad8b65e5c2608616053d825055f4be4d62bc",
+      "backendAcceptedEndSha": "e60df1050aa051703ca470b036815d970ff9648b",
+      "backendCurrentSha": "00141144b7173c1d27c410ce39e8b176ee26aa86",
+      "backendQualityRun": "33247284200",
       "backendPullRequest": "https://github.com/sajadkhavas/sole-backend/pull/1",
       "frontendPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/31",
-      "completedParts": [
-        "P01.1"
-      ]
+      "completedParts": ["P01.1", "P01.2", "P01.3", "P01.4", "P01.5", "P01.6", "P01.7"]
     },
-    {
-      "id": "P02",
-      "slug": "media-catalog-ingestion",
-      "dependsOn": [
-        "P01"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P03",
-      "slug": "auth-customer-security",
-      "dependsOn": [
-        "P01"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P04",
-      "slug": "size-fit-intelligence",
-      "dependsOn": [
-        "P02",
-        "P03"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P05",
-      "slug": "discovery-pdp-conversion",
-      "dependsOn": [
-        "P02",
-        "P04"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P06",
-      "slug": "cart-checkout-orders",
-      "dependsOn": [
-        "P02",
-        "P03"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P07",
-      "slug": "payment-shipping-returns",
-      "dependsOn": [
-        "P06"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P08",
-      "slug": "trust-support-postpurchase",
-      "dependsOn": [
-        "P07"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P09",
-      "slug": "loyalty-crm-notifications",
-      "dependsOn": [
-        "P03",
-        "P07"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P10",
-      "slug": "seo-content-merchant",
-      "dependsOn": [
-        "P02",
-        "P08"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P11",
-      "slug": "observability-rum-cro",
-      "dependsOn": [
-        "P07",
-        "P10"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P12",
-      "slug": "production-readiness",
-      "dependsOn": [
-        "P00",
-        "P01",
-        "P02",
-        "P03",
-        "P04",
-        "P05",
-        "P06",
-        "P07",
-        "P08",
-        "P09",
-        "P10",
-        "P11"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P13",
-      "slug": "staging-acceptance",
-      "dependsOn": [
-        "P12"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P14",
-      "slug": "production-release",
-      "dependsOn": [
-        "P13"
-      ],
-      "status": "registered"
-    }
+    {"id":"P02","slug":"media-catalog-ingestion","dependsOn":["P01"],"status":"registered"},
+    {"id":"P03","slug":"auth-customer-security","dependsOn":["P01"],"status":"registered"},
+    {"id":"P04","slug":"size-fit-intelligence","dependsOn":["P02","P03"],"status":"registered"},
+    {"id":"P05","slug":"discovery-pdp-conversion","dependsOn":["P02","P04"],"status":"registered"},
+    {"id":"P06","slug":"cart-checkout-orders","dependsOn":["P02","P03"],"status":"registered"},
+    {"id":"P07","slug":"payment-shipping-returns","dependsOn":["P06"],"status":"registered"},
+    {"id":"P08","slug":"trust-support-postpurchase","dependsOn":["P07"],"status":"registered"},
+    {"id":"P09","slug":"loyalty-crm-notifications","dependsOn":["P03","P07"],"status":"registered"},
+    {"id":"P10","slug":"seo-content-merchant","dependsOn":["P02","P08"],"status":"registered"},
+    {"id":"P11","slug":"observability-rum-cro","dependsOn":["P07","P10"],"status":"registered"},
+    {"id":"P12","slug":"production-readiness","dependsOn":["P00","P01","P02","P03","P04","P05","P06","P07","P08","P09","P10","P11"],"status":"registered"},
+    {"id":"P13","slug":"staging-acceptance","dependsOn":["P12"],"status":"registered"},
+    {"id":"P14","slug":"production-release","dependsOn":["P13"],"status":"registered"}
   ]
 }
