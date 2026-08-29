@@ -264,53 +264,65 @@ function ProductsPage() {
                   aria-atomic="true"
                 >
                   <span className="font-mono-num text-foreground">{products.length}</span> محصول
+                  نمایشی
                 </p>
               </div>
-              <div className="flex items-center gap-2">
-                <label className="sr-only" htmlFor="catalog-sort">
-                  مرتب‌سازی محصولات
-                </label>
-                <select
-                  id="catalog-sort"
-                  value={search.sort}
-                  onChange={(event) =>
-                    updateSearch({ sort: event.currentTarget.value as CatalogSearch["sort"] })
-                  }
-                  className="min-h-11 rounded-xl border border-border bg-surface px-3 font-fa text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+
+              <div className="flex flex-1 items-center justify-end gap-2 sm:flex-initial">
+                <div
+                  role="group"
+                  aria-label="نوع نمایش"
+                  className="hidden rounded-full border border-border bg-surface p-1 sm:flex"
                 >
-                  <option value="newest">جدیدترین</option>
-                  <option value="price-asc">قیمت: کم به زیاد</option>
-                  <option value="price-desc">قیمت: زیاد به کم</option>
-                  <option value="rating">بالاترین امتیاز</option>
-                </select>
-                <div className="hidden items-center rounded-xl border border-border bg-surface p-1 sm:flex">
                   <IconButton
                     label="نمایش شبکه‌ای"
-                    pressed={search.view === "grid"}
+                    size="sm"
+                    variant={search.view === "grid" ? "default" : "ghost"}
+                    aria-pressed={search.view === "grid"}
                     onClick={() => updateSearch({ view: "grid" })}
-                    className="min-h-9 min-w-9 rounded-lg"
+                    className="rounded-full"
                   >
                     <Grid3x3 aria-hidden="true" className="size-4" />
                   </IconButton>
                   <IconButton
                     label="نمایش فهرستی"
-                    pressed={search.view === "list"}
+                    size="sm"
+                    variant={search.view === "list" ? "default" : "ghost"}
+                    aria-pressed={search.view === "list"}
                     onClick={() => updateSearch({ view: "list" })}
-                    className="min-h-9 min-w-9 rounded-lg"
+                    className="rounded-full"
                   >
                     <LayoutList aria-hidden="true" className="size-4" />
                   </IconButton>
                 </div>
+
+                <label htmlFor="catalog-sort" className="sr-only">
+                  مرتب‌سازی محصولات
+                </label>
+                <select
+                  id="catalog-sort"
+                  data-testid="catalog-sort"
+                  value={search.sort}
+                  onChange={(event) =>
+                    updateSearch({ sort: event.currentTarget.value as CatalogSearch["sort"] })
+                  }
+                  className="min-h-11 min-w-0 rounded-full border border-border bg-surface px-4 font-fa text-sm outline-none focus-visible:border-neon focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <option value="newest">جدیدترین</option>
+                  <option value="price-asc">قیمت: کم به زیاد</option>
+                  <option value="price-desc">قیمت: زیاد به کم</option>
+                  <option value="popular">بیشترین بازخورد داده</option>
+                </select>
               </div>
             </div>
 
             {products.length ? (
               <div
-                data-testid="catalog-grid"
+                data-testid="catalog-results"
                 className={
-                  search.view === "list"
-                    ? "grid grid-cols-1 gap-4 md:grid-cols-2"
-                    : "grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4"
+                  search.view === "grid"
+                    ? "grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 xl:grid-cols-3"
+                    : "space-y-4"
                 }
               >
                 {products.map((shoe, index) => (
@@ -318,19 +330,21 @@ function ProductsPage() {
                     key={shoe.id}
                     shoe={shoe}
                     index={index}
-                    onQuickView={(opener) => openQuickView(shoe, opener)}
+                    variant={search.view}
+                    onQuickView={openQuickView}
                   />
                 ))}
               </div>
             ) : (
               <EmptyState
-                title="نتیجه‌ای پیدا نشد"
-                description="فیلترها را تغییر بده یا همه فیلترها را پاک کن."
+                title="محصولی با این فیلترها پیدا نشد"
+                description="فیلترها را تغییر دهید یا همه آن‌ها را پاک کنید."
                 action={
-                  <Button type="button" variant="outline" onClick={clearFilters}>
-                    پاک‌کردن فیلترها
+                  <Button type="button" onClick={clearFilters}>
+                    نمایش همه محصولات
                   </Button>
                 }
+                className="min-h-72 border border-dashed border-border bg-surface"
               />
             )}
           </div>
@@ -339,46 +353,55 @@ function ProductsPage() {
 
       <DialogPrimitive.Root open={filterDialogOpen} onOpenChange={setFilterDialogOpen}>
         <DialogPrimitive.Portal>
-          <DialogPrimitive.Overlay className="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm lg:hidden" />
-          <DialogPrimitive.Content className="fixed inset-x-3 bottom-3 z-[81] max-h-[85svh] overflow-y-auto rounded-2xl border border-border bg-surface p-5 shadow-2xl lg:hidden">
-            <DialogPrimitive.Title className="font-fa text-lg font-bold">فیلتر محصولات</DialogPrimitive.Title>
-            <DialogPrimitive.Description className="mt-1 font-fa text-sm text-muted-foreground">
-              برند، دسته، سایز و محدوده قیمت را انتخاب کن.
-            </DialogPrimitive.Description>
-            <DialogPrimitive.Close asChild>
-              <IconButton label="بستن فیلترها" className="absolute end-4 top-4">
-                <X aria-hidden="true" className="size-4" />
-              </IconButton>
-            </DialogPrimitive.Close>
-            <div className="mt-5">
-              <CatalogFilters
-                brand={search.brand}
-                category={search.category}
-                sizes={selectedSizes}
-                priceMax={search.priceMax ?? CATALOG_MAX_PRICE}
-                onBrandChange={(brand) => updateSearch({ brand })}
-                onCategoryChange={(category) => updateSearch({ category })}
-                onSizesChange={setSizeFilters}
-                onPriceMaxChange={(priceMax) =>
-                  updateSearch(
-                    { priceMax: priceMax === CATALOG_MAX_PRICE ? undefined : priceMax },
-                    { replace: true },
-                  )
-                }
-                onClear={clearFilters}
-              />
+          <DialogPrimitive.Overlay className="fixed inset-0 z-[var(--z-overlay)] bg-overlay backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 motion-reduce:animate-none" />
+          <DialogPrimitive.Content
+            data-testid="mobile-filter-dialog"
+            className="fixed inset-y-0 start-0 z-[var(--z-modal)] w-[min(92vw,25rem)] overflow-y-auto border-e border-border bg-surface-elevated p-5 shadow-[var(--shadow-overlay)] outline-none"
+          >
+            <div className="mb-6 flex items-start justify-between gap-3">
+              <div>
+                <DialogPrimitive.Title className="font-fa text-xl font-bold">
+                  فیلتر محصولات
+                </DialogPrimitive.Title>
+                <DialogPrimitive.Description className="mt-1 font-fa text-sm text-muted-foreground">
+                  انتخاب‌ها فوراً در URL ذخیره می‌شوند.
+                </DialogPrimitive.Description>
+              </div>
+              <DialogPrimitive.Close asChild>
+                <IconButton label="بستن فیلترها" variant="ghost">
+                  <X aria-hidden="true" className="size-5" />
+                </IconButton>
+              </DialogPrimitive.Close>
             </div>
+
+            <CatalogFilters
+              brand={search.brand}
+              category={search.category}
+              sizes={selectedSizes}
+              priceMax={search.priceMax ?? CATALOG_MAX_PRICE}
+              onBrandChange={(brand) => updateSearch({ brand })}
+              onCategoryChange={(category) => updateSearch({ category })}
+              onSizesChange={setSizeFilters}
+              onPriceMaxChange={(priceMax) =>
+                updateSearch(
+                  { priceMax: priceMax === CATALOG_MAX_PRICE ? undefined : priceMax },
+                  { replace: true },
+                )
+              }
+              onClear={clearFilters}
+              onApply={() => setFilterDialogOpen(false)}
+            />
           </DialogPrimitive.Content>
         </DialogPrimitive.Portal>
       </DialogPrimitive.Root>
 
       <QuickViewDialog
         shoe={quickViewShoe}
-        open={Boolean(quickViewShoe)}
+        opener={quickViewOpener}
+        open={quickViewShoe !== null}
         onOpenChange={(open) => {
           if (!open) setQuickViewShoe(null);
         }}
-        opener={quickViewOpener}
       />
 
       <Footer />
@@ -389,11 +412,14 @@ function ProductsPage() {
 
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex min-h-11 items-center gap-1 rounded-full border border-border bg-surface px-2 ps-3 font-fa text-xs">
-      {label}
-      <IconButton label={`حذف ${label}`} onClick={onRemove} className="min-h-9 min-w-9 rounded-full">
-        <X aria-hidden="true" className="size-3.5" />
-      </IconButton>
-    </span>
+    <button
+      type="button"
+      onClick={onRemove}
+      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-neon bg-neon/10 px-3 font-fa text-xs text-foreground transition-colors hover:bg-neon hover:text-ink"
+    >
+      <span>{label}</span>
+      <X aria-hidden="true" className="size-3.5" />
+      <span className="sr-only">حذف فیلتر</span>
+    </button>
   );
 }
