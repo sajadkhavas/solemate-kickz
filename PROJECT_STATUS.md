@@ -1,7 +1,7 @@
 # SOLE Project Status — Authoritative Chat Handoff
 
 **Repository:** [sajadkhavas/solemate-kickz](https://github.com/sajadkhavas/solemate-kickz)  
-**Status last reconciled:** 2026-08-28  
+**Status last reconciled:** 2026-08-29  
 **Document baseline:** `main@c03f345071c6f7f34a67ebc63e9975233c45dd79`  
 **Purpose:** A new contributor or AI chat must be able to continue SOLE without asking the owner to repeat project history.
 
@@ -24,7 +24,7 @@ If this document and live GitHub history disagree, GitHub commit/PR history and 
 SOLE is a sneaker commerce product.
 
 - **Frontend:** TanStack Start with React, full-document SSR, streaming/server capabilities, Vite-based build, Node production runtime.
-- **Backend target:** a new independent repository, intended name `sajadkhavas/sole-backend`, using Laravel 13 + Filament 5, PHP 8.3+, MySQL, and an API consumed by the TanStack SSR frontend.
+- **Backend:** [`sajadkhavas/sole-backend`](https://github.com/sajadkhavas/sole-backend), P01 branch `phase/sole-p01-backend-admin-product-truth`, current registered SHA `a55bad8b65e5c2608616053d825055f4be4d62bc`, using Laravel 13 + Filament 5, PHP 8.3+, MySQL, and an API consumed by the TanStack SSR frontend.
 - **Primary backend donor:** `sajadkhavas/lbb-backend`, reviewed baseline `integration/backend-final-push-reviewed@bc6f53f9cc9b79d8e089fe35b543ad32f5c33217`.
 - **Selective donor:** `sajadkhavas/winimi-bakery-backend`, reviewed media baseline `phase-21/media-release-v1@19d294d8dd835571ee73b9330dff830ed1dda0ed`.
 - **Rule:** do not fork/copy either donor blindly. Build fresh SOLE migrations and copy only reviewed domain modules. Never copy donor data, secrets, bakery/ToolMaster legacy, prototype routes, or test placeholders.
@@ -192,9 +192,9 @@ No prototype, mock, test OTP, sandbox gateway or fake product truth may cross in
 
 ## 8. Next action
 
-**P01 — Backend, Admin and Product Truth is in progress.** The frontend start SHA is `c03f345071c6f7f34a67ebc63e9975233c45dd79`; branch `phase/sole-p01-backend-admin-product-truth`. Backend repository creation and its initial SHA are the first open gate.
+**P01 — Backend, Admin and Product Truth is in progress.** P01.1 is registered in backend [Draft PR #1](https://github.com/sajadkhavas/sole-backend/pull/1) at SHA `a55bad8b65e5c2608616053d825055f4be4d62bc`. The backend start SHA is `c0a1426b4e5ec818cdedce75490e2bcc7b9689c6`.
 
-Before coding P01, verify whether `sajadkhavas/sole-backend` already exists. If it does not, create it as an independent repository and register its initial SHA in the P01 handoff. The frontend repository must retain API/OpenAPI contracts and cross-repository integration evidence.
+The next gate is P01.2: implement admin identity, deny-by-default panel access, RBAC, policies, mutation auditing, and security regression tests. Continue on the existing P01 branches and update both PRs. The frontend repository retains API/OpenAPI contracts and cross-repository integration evidence.
 
 ## 9. Official references
 
