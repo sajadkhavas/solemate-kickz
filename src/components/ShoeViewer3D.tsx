@@ -100,19 +100,25 @@ export function ShoeViewer3D({ fallbackImage, alt, priority = false }: Props) {
 
     let cancelled = false;
     let objectUrl: string | null = null;
+    const preparationTimeout = window.setTimeout(() => {
+      if (!cancelled) setErrored(true);
+    }, 8_000);
 
     Promise.all([import("@google/model-viewer"), import("@/lib/create-shoe-model")])
       .then(([, modelFactory]) => {
         if (cancelled) return;
+        window.clearTimeout(preparationTimeout);
         objectUrl = URL.createObjectURL(modelFactory.createShoeModelBlob());
         setModelSrc(objectUrl);
       })
       .catch(() => {
+        window.clearTimeout(preparationTimeout);
         if (!cancelled) setErrored(true);
       });
 
     return () => {
       cancelled = true;
+      window.clearTimeout(preparationTimeout);
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [runtimeActive]);
@@ -142,6 +148,10 @@ export function ShoeViewer3D({ fallbackImage, alt, priority = false }: Props) {
       setSupported(false);
       return;
     }
+
+    // An explicit user activation proves this viewer is the active interaction target.
+    // Do not let a delayed IntersectionObserver callback strand the UI in a paused state.
+    setInView(true);
     setActivated(true);
   }, [reduced]);
 

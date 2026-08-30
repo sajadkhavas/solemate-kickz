@@ -62,7 +62,11 @@ function ProductsPage() {
   const [quickViewShoe, setQuickViewShoe] = useState<Shoe | null>(null);
   const [quickViewOpener, setQuickViewOpener] = useState<HTMLElement | null>(null);
   const [localQuery, setLocalQuery] = useState(search.q ?? "");
+  const [interactive, setInteractive] = useState(false);
 
+  useEffect(() => {
+    setInteractive(true);
+  }, []);
   useEffect(() => setLocalQuery(search.q ?? ""), [search.q]);
 
   const selectedSizes = useMemo(() => parseSizeParam(search.sizes), [search.sizes]);
@@ -124,6 +128,8 @@ function ProductsPage() {
 
           <form
             onSubmit={submitSearch}
+            data-testid="catalog-search-form"
+            data-interactive={interactive ? "true" : "false"}
             className="mt-6 grid max-w-2xl gap-2 sm:grid-cols-[1fr_auto]"
           >
             <label htmlFor="catalog-search" className="sr-only">

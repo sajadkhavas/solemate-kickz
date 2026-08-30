@@ -28,6 +28,13 @@ async function press(client, key, code = key) {
   await sleep(100);
 }
 
+async function waitForCatalogInteractive(client) {
+  await waitForExpression(
+    client,
+    `document.querySelector('[data-testid="catalog-search-form"]')?.getAttribute('data-interactive') === 'true'`,
+  );
+}
+
 async function setInput(client, selector, value) {
   const focused = await evaluate(
     client,
@@ -168,6 +175,7 @@ async function run(baseUrl) {
       client,
       `document.querySelectorAll('[data-testid="product-card"]').length > 0`,
     );
+    await waitForCatalogInteractive(client);
     const initialCount = await evaluate(
       client,
       `document.querySelectorAll('[data-testid="product-card"]').length`,
@@ -281,6 +289,7 @@ async function run(baseUrl) {
     );
 
     await navigate(client, `${baseUrl}/products`);
+    await waitForCatalogInteractive(client);
     await waitForExpression(
       client,
       `[...document.querySelectorAll('[data-testid="quick-view-trigger"]')].some((element) => {
@@ -356,6 +365,7 @@ async function run(baseUrl) {
       screenHeight: 844,
     });
     await navigate(client, `${baseUrl}/products`);
+    await waitForCatalogInteractive(client);
     await activateVisible(client, '[data-testid="mobile-filter-trigger"]');
     await waitForExpression(
       client,
@@ -389,6 +399,7 @@ async function run(baseUrl) {
     );
 
     await navigate(client, `${baseUrl}/products?q=Dunk%20Low`);
+    await waitForCatalogInteractive(client);
     await waitForExpression(
       client,
       `[...document.querySelectorAll('[data-testid="quick-view-trigger"]')].some((element) => {

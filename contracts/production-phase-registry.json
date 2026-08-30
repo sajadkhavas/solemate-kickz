@@ -34,9 +34,7 @@
     {
       "id": "P00",
       "slug": "production-foundation",
-      "dependsOn": [
-        "F18"
-      ],
+      "dependsOn": ["F18"],
       "status": "completed",
       "startSha": "6566bdcb259cae3a853162f2072ce7a700f28845",
       "endSha": "4a62f760ba4f4dee25075a9e9f39183d6b27d896",
@@ -47,131 +45,42 @@
     {
       "id": "P01",
       "slug": "backend-admin-product-truth",
-      "dependsOn": [
-        "P00"
-      ],
-      "status": "registered"
+      "dependsOn": ["P00"],
+      "status": "completed",
+      "startSha": "c03f345071c6f7f34a67ebc63e9975233c45dd79",
+      "endSha": "1248091fa5157e733d70120bb26ca9a07169263b",
+      "branch": "phase/sole-p01-backend-admin-product-truth",
+      "startedAt": "2026-08-28",
+      "acceptedAt": "2026-08-29",
+      "architecture": "Laravel 13 + PHP 8.3+ + Filament 5 + MySQL; LBB/Winimi are read-only selective donors",
+      "qaResult": "PASS — Frontend CI run 1027 (33261912130), exact closure CI run 1029 (33262459382); Backend quality gate run 9 (33255041451)",
+      "rollbackImpact": "Frontend rollback target is START_SHA; backend rollback target is pre-P01 main c0a1426b4e5ec818cdedce75490e2bcc7b9689c6. No production server or production data mutation occurred.",
+      "serverRequired": false,
+      "backendRepository": "sajadkhavas/sole-backend",
+      "backendStartSha": "c0a1426b4e5ec818cdedce75490e2bcc7b9689c6",
+      "backendAcceptedEndSha": "e60df1050aa051703ca470b036815d970ff9648b",
+      "backendMergeHead": "00141144b7173c1d27c410ce39e8b176ee26aa86",
+      "backendMergeSha": "c9e2f66bab300882e2306bcd52346a81fb1a2e6b",
+      "backendQualityRun": "33255041451",
+      "backendPullRequest": "https://github.com/sajadkhavas/sole-backend/pull/2",
+      "frontendQualityRun": "33261912130",
+      "frontendClosureQualityRun": "33262459382",
+      "frontendPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/32",
+      "supersededFrontendDraftPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/31",
+      "completedParts": ["P01.1", "P01.2", "P01.3", "P01.4", "P01.5", "P01.6", "P01.7"]
     },
-    {
-      "id": "P02",
-      "slug": "media-catalog-ingestion",
-      "dependsOn": [
-        "P01"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P03",
-      "slug": "auth-customer-security",
-      "dependsOn": [
-        "P01"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P04",
-      "slug": "size-fit-intelligence",
-      "dependsOn": [
-        "P02",
-        "P03"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P05",
-      "slug": "discovery-pdp-conversion",
-      "dependsOn": [
-        "P02",
-        "P04"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P06",
-      "slug": "cart-checkout-orders",
-      "dependsOn": [
-        "P02",
-        "P03"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P07",
-      "slug": "payment-shipping-returns",
-      "dependsOn": [
-        "P06"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P08",
-      "slug": "trust-support-postpurchase",
-      "dependsOn": [
-        "P07"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P09",
-      "slug": "loyalty-crm-notifications",
-      "dependsOn": [
-        "P03",
-        "P07"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P10",
-      "slug": "seo-content-merchant",
-      "dependsOn": [
-        "P02",
-        "P08"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P11",
-      "slug": "observability-rum-cro",
-      "dependsOn": [
-        "P07",
-        "P10"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P12",
-      "slug": "production-readiness",
-      "dependsOn": [
-        "P00",
-        "P01",
-        "P02",
-        "P03",
-        "P04",
-        "P05",
-        "P06",
-        "P07",
-        "P08",
-        "P09",
-        "P10",
-        "P11"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P13",
-      "slug": "staging-acceptance",
-      "dependsOn": [
-        "P12"
-      ],
-      "status": "registered"
-    },
-    {
-      "id": "P14",
-      "slug": "production-release",
-      "dependsOn": [
-        "P13"
-      ],
-      "status": "registered"
-    }
+    {"id":"P02","slug":"media-catalog-ingestion","dependsOn":["P01"],"status":"registered"},
+    {"id":"P03","slug":"auth-customer-security","dependsOn":["P01"],"status":"registered"},
+    {"id":"P04","slug":"size-fit-intelligence","dependsOn":["P02","P03"],"status":"registered"},
+    {"id":"P05","slug":"discovery-pdp-conversion","dependsOn":["P02","P04"],"status":"registered"},
+    {"id":"P06","slug":"cart-checkout-orders","dependsOn":["P02","P03"],"status":"registered"},
+    {"id":"P07","slug":"payment-shipping-returns","dependsOn":["P06"],"status":"registered"},
+    {"id":"P08","slug":"trust-support-postpurchase","dependsOn":["P07"],"status":"registered"},
+    {"id":"P09","slug":"loyalty-crm-notifications","dependsOn":["P03","P07"],"status":"registered"},
+    {"id":"P10","slug":"seo-content-merchant","dependsOn":["P02","P08"],"status":"registered"},
+    {"id":"P11","slug":"observability-rum-cro","dependsOn":["P07","P10"],"status":"registered"},
+    {"id":"P12","slug":"production-readiness","dependsOn":["P00","P01","P02","P03","P04","P05","P06","P07","P08","P09","P10","P11"],"status":"registered"},
+    {"id":"P13","slug":"staging-acceptance","dependsOn":["P12"],"status":"registered"},
+    {"id":"P14","slug":"production-release","dependsOn":["P13"],"status":"registered"}
   ]
 }

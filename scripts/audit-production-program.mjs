@@ -11,13 +11,28 @@ async function text(path) {
   }
 }
 
-const [constitution, roadmap, registryRaw, service, workflow, packageRaw] = await Promise.all([
+const [
+  constitution,
+  roadmap,
+  registryRaw,
+  service,
+  workflow,
+  packageRaw,
+  p01Handoff,
+  p01Openapi,
+  viteConfig,
+  productionCatalog,
+] = await Promise.all([
   text("docs/production/PRODUCTION-ENGINEERING-CONSTITUTION.md"),
   text("docs/roadmaps/SOLE-PRODUCTION-COMPLETION-PROGRAM.md"),
   text("contracts/production-phase-registry.json"),
   text("deploy/systemd/sole-frontend.service.example"),
   text(".github/workflows/frontend-ci.yml"),
   text("package.json"),
+  text("docs/handoffs/P01-BACKEND-ADMIN-PRODUCT-TRUTH.md"),
+  text("openapi/sole-catalog-v1.yaml"),
+  text("vite.config.ts"),
+  text("src/data/production-shoes.ts"),
 ]);
 const navigationAudit = await text("scripts/audit-f2-navigation-search.mjs");
 const contentAudit = await text("scripts/audit-f8-content-pages.mjs");
@@ -65,8 +80,9 @@ if (registry?.phases?.length !== 15) failures.push("registry must contain P00-P1
 for (const [index, phase] of (registry?.phases ?? []).entries()) {
   const expected = `P${String(index).padStart(2, "0")}`;
   if (phase.id !== expected) failures.push(`expected ${expected} at registry index ${index}`);
-  if (!["registered", "completed"].includes(phase.status))
+  if (!["registered", "completed"].includes(phase.status)) {
     failures.push(`${phase.id} has invalid status ${phase.status}`);
+  }
   if (phase.status === "completed") {
     for (const field of ["startSha", "endSha", "qaResult", "rollbackImpact", "acceptedAt"]) {
       if (!phase[field]) failures.push(`${phase.id} completed evidence missing ${field}`);
@@ -76,9 +92,7 @@ for (const [index, phase] of (registry?.phases ?? []).entries()) {
 }
 
 for (const field of ["START_SHA", "END_SHA", "QA_RESULT", "ROLLBACK_IMPACT"]) {
-  if (!registry?.requiredPhaseEvidence?.includes(field)) {
-    failures.push(`phase evidence missing ${field}`);
-  }
+  if (!registry?.requiredPhaseEvidence?.includes(field)) failures.push(`phase evidence missing ${field}`);
 }
 for (const field of [
   "CURRENT_SHA",
@@ -87,9 +101,7 @@ for (const field of [
   "ROLLBACK_TARGET",
   "HEALTH_CHECK_RESULT",
 ]) {
-  if (!registry?.requiredReleaseEvidence?.includes(field)) {
-    failures.push(`release evidence missing ${field}`);
-  }
+  if (!registry?.requiredReleaseEvidence?.includes(field)) failures.push(`release evidence missing ${field}`);
 }
 
 if (!/KillMode=control-group/.test(service)) {
@@ -112,6 +124,33 @@ if (!/Production program contract audit[\s\S]*audit:production-program/.test(wor
 }
 if (pkg?.scripts?.["audit:production-program"] !== "node scripts/audit-production-program.mjs") {
   failures.push("package script audit:production-program is missing");
+}
+
+const p01 = registry?.phases?.find((phase) => phase.id === "P01");
+if (p01) {
+  if (p01.backendRepository !== "sajadkhavas/sole-backend") {
+    failures.push("P01 must bind the canonical sole-backend repository");
+  }
+  if (!p01.backendStartSha || !p01.backendAcceptedEndSha) {
+    failures.push("P01 must record backend start and accepted implementation SHAs");
+  }
+  for (const marker of ["P01.1", "P01.2", "P01.3", "P01.4", "P01.5", "P01.6", "P01.7"]) {
+    if (!p01Handoff.includes(marker)) failures.push(`P01 handoff missing ${marker}`);
+  }
+  if (!viteConfig.includes("sole-production-catalog-guard") || !viteConfig.includes('source === "@/data/shoes"')) {
+    failures.push("production build must redirect the development shoe dataset");
+  }
+  if (!productionCatalog.includes("export const SHOES: Shoe[] = []")) {
+    failures.push("production catalog must fail closed until backend ingestion is connected");
+  }
+  for (const forbidden of ["Silver Bullet", "Air Max 97", "SOLE-0001", "images.unsplash.com/photo-"]) {
+    if (productionCatalog.includes(forbidden)) {
+      failures.push(`production catalog contains forbidden development product truth: ${forbidden}`);
+    }
+  }
+  for (const marker of ["/v1/catalog/products", "price_minor", "available_quantity"]) {
+    if (!p01Openapi.includes(marker)) failures.push(`P01 catalog OpenAPI missing ${marker}`);
+  }
 }
 
 if (failures.length) {

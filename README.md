@@ -7,13 +7,17 @@ Production-oriented sneaker commerce platform.
 ## Current state
 
 - Frontend program **F0–F18: completed and released to `main`**
-- Production program **P00: completed**
-- Remaining production phases **P01–P14: registered**
-- Current documented `main` baseline: `0881fe19e8c92c36aca61f29f235d99888bf21d6`
-- Frontend: TanStack Start / React full-document SSR
-- Planned backend: independent Laravel 12 + Filament application, adapted primarily from LBB with selective Winimi modules
+- Production program **P00–P01: completed/accepted**
+- Remaining production phases **P02–P14: registered**
+- P01 frontend accepted implementation: `1248091fa5157e733d70120bb26ca9a07169263b` in [PR #31](https://github.com/sajadkhavas/solemate-kickz/pull/31)
+- Backend: [`sajadkhavas/sole-backend`](https://github.com/sajadkhavas/sole-backend), Laravel 13 + Filament 5 + PHP 8.3+ + MySQL
+- Backend P01 merged to `main@c9e2f66bab300882e2306bcd52346a81fb1a2e6b`
+- Frontend: TanStack Start / React full-document SSR / Node production runtime
+- Next phase: **P02 — Media & Catalog Ingestion**
 
-The authoritative progress matrix, phase definitions, donor decisions, engineering rules, and mandatory handoff procedure live in [PROJECT_STATUS.md](./PROJECT_STATUS.md).
+P01 deliberately fails closed in production until P02 connects real catalog/media ingestion: development product fixtures remain available to controlled development/browser QA, while production resolves product truth to an empty safe catalog instead of shipping fake SKUs, prices or stock.
+
+The authoritative progress matrix, phase definitions, donor decisions, engineering rules and mandatory handoff procedure live in [PROJECT_STATUS.md](./PROJECT_STATUS.md).
 
 Detailed evidence remains in:
 
