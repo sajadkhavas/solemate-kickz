@@ -9,8 +9,10 @@
 - BRANCH: `phase/sole-p01-backend-admin-product-truth`
 - START_SHA: `c03f345071c6f7f34a67ebc63e9975233c45dd79`
 - END_SHA: `1248091fa5157e733d70120bb26ca9a07169263b`
-- FRONTEND_PR: [solemate-kickz#31](https://github.com/sajadkhavas/solemate-kickz/pull/31)
+- FRONTEND_PR: [solemate-kickz#32](https://github.com/sajadkhavas/solemate-kickz/pull/32)
+- SUPERSEDED_FRONTEND_DRAFT_PR: [solemate-kickz#31](https://github.com/sajadkhavas/solemate-kickz/pull/31)
 - FRONTEND_CI: Frontend CI run 1027 / `33261912130` — PASS
+- FRONTEND_CLOSURE_CI: Frontend CI run 1029 / `33262459382` — PASS
 - BACKEND_START_SHA: `c0a1426b4e5ec818cdedce75490e2bcc7b9689c6`
 - BACKEND_ACCEPTED_END_SHA: `e60df1050aa051703ca470b036815d970ff9648b`
 - BACKEND_MERGE_HEAD: `00141144b7173c1d27c410ce39e8b176ee26aa86`
@@ -71,7 +73,9 @@ Backend owns the Laravel application, migrations, domain models/services/policie
 
 Backend exact-head run `33255041451` passed locked Composer installation/validation, Pint, PHP syntax, MySQL 8.4 migrate/fresh, RBAC sync, rollback/re-migrate, SQLite regression, full MySQL integration, real two-process inventory concurrency, route/operator boot, dependency audit and production config cache.
 
-Frontend exact-head run `33261912130` passed the cumulative F0–F18 source/browser gates, P00/P01 production-program contract, TypeScript, ESLint, every registered Prettier gate, production build, F12 performance budgets, VPS Node build, production runtime/port-leak smoke, all desktop/mobile visual QA suites, cumulative evidence verification and clean-tree verification.
+Frontend implementation run `33261912130` passed the cumulative F0–F18 source/browser gates, P00/P01 production-program contract, TypeScript, ESLint, every registered Prettier gate, production build, F12 performance budgets, VPS Node build, production runtime/port-leak smoke, all desktop/mobile visual QA suites, cumulative evidence verification and clean-tree verification.
+
+Exact closure head `0767ff2655e658ed97cebcbbd48971574b561d43` independently passed the same Frontend CI as run `33262459382` before the merge-wrapper workaround. PR #31 was superseded solely because the connected Draft→Ready GraphQL mutation failed on a GitHub schema field; no code or acceptance criteria changed.
 
 ## QA_RESULT
 
