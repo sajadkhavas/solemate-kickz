@@ -1,5 +1,6 @@
 name: P03 audit sync
 
+# Temporary branch-only workflow; deletes itself after successful wiring.
 on:
   push:
     branches: [phase/sole-p03-auth-customer-security]
