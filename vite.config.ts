@@ -16,13 +16,24 @@ const isProductionBuild = isNodeServerBuild || isExplicitProductionBuild;
 const productionCatalogModule = fileURLToPath(
   new URL("./src/data/production-shoes.ts", import.meta.url),
 );
+const productionAuthRouteModule = fileURLToPath(
+  new URL("./src/auth/production-auth-route.tsx", import.meta.url),
+);
+const productionAccountRouteModule = fileURLToPath(
+  new URL("./src/auth/production-account-route.tsx", import.meta.url),
+);
 
-const productionCatalogGuard = {
-  name: "sole-production-catalog-guard",
+const productionTruthGuard = {
+  name: "sole-production-truth-guard",
   enforce: "pre" as const,
-  resolveId(source: string) {
-    if (isProductionBuild && source === "@/data/shoes") {
-      return productionCatalogModule;
+  resolveId(source: string, importer?: string) {
+    if (!isProductionBuild) return null;
+
+    if (source === "@/data/shoes") return productionCatalogModule;
+
+    if (importer?.endsWith("/src/routeTree.gen.ts")) {
+      if (source === "./routes/auth") return productionAuthRouteModule;
+      if (source === "./routes/account") return productionAccountRouteModule;
     }
 
     return null;
@@ -30,10 +41,10 @@ const productionCatalogGuard = {
 };
 
 export default defineConfig({
-  // Local development and browser QA retain their deterministic fixture catalog.
-  // Production builds resolve the same import to a fail-closed module with no product truth.
+  // Local development and browser QA retain deterministic fixture catalog/account surfaces.
+  // Production builds replace product truth and auth/account routes with backend-authoritative modules.
   vite: {
-    plugins: [productionCatalogGuard],
+    plugins: [productionTruthGuard],
   },
   // Keep Lovable's normal preview/build behavior unchanged. Self-hosted VPS builds
   // opt in explicitly through `bun run build:vps`, which sets SOLE_DEPLOY_TARGET.
