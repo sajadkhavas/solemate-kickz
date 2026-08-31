@@ -34,8 +34,8 @@ const productionMobileBottomNavModule = fileURLToPath(
 
 function isProductionCustomerPage(importer?: string) {
   return (
-    importer?.endsWith("/src/auth/ProductionAuthPage.tsx") ||
-    importer?.endsWith("/src/auth/ProductionAccountPage.tsx")
+    importer?.includes("/src/auth/ProductionAuthPage.tsx") ||
+    importer?.includes("/src/auth/ProductionAccountPage.tsx")
   );
 }
 
@@ -47,7 +47,7 @@ const productionTruthGuard = {
 
     if (source === "@/data/shoes") return productionCatalogModule;
 
-    if (importer?.endsWith("/src/routeTree.gen.ts")) {
+    if (importer?.includes("/src/routeTree.gen.ts")) {
       if (source === "./routes/auth") return productionAuthRouteModule;
       if (source === "./routes/account") return productionAccountRouteModule;
     }
@@ -67,6 +67,23 @@ export default defineConfig({
   // Production builds replace product truth and auth/account routes with backend-authoritative modules.
   vite: {
     plugins: [productionTruthGuard],
+    build: {
+      rolldownOptions: {
+        output: {
+          codeSplitting: {
+            groups: [
+              {
+                name: "shared",
+                minShareCount: 2,
+                minSize: 20_000,
+                entriesAware: true,
+                priority: 5,
+              },
+            ],
+          },
+        },
+      },
+    },
   },
   // Keep Lovable's normal preview/build behavior unchanged. Self-hosted VPS builds
   // opt in explicitly through `bun run build:vps`, which sets SOLE_DEPLOY_TARGET.

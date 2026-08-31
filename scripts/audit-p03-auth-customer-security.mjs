@@ -63,6 +63,16 @@ for (const marker of [
 ]) {
   if (!vite.includes(marker)) failures.push(`production customer shell isolation missing ${marker}`);
 }
+for (const marker of [
+  "rolldownOptions",
+  "codeSplitting",
+  'name: "shared"',
+  "minShareCount: 2",
+  "minSize: 20_000",
+  "entriesAware: true",
+]) {
+  if (!vite.includes(marker)) failures.push(`stable production chunking missing ${marker}`);
+}
 
 for (const marker of [
   "process.env.SOLE_API_URL",
