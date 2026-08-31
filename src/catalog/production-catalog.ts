@@ -58,11 +58,11 @@ const productSchema = z.object({
   slug: z.string().min(1),
   name: z.string().min(1),
   description: z.string().nullable(),
-  brand: z.string().min(1),
+  brand: z.string().min(1).nullable(),
   colorway: z.string().nullable(),
   tags: z.array(z.string()),
   published_at: z.string().nullable(),
-  category: categorySchema,
+  category: categorySchema.nullable(),
   collections: z.array(z.object({ id: z.number().int().positive(), slug: z.string(), name: z.string() })),
   media: z.array(mediaSchema),
   variants: z.array(variantSchema).min(1),
@@ -120,8 +120,18 @@ function mediaFor(media: ApiMedia[]): ResponsiveProductMedia[] {
 }
 
 export function mapApiProduct(product: ApiProduct): ResponsiveShoe | null {
-  if (!categoryIds.includes(product.category.slug)) return null;
+  if (!product.category || !categoryIds.includes(product.category.slug)) return null;
+  if (!product.brand?.trim()) return null;
   if (product.variants.some((variant) => variant.currency !== "IRR")) return null;
+  if (
+    product.variants.some(
+      (variant) =>
+        variant.price_minor % 10 !== 0 ||
+        (variant.compare_at_price_minor !== null && variant.compare_at_price_minor % 10 !== 0),
+    )
+  ) {
+    return null;
+  }
 
   const variants = [...product.variants].sort((a, b) => a.price_minor - b.price_minor || a.id - b.id);
   const priceVariant = variants[0];
@@ -130,6 +140,8 @@ export function mapApiProduct(product: ApiProduct): ResponsiveShoe | null {
   const productMedia = mediaFor(product.media);
   const variantMedia = mediaFor(variants.flatMap((variant) => variant.media));
   const responsiveMedia = productMedia.length ? productMedia : variantMedia;
+  if (!responsiveMedia.length) return null;
+
   const images = responsiveMedia.map((media) => media.src);
   const sizes = [...new Set(variants.map((variant) => Number(variant.size)).filter(Number.isFinite))].sort(
     (a, b) => a - b,
@@ -141,11 +153,11 @@ export function mapApiProduct(product: ApiProduct): ResponsiveShoe | null {
   return {
     id: product.id,
     name: product.name,
-    brand: product.brand,
+    brand: product.brand.trim(),
     colorway: product.colorway ?? "",
-    price: Math.round((hasDiscount ? compareAt : priceVariant.price_minor) / 10),
-    sale_price: hasDiscount ? Math.round(priceVariant.price_minor / 10) : undefined,
-    image: images[0] ?? "",
+    price: (hasDiscount ? compareAt : priceVariant.price_minor) / 10,
+    sale_price: hasDiscount ? priceVariant.price_minor / 10 : undefined,
+    image: images[0],
     images,
     category: product.category.slug,
     sizes,
