@@ -100,14 +100,15 @@ add("accepted Foundation is ancestor", foundationIsAncestor, {
 const foundationRouteTree = git(["show", `${FOUNDATION_SHA}:src/routeTree.gen.ts`]);
 const baselineRoutes = extractFullPathRegistrations(foundationRouteTree);
 const currentRoutes = extractFullPathRegistrations(files.routeTree);
-const authorizedAdditions = ["/account", "/checkout", "/wishlist"];
+const authorizedAdditions = ["/account", "/api/catalog", "/checkout", "/wishlist"];
 const expectedRoutes = [...new Set([...baselineRoutes, ...authorizedAdditions])].sort();
 add(
-  "generated route set is exact Foundation plus authorized F7/F9 additions",
+  "generated route set is exact Foundation plus authorized F7/F9/P02 additions",
   JSON.stringify(currentRoutes) === JSON.stringify(expectedRoutes) &&
     files.routeTree.includes("CheckoutRouteImport") &&
     files.routeTree.includes("WishlistRouteImport") &&
-    files.routeTree.includes("AccountRouteImport"),
+    files.routeTree.includes("AccountRouteImport") &&
+    files.routeTree.includes("ApiCatalogRouteImport"),
   { baselineRoutes, authorizedAdditions, expectedRoutes, currentRoutes },
 );
 

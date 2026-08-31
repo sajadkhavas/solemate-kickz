@@ -4,6 +4,7 @@ import { Eye, Heart } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent, type RefObject } from "react";
 import { toast } from "sonner";
 
+import { ResponsiveCatalogImage } from "@/components/catalog/ResponsiveCatalogImage";
 import { Button } from "@/components/ui/button";
 import { Price } from "@/components/ui/commerce-primitives";
 import { type Shoe } from "@/data/shoes";
@@ -56,10 +57,12 @@ function ProductImage({
   }
 
   return (
-    <img
+    <ResponsiveCatalogImage
       ref={imageRef}
+      shoe={shoe}
       src={source}
       alt={`${shoe.brand} ${shoe.name}`}
+      sizes="(min-width: 1280px) 30vw, (min-width: 480px) 50vw, 100vw"
       loading={priority ? "eager" : "lazy"}
       fetchPriority={priority ? "high" : "auto"}
       decoding="async"
@@ -82,6 +85,8 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
   const discount = shoe.sale_price
     ? Math.round(((shoe.price - shoe.sale_price) / shoe.price) * 100)
     : 0;
+  const soldOutLabel = import.meta.env.PROD ? "ناموجود" : "ناموجود در داده نمایشی";
+  const sourceLabel = import.meta.env.PROD ? "کاتالوگ" : "داده نمایشی";
 
   const productTarget = {
     to: "/product/$id" as const,
@@ -125,7 +130,7 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
           />
           {shoe.isSoldOut ? (
             <span className="absolute inset-x-2 bottom-2 rounded-full bg-ink/85 px-2 py-1 text-center font-fa text-xs text-white">
-              ناموجود در داده نمایشی
+              {soldOutLabel}
             </span>
           ) : null}
         </Link>
@@ -250,7 +255,7 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
         {shoe.isSoldOut ? (
           <div className="pointer-events-none absolute inset-0 grid place-items-center">
             <span className="-rotate-6 border-2 border-white bg-ink/60 px-4 py-2 font-fa text-sm font-bold text-white">
-              ناموجود در داده نمایشی
+              {soldOutLabel}
             </span>
           </div>
         ) : null}
@@ -262,7 +267,7 @@ export function ShoeCard({ shoe, index = 0, variant = "grid", onQuickView }: Pro
             <bdi dir="ltr">{shoe.brand}</bdi>
           </p>
           <span className="rounded-full border border-border px-2 py-0.5 font-fa text-[0.65rem] text-muted-foreground">
-            داده نمایشی
+            {sourceLabel}
           </span>
         </div>
 

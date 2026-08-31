@@ -13,6 +13,7 @@ import {
   parseSizeParam,
   serialiseSizes,
 } from "@/catalog/catalog-state";
+import { catalogForRuntime } from "@/catalog/production-catalog";
 import { CatalogFilters } from "@/components/catalog/CatalogFilters";
 import { QuickViewDialog } from "@/components/catalog/QuickViewDialog";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
@@ -30,6 +31,7 @@ const DEFAULT_CATALOG_SEARCH = {
 } as const;
 
 export const Route = createFileRoute("/products")({
+  loader: async () => ({ catalog: await catalogForRuntime(SHOES) }),
   validateSearch: zodValidator(catalogSearchSchema),
   search: {
     middlewares: [stripSearchParams(DEFAULT_CATALOG_SEARCH)],
@@ -39,7 +41,7 @@ export const Route = createFileRoute("/products")({
       { title: "کاتالوگ کفش — SOLE" },
       {
         name: "description",
-        content: "مرور و فیلتر داده نمایشی محصولات SOLE بر اساس برند، دسته، سایز و قیمت.",
+        content: "مرور و فیلتر محصولات SOLE بر اساس برند، دسته، سایز و قیمت.",
       },
       { property: "og:title", content: "کاتالوگ کفش — SOLE" },
     ],
@@ -58,6 +60,7 @@ const QUICK_FILTERS = [
 function ProductsPage() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
+  const { catalog } = Route.useLoaderData() as { catalog: Shoe[] };
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [quickViewShoe, setQuickViewShoe] = useState<Shoe | null>(null);
   const [quickViewOpener, setQuickViewOpener] = useState<HTMLElement | null>(null);
@@ -70,7 +73,7 @@ function ProductsPage() {
   useEffect(() => setLocalQuery(search.q ?? ""), [search.q]);
 
   const selectedSizes = useMemo(() => parseSizeParam(search.sizes), [search.sizes]);
-  const products = useMemo(() => filterCatalog(SHOES, search), [search]);
+  const products = useMemo(() => filterCatalog(catalog, search), [catalog, search]);
   const activeFilters = hasCatalogFilters(search);
 
   const updateSearch = (patch: Partial<CatalogSearch>, options: { replace?: boolean } = {}) => {
@@ -122,8 +125,7 @@ function ProductsPage() {
             انتخاب <span className="text-neon">کفش</span>
           </h1>
           <p className="mt-3 max-w-2xl font-fa text-sm leading-7 text-muted-foreground sm:text-base">
-            این صفحه از Dataset نمایشی پروژه استفاده می‌کند. فیلترها، مرتب‌سازی و نوع نمایش در نشانی
-            صفحه ذخیره می‌شوند.
+            فیلترها، مرتب‌سازی و نوع نمایش در نشانی صفحه ذخیره می‌شوند.
           </p>
 
           <form
@@ -264,7 +266,6 @@ function ProductsPage() {
                   aria-atomic="true"
                 >
                   <span className="font-mono-num text-foreground">{products.length}</span> محصول
-                  نمایشی
                 </p>
               </div>
 

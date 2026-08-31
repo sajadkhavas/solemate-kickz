@@ -51,7 +51,12 @@ check(
     state.includes(`${key}:`),
   ),
 );
-check("catalog uses permanent filter function", products.includes("filterCatalog(SHOES, search)"));
+check(
+  "catalog uses permanent filter function over runtime catalog truth",
+  products.includes("filterCatalog(catalog, search)") &&
+    products.includes("catalogForRuntime(SHOES)") &&
+    products.includes("Route.useLoaderData()"),
+);
 check(
   "sizes are serialized in URL",
   products.includes("serialiseSizes") && state.includes("parseSizeParam"),

@@ -2,10 +2,12 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ChevronLeft, ChevronRight, Expand, ImageOff, X } from "lucide-react";
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 
+import { ResponsiveCatalogImage } from "@/components/catalog/ResponsiveCatalogImage";
 import { IconButton } from "@/components/ui/commerce-primitives";
 import type { Shoe } from "@/data/shoes";
 
 type SafeImageProps = {
+  shoe: Shoe;
   src: string;
   alt: string;
   className: string;
@@ -15,9 +17,11 @@ type SafeImageProps = {
   fetchPriority?: "high" | "low" | "auto";
   width?: number;
   height?: number;
+  sizes?: string;
 };
 
 function SafeImage({
+  shoe,
   src,
   alt,
   className,
@@ -27,6 +31,7 @@ function SafeImage({
   fetchPriority = "auto",
   width,
   height,
+  sizes = "100vw",
 }: SafeImageProps) {
   const [failed, setFailed] = useState(false);
 
@@ -47,7 +52,8 @@ function SafeImage({
   }
 
   return (
-    <img
+    <ResponsiveCatalogImage
+      shoe={shoe}
       data-testid={testId}
       src={src}
       alt={alt}
@@ -56,6 +62,7 @@ function SafeImage({
       decoding="async"
       width={width}
       height={height}
+      sizes={sizes}
       className={className}
       onError={() => {
         setFailed(true);
@@ -135,6 +142,7 @@ export function ProductGallery({ shoe }: ProductGalleryProps) {
       >
         <SafeImage
           key={`${shoe.id}-${activeIndex}`}
+          shoe={shoe}
           src={activeImage}
           alt={`${shoe.brand} ${shoe.name}، نمای ${activeIndex + 1}`}
           testId="product-main-image"
@@ -142,6 +150,7 @@ export function ProductGallery({ shoe }: ProductGalleryProps) {
           fetchPriority="high"
           width={900}
           height={900}
+          sizes="(min-width: 1024px) 54vw, 100vw"
           className="h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-300 group-hover:scale-[1.02]"
         />
 
@@ -208,12 +217,14 @@ export function ProductGallery({ shoe }: ProductGalleryProps) {
               className="relative aspect-square min-h-11 overflow-hidden rounded-xl border-2 border-border bg-surface outline-none transition-colors hover:border-border-strong focus-visible:ring-2 focus-visible:ring-focus aria-selected:border-primary"
             >
               <SafeImage
+                shoe={shoe}
                 src={image}
                 alt=""
                 loading="lazy"
                 fetchPriority="low"
                 width={220}
                 height={220}
+                sizes="220px"
                 className="h-full w-full object-cover"
               />
             </button>
@@ -241,8 +252,10 @@ export function ProductGallery({ shoe }: ProductGalleryProps) {
             </div>
             <div className="min-h-0 flex-1 overflow-hidden rounded-xl bg-surface">
               <SafeImage
+                shoe={shoe}
                 src={activeImage}
                 alt={`${shoe.brand} ${shoe.name}، نمای بزرگ ${activeIndex + 1}`}
+                sizes="100vw"
                 className="h-full w-full object-contain"
               />
             </div>

@@ -201,10 +201,26 @@ record(
   git("merge-base", "--is-ancestor", BASELINE, "HEAD").status === 0,
   BASELINE,
 );
+const generatedRouteTreeDiff = git(
+  "diff",
+  "--name-only",
+  BASELINE,
+  "HEAD",
+  "--",
+  "src/routeTree.gen.ts",
+).stdout;
+const controlledP02CatalogRouteRegistration =
+  generatedRouteTreeDiff === "src/routeTree.gen.ts" &&
+  exists("src/routes/api.catalog.ts") &&
+  read("src/routeTree.gen.ts").includes("'/api/catalog'") &&
+  read("src/routeTree.gen.ts").includes("ApiCatalogRouteImport");
 record(
-  "generated route tree is untouched",
-  git("diff", "--name-only", BASELINE, "HEAD", "--", "src/routeTree.gen.ts").stdout === "",
-  git("diff", "--name-only", BASELINE, "HEAD", "--", "src/routeTree.gen.ts").stdout,
+  "generated route tree is baseline or controlled P02 catalog route registration",
+  generatedRouteTreeDiff === "" || controlledP02CatalogRouteRegistration,
+  {
+    diff: generatedRouteTreeDiff,
+    controlledP02CatalogRouteRegistration,
+  },
 );
 record(
   "lockfile is untouched",

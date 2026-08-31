@@ -19,6 +19,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
+import { Route as ApiCatalogRouteImport } from './routes/api.catalog'
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -70,6 +71,11 @@ const ProductIdRoute = ProductIdRouteImport.update({
   path: '/product/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCatalogRoute = ApiCatalogRouteImport.update({
+  id: '/api/catalog',
+  path: '/api/catalog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/products': typeof ProductsRoute
   '/wishlist': typeof WishlistRoute
+  '/api/catalog': typeof ApiCatalogRoute
   '/product/$id': typeof ProductIdRoute
 }
 export interface FileRoutesByTo {
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/products': typeof ProductsRoute
   '/wishlist': typeof WishlistRoute
+  '/api/catalog': typeof ApiCatalogRoute
   '/product/$id': typeof ProductIdRoute
 }
 export interface FileRoutesById {
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/products': typeof ProductsRoute
   '/wishlist': typeof WishlistRoute
+  '/api/catalog': typeof ApiCatalogRoute
   '/product/$id': typeof ProductIdRoute
 }
 export interface FileRouteTypes {
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/products'
     | '/wishlist'
+    | '/api/catalog'
     | '/product/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/products'
     | '/wishlist'
+    | '/api/catalog'
     | '/product/$id'
   id:
     | '__root__'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/products'
     | '/wishlist'
+    | '/api/catalog'
     | '/product/$id'
   fileRoutesById: FileRoutesById
 }
@@ -157,6 +169,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   ProductsRoute: typeof ProductsRoute
   WishlistRoute: typeof WishlistRoute
+  ApiCatalogRoute: typeof ApiCatalogRoute
   ProductIdRoute: typeof ProductIdRoute
 }
 
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/catalog': {
+      id: '/api/catalog'
+      path: '/api/catalog'
+      fullPath: '/api/catalog'
+      preLoaderRoute: typeof ApiCatalogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -245,6 +265,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   ProductsRoute: ProductsRoute,
   WishlistRoute: WishlistRoute,
+  ApiCatalogRoute: ApiCatalogRoute,
   ProductIdRoute: ProductIdRoute,
 }
 export const routeTree = rootRouteImport

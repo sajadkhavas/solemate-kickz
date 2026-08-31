@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
 
+import { catalogForRuntime } from "@/catalog/production-catalog";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Navbar } from "@/components/Navbar";
 import { ProductGallery } from "@/components/product/ProductGallery";
@@ -14,10 +15,15 @@ import { SHOES, formatPrice, type Shoe } from "@/data/shoes";
 import { useStore } from "@/store";
 
 export const Route = createFileRoute("/product/$id")({
-  loader: ({ params }) => {
-    const shoe = SHOES.find((item) => item.id === Number(params.id));
+  loader: async ({ params }) => {
+    const catalog = await catalogForRuntime(SHOES);
+    const productId = Number(params.id);
+    const fixtureShoe = !import.meta.env.PROD
+      ? SHOES.find((item) => item.id === productId)
+      : undefined;
+    const shoe = fixtureShoe ?? catalog.find((item) => item.id === productId);
     if (!shoe) throw notFound();
-    return { shoe };
+    return { shoe, catalog };
   },
   head: ({ loaderData }) => ({
     meta: loaderData
@@ -48,7 +54,7 @@ function ProductNotFound() {
     <main className="flex min-h-screen items-center justify-center px-6 text-center">
       <EmptyState
         title="این محصول پیدا نشد"
-        description="شناسه واردشده در Dataset فعلی وجود ندارد."
+        description="این محصول در کاتالوگ فعلی در دسترس نیست."
         action={
           <Button asChild>
             <Link to="/products">بازگشت به فروشگاه</Link>
@@ -93,7 +99,7 @@ function ProductCollection({
 }
 
 function ProductPage() {
-  const { shoe } = Route.useLoaderData() as { shoe: Shoe };
+  const { shoe, catalog } = Route.useLoaderData() as { shoe: Shoe; catalog: Shoe[] };
   const addRecentlyViewed = useStore((state) => state.addRecentlyViewed);
   const recentlyViewedIds = useStore((state) => state.recentlyViewed);
 
@@ -103,22 +109,24 @@ function ProductPage() {
 
   const related = useMemo(
     () =>
-      SHOES.filter(
-        (candidate) =>
-          candidate.id !== shoe.id &&
-          (candidate.brand === shoe.brand || candidate.category === shoe.category),
-      ).slice(0, 4),
-    [shoe],
+      catalog
+        .filter(
+          (candidate) =>
+            candidate.id !== shoe.id &&
+            (candidate.brand === shoe.brand || candidate.category === shoe.category),
+        )
+        .slice(0, 4),
+    [catalog, shoe],
   );
 
   const recentlyViewed = useMemo(
     () =>
       recentlyViewedIds
         .filter((id) => id !== shoe.id)
-        .map((id) => SHOES.find((item) => item.id === id))
+        .map((id) => catalog.find((item) => item.id === id))
         .filter((item): item is Shoe => Boolean(item))
         .slice(0, 4),
-    [recentlyViewedIds, shoe.id],
+    [catalog, recentlyViewedIds, shoe.id],
   );
 
   const shareProduct = async () => {
@@ -176,7 +184,7 @@ function ProductPage() {
         </div>
 
         <ProductCollection
-          eyebrow="Related from the current dataset"
+          eyebrow="Related products"
           title="محصولات مرتبط"
           products={related}
           testId="related-products"
