@@ -218,21 +218,23 @@ record(
     checkoutRoute.includes("ادامه پس از اتصال سرویس سفارش"),
 );
 record(
-  "authorized F7 F9 and P02 routes are registered together",
+  "authorized F7 F9 P02 and P03 routes are registered together",
   routeTree.includes("CheckoutRouteImport") &&
     routeTree.includes("WishlistRouteImport") &&
     routeTree.includes("AccountRouteImport") &&
     routeTree.includes("ApiCatalogRouteImport") &&
+    routeTree.includes("ApiAuthSplatRouteImport") &&
     routeTree.includes("'/checkout': typeof CheckoutRoute") &&
     routeTree.includes("'/wishlist': typeof WishlistRoute") &&
     routeTree.includes("'/account': typeof AccountRoute") &&
-    routeTree.includes("'/api/catalog': typeof ApiCatalogRoute"),
+    routeTree.includes("'/api/catalog': typeof ApiCatalogRoute") &&
+    routeTree.includes("'/api/auth/$': typeof ApiAuthSplatRoute"),
 );
 record(
   "F2 route gate remains strict for the integrated authorized route set",
-  f2Audit.includes("exact Foundation plus authorized F7/F9/P02 additions") &&
+  f2Audit.includes("exact Foundation plus authorized F7/F9/P02/P03 additions") &&
     f2Audit.includes(
-      'const authorizedAdditions = ["/account", "/api/catalog", "/checkout", "/wishlist"]',
+      'const authorizedAdditions = ["/account", "/api/auth/$", "/api/catalog", "/checkout", "/wishlist"]',
     ) &&
     f2Audit.includes("JSON.stringify(currentRoutes) === JSON.stringify(expectedRoutes)"),
 );
