@@ -18,7 +18,9 @@ export const Route = createFileRoute("/product/$id")({
   loader: async ({ params }) => {
     const catalog = await catalogForRuntime(SHOES);
     const productId = Number(params.id);
-    const fixtureShoe = !import.meta.env.PROD ? SHOES.find((item) => item.id === productId) : undefined;
+    const fixtureShoe = !import.meta.env.PROD
+      ? SHOES.find((item) => item.id === productId)
+      : undefined;
     const shoe = fixtureShoe ?? catalog.find((item) => item.id === productId);
     if (!shoe) throw notFound();
     return { shoe, catalog };
