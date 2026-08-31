@@ -19,6 +19,6 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthRouteComponent() {
-  const search = Route.useSearch();
+  const search = Route.useSearch() as AuthSearch;
   return <ProductionAuthPage completePhone={search.complete === "phone"} />;
 }
