@@ -115,7 +115,7 @@ for (const field of [
 if (!/KillMode=control-group/.test(service)) {
   failures.push("systemd service must use KillMode=control-group");
 }
-if (!/sole-p\(?:0\[0-9\]\|1\[0-4\]\)/.test(navigationAudit)) {
+if (!/sole-p\(\?:0\[0-9\]\|1\[0-4\]\)/.test(navigationAudit)) {
   failures.push("legacy branch gate must recognize registered P00-P14 branches");
 }
 for (const [name, source] of [
