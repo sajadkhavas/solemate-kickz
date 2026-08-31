@@ -72,15 +72,15 @@ if (proxy.includes("KAVENEGAR_API_KEY") || proxy.includes("GOOGLE_CLIENT_SECRET"
 }
 
 for (const marker of [
-  'fetch(`/api/auth/${path}`',
+  "fetch(`/api/auth/${path}`",
   'credentials: "same-origin"',
   'request<void>("csrf")',
-  'getCustomerSession',
-  'updateCustomerProfile',
-  'getAddresses',
-  'recordConsent',
-  'requestAccountDeletion',
-  'cancelAccountDeletion',
+  "getCustomerSession",
+  "updateCustomerProfile",
+  "getAddresses",
+  "recordConsent",
+  "requestAccountDeletion",
+  "cancelAccountDeletion",
 ]) {
   if (!client.includes(marker)) failures.push(`customer auth client missing ${marker}`);
 }
@@ -94,7 +94,8 @@ for (const marker of [
   if (!authPage.includes(marker)) failures.push(`production auth UI missing ${marker}`);
 }
 for (const forbidden of ["password", "ثبت‌نام نمایشی", "localStorage", "sessionStorage"]) {
-  if (authPage.includes(forbidden)) failures.push(`production auth UI contains forbidden demo/password marker: ${forbidden}`);
+  if (authPage.includes(forbidden))
+    failures.push(`production auth UI contains forbidden demo/password marker: ${forbidden}`);
 }
 
 for (const marker of [
@@ -112,7 +113,8 @@ for (const marker of [
   if (!accountPage.includes(marker)) failures.push(`production account UI missing ${marker}`);
 }
 for (const forbidden of ["DEMO_ORDERS", "account-profile-v1", "localStorage", "sessionStorage"]) {
-  if (accountPage.includes(forbidden)) failures.push(`production account UI contains forbidden demo authority: ${forbidden}`);
+  if (accountPage.includes(forbidden))
+    failures.push(`production account UI contains forbidden demo authority: ${forbidden}`);
 }
 
 for (const [name, source, route] of [
