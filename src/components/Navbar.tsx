@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Heart, Search, ShoppingBag, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -12,11 +12,13 @@ import { useCartCount, useStore } from "@/store";
 
 import "@/components/navigation/navigation.css";
 
-function DemoDisclosure() {
+function DemoDisclosure({ productionCustomerTruth }: { productionCustomerTruth: boolean }) {
   return (
     <div className="border-b border-primary/30 bg-primary text-primary-foreground">
       <p className="mx-auto flex min-h-9 max-w-[1400px] items-center justify-center px-4 text-center font-fa text-[11px] font-semibold sm:text-xs">
-        نسخه نمایشی فرانت‌اند — جستجو، Wishlist و Account از داده محلی مرورگر استفاده می‌کنند
+        {productionCustomerTruth
+          ? "محیط Production — حساب کاربری از Backend امن SOLE دریافت می‌شود و قابلیت‌های متصل‌نشده به‌صورت fail-closed باقی می‌مانند"
+          : "نسخه نمایشی فرانت‌اند — جستجو، Wishlist و Account از داده محلی مرورگر استفاده می‌کنند"}
       </p>
     </div>
   );
@@ -25,10 +27,13 @@ function DemoDisclosure() {
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const location = useLocation();
   const setCartOpen = useStore((state) => state.setCartOpen);
   const setSearchOpen = useStore((state) => state.setSearchOpen);
   const wishlistCount = useStore((state) => state.wishlist.length);
   const cartCount = useCartCount();
+  const productionCustomerTruth =
+    import.meta.env.PROD && (location.pathname === "/auth" || location.pathname === "/account");
 
   useEffect(() => {
     setMounted(true);
@@ -52,7 +57,7 @@ export function Navbar() {
 
   return (
     <>
-      <DemoDisclosure />
+      <DemoDisclosure productionCustomerTruth={productionCustomerTruth} />
       <header
         data-testid="global-header"
         data-hydrated={mounted ? "true" : "false"}
@@ -106,7 +111,7 @@ export function Navbar() {
             <Link
               to="/account"
               search={{ section: "overview" }}
-              aria-label="حساب کاربری نمایشی"
+              aria-label={productionCustomerTruth ? "حساب کاربری" : "حساب کاربری نمایشی"}
               data-testid="account-nav-link"
               className="hidden size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-interactive hover:text-foreground focus-visible:outline-none sm:inline-flex"
             >

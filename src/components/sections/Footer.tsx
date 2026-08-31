@@ -1,7 +1,6 @@
 import { ChevronDown, Info } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 
 interface FooterLink {
   label: string;
@@ -82,30 +81,20 @@ function FooterCol({ section }: { section: Section }) {
         <ChevronDown
           aria-hidden="true"
           size={16}
-          className={`transition-transform motion-reduce:transition-none ${open ? "rotate-180" : ""}`}
+          className={`transition-transform duration-200 motion-reduce:transition-none ${open ? "rotate-180" : ""}`}
         />
       </button>
 
       <h2 className="eyebrow mb-4 hidden text-neon md:block">{section.title}</h2>
 
-      <div id={contentId} className="md:hidden">
-        <AnimatePresence initial={false}>
-          {open ? (
-            <motion.ul
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="space-y-2 overflow-hidden pb-4 font-fa text-sm text-muted-foreground motion-reduce:transition-none"
-            >
-              {section.links.map((item) => (
-                <li key={item.label}>
-                  <FooterItem item={item} />
-                </li>
-              ))}
-            </motion.ul>
-          ) : null}
-        </AnimatePresence>
+      <div id={contentId} className="md:hidden" hidden={!open}>
+        <ul className="space-y-2 pb-4 font-fa text-sm text-muted-foreground">
+          {section.links.map((item) => (
+            <li key={item.label}>
+              <FooterItem item={item} />
+            </li>
+          ))}
+        </ul>
       </div>
 
       <ul className="hidden space-y-2 font-fa text-sm text-muted-foreground md:block">
