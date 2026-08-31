@@ -1,0 +1,35 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+import {
+  ProductionAccountPage,
+  type ProductionAccountSection,
+} from "@/auth/ProductionAccountPage";
+
+const SECTIONS = ["overview", "profile", "addresses", "orders"] as const;
+
+type AccountSearch = {
+  section: ProductionAccountSection;
+  order?: string;
+};
+
+export const Route = createFileRoute("/account")({
+  validateSearch: (search: Record<string, unknown>): AccountSearch => ({
+    section: SECTIONS.includes(search.section as ProductionAccountSection)
+      ? (search.section as ProductionAccountSection)
+      : "overview",
+    order: typeof search.order === "string" && search.order.trim() ? search.order : undefined,
+  }),
+  head: () => ({
+    meta: [
+      { title: "حساب من — SOLE" },
+      { name: "description", content: "پروفایل، آدرس و کنترل‌های حریم خصوصی حساب مشتری SOLE." },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
+  component: AccountRouteComponent,
+});
+
+function AccountRouteComponent() {
+  const { section } = Route.useSearch();
+  return <ProductionAccountPage section={section} />;
+}
