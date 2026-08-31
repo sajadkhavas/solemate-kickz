@@ -13,7 +13,7 @@ export const ResponsiveCatalogImage = forwardRef<HTMLImageElement, ResponsiveCat
   function ResponsiveCatalogImage({ shoe, src, alt, sizes = "100vw", width, height, ...props }, ref) {
     const media = responsiveMediaFor(shoe, src);
     const largest = media?.sources.at(-1);
-    const resolvedAlt = alt ?? media?.altText ?? "";
+    const resolvedAlt = media?.altText || alt || "";
 
     return (
       <picture className="contents">
