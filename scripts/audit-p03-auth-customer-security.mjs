@@ -23,6 +23,9 @@ const [
   routeTree,
   f2Audit,
   f7Audit,
+  productionNavbar,
+  productionFooter,
+  productionMobileBottomNav,
 ] = await Promise.all([
   text("vite.config.ts"),
   text("src/auth/auth-proxy.server.ts"),
@@ -35,6 +38,9 @@ const [
   text("src/routeTree.gen.ts"),
   text("scripts/audit-f2-navigation-search.mjs"),
   text("scripts/audit-f7-cart-checkout.mjs"),
+  text("src/auth/ProductionNavbar.tsx"),
+  text("src/auth/ProductionFooter.tsx"),
+  text("src/auth/ProductionMobileBottomNav.tsx"),
 ]);
 
 for (const marker of [
@@ -43,8 +49,19 @@ for (const marker of [
   "productionAuthRouteModule",
   "productionAccountRouteModule",
   "sole-production-truth-guard",
+  "productionNavbarModule",
+  "productionFooterModule",
+  "productionMobileBottomNavModule",
+  "isProductionCustomerPage",
 ]) {
   if (!vite.includes(marker)) failures.push(`production route isolation missing ${marker}`);
+}
+for (const marker of [
+  'source === "@/components/Navbar"',
+  'source === "@/components/sections/Footer"',
+  'source === "@/components/MobileBottomNav"',
+]) {
+  if (!vite.includes(marker)) failures.push(`production customer shell isolation missing ${marker}`);
 }
 
 for (const marker of [
@@ -130,6 +147,22 @@ for (const marker of ["ApiAuthSplatRouteImport", "'/api/auth/$': typeof ApiAuthS
 }
 if (!f2Audit.includes('"/api/auth/$"') || !f7Audit.includes('"/api/auth/$"')) {
   failures.push("cumulative exact-route gates must register the controlled P03 auth server route");
+}
+
+for (const [name, source] of [
+  ["production navbar", productionNavbar],
+  ["production footer", productionFooter],
+  ["production mobile navigation", productionMobileBottomNav],
+]) {
+  if (!source.includes("Backend") && name !== "production mobile navigation") {
+    failures.push(`${name} must state backend authority`);
+  }
+  for (const forbidden of ["@/store", "SearchDialog", "NotificationCenter", "framer-motion"]) {
+    if (source.includes(forbidden)) failures.push(`${name} imports heavy/demo shell dependency ${forbidden}`);
+  }
+}
+if (!productionNavbar.includes("fail-closed")) {
+  failures.push("production navbar must disclose fail-closed account boundary");
 }
 
 try {

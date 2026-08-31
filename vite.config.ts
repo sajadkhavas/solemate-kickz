@@ -22,6 +22,22 @@ const productionAuthRouteModule = fileURLToPath(
 const productionAccountRouteModule = fileURLToPath(
   new URL("./src/auth/production-account-route.tsx", import.meta.url),
 );
+const productionNavbarModule = fileURLToPath(
+  new URL("./src/auth/ProductionNavbar.tsx", import.meta.url),
+);
+const productionFooterModule = fileURLToPath(
+  new URL("./src/auth/ProductionFooter.tsx", import.meta.url),
+);
+const productionMobileBottomNavModule = fileURLToPath(
+  new URL("./src/auth/ProductionMobileBottomNav.tsx", import.meta.url),
+);
+
+function isProductionCustomerPage(importer?: string) {
+  return (
+    importer?.endsWith("/src/auth/ProductionAuthPage.tsx") ||
+    importer?.endsWith("/src/auth/ProductionAccountPage.tsx")
+  );
+}
 
 const productionTruthGuard = {
   name: "sole-production-truth-guard",
@@ -34,6 +50,12 @@ const productionTruthGuard = {
     if (importer?.endsWith("/src/routeTree.gen.ts")) {
       if (source === "./routes/auth") return productionAuthRouteModule;
       if (source === "./routes/account") return productionAccountRouteModule;
+    }
+
+    if (isProductionCustomerPage(importer)) {
+      if (source === "@/components/Navbar") return productionNavbarModule;
+      if (source === "@/components/sections/Footer") return productionFooterModule;
+      if (source === "@/components/MobileBottomNav") return productionMobileBottomNavModule;
     }
 
     return null;
