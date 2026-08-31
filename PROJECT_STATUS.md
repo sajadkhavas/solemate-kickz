@@ -1,9 +1,10 @@
 # SOLE Project Status — Authoritative Chat Handoff
 
-**Repository:** [sajadkhavas/solemate-kickz](https://github.com/sajadkhavas/solemate-kickz)  
-**Status last reconciled:** 2026-08-29  
-**Document baseline before P01 merge:** `main@c03f345071c6f7f34a67ebc63e9975233c45dd79`  
-**P01 accepted frontend implementation:** `1248091fa5157e733d70120bb26ca9a07169263b`  
+**Repository:** `sajadkhavas/solemate-kickz`  
+**Status last reconciled:** 2026-08-31  
+**Current accepted frontend phase:** P02 — Media & Catalog Ingestion  
+**P02 START_SHA:** `9423700cc8197d69a14a19e5cc29f092f51da115`  
+**P02 accepted functional END_SHA:** `11c16357a846d01020f4774002ee11d8e63b2d2a`  
 **Purpose:** a new contributor or AI chat must be able to continue SOLE without asking the owner to repeat project history.
 
 ## 1. Reading order and source of truth
@@ -11,12 +12,12 @@
 Before any planning or change:
 
 1. Read this file completely.
-2. Read root [AGENTS.md](./AGENTS.md).
-3. Read the selected phase in [SOLe Production Completion Program](./docs/roadmaps/SOLE-PRODUCTION-COMPLETION-PROGRAM.md).
-4. Read [Production Engineering Constitution](./docs/production/PRODUCTION-ENGINEERING-CONSTITUTION.md).
-5. Read the relevant file under [docs/handoffs](./docs/handoffs/).
+2. Read root `AGENTS.md`.
+3. Read the selected phase in `docs/roadmaps/SOLE-PRODUCTION-COMPLETION-PROGRAM.md`.
+4. Read `docs/production/PRODUCTION-ENGINEERING-CONSTITUTION.md`.
+5. Read the relevant file under `docs/handoffs/`.
 6. Verify the live default-branch SHA and dependency state on GitHub.
-7. Treat [contracts/production-phase-registry.json](./contracts/production-phase-registry.json) as the machine-readable phase registry.
+7. Treat `contracts/production-phase-registry.json` as the machine-readable phase registry.
 
 If a document and live GitHub history disagree, verified GitHub commit/PR/CI evidence wins and the document must be corrected in the next controlled phase change.
 
@@ -24,50 +25,55 @@ If a document and live GitHub history disagree, verified GitHub commit/PR/CI evi
 
 SOLE is a sneaker commerce product.
 
-- **Frontend:** TanStack Start + React, full-document SSR/streaming, Vite, Node production runtime.
-- **Backend:** [`sajadkhavas/sole-backend`](https://github.com/sajadkhavas/sole-backend), Laravel 13 + PHP 8.3+ + Filament 5 + MySQL. P01 backend is merged to `main@c9e2f66bab300882e2306bcd52346a81fb1a2e6b` through [backend PR #2](https://github.com/sajadkhavas/sole-backend/pull/2).
+- **Frontend:** TanStack Start + React, SSR/streaming, Vite and the repository's pinned Node/Bun toolchain.
+- **Backend:** `sajadkhavas/sole-backend`, Laravel 13 + PHP 8.3+ + Filament 5 + MySQL.
+- **Backend P02 main:** `36eca2810495591b44f1f86c975f4ff287374e81`, merged through backend PR #4.
 - **Primary donor reference:** `sajadkhavas/lbb-backend@bc6f53f9cc9b79d8e089fe35b543ad32f5c33217` — read-only.
 - **Selective media donor reference:** `sajadkhavas/winimi-bakery-backend@19d294d8dd835571ee73b9330dff830ed1dda0ed` — read-only.
-- **Truth rule:** the backend owns price, stock, publication and business truth. Donor data/secrets/history are never imported.
+- **Truth rule:** backend owns product publication, SKU, price, stock, media processing and business truth. Donor data, donor secrets and donor history are never imported.
 
-P01 production catalog safety is intentionally fail-closed. Development/browser QA may use deterministic fixtures, but production builds redirect `@/data/shoes` to `src/data/production-shoes.ts`, where `SHOES` is empty until P02 connects real ingestion.
+Production catalog data now enters the frontend through the P02 backend adapter. Development/browser QA fixtures remain deterministic and development-only. Production rejects missing/invalid backend configuration or invalid catalog payloads by failing closed; it never falls back to demo product truth.
 
 ## 3. Completed work
 
 ### Frontend F0–F18
 
-All frontend phases F0 through F18 are completed and released. The cumulative frontend release merged through PR #23 at `6bb540d84ef3952937e03fee5b657b1446b02f47`. Their detailed accepted heads and evidence remain in `docs/handoffs/F*.md` and GitHub history.
+All frontend phases F0 through F18 are completed and released. Their detailed accepted heads and evidence remain in `docs/handoffs/F*.md` and GitHub history.
 
 ### Production program
 
 | Phase | Scope | Evidence | State |
 |---|---|---|---|
-| Program registration | P00–P14 roadmap/registry | frontend PR #24, merge `6566bdcb259cae3a853162f2072ce7a700f28845` | Completed |
-| P00 | Immutable production foundation | accepted implementation `4a62f760ba4f4dee25075a9e9f39183d6b27d896`; frontend PR #25 | Completed |
-| P01 | Backend, admin and product truth | frontend END_SHA `1248091fa5157e733d70120bb26ca9a07169263b`, CI `33261912130`; backend merge `c9e2f66bab300882e2306bcd52346a81fb1a2e6b`, CI `33255041451`; frontend PR #31 | Accepted / merge pending |
+| Program registration | P00–P14 roadmap/registry | frontend PR #24 | Completed |
+| P00 | Immutable production foundation | accepted implementation `4a62f760ba4f4dee25075a9e9f39183d6b27d896` | Completed |
+| P01 | Backend, admin and product truth | frontend PR #32 merged at `9423700cc8197d69a14a19e5cc29f092f51da115`; backend merge `c9e2f66bab300882e2306bcd52346a81fb1a2e6b` | Completed |
+| P02 | Media and catalog ingestion | frontend accepted END `11c16357a846d01020f4774002ee11d8e63b2d2a`, CI `33405521318`; backend merge `36eca2810495591b44f1f86c975f4ff287374e81`, backend CI `33367224392` and `33371334406`; frontend merge closure PR #35 | Completed |
 
-### P01 accepted outcomes
+### P02 accepted outcomes
 
-- independent SOLE backend on Laravel 13 / Filament 5 / MySQL
-- deny-by-default admin access, explicit RBAC and policies
-- append-only privileged audit evidence
-- fresh SOLE-owned schema with constraints/indexes/FKs/factories
-- category/collection/product/variant/SKU/integer-price/settings truth
-- transactional/idempotent inventory ledger with pessimistic locking and concurrency QA
-- policy-protected Filament operational workflows
-- published/sellable read-only catalog API and OpenAPI
-- no production product/admin seed truth
-- production frontend refuses development/demo product truth
-- exact-head backend and frontend QA fully green
-- no server activation or production data mutation in P01
+- private quarantine and signed upload intent
+- server-side byte/MIME/decode/dimension/animation validation
+- fail-closed malware scanning
+- deterministic responsive WebP derivatives and content-addressed delivery
+- versioned catalog manifests with preview/dry-run validation
+- duplicate, SKU, slug and reference validation
+- idempotent catalog apply and ready-media attachment
+- import cannot publish or set publication timestamps
+- draft → review → publish workflow with append-only publication revisions and stale-aware rollback
+- storefront API/OpenAPI v1.1 exposes backend-authoritative ready media
+- production frontend consumes backend catalog truth through `SOLE_API_URL`
+- browser navigation uses the same-origin TanStack server route `/api/catalog`
+- responsive product cards/PDP gallery consume backend-generated WebP `srcset`
+- generated TanStack route tree is committed exactly as produced by the pinned build
+- complete cumulative frontend CI, production build, VPS runtime smoke, performance budgets, visual QA, aggregate evidence and clean-tree all pass on the accepted functional head
+- no server activation and no production data mutation occurred in P02
 
 ## 4. Remaining production phases
 
-P02–P14 remain: **13 phases and 80 planned steps**.
+P03–P14 remain: **12 phases and 74 planned steps**.
 
 | Phase | Scope | Planned steps | Depends on | Server required? |
 |---|---|---:|---|---|
-| P02 | Media and catalog ingestion | 6 | P01 | No |
 | P03 | Authentication and customer security | 6 | P01 | No |
 | P04 | Size and fit intelligence | 5 | P02, P03 | No |
 | P05 | Discovery and PDP conversion | 6 | P02, P04 | No |
@@ -81,27 +87,11 @@ P02–P14 remain: **13 phases and 80 planned steps**.
 | P13 | Staging acceptance | 6 | P12 | Yes |
 | P14 | Production release | 7 | P13 | Yes |
 
-### Remaining acceptance outcomes
-
-- **P02:** secure media processing, catalog ingestion manifest/dry-run, idempotency/checksums, recovery and real frontend catalog/media adapter.
-- **P03:** customer identity, Sanctum/session boundary, OTP lifecycle, throttling, authorization and security regression.
-- **P04:** size charts, measurements, fit data and truthful recommendation boundary.
-- **P05:** real discovery/PDP integration, URL state, stock/price truth, structured product data and conversion QA.
-- **P06:** server-owned quote, inventory reservation, cart, checkout, order state machine and oversell/concurrency protection.
-- **P07:** payment adapter/verified callback, shipping, returns/exchanges/refunds and reconciliation/audit.
-- **P08:** truthful policies, support cases, order tracking and post-purchase operations.
-- **P09:** consented notifications, loyalty/CRM, delivery idempotency/retry, preferences and privacy.
-- **P10:** metadata/canonical/robots/schema/sitemap, content operations and merchant feeds.
-- **P11:** logs/errors/metrics/traces/RUM, privacy-safe analytics, funnel and actionable alerts.
-- **P12:** pinned server/runtime/secrets/backups, immutable deploy/rollback drill, health and full readiness gate.
-- **P13:** production-like staging deployment, migrations, regression, visual/performance/security acceptance and sign-off.
-- **P14:** exact-SHA production release, migration/deploy, public health evidence, monitoring and tested rollback target.
-
 ## 5. Cost and server strategy
 
-Do **not** keep a paid VPS running during P02–P11. Use GitHub Actions and controlled local/CI services for application development and production-like MySQL/Redis/build validation. Activate the server at P12, then perform P13 staging and P14 production.
+Do **not** keep a paid VPS running during P03–P11. Use GitHub Actions and controlled local/CI services for application development and production-like validation. Activate the server at P12, then perform P13 staging and P14 production.
 
-No prototype route, mock OTP, sandbox payment default, placeholder secret or fake product truth may cross into production.
+No prototype route, mock OTP, sandbox payment default, placeholder secret, fake product truth or donor secret may cross into production.
 
 ## 6. Mandatory engineering rules
 
@@ -139,10 +129,10 @@ Mandatory handoff fields remain: `PHASE`, `STATUS`, `START_SHA`, `END_SHA`, `BRA
 
 ## 8. Next action
 
-**P02 — Media & Catalog Ingestion** is the next dependency-ready phase after frontend P01 PR #31 is merged. Start P02 from the verified post-P01 frontend `main` SHA and the merged backend `main@c9e2f66bab300882e2306bcd52346a81fb1a2e6b`.
+**P03 — Authentication & Customer Security** is the next dependency-ready phase.
 
-P02 must replace the intentional empty production catalog with secure, backend-owned ingested catalog/media truth; it must not re-enable development fixtures in production.
+Start P03 only from the verified post-P02 frontend `main` SHA and backend `main@36eca2810495591b44f1f86c975f4ff287374e81`. P03 owns customer identity/session/OTP/security; it must not weaken the P02 catalog/media truth boundary.
 
-## 9. Official references
+## 9. Official-reference baseline
 
-Use current official documentation for the selected phase. P01 specifically used current Laravel 13 transaction/pessimistic-lock guidance and current Filament 5 resource/action/panel-access guidance. GitHub CI evidence is the acceptance authority for committed code.
+P02 implementation was checked against current official TanStack Start server-route/file-routing documentation and Laravel 13 filesystem, validation and pessimistic-locking documentation. Exact committed GitHub CI remains the acceptance authority.
