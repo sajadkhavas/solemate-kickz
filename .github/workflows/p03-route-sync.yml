@@ -1,0 +1,87 @@
+name: P03 route sync
+
+on:
+  push:
+    branches: [phase/sole-p03-auth-customer-security]
+    paths: [.github/workflows/p03-route-sync.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout P03 branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: phase/sole-p03-auth-customer-security
+          fetch-depth: 0
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76 # v2
+        with:
+          bun-version: 1.3.14
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Register the single P03 server route in cumulative gates
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          f2 = Path('scripts/audit-f2-navigation-search.mjs')
+          text = f2.read_text()
+          text = text.replace(
+              'const authorizedAdditions = ["/account", "/api/catalog", "/checkout", "/wishlist"];',
+              'const authorizedAdditions = ["/account", "/api/auth/$", "/api/catalog", "/checkout", "/wishlist"];',
+          )
+          text = text.replace(
+              'generated route set is exact Foundation plus authorized F7/F9/P02 additions',
+              'generated route set is exact Foundation plus authorized F7/F9/P02/P03 additions',
+          )
+          text = text.replace(
+              'files.routeTree.includes("ApiCatalogRouteImport")',
+              'files.routeTree.includes("ApiCatalogRouteImport") &&\n    files.routeTree.includes("ApiAuthSplatRouteImport")',
+              1,
+          )
+          f2.write_text(text)
+
+          f7 = Path('scripts/audit-f7-cart-checkout.mjs')
+          text = f7.read_text()
+          text = text.replace(
+              'authorized F7 F9 and P02 routes are registered together',
+              'authorized F7 F9 P02 and P03 routes are registered together',
+          )
+          text = text.replace(
+              'routeTree.includes("ApiCatalogRouteImport") &&',
+              'routeTree.includes("ApiCatalogRouteImport") &&\n    routeTree.includes("ApiAuthSplatRouteImport") &&',
+              1,
+          )
+          text = text.replace(
+              'routeTree.includes("\'/api/catalog\': typeof ApiCatalogRoute")',
+              'routeTree.includes("\'/api/catalog\': typeof ApiCatalogRoute") &&\n    routeTree.includes("\'/api/auth/$\': typeof ApiAuthSplatRoute")',
+              1,
+          )
+          text = text.replace(
+              'exact Foundation plus authorized F7/F9/P02 additions',
+              'exact Foundation plus authorized F7/F9/P02/P03 additions',
+          )
+          text = text.replace(
+              'const authorizedAdditions = ["/account", "/api/catalog", "/checkout", "/wishlist"]',
+              'const authorizedAdditions = ["/account", "/api/auth/$", "/api/catalog", "/checkout", "/wishlist"]',
+          )
+          f7.write_text(text)
+          PY
+      - name: Generate exact TanStack route tree
+        env:
+          SOLE_API_URL: https://api.example.invalid
+        run: bun run build
+      - name: Format controlled audit files
+        run: bunx prettier --write scripts/audit-f2-navigation-search.mjs scripts/audit-f7-cart-checkout.mjs
+      - name: Remove temporary workflow and commit generated truth
+        run: |
+          rm .github/workflows/p03-route-sync.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/routeTree.gen.ts scripts/audit-f2-navigation-search.mjs scripts/audit-f7-cart-checkout.mjs .github/workflows/p03-route-sync.yml
+          git commit -m 'test(p03): register controlled auth route surface'
+          git push origin HEAD:phase/sole-p03-auth-customer-security
