@@ -1,0 +1,107 @@
+name: P07 Payment Shipping Returns Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/p07-payment-shipping-returns.yml"
+      - "src/commerce/**"
+      - "src/auth/production-account-route.tsx"
+      - "src/auth/ProductionNavbar.tsx"
+      - "src/auth/ProductionFooter.tsx"
+      - "src/auth/ProductionMobileBottomNav.tsx"
+      - "scripts/audit-p06-cart-checkout-orders.mjs"
+      - "scripts/test-p06-cart-checkout-orders.mjs"
+      - "scripts/audit-p07-payment-shipping-returns.mjs"
+      - "scripts/test-p07-payment-shipping-returns.mjs"
+      - "docs/handoffs/P07-PAYMENT-SHIPPING-RETURNS.md"
+      - "contracts/production-phase-registry.json"
+  push:
+    branches:
+      - "phase/sole-p07-*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: p07-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  p07:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.23.1"
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+          no-cache: true
+
+      - name: Install from lockfile
+        run: bun install --frozen-lockfile
+
+      - name: P07 source audit
+        run: node scripts/audit-p07-payment-shipping-returns.mjs
+
+      - name: P07 safety contract tests
+        run: node scripts/test-p07-payment-shipping-returns.mjs
+
+      - name: P06 regression audit
+        run: node scripts/audit-p06-cart-checkout-orders.mjs
+
+      - name: P06 payment truth regression
+        run: node scripts/test-p06-cart-checkout-orders.mjs
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Lint
+        run: bun run lint
+
+      - name: P07 format check
+        run: >-
+          bunx prettier --check
+          .github/workflows/p07-payment-shipping-returns.yml
+          docs/handoffs/P07-PAYMENT-SHIPPING-RETURNS.md
+          scripts/audit-p06-cart-checkout-orders.mjs
+          scripts/test-p06-cart-checkout-orders.mjs
+          scripts/audit-p07-payment-shipping-returns.mjs
+          scripts/test-p07-payment-shipping-returns.mjs
+          src/auth/production-account-route.tsx
+          src/auth/ProductionNavbar.tsx
+          src/auth/ProductionFooter.tsx
+          src/auth/ProductionMobileBottomNav.tsx
+          src/commerce/commerce-api.ts
+          src/commerce/commerce-proxy.server.ts
+          src/commerce/ProductionCheckoutPage.tsx
+          src/commerce/ProductionOrdersPage.tsx
+          src/commerce/production-checkout-route.tsx
+
+      - name: Production build
+        run: bun run build
+        env:
+          NODE_ENV: production
+
+      - name: Existing performance budgets
+        run: bun run qa:perf:f12
+
+      - name: Upload P07 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p07-payment-shipping-returns-evidence
+          path: |
+            artifacts/reports/p07-payment-shipping-returns-contract.json
+            artifacts/reports/p06-cart-checkout-orders-contract.json
+          if-no-files-found: ignore
