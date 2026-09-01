@@ -7,10 +7,7 @@ import type {
   DiscoveryResult,
   DiscoveryShoe,
 } from "@/catalog/discovery-types";
-import type {
-  ResponsiveImageSource,
-  ResponsiveProductMedia,
-} from "@/catalog/responsive-media";
+import type { ResponsiveImageSource, ResponsiveProductMedia } from "@/catalog/responsive-media";
 
 const categoryIds = [
   "running",
@@ -115,7 +112,9 @@ const productSchema = z.object({
   published_at: z.string().nullable(),
   merchandising_priority: z.number().int(),
   category: categorySchema.nullable(),
-  collections: z.array(z.object({ id: z.number().int().positive(), slug: z.string(), name: z.string() })),
+  collections: z.array(
+    z.object({ id: z.number().int().positive(), slug: z.string(), name: z.string() }),
+  ),
   media: z.array(mediaSchema),
   variants: z.array(variantSchema).min(1),
   size_guide: sizeGuideSchema,
@@ -231,9 +230,9 @@ function mapProduct(product: ApiProduct): DiscoveryShoe | null {
   if (!responsiveMedia.length) return null;
 
   const images = responsiveMedia.map((item) => item.src);
-  const sizes = [...new Set(variants.map((variant) => Number(variant.size)).filter(Number.isFinite))].sort(
-    (a, b) => a - b,
-  );
+  const sizes = [
+    ...new Set(variants.map((variant) => Number(variant.size)).filter(Number.isFinite)),
+  ].sort((a, b) => a - b);
   const compareAt = priceVariant.compare_at_price_minor;
   const hasDiscount = compareAt !== null && compareAt > priceVariant.price_minor;
   const tags = product.tags.map((tag) => tag.trim()).filter(Boolean);
@@ -263,7 +262,10 @@ function mapProduct(product: ApiProduct): DiscoveryShoe | null {
     variants: variants.map((variant) => ({
       id: variant.id,
       sku: variant.sku,
-      size: variant.size === null || !Number.isFinite(Number(variant.size)) ? null : Number(variant.size),
+      size:
+        variant.size === null || !Number.isFinite(Number(variant.size))
+          ? null
+          : Number(variant.size),
       color: variant.color,
       price: variant.price_minor / 10,
       compareAtPrice:
@@ -275,7 +277,9 @@ function mapProduct(product: ApiProduct): DiscoveryShoe | null {
       availability: {
         state: product.decision_support.availability.state,
         availableQuantity: product.decision_support.availability.available_quantity,
-        availableSizes: product.decision_support.availability.available_sizes.map(Number).filter(Number.isFinite),
+        availableSizes: product.decision_support.availability.available_sizes
+          .map(Number)
+          .filter(Number.isFinite),
       },
       pricing: {
         currency: product.decision_support.pricing.currency === "IRR" ? "IRR" : null,
@@ -362,7 +366,9 @@ export async function fetchProductionDiscovery(search: CatalogSearch): Promise<D
     if (!response.ok) return unavailable();
     const parsed = pageSchema.safeParse(await response.json());
     if (!parsed.success) return unavailable();
-    const products = parsed.data.data.map(mapProduct).filter((item): item is DiscoveryShoe => item !== null);
+    const products = parsed.data.data
+      .map(mapProduct)
+      .filter((item): item is DiscoveryShoe => item !== null);
     const facets: CatalogFacets = parsed.data.facets;
     return {
       products,
@@ -396,7 +402,9 @@ export async function fetchProductionCatalogP05(): Promise<DiscoveryShoe[]> {
       if (!response.ok) return [];
       const parsed = pageSchema.safeParse(await response.json());
       if (!parsed.success) return [];
-      products.push(...parsed.data.data.map(mapProduct).filter((item): item is DiscoveryShoe => item !== null));
+      products.push(
+        ...parsed.data.data.map(mapProduct).filter((item): item is DiscoveryShoe => item !== null),
+      );
       if (parsed.data.links.next === null) return products;
     } catch {
       return [];

@@ -34,11 +34,8 @@ export const Route = createFileRoute("/api/catalog")({
         try {
           const url = new URL(request.url);
           const mode = url.searchParams.get("mode");
-          const {
-            fetchProductionCatalogP05,
-            fetchProductionDiscovery,
-            fetchProductionRelated,
-          } = await import("@/catalog/p05-discovery.server");
+          const { fetchProductionCatalogP05, fetchProductionDiscovery, fetchProductionRelated } =
+            await import("@/catalog/p05-discovery.server");
 
           if (mode === "all") {
             return Response.json(await fetchProductionCatalogP05(), {
@@ -69,9 +66,7 @@ export const Route = createFileRoute("/api/catalog")({
           const parsed = backInStockRequestSchema.safeParse(await request.json());
           if (!parsed.success) return Response.json({ status: "invalid" }, { status: 422 });
 
-          const { registerProductionBackInStock } = await import(
-            "@/catalog/p05-discovery.server"
-          );
+          const { registerProductionBackInStock } = await import("@/catalog/p05-discovery.server");
           const result = await registerProductionBackInStock({
             slug: parsed.data.slug,
             variantId: parsed.data.variantId,

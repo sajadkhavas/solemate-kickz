@@ -141,7 +141,8 @@ function ProductsPage() {
             انتخاب <span className="text-neon">کفش</span>
           </h1>
           <p className="mt-3 max-w-2xl font-fa text-sm leading-7 text-muted-foreground sm:text-base">
-            جستجو، فیلتر، مرتب‌سازی و صفحه در نشانی ذخیره می‌شوند؛ در Production نتیجه از کاتالوگ رسمی سرور می‌آید.
+            جستجو، فیلتر، مرتب‌سازی و صفحه در نشانی ذخیره می‌شوند؛ در Production نتیجه از کاتالوگ
+            رسمی سرور می‌آید.
           </p>
 
           <form
@@ -150,7 +151,9 @@ function ProductsPage() {
             data-interactive={interactive ? "true" : "false"}
             className="mt-6 grid max-w-2xl gap-2 sm:grid-cols-[1fr_auto]"
           >
-            <label htmlFor="catalog-search" className="sr-only">جستجو در کاتالوگ</label>
+            <label htmlFor="catalog-search" className="sr-only">
+              جستجو در کاتالوگ
+            </label>
             <SearchInput
               id="catalog-search"
               data-testid="catalog-search"
@@ -167,7 +170,11 @@ function ProductsPage() {
             <Button type="submit">جستجو</Button>
           </form>
 
-          <div role="group" aria-label="فیلترهای سریع" className="-mx-1 mt-5 flex gap-2 overflow-x-auto px-1 pb-1">
+          <div
+            role="group"
+            aria-label="فیلترهای سریع"
+            className="-mx-1 mt-5 flex gap-2 overflow-x-auto px-1 pb-1"
+          >
             {QUICK_FILTERS.map((item) => {
               const Icon = item.icon;
               const active = search.quick === item.id;
@@ -178,7 +185,9 @@ function ProductsPage() {
                   aria-pressed={active}
                   onClick={() => updateSearch({ quick: item.id })}
                   className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border px-4 font-fa text-sm transition-colors ${
-                    active ? "border-neon bg-neon font-bold text-ink" : "border-border bg-surface hover:border-neon"
+                    active
+                      ? "border-neon bg-neon font-bold text-ink"
+                      : "border-border bg-surface hover:border-neon"
                   }`}
                 >
                   <Icon aria-hidden="true" className="size-4" />
@@ -190,8 +199,18 @@ function ProductsPage() {
 
           {activeFilters ? (
             <div className="mt-4 flex flex-wrap items-center gap-2" aria-label="فیلترهای فعال">
-              {search.brand ? <FilterChip label={`برند ${search.brand}`} onRemove={() => updateSearch({ brand: undefined })} /> : null}
-              {categoryLabel ? <FilterChip label={categoryLabel} onRemove={() => updateSearch({ category: undefined })} /> : null}
+              {search.brand ? (
+                <FilterChip
+                  label={`برند ${search.brand}`}
+                  onRemove={() => updateSearch({ brand: undefined })}
+                />
+              ) : null}
+              {categoryLabel ? (
+                <FilterChip
+                  label={categoryLabel}
+                  onRemove={() => updateSearch({ category: undefined })}
+                />
+              ) : null}
               {search.q ? (
                 <FilterChip
                   label={`جستجو: ${search.q}`}
@@ -202,7 +221,11 @@ function ProductsPage() {
                 />
               ) : null}
               {selectedSizes.map((size) => (
-                <FilterChip key={size} label={`سایز ${size}`} onRemove={() => setSizeFilters(selectedSizes.filter((item) => item !== size))} />
+                <FilterChip
+                  key={size}
+                  label={`سایز ${size}`}
+                  onRemove={() => setSizeFilters(selectedSizes.filter((item) => item !== size))}
+                />
               ))}
               {search.priceMax && search.priceMax < CATALOG_MAX_PRICE ? (
                 <FilterChip
@@ -216,7 +239,9 @@ function ProductsPage() {
                   onRemove={() => updateSearch({ availability: "all" })}
                 />
               ) : null}
-              <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>پاک‌کردن همه</Button>
+              <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
+                پاک‌کردن همه
+              </Button>
             </div>
           ) : null}
         </div>
@@ -239,7 +264,10 @@ function ProductsPage() {
                 onSizesChange={setSizeFilters}
                 onAvailabilityChange={(availability) => updateSearch({ availability })}
                 onPriceMaxChange={(priceMax) =>
-                  updateSearch({ priceMax: priceMax === CATALOG_MAX_PRICE ? undefined : priceMax }, { replace: true })
+                  updateSearch(
+                    { priceMax: priceMax === CATALOG_MAX_PRICE ? undefined : priceMax },
+                    { replace: true },
+                  )
                 }
                 onClear={clearFilters}
               />
@@ -249,31 +277,63 @@ function ProductsPage() {
           <div className="min-w-0">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <Button type="button" variant="outline" className="lg:hidden" onClick={() => setFilterDialogOpen(true)} data-testid="mobile-filter-trigger">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="lg:hidden"
+                  onClick={() => setFilterDialogOpen(true)}
+                  data-testid="mobile-filter-trigger"
+                >
                   <SlidersHorizontal aria-hidden="true" className="size-4" />
                   فیلترها
                 </Button>
-                <p className="font-fa text-sm text-muted-foreground" aria-live="polite" aria-atomic="true">
+                <p
+                  className="font-fa text-sm text-muted-foreground"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
                   <span className="font-mono-num text-foreground">{discovery.total}</span> محصول
                 </p>
               </div>
 
               <div className="flex flex-1 items-center justify-end gap-2 sm:flex-initial">
-                <div role="group" aria-label="نوع نمایش" className="hidden rounded-full border border-border bg-surface p-1 sm:flex">
-                  <IconButton label="نمایش شبکه‌ای" size="sm" variant={search.view === "grid" ? "default" : "ghost"} aria-pressed={search.view === "grid"} onClick={() => updateSearch({ view: "grid" })} className="rounded-full">
+                <div
+                  role="group"
+                  aria-label="نوع نمایش"
+                  className="hidden rounded-full border border-border bg-surface p-1 sm:flex"
+                >
+                  <IconButton
+                    label="نمایش شبکه‌ای"
+                    size="sm"
+                    variant={search.view === "grid" ? "default" : "ghost"}
+                    aria-pressed={search.view === "grid"}
+                    onClick={() => updateSearch({ view: "grid" })}
+                    className="rounded-full"
+                  >
                     <Grid3x3 aria-hidden="true" className="size-4" />
                   </IconButton>
-                  <IconButton label="نمایش فهرستی" size="sm" variant={search.view === "list" ? "default" : "ghost"} aria-pressed={search.view === "list"} onClick={() => updateSearch({ view: "list" })} className="rounded-full">
+                  <IconButton
+                    label="نمایش فهرستی"
+                    size="sm"
+                    variant={search.view === "list" ? "default" : "ghost"}
+                    aria-pressed={search.view === "list"}
+                    onClick={() => updateSearch({ view: "list" })}
+                    className="rounded-full"
+                  >
                     <LayoutList aria-hidden="true" className="size-4" />
                   </IconButton>
                 </div>
 
-                <label htmlFor="catalog-sort" className="sr-only">مرتب‌سازی محصولات</label>
+                <label htmlFor="catalog-sort" className="sr-only">
+                  مرتب‌سازی محصولات
+                </label>
                 <select
                   id="catalog-sort"
                   data-testid="catalog-sort"
                   value={search.sort}
-                  onChange={(event) => updateSearch({ sort: event.currentTarget.value as CatalogSearch["sort"] })}
+                  onChange={(event) =>
+                    updateSearch({ sort: event.currentTarget.value as CatalogSearch["sort"] })
+                  }
                   className="min-h-11 min-w-0 rounded-full border border-border bg-surface px-4 font-fa text-sm outline-none focus-visible:border-neon focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <option value="newest">جدیدترین</option>
@@ -294,20 +354,49 @@ function ProductsPage() {
               <>
                 <div
                   data-testid="catalog-results"
-                  className={search.view === "grid" ? "grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 xl:grid-cols-3" : "space-y-4"}
+                  className={
+                    search.view === "grid"
+                      ? "grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 xl:grid-cols-3"
+                      : "space-y-4"
+                  }
                 >
                   {products.map((shoe, index) => (
-                    <ShoeCard key={shoe.id} shoe={shoe} index={index} variant={search.view} onQuickView={openQuickView} />
+                    <ShoeCard
+                      key={shoe.id}
+                      shoe={shoe}
+                      index={index}
+                      variant={search.view}
+                      onQuickView={openQuickView}
+                    />
                   ))}
                 </div>
 
                 {discovery.lastPage > 1 ? (
-                  <nav aria-label="صفحه‌بندی کاتالوگ" className="mt-8 flex items-center justify-center gap-3">
-                    <Button type="button" variant="outline" disabled={discovery.currentPage <= 1} onClick={() => updateSearch({ page: discovery.currentPage - 1 })}>صفحه قبل</Button>
+                  <nav
+                    aria-label="صفحه‌بندی کاتالوگ"
+                    className="mt-8 flex items-center justify-center gap-3"
+                  >
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={discovery.currentPage <= 1}
+                      onClick={() => updateSearch({ page: discovery.currentPage - 1 })}
+                    >
+                      صفحه قبل
+                    </Button>
                     <span className="font-fa text-sm text-muted-foreground">
-                      صفحه <span className="font-mono-num text-foreground">{discovery.currentPage}</span> از <span className="font-mono-num text-foreground">{discovery.lastPage}</span>
+                      صفحه{" "}
+                      <span className="font-mono-num text-foreground">{discovery.currentPage}</span>{" "}
+                      از <span className="font-mono-num text-foreground">{discovery.lastPage}</span>
                     </span>
-                    <Button type="button" variant="outline" disabled={discovery.currentPage >= discovery.lastPage} onClick={() => updateSearch({ page: discovery.currentPage + 1 })}>صفحه بعد</Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={discovery.currentPage >= discovery.lastPage}
+                      onClick={() => updateSearch({ page: discovery.currentPage + 1 })}
+                    >
+                      صفحه بعد
+                    </Button>
                   </nav>
                 ) : null}
               </>
@@ -321,11 +410,18 @@ function ProductsPage() {
                 }
                 action={
                   discovery.recovery?.suggestedQuery ? (
-                    <Button type="button" onClick={() => updateSearch({ q: discovery.recovery?.suggestedQuery ?? undefined })}>
+                    <Button
+                      type="button"
+                      onClick={() =>
+                        updateSearch({ q: discovery.recovery?.suggestedQuery ?? undefined })
+                      }
+                    >
                       جستجوی پیشنهاد اصلاح‌شده
                     </Button>
                   ) : (
-                    <Button type="button" onClick={clearFilters}>نمایش همه محصولات</Button>
+                    <Button type="button" onClick={clearFilters}>
+                      نمایش همه محصولات
+                    </Button>
                   )
                 }
                 className="min-h-72 border border-dashed border-border bg-surface"
@@ -338,14 +434,23 @@ function ProductsPage() {
       <DialogPrimitive.Root open={filterDialogOpen} onOpenChange={setFilterDialogOpen}>
         <DialogPrimitive.Portal>
           <DialogPrimitive.Overlay className="fixed inset-0 z-[var(--z-overlay)] bg-overlay backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 motion-reduce:animate-none" />
-          <DialogPrimitive.Content data-testid="mobile-filter-dialog" className="fixed inset-y-0 start-0 z-[var(--z-modal)] w-[min(92vw,25rem)] overflow-y-auto border-e border-border bg-surface-elevated p-5 shadow-[var(--shadow-overlay)] outline-none">
+          <DialogPrimitive.Content
+            data-testid="mobile-filter-dialog"
+            className="fixed inset-y-0 start-0 z-[var(--z-modal)] w-[min(92vw,25rem)] overflow-y-auto border-e border-border bg-surface-elevated p-5 shadow-[var(--shadow-overlay)] outline-none"
+          >
             <div className="mb-6 flex items-start justify-between gap-3">
               <div>
-                <DialogPrimitive.Title className="font-fa text-xl font-bold">فیلتر محصولات</DialogPrimitive.Title>
-                <DialogPrimitive.Description className="mt-1 font-fa text-sm text-muted-foreground">انتخاب‌ها فوراً در URL ذخیره می‌شوند.</DialogPrimitive.Description>
+                <DialogPrimitive.Title className="font-fa text-xl font-bold">
+                  فیلتر محصولات
+                </DialogPrimitive.Title>
+                <DialogPrimitive.Description className="mt-1 font-fa text-sm text-muted-foreground">
+                  انتخاب‌ها فوراً در URL ذخیره می‌شوند.
+                </DialogPrimitive.Description>
               </div>
               <DialogPrimitive.Close asChild>
-                <IconButton label="بستن فیلترها" variant="ghost"><X aria-hidden="true" className="size-5" /></IconButton>
+                <IconButton label="بستن فیلترها" variant="ghost">
+                  <X aria-hidden="true" className="size-5" />
+                </IconButton>
               </DialogPrimitive.Close>
             </div>
 
@@ -362,7 +467,10 @@ function ProductsPage() {
               onSizesChange={setSizeFilters}
               onAvailabilityChange={(availability) => updateSearch({ availability })}
               onPriceMaxChange={(priceMax) =>
-                updateSearch({ priceMax: priceMax === CATALOG_MAX_PRICE ? undefined : priceMax }, { replace: true })
+                updateSearch(
+                  { priceMax: priceMax === CATALOG_MAX_PRICE ? undefined : priceMax },
+                  { replace: true },
+                )
               }
               onClear={clearFilters}
               onApply={() => setFilterDialogOpen(false)}

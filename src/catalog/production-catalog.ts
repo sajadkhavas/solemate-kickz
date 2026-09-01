@@ -130,10 +130,13 @@ export async function relatedCatalogForRuntime(
   }
 
   try {
-    const response = await fetch(`/api/catalog?mode=related&slug=${encodeURIComponent(shoe.slug)}`, {
-      headers: { Accept: "application/json" },
-      credentials: "same-origin",
-    });
+    const response = await fetch(
+      `/api/catalog?mode=related&slug=${encodeURIComponent(shoe.slug)}`,
+      {
+        headers: { Accept: "application/json" },
+        credentials: "same-origin",
+      },
+    );
     if (!response.ok) return [];
     const payload: unknown = await response.json();
     return Array.isArray(payload) ? (payload as Shoe[]) : [];

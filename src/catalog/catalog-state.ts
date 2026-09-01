@@ -29,10 +29,7 @@ export const catalogSearchSchema = z.object({
     z.coerce.number().int().min(CATALOG_MIN_PRICE).max(CATALOG_MAX_PRICE).optional(),
     undefined,
   ),
-  availability: fallback(
-    z.enum(["all", "in_stock", "out_of_stock"]),
-    "all",
-  ).default("all"),
+  availability: fallback(z.enum(["all", "in_stock", "out_of_stock"]), "all").default("all"),
   quick: fallback(z.enum(["all", "new", "sale", "limited"]), "all").default("all"),
   view: fallback(z.enum(["grid", "list"]), "grid").default("grid"),
   page: fallback(z.coerce.number().int().min(1), 1).default(1),

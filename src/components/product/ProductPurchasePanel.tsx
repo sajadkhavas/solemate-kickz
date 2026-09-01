@@ -163,7 +163,9 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
           {shoe.sizes.map((size) => {
             const selected = selectedSize === size;
             const variant = richShoe.variants?.find((item) => item.size === size);
-            const availability = hasVariantTruth ? variant?.availability ?? "out_of_stock" : undefined;
+            const availability = hasVariantTruth
+              ? (variant?.availability ?? "out_of_stock")
+              : undefined;
             return (
               <button
                 key={size}
@@ -242,7 +244,10 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
           data-testid="product-wishlist"
           className="min-h-14 rounded-full"
         >
-          <Heart aria-hidden="true" className={isWishlisted ? "fill-primary text-primary" : undefined} />
+          <Heart
+            aria-hidden="true"
+            className={isWishlisted ? "fill-primary text-primary" : undefined}
+          />
           <span className="sm:sr-only">
             {isWishlisted ? "حذف از علاقه‌مندی" : "افزودن به علاقه‌مندی"}
           </span>
@@ -268,7 +273,8 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
         >
           <h2 className="font-fa text-sm font-bold">اطلاع از موجودشدن این سایز</h2>
           <p className="mt-2 font-fa text-xs leading-6 text-muted-foreground">
-            ایمیل فقط برای همین درخواست ثبت می‌شود. ارسال اعلان در P09 فعال خواهد شد و این فرم وعده زمان ارسال نمی‌دهد.
+            ایمیل فقط برای همین درخواست ثبت می‌شود. ارسال اعلان در P09 فعال خواهد شد و این فرم وعده
+            زمان ارسال نمی‌دهد.
           </p>
           <label className="mt-4 block font-fa text-xs font-bold" htmlFor="back-in-stock-email">
             ایمیل
@@ -292,7 +298,11 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
             />
             <span>رضایت می‌دهم ایمیل من فقط برای اطلاع از موجودشدن همین Variant ثبت شود.</span>
           </label>
-          <Button type="submit" className="mt-4" disabled={!consent || !email.trim() || waitlistSubmitting}>
+          <Button
+            type="submit"
+            className="mt-4"
+            disabled={!consent || !email.trim() || waitlistSubmitting}
+          >
             {waitlistSubmitting ? "در حال ثبت…" : "ثبت درخواست"}
           </Button>
         </form>
@@ -330,7 +340,8 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
         ) : (
           <div className="mt-4 border-t border-border pt-4">
             <p className="font-fa text-xs leading-6 text-muted-foreground">
-              Dataset فعلی اطلاعاتی درباره موجودی هر سایز، جنس، کشور سازنده، اصالت، زمان ارسال یا شرایط بازگشت ندارد؛ بنابراین این صفحه چنین ادعاهایی نمایش نمی‌دهد.
+              Dataset فعلی اطلاعاتی درباره موجودی هر سایز، جنس، کشور سازنده، اصالت، زمان ارسال یا
+              شرایط بازگشت ندارد؛ بنابراین این صفحه چنین ادعاهایی نمایش نمی‌دهد.
             </p>
           </div>
         )}
@@ -342,7 +353,9 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
       >
         <div className="mx-auto flex max-w-xl items-center gap-3">
           <div className="min-w-0 flex-1">
-            <p className="truncate font-display text-xs font-bold">{shoe.brand} {shoe.name}</p>
+            <p className="truncate font-display text-xs font-bold">
+              {shoe.brand} {shoe.name}
+            </p>
             <Price value={currentPrice} className="mt-1 text-sm font-bold" />
           </div>
           <Button

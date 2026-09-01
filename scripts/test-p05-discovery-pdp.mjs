@@ -68,8 +68,14 @@ async function run(baseUrl) {
     });
 
     await navigate(client, `${baseUrl}/products`);
-    await waitForExpression(client, `document.querySelector('[data-testid="catalog-search-form"]')?.getAttribute('data-interactive') === 'true'`);
-    await waitForExpression(client, `document.querySelectorAll('[data-testid="product-card"]').length > 0`);
+    await waitForExpression(
+      client,
+      `document.querySelector('[data-testid="catalog-search-form"]')?.getAttribute('data-interactive') === 'true'`,
+    );
+    await waitForExpression(
+      client,
+      `document.querySelectorAll('[data-testid="product-card"]').length > 0`,
+    );
 
     const sortContract = await evaluate(
       client,
@@ -85,8 +91,14 @@ async function run(baseUrl) {
     );
 
     await clickText(client, '[data-testid="catalog-filters"] button', "فقط ناموجود");
-    await waitForExpression(client, `new URLSearchParams(location.search).get('availability') === 'out_of_stock'`);
-    await waitForExpression(client, `document.querySelectorAll('[data-testid="product-card"]').length > 0`);
+    await waitForExpression(
+      client,
+      `new URLSearchParams(location.search).get('availability') === 'out_of_stock'`,
+    );
+    await waitForExpression(
+      client,
+      `document.querySelectorAll('[data-testid="product-card"]').length > 0`,
+    );
     const soldOutState = await evaluate(
       client,
       `({
@@ -102,8 +114,14 @@ async function run(baseUrl) {
     );
 
     await clickText(client, '[data-testid="catalog-filters"] button', "فقط موجود");
-    await waitForExpression(client, `new URLSearchParams(location.search).get('availability') === 'in_stock'`);
-    await waitForExpression(client, `document.querySelectorAll('[data-testid="product-card"]').length > 0`);
+    await waitForExpression(
+      client,
+      `new URLSearchParams(location.search).get('availability') === 'in_stock'`,
+    );
+    await waitForExpression(
+      client,
+      `document.querySelectorAll('[data-testid="product-card"]').length > 0`,
+    );
     const inStockState = await evaluate(
       client,
       `({
@@ -128,7 +146,10 @@ async function run(baseUrl) {
         return true;
       })()`,
     );
-    await waitForExpression(client, `new URLSearchParams(location.search).get('sort') === 'popular'`);
+    await waitForExpression(
+      client,
+      `new URLSearchParams(location.search).get('sort') === 'popular'`,
+    );
     record(
       "Merchandising sort remains URL-backed",
       await evaluate(client, `new URLSearchParams(location.search).get('sort') === 'popular'`),
@@ -146,8 +167,12 @@ async function run(baseUrl) {
     );
     record("P05 discovery state survives deep links", deepLink.pressed && deepLink.list, deepLink);
 
-    const hydration = browserErrors.filter((error) => /hydration|server rendered html|did not match/i.test(error));
-    const runtime = browserErrors.filter((error) => /uncaught|typeerror|referenceerror|syntaxerror/i.test(error));
+    const hydration = browserErrors.filter((error) =>
+      /hydration|server rendered html|did not match/i.test(error),
+    );
+    const runtime = browserErrors.filter((error) =>
+      /uncaught|typeerror|referenceerror|syntaxerror/i.test(error),
+    );
     record("No P05 hydration mismatch", hydration.length === 0, hydration);
     record("No P05 runtime exception", runtime.length === 0, runtime);
   } finally {

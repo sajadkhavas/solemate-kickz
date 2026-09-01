@@ -50,7 +50,7 @@ for (const marker of [
   "discoverCatalogForRuntime",
   "fetchProductionCatalogP05",
   'fetch("/api/catalog',
-  'if (!import.meta.env.PROD)',
+  "if (!import.meta.env.PROD)",
 ]) {
   if (!runtime.includes(marker)) failures.push(`P05 runtime boundary missing ${marker}`);
 }
