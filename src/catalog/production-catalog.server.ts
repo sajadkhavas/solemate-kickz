@@ -66,6 +66,23 @@ const productSchema = z.object({
   ),
   media: z.array(mediaSchema),
   variants: z.array(variantSchema).min(1),
+  size_guide: z
+    .object({
+      source_label: z.string().min(1),
+      source_url: z.string().url().nullable(),
+      measurement_unit: z.literal("mm"),
+      width_profile: z.enum(["narrow", "standard", "wide"]),
+      verified_at: z.string().nullable(),
+      entries: z.array(
+        z.object({
+          eu_size: z.string().min(1),
+          foot_length_min_mm: z.number().int().min(180).max(340),
+          foot_length_max_mm: z.number().int().min(180).max(340),
+          label: z.string().nullable(),
+        }),
+      ),
+    })
+    .nullable(),
 });
 
 const pageSchema = z.object({
@@ -173,6 +190,20 @@ function mapApiProduct(product: ApiProduct): ResponsiveShoe | null {
     sku: priceVariant.sku,
     tags,
     responsiveMedia,
+    sizeGuide: product.size_guide
+      ? {
+          sourceLabel: product.size_guide.source_label,
+          sourceUrl: product.size_guide.source_url,
+          verifiedAt: product.size_guide.verified_at,
+          widthProfile: product.size_guide.width_profile,
+          entries: product.size_guide.entries.map((entry) => ({
+            euSize: entry.eu_size,
+            footLengthMinMm: entry.foot_length_min_mm,
+            footLengthMaxMm: entry.foot_length_max_mm,
+            label: entry.label,
+          })),
+        }
+      : undefined,
   } satisfies ResponsiveShoe;
 }
 

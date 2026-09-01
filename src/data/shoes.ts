@@ -28,6 +28,18 @@ export interface Shoe {
   colors: string[];
   sku: string;
   tags: string[];
+  sizeGuide?: {
+    sourceLabel: string;
+    sourceUrl: string | null;
+    verifiedAt: string | null;
+    widthProfile: "narrow" | "standard" | "wide";
+    entries: Array<{
+      euSize: string;
+      footLengthMinMm: number;
+      footLengthMaxMm: number;
+      label: string | null;
+    }>;
+  };
 }
 
 // Curated, verified Unsplash sneaker photo IDs (real shoe photography)

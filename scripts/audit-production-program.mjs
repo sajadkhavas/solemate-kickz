@@ -134,7 +134,7 @@ if (!/Production program contract audit[\s\S]*audit:production-program/.test(wor
 }
 if (
   pkg?.scripts?.["audit:production-program"] !==
-  "node scripts/audit-production-program.mjs && bun run audit:p03"
+  "node scripts/audit-production-program.mjs && bun run audit:p03 && bun run audit:p04"
 ) {
   failures.push("package script audit:production-program is missing");
 }

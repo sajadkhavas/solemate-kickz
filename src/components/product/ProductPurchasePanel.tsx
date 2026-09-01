@@ -94,7 +94,7 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
               سایز به‌صورت خودکار انتخاب نمی‌شود.
             </p>
           </div>
-          <SizeGuideDialog sizes={shoe.sizes} />
+          <SizeGuideDialog sizes={shoe.sizes} sizeGuide={shoe.sizeGuide} />
         </div>
 
         <div
