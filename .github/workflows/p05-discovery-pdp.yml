@@ -67,7 +67,7 @@ jobs:
 
       - name: P00 production foundation audit
           run: bun run audit:p00
-'''
+          '''
           new_audit = '''      - name: P04 size and fit intelligence audit
           run: bun run audit:p04
 
@@ -79,7 +79,7 @@ jobs:
 
       - name: P00 production foundation audit
           run: bun run audit:p00
-'''
+          '''
 
           old_format = '''      - name: F18 format check
           run: >-
@@ -95,7 +95,7 @@ jobs:
             scripts/verify-cumulative-quality.mjs
 
       - name: Production build
-'''
+          '''
           new_format = '''      - name: F18 format check
           run: >-
             bunx prettier --check
@@ -127,7 +127,7 @@ jobs:
             'src/routes/product.$id.tsx'
 
       - name: Production build
-'''
+          '''
 
           old_summary = '            echo "- Included phases: F0/F1, F3 + commercial homepage upgrade, F2, F8, F4/F5, F6, F7, F9, F10, F11, F12, F13, F14 and F15"\n'
           new_summary = '            echo "- Included phases: F0/F1, F2-F18 cumulative contracts plus production P00, P03, P04 and P05 gates"\n'
