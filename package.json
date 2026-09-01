@@ -84,6 +84,9 @@
     "audit:p06": "node scripts/audit-p06-cart-checkout-orders.mjs",
     "test:p06": "node scripts/test-p06-cart-checkout-orders.mjs",
     "format:p06": "prettier --write docs/handoffs/P06-CART-CHECKOUT-ORDERS.md package.json scripts/audit-p06-cart-checkout-orders.mjs scripts/test-p06-cart-checkout-orders.mjs scripts/audit-production-program.mjs scripts/verify-cumulative-quality.mjs src/commerce/commerce-api.ts src/commerce/commerce-proxy.server.ts src/commerce/ProductionCartPage.tsx src/commerce/ProductionCheckoutPage.tsx src/commerce/production-cart-route.tsx src/commerce/production-checkout-route.tsx 'src/routes/api.commerce.$.ts' src/auth/ProductionAccountPage.tsx src/auth/production-account-route.tsx src/components/product/ProductPurchasePanel.tsx vite.config.ts",
+    "audit:p07": "node scripts/audit-p07-payment-shipping-returns.mjs",
+    "test:p07": "node scripts/test-p07-payment-shipping-returns.mjs",
+    "format:p07": "prettier --write docs/handoffs/P07-PAYMENT-SHIPPING-RETURNS.md package.json scripts/audit-p06-cart-checkout-orders.mjs scripts/test-p06-cart-checkout-orders.mjs scripts/audit-p07-payment-shipping-returns.mjs scripts/test-p07-payment-shipping-returns.mjs scripts/audit-production-program.mjs scripts/verify-cumulative-quality.mjs src/auth/production-account-route.tsx src/auth/ProductionNavbar.tsx src/auth/ProductionFooter.tsx src/auth/ProductionMobileBottomNav.tsx src/commerce/commerce-api.ts src/commerce/commerce-proxy.server.ts src/commerce/ProductionCheckoutPage.tsx src/commerce/ProductionOrdersPage.tsx src/commerce/production-checkout-route.tsx",
     "format:p04": "prettier --write .github/workflows/frontend-ci.yml package.json scripts/audit-p04-size-fit-intelligence.mjs src/catalog/production-catalog.server.ts src/components/product/ProductPurchasePanel.tsx src/components/product/SizeGuideDialog.tsx src/data/shoes.ts"
   },
   "dependencies": {

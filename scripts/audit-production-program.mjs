@@ -275,6 +275,32 @@ for (const [command, args] of p06Commands) {
   if (result.status !== 0) failures.push(`P06 permanent gate failed: ${command} ${args.join(" ")}`);
 }
 
+const p07FormatFiles = [
+  "docs/handoffs/P07-PAYMENT-SHIPPING-RETURNS.md",
+  "scripts/audit-p06-cart-checkout-orders.mjs",
+  "scripts/test-p06-cart-checkout-orders.mjs",
+  "scripts/audit-p07-payment-shipping-returns.mjs",
+  "scripts/test-p07-payment-shipping-returns.mjs",
+  "src/auth/production-account-route.tsx",
+  "src/auth/ProductionNavbar.tsx",
+  "src/auth/ProductionFooter.tsx",
+  "src/auth/ProductionMobileBottomNav.tsx",
+  "src/commerce/commerce-api.ts",
+  "src/commerce/commerce-proxy.server.ts",
+  "src/commerce/ProductionCheckoutPage.tsx",
+  "src/commerce/ProductionOrdersPage.tsx",
+  "src/commerce/production-checkout-route.tsx",
+];
+const p07Commands = [
+  ["node", ["scripts/audit-p07-payment-shipping-returns.mjs"]],
+  ["node", ["scripts/test-p07-payment-shipping-returns.mjs"]],
+  ["bunx", ["prettier", "--check", ...p07FormatFiles]],
+];
+for (const [command, args] of p07Commands) {
+  const result = spawnSync(command, args, { stdio: "inherit" });
+  if (result.status !== 0) failures.push(`P07 permanent gate failed: ${command} ${args.join(" ")}`);
+}
+
 if (failures.length) {
   console.error("Production program audit failed:");
   for (const failure of failures) console.error(`- ${failure}`);
@@ -282,5 +308,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including permanent P05 and P06 gates.",
+  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including permanent P05, P06 and P07 gates.",
 );
