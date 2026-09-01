@@ -15,7 +15,10 @@
 - Frontend implementation PR: `#48`
 - Frontend implementation END_SHA: `f9ecafa36065fc3349cb283889e0618b25c119d6`
 - Frontend implementation CI: Frontend CI `#1214` / `33555570220` — PASS
-- Frontend status: `COMPLETED / ACCEPTED / CLOSURE PENDING`
+- Frontend closure SHA: `f17d96180c2248ccae1d1a617cf99a2307ca6376`
+- Frontend closure CI: Frontend CI `#1216` / `33557739574` — PASS
+- Frontend merge SHA: `caa1c0baf5a20f56251b87fab995cac4f508f1d0`
+- Frontend status: `COMPLETED / REGISTERED / MERGED / CLOSED`
 
 ## P07.1 — Payment gateway adapter
 
@@ -65,6 +68,8 @@
 Backend acceptance is complete on exact implementation head `63ce16267a489f56736419edeac3f683125dc2da`; its Quality run `#44` / `33551751760` passed Pint, PHP syntax, MySQL migrate/fresh, rollback/re-migrate, SQLite and MySQL suites, inventory concurrency, route/operator boot, dependency audit and production config cache. Backend PR #11 was merged only after review-thread count was confirmed as zero.
 
 Frontend acceptance is complete on exact implementation head `f9ecafa36065fc3349cb283889e0618b25c119d6`. Dedicated P07 Gate #11 / `33552361775` first passed the focused source, safety, regression, TypeScript, lint, format, production-build and performance checks. The temporary dedicated workflow was then removed and P07 was permanently chained into the single cumulative quality workflow. Frontend CI #1214 / `33555570220` passed all 72 steps on the final implementation head, including P07 audit/contracts, required P07 cumulative evidence, P06 regressions, production/VPS builds, runtime smoke, unchanged F12 budgets, all browser/visual/SEO/PWA suites, Foundation completion and clean-tree verification.
+
+Closure head `f17d96180c2248ccae1d1a617cf99a2307ca6376` passed Frontend CI #1216 / `33557739574` with all 72 steps. PR #48 merged as `caa1c0baf5a20f56251b87fab995cac4f508f1d0`, review threads were zero and issue #47 closed as completed.
 
 ## Files, dependencies and commands
 
