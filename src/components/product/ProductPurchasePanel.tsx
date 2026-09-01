@@ -1,8 +1,10 @@
 import { Heart, Share2, ShoppingBag } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { MAX_CART_ITEM_QUANTITY } from "@/cart/cart-domain";
+import type { DiscoveryShoe } from "@/catalog/discovery-types";
+import { registerBackInStockForRuntime } from "@/catalog/production-catalog";
 import { SizeGuideDialog } from "@/components/product/SizeGuideDialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,17 +28,43 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
   const isWishlisted = useStore((state) => state.wishlist.includes(shoe.id));
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [email, setEmail] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
+  const richShoe = shoe as DiscoveryShoe;
 
   useEffect(() => {
     setSelectedSize(null);
     setQuantity(1);
+    setEmail("");
+    setConsent(false);
   }, [shoe.id]);
 
-  const canAdd = !shoe.isSoldOut && selectedSize !== null;
+  const selectedVariant = useMemo(
+    () => richShoe.variants?.find((variant) => variant.size === selectedSize),
+    [richShoe.variants, selectedSize],
+  );
+  const hasVariantTruth = import.meta.env.PROD && Boolean(richShoe.variants?.length);
+  const selectedAvailable = hasVariantTruth
+    ? selectedVariant?.availability === "in_stock" && (selectedVariant.availableQuantity ?? 0) > 0
+    : !shoe.isSoldOut;
+  const canAdd = selectedSize !== null && selectedAvailable;
   const currentPrice = shoe.sale_price ?? shoe.price;
+  const quantityMax = hasVariantTruth
+    ? Math.max(1, Math.min(MAX_CART_ITEM_QUANTITY, selectedVariant?.availableQuantity ?? 1))
+    : MAX_CART_ITEM_QUANTITY;
+  const canRegisterBackInStock =
+    import.meta.env.PROD &&
+    Boolean(richShoe.slug) &&
+    Boolean(selectedVariant) &&
+    selectedVariant?.availability === "out_of_stock";
+
+  useEffect(() => {
+    if (quantity > quantityMax) setQuantity(quantityMax);
+  }, [quantity, quantityMax]);
 
   const handleAdd = () => {
-    if (shoe.isSoldOut) return;
+    if (!selectedAvailable) return;
     if (selectedSize === null) {
       toast.error("پیش از افزودن، یک سایز را انتخاب کنید.");
       return;
@@ -53,6 +81,36 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
   const handleWishlist = () => {
     toggleWishlist(shoe.id);
     toast(isWishlisted ? "از علاقه‌مندی محلی حذف شد." : "در علاقه‌مندی محلی ذخیره شد.");
+  };
+
+  const handleBackInStock = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!canRegisterBackInStock || !richShoe.slug || !selectedVariant || !consent) return;
+
+    setWaitlistSubmitting(true);
+    const result = await registerBackInStockForRuntime({
+      slug: richShoe.slug,
+      variantId: selectedVariant.id,
+      email: email.trim(),
+      consent: true,
+    });
+    setWaitlistSubmitting(false);
+
+    if (result.status === "registered") {
+      toast.success("درخواست اطلاع از موجودشدن ثبت شد.");
+      setEmail("");
+      setConsent(false);
+      return;
+    }
+    if (result.status === "already_available") {
+      toast.info("این سایز اکنون موجود است؛ صفحه را تازه کنید.");
+      return;
+    }
+    if (result.status === "invalid") {
+      toast.error("ایمیل یا رضایت ثبت‌شده معتبر نیست.");
+      return;
+    }
+    toast.error("ثبت درخواست فعلاً در دسترس نیست.");
   };
 
   return (
@@ -104,14 +162,20 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
         >
           {shoe.sizes.map((size) => {
             const selected = selectedSize === size;
+            const variant = richShoe.variants?.find((item) => item.size === size);
+            const availability = hasVariantTruth ? variant?.availability ?? "out_of_stock" : undefined;
             return (
               <button
                 key={size}
                 type="button"
                 aria-pressed={selected}
+                aria-label={
+                  availability === "out_of_stock" ? `سایز ${size}، ناموجود` : `سایز ${size}`
+                }
                 data-testid="product-size-option"
+                data-availability={availability}
                 onClick={() => setSelectedSize(size)}
-                className="min-h-11 rounded-xl border border-border bg-background px-2 font-mono-num text-sm font-semibold outline-none transition-colors hover:border-border-strong focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+                className="min-h-11 rounded-xl border border-border bg-background px-2 font-mono-num text-sm font-semibold outline-none transition-colors hover:border-border-strong focus-visible:ring-2 focus-visible:ring-focus aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground data-[availability=out_of_stock]:border-dashed data-[availability=out_of_stock]:text-muted-foreground"
               >
                 {size}
               </button>
@@ -122,21 +186,33 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
         <p data-testid="product-size-status" className="mt-3 font-fa text-xs text-muted-foreground">
           {selectedSize === null
             ? "هنوز سایزی انتخاب نشده است."
-            : `سایز انتخابی: EU ${selectedSize}`}
+            : hasVariantTruth && selectedVariant?.availability === "out_of_stock"
+              ? `سایز EU ${selectedSize} انتخاب شد و اکنون ناموجود است.`
+              : `سایز انتخابی: EU ${selectedSize}`}
         </p>
       </div>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface p-4">
         <StockState
-          status={shoe.isSoldOut ? "out-of-stock" : "in-stock"}
-          label={shoe.isSoldOut ? "در Dataset ناموجود ثبت شده" : "در Dataset برای افزودن فعال است"}
+          status={selectedAvailable ? "in-stock" : "out-of-stock"}
+          label={
+            hasVariantTruth
+              ? selectedSize === null
+                ? "برای مشاهده موجودی، سایز را انتخاب کنید"
+                : selectedAvailable
+                  ? `${selectedVariant?.availableQuantity ?? 0} عدد موجود در موجودی رسمی`
+                  : "این سایز در موجودی رسمی ناموجود است"
+              : shoe.isSoldOut
+                ? "در Dataset ناموجود ثبت شده"
+                : "در Dataset برای افزودن فعال است"
+          }
         />
         <QuantityStepper
           value={quantity}
           onChange={setQuantity}
           min={1}
-          max={MAX_CART_ITEM_QUANTITY}
-          disabled={shoe.isSoldOut}
+          max={quantityMax}
+          disabled={!selectedAvailable}
           label="تعداد برای افزودن به سبد"
           className="bg-background"
         />
@@ -151,8 +227,8 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
           className="min-h-14 rounded-full font-fa font-bold"
         >
           <ShoppingBag aria-hidden="true" />
-          {shoe.isSoldOut
-            ? "محصول ناموجود است"
+          {!selectedAvailable && selectedSize !== null
+            ? "این سایز ناموجود است"
             : selectedSize === null
               ? "ابتدا سایز را انتخاب کنید"
               : `افزودن ${quantity} عدد به سبد`}
@@ -166,10 +242,7 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
           data-testid="product-wishlist"
           className="min-h-14 rounded-full"
         >
-          <Heart
-            aria-hidden="true"
-            className={isWishlisted ? "fill-primary text-primary" : undefined}
-          />
+          <Heart aria-hidden="true" className={isWishlisted ? "fill-primary text-primary" : undefined} />
           <span className="sm:sr-only">
             {isWishlisted ? "حذف از علاقه‌مندی" : "افزودن به علاقه‌مندی"}
           </span>
@@ -187,8 +260,48 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
         </Button>
       </div>
 
+      {canRegisterBackInStock ? (
+        <form
+          data-testid="back-in-stock-form"
+          onSubmit={(event) => void handleBackInStock(event)}
+          className="mt-5 rounded-2xl border border-border bg-surface p-5"
+        >
+          <h2 className="font-fa text-sm font-bold">اطلاع از موجودشدن این سایز</h2>
+          <p className="mt-2 font-fa text-xs leading-6 text-muted-foreground">
+            ایمیل فقط برای همین درخواست ثبت می‌شود. ارسال اعلان در P09 فعال خواهد شد و این فرم وعده زمان ارسال نمی‌دهد.
+          </p>
+          <label className="mt-4 block font-fa text-xs font-bold" htmlFor="back-in-stock-email">
+            ایمیل
+          </label>
+          <input
+            id="back-in-stock-email"
+            type="email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(event) => setEmail(event.currentTarget.value)}
+            className="mt-2 min-h-11 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          />
+          <label className="mt-4 flex items-start gap-3 font-fa text-xs leading-6">
+            <input
+              type="checkbox"
+              required
+              checked={consent}
+              onChange={(event) => setConsent(event.currentTarget.checked)}
+              className="mt-1 size-4"
+            />
+            <span>رضایت می‌دهم ایمیل من فقط برای اطلاع از موجودشدن همین Variant ثبت شود.</span>
+          </label>
+          <Button type="submit" className="mt-4" disabled={!consent || !email.trim() || waitlistSubmitting}>
+            {waitlistSubmitting ? "در حال ثبت…" : "ثبت درخواست"}
+          </Button>
+        </form>
+      ) : null}
+
       <div className="mt-7 rounded-2xl border border-border bg-surface p-5">
-        <h2 className="font-fa text-sm font-bold">اطلاعات ثبت‌شده در Dataset</h2>
+        <h2 className="font-fa text-sm font-bold">
+          {import.meta.env.PROD ? "اطلاعات رسمی محصول" : "اطلاعات ثبت‌شده در Dataset"}
+        </h2>
         <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
           <div>
             <dt className="font-fa text-xs text-muted-foreground">شناسه کالا</dt>
@@ -208,28 +321,19 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
           </div>
         </dl>
 
-        <div className="mt-4 border-t border-border pt-4">
-          <p className="font-fa text-xs leading-6 text-muted-foreground">
-            Dataset فعلی اطلاعاتی درباره موجودی هر سایز، جنس، کشور سازنده، اصالت، زمان ارسال یا
-            شرایط بازگشت ندارد؛ بنابراین این صفحه چنین ادعاهایی نمایش نمی‌دهد.
-          </p>
-          <div className="mt-3 flex flex-wrap items-center gap-2" aria-label="پالت رنگ ثبت‌شده">
-            <span className="font-fa text-xs text-muted-foreground">پالت رنگ ثبت‌شده:</span>
-            {shoe.colors.map((color, index) => (
-              <span
-                key={`${color}-${index}`}
-                role="img"
-                aria-label={`رنگ ${index + 1}: ${color}`}
-                title={color}
-                className="size-8 rounded-full border border-border"
-                style={{ backgroundColor: color }}
-              />
-            ))}
-            <span className="font-fa text-xs text-muted-foreground">
-              این رنگ‌ها Variant مستقل موجودی نیستند.
-            </span>
+        {import.meta.env.PROD && richShoe.decisionSupport ? (
+          <div className="mt-4 grid gap-3 border-t border-border pt-4 font-fa text-xs leading-6 text-muted-foreground sm:grid-cols-3">
+            <p>امتیاز و نظر: تا وجود شواهد تأییدشده P08 نمایش داده نمی‌شود.</p>
+            <p>ارسال: زمان یا وعده‌ای بدون داده معتبر نمایش داده نمی‌شود.</p>
+            <p>بازگشت: شرطی بدون Policy معتبر نمایش داده نمی‌شود.</p>
           </div>
-        </div>
+        ) : (
+          <div className="mt-4 border-t border-border pt-4">
+            <p className="font-fa text-xs leading-6 text-muted-foreground">
+              Dataset فعلی اطلاعاتی درباره موجودی هر سایز، جنس، کشور سازنده، اصالت، زمان ارسال یا شرایط بازگشت ندارد؛ بنابراین این صفحه چنین ادعاهایی نمایش نمی‌دهد.
+            </p>
+          </div>
+        )}
       </div>
 
       <div
@@ -238,9 +342,7 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
       >
         <div className="mx-auto flex max-w-xl items-center gap-3">
           <div className="min-w-0 flex-1">
-            <p className="truncate font-display text-xs font-bold">
-              {shoe.brand} {shoe.name}
-            </p>
+            <p className="truncate font-display text-xs font-bold">{shoe.brand} {shoe.name}</p>
             <Price value={currentPrice} className="mt-1 text-sm font-bold" />
           </div>
           <Button
@@ -249,7 +351,7 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
             data-testid="product-mobile-add-to-cart"
             className="min-h-12 rounded-full px-5 font-fa font-bold"
           >
-            {shoe.isSoldOut
+            {!selectedAvailable && selectedSize !== null
               ? "ناموجود"
               : selectedSize === null
                 ? "انتخاب سایز"

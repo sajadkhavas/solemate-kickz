@@ -2,7 +2,8 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
 
-import { catalogForRuntime } from "@/catalog/production-catalog";
+import type { DiscoveryShoe } from "@/catalog/discovery-types";
+import { catalogForRuntime, relatedCatalogForRuntime } from "@/catalog/production-catalog";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Navbar } from "@/components/Navbar";
 import { ProductGallery } from "@/components/product/ProductGallery";
@@ -23,7 +24,8 @@ export const Route = createFileRoute("/product/$id")({
       : undefined;
     const shoe = fixtureShoe ?? catalog.find((item) => item.id === productId);
     if (!shoe) throw notFound();
-    return { shoe, catalog };
+    const related = await relatedCatalogForRuntime(shoe as DiscoveryShoe, catalog);
+    return { shoe, catalog, related };
   },
   head: ({ loaderData }) => ({
     meta: loaderData
@@ -33,10 +35,7 @@ export const Route = createFileRoute("/product/$id")({
             name: "description",
             content: `${loaderData.shoe.brand} ${loaderData.shoe.name}، رنگ ${loaderData.shoe.colorway}، قیمت ${formatPrice(loaderData.shoe.sale_price ?? loaderData.shoe.price)}`,
           },
-          {
-            property: "og:title",
-            content: `${loaderData.shoe.brand} ${loaderData.shoe.name}`,
-          },
+          { property: "og:title", content: `${loaderData.shoe.brand} ${loaderData.shoe.name}` },
           {
             property: "og:description",
             content: `مشاهده تصاویر، سایزهای ثبت‌شده و قیمت ${loaderData.shoe.brand} ${loaderData.shoe.name}`,
@@ -99,25 +98,17 @@ function ProductCollection({
 }
 
 function ProductPage() {
-  const { shoe, catalog } = Route.useLoaderData() as { shoe: Shoe; catalog: Shoe[] };
+  const { shoe, catalog, related } = Route.useLoaderData() as {
+    shoe: Shoe;
+    catalog: Shoe[];
+    related: Shoe[];
+  };
   const addRecentlyViewed = useStore((state) => state.addRecentlyViewed);
   const recentlyViewedIds = useStore((state) => state.recentlyViewed);
 
   useEffect(() => {
     addRecentlyViewed(shoe.id);
   }, [addRecentlyViewed, shoe.id]);
-
-  const related = useMemo(
-    () =>
-      catalog
-        .filter(
-          (candidate) =>
-            candidate.id !== shoe.id &&
-            (candidate.brand === shoe.brand || candidate.category === shoe.category),
-        )
-        .slice(0, 4),
-    [catalog, shoe],
-  );
 
   const recentlyViewed = useMemo(
     () =>
@@ -159,17 +150,11 @@ function ProductPage() {
           aria-label="مسیر صفحه"
           className="mb-7 flex flex-wrap items-center gap-2 font-fa text-xs text-muted-foreground"
         >
-          <Link
-            to="/"
-            className="inline-flex min-h-11 min-w-6 items-center justify-center hover:text-foreground"
-          >
+          <Link to="/" className="inline-flex min-h-11 min-w-6 items-center justify-center hover:text-foreground">
             خانه
           </Link>
           <span aria-hidden="true">/</span>
-          <Link
-            to="/products"
-            className="inline-flex min-h-11 min-w-6 items-center justify-center hover:text-foreground"
-          >
+          <Link to="/products" className="inline-flex min-h-11 min-w-6 items-center justify-center hover:text-foreground">
             فروشگاه
           </Link>
           <span aria-hidden="true">/</span>
