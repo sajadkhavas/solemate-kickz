@@ -129,16 +129,93 @@
       "performanceContract": "Unchanged F12 limits PASS after lightweight production customer shell plus Vite/Rolldown entries-aware route splitting; no budget increase.",
       "completedParts": ["P03.1", "P03.2", "P03.3", "P03.4", "P03.5", "P03.6"]
     },
-    {"id":"P04","slug":"size-fit-intelligence","dependsOn":["P02","P03"],"status":"registered"},
-    {"id":"P05","slug":"discovery-pdp-conversion","dependsOn":["P02","P04"],"status":"registered"},
-    {"id":"P06","slug":"cart-checkout-orders","dependsOn":["P02","P03"],"status":"registered"},
-    {"id":"P07","slug":"payment-shipping-returns","dependsOn":["P06"],"status":"registered"},
-    {"id":"P08","slug":"trust-support-postpurchase","dependsOn":["P07"],"status":"registered"},
-    {"id":"P09","slug":"loyalty-crm-notifications","dependsOn":["P03","P07"],"status":"registered"},
-    {"id":"P10","slug":"seo-content-merchant","dependsOn":["P02","P08"],"status":"registered"},
-    {"id":"P11","slug":"observability-rum-cro","dependsOn":["P07","P10"],"status":"registered"},
-    {"id":"P12","slug":"production-readiness","dependsOn":["P00","P01","P02","P03","P04","P05","P06","P07","P08","P09","P10","P11"],"status":"registered"},
-    {"id":"P13","slug":"staging-acceptance","dependsOn":["P12"],"status":"registered"},
-    {"id":"P14","slug":"production-release","dependsOn":["P13"],"status":"registered"}
+    {
+      "id": "P04",
+      "slug": "size-fit-intelligence",
+      "dependsOn": ["P02", "P03"],
+      "status": "completed",
+      "startSha": "5da25a6faca25cc7b23f04efd7a779970afa66a5",
+      "endSha": "a59e859331308fbfcf90efb1b29b9f03dc1e7dbb",
+      "branch": "phase/sole-p04-size-fit-intelligence",
+      "startedAt": "2026-09-01",
+      "acceptedAt": "2026-09-01",
+      "qaResult": "PASS — Frontend CI #1128 / run 33480367490 exact-head rerun passed the complete cumulative gate; Backend quality gate #29 / run 33480441245 passed Pint, syntax, MySQL migration/rollback, SQLite/MySQL tests, concurrency and production config cache",
+      "rollbackImpact": "Frontend rollback target is START_SHA 5da25a6faca25cc7b23f04efd7a779970afa66a5; backend rollback target is pre-P04 main 3d97a73aa193e7d53fa4f7beb45abf4b591bf968. No production activation or production data mutation occurred.",
+      "serverRequired": false,
+      "backendRepository": "sajadkhavas/sole-backend",
+      "backendStartSha": "3d97a73aa193e7d53fa4f7beb45abf4b591bf968",
+      "backendAcceptedEndSha": "445596ac316176ac74e5dc854f67820e7fa693b3",
+      "backendMergeSha": "3bdfac22c1aebf6f218c786cfbe7805a0c496505",
+      "backendQualityRun": "33480441245",
+      "backendPullRequest": "https://github.com/sajadkhavas/sole-backend/pull/8",
+      "frontendQualityRun": "33480367490",
+      "frontendPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/38",
+      "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/39",
+      "privacyContract": "Raw foot length is processed ephemerally and never persisted; fit analytics store only allow-listed aggregate-safe fields.",
+      "completedParts": ["P04.1", "P04.2", "P04.3", "P04.4", "P04.5"]
+    },
+    {
+      "id": "P05",
+      "slug": "discovery-pdp-conversion",
+      "dependsOn": ["P02", "P04"],
+      "status": "registered"
+    },
+    {
+      "id": "P06",
+      "slug": "cart-checkout-orders",
+      "dependsOn": ["P02", "P03"],
+      "status": "registered"
+    },
+    {
+      "id": "P07",
+      "slug": "payment-shipping-returns",
+      "dependsOn": ["P06"],
+      "status": "registered"
+    },
+    {
+      "id": "P08",
+      "slug": "trust-support-postpurchase",
+      "dependsOn": ["P07"],
+      "status": "registered"
+    },
+    {
+      "id": "P09",
+      "slug": "loyalty-crm-notifications",
+      "dependsOn": ["P03", "P07"],
+      "status": "registered"
+    },
+    {
+      "id": "P10",
+      "slug": "seo-content-merchant",
+      "dependsOn": ["P02", "P08"],
+      "status": "registered"
+    },
+    {
+      "id": "P11",
+      "slug": "observability-rum-cro",
+      "dependsOn": ["P07", "P10"],
+      "status": "registered"
+    },
+    {
+      "id": "P12",
+      "slug": "production-readiness",
+      "dependsOn": [
+        "P00",
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P08",
+        "P09",
+        "P10",
+        "P11"
+      ],
+      "status": "registered"
+    },
+    { "id": "P13", "slug": "staging-acceptance", "dependsOn": ["P12"], "status": "registered" },
+    { "id": "P14", "slug": "production-release", "dependsOn": ["P13"], "status": "registered" }
   ]
 }
