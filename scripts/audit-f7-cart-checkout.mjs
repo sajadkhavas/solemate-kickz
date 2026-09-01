@@ -130,13 +130,20 @@ record(
     cartDomain.includes("shoe.sizes.includes(size)") &&
     purchase.includes("selectedSize === null"),
 );
+const legacyPdpQuantityCeiling = purchase.includes("max={MAX_CART_ITEM_QUANTITY}");
+const p05InventoryAwareQuantityCeiling =
+  purchase.includes("const quantityMax = hasVariantTruth") &&
+  purchase.includes("Math.min(MAX_CART_ITEM_QUANTITY") &&
+  purchase.includes("selectedVariant?.availableQuantity") &&
+  purchase.includes("max={quantityMax}");
 record(
-  "quantity ceiling is documented as client safety rather than inventory",
+  "quantity ceiling preserves client safety and may additionally honor authoritative P05 inventory",
   !purchase.includes("max={10}") &&
     commerce.includes('typeof max !== "number" || safeValue < max') &&
-    purchase.includes("max={MAX_CART_ITEM_QUANTITY}") &&
+    (legacyPdpQuantityCeiling || p05InventoryAwareQuantityCeiling) &&
     cartDomain.includes("MAX_CART_ITEM_QUANTITY = 99") &&
     f13Handoff.includes("not inventory claims"),
+  { legacyPdpQuantityCeiling, p05InventoryAwareQuantityCeiling },
 );
 record(
   "stale persisted states stay visible and block review",

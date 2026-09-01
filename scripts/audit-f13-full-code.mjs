@@ -97,10 +97,17 @@ record(
 );
 
 const purchasePanel = read("src/components/product/ProductPurchasePanel.tsx");
+const legacyPdpQuantityCeiling = purchasePanel.includes("max={MAX_CART_ITEM_QUANTITY}");
+const p05InventoryAwareQuantityCeiling =
+  purchasePanel.includes("const quantityMax = hasVariantTruth") &&
+  purchasePanel.includes("Math.min(MAX_CART_ITEM_QUANTITY") &&
+  purchasePanel.includes("selectedVariant?.availableQuantity") &&
+  purchasePanel.includes("max={quantityMax}");
 record(
-  "PDP quantity control exposes the same cart ceiling",
+  "PDP quantity control preserves the cart safety ceiling and may honor authoritative P05 inventory",
   purchasePanel.includes("MAX_CART_ITEM_QUANTITY") &&
-    purchasePanel.includes("max={MAX_CART_ITEM_QUANTITY}"),
+    (legacyPdpQuantityCeiling || p05InventoryAwareQuantityCeiling),
+  { legacyPdpQuantityCeiling, p05InventoryAwareQuantityCeiling },
 );
 
 const catalog = read("src/catalog/catalog-state.ts");
