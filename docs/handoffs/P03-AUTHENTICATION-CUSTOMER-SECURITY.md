@@ -6,7 +6,7 @@ P03 — Authentication & Customer Security
 
 ## STATUS
 
-**COMPLETED / ACCEPTED — MERGE PENDING on frontend PR #37**
+**COMPLETED / ACCEPTED / MERGED**
 
 ## START_SHA
 
@@ -16,12 +16,14 @@ P03 — Authentication & Customer Security
 ## END_SHA
 
 - Frontend accepted implementation END_SHA: `7b4ca63494ec8d8f2557087f1d8d3b04707bf7c0`
+- Frontend documentation-closure head: `121f592a74748bd45cd008f7bde15f7419679365`
+- Frontend P03 merge SHA: `5da25a6faca25cc7b23f04efd7a779970afa66a5`
 - Backend accepted functional END_SHA: `c2883515d59398294315240cae4f0865c72f8e29`
 - Backend initial P03 merge SHA: `04314ac81af1e60b32f425dfe63c769a6cf1d59b`
 - Backend privacy/API-contract closure head: `784600385521869c6a5c5e0fdbe53b88c3e786b1`
 - Backend final P03 main SHA: `3d97a73aa193e7d53fa4f7beb45abf4b591bf968`
 
-The documentation-closure commit intentionally records the accepted frontend implementation END_SHA rather than self-referencing its own SHA. The exact closure CI run and final frontend merge SHA are recorded on PR #37 and tracking issue #36 after this documentation commit runs and is merged.
+Frontend PR #37 merged only after documentation-closure exact-head Frontend CI #1118 / run `33475729167` passed. The post-merge documentation reconciliation is intentionally metadata-only; future phases must still verify the live default-branch SHA before branching.
 
 ## BRANCH
 
@@ -31,10 +33,10 @@ The documentation-closure commit intentionally records the accepted frontend imp
 
 ## PR
 
-- Frontend: `sajadkhavas/solemate-kickz#37`
+- Frontend: `sajadkhavas/solemate-kickz#37` — merged
 - Backend implementation: `sajadkhavas/sole-backend#5` — merged
 - Backend privacy/API contract: `sajadkhavas/sole-backend#6` — merged
-- Tracking issue: `sajadkhavas/solemate-kickz#36`
+- Tracking issue: `sajadkhavas/solemate-kickz#36` — completed/closed
 
 ## SCOPE
 
@@ -143,26 +145,27 @@ Frontend acceptance uses the repository's complete Frontend CI workflow, includi
 
 ## QA_RESULT
 
-**PASS for the accepted implementation and backend closure; only the documentation-closure exact-head gate remains before frontend merge.**
+**PASS — frontend and backend P03 are accepted and merged.**
 
 - Frontend accepted implementation CI #1110 / run `33424062662` on `7b4ca63494ec8d8f2557087f1d8d3b04707bf7c0` — PASS.
 - That run passed all 67 quality steps: cumulative source/behavior audits, P03 production-program audit, typecheck, lint, format checks, production build, unchanged F12 performance budgets, VPS Node build, production runtime smoke/port-leak gate, all visual QA suites, aggregate evidence and clean-tree verification.
+- Frontend documentation-closure exact-head CI #1118 / run `33475729167` on `121f592a74748bd45cd008f7bde15f7419679365` — PASS.
+- Frontend PR #37 merged to `main` as `5da25a6faca25cc7b23f04efd7a779970afa66a5`.
 - P03 audit-sync run `33419744505` — PASS; it ran the combined production-program + P03 security audit and removed its temporary workflow.
 - Backend functional exact-head run `33415202137` / #22 — PASS.
 - Backend initial post-merge run `33415423304` / #23 — PASS.
 - Backend privacy/API-contract exact-head run `33416862009` / #24 — PASS.
 - Backend final post-merge run `33419679436` / #25 on `main@3d97a73aa193e7d53fa4f7beb45abf4b591bf968` — PASS.
-- The frontend documentation-closure exact-head run is recorded on PR #37 and issue #36 after this commit, because that run ID cannot exist before this commit exists.
 
 ## CI_RUN_IDS
 
 - Frontend accepted implementation exact-head: `33424062662` — PASS
+- Frontend documentation closure exact-head: `33475729167` — PASS
 - Frontend P03 security/audit sync: `33419744505` — PASS
 - Backend functional exact-head: `33415202137` — PASS
 - Backend first post-merge: `33415423304` — PASS
 - Backend privacy/API exact-head: `33416862009` — PASS
 - Backend final post-merge: `33419679436` — PASS
-- Frontend documentation closure exact-head: recorded on PR #37 and issue #36 after closure CI
 
 ## ROUTES_VIEWPORTS
 
@@ -213,6 +216,7 @@ P03 establishes customer identity and privacy truth but deliberately does not co
 
 - Frontend rollback target: `3a908fc6b7be87d7c0c06c85d7d2806be29b6fd1`
 - Backend rollback target: `36eca2810495591b44f1f86c975f4ff287374e81`
+- Frontend P03 was merged at `5da25a6faca25cc7b23f04efd7a779970afa66a5`.
 - Backend P03 is merged at `3d97a73aa193e7d53fa4f7beb45abf4b591bf968`; deployment-time rollback must respect P03 schema/data migration policy.
 - P03 performed no production server activation, production data mutation or provider credential enrollment, so no live rollback was executed.
 
@@ -224,4 +228,4 @@ Implementation decisions were checked against current primary documentation for 
 
 **P04 — Size & Fit Intelligence**.
 
-P04 must start from the verified post-P03 frontend and backend default-branch SHAs after PR #37 is merged. It must preserve customer privacy and must represent sizing recommendations with honest uncertainty rather than false certainty.
+P04 must start only from the live verified post-P03 frontend and backend default-branch SHAs. It must preserve P02 catalog/media truth and P03 customer privacy/session boundaries, and must represent sizing recommendations with honest uncertainty rather than false certainty.
