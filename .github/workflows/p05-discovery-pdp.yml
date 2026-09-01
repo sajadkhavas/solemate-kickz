@@ -64,6 +64,8 @@ jobs:
         run: bun run lint
 
       - name: P05 format check
+        id: p05_format
+        continue-on-error: true
         run: >-
           bunx prettier --check
           .github/workflows/p05-discovery-pdp.yml
@@ -79,6 +81,41 @@ jobs:
           src/routes/api.catalog.ts
           src/routes/products.tsx
           'src/routes/product.$id.tsx'
+
+      - name: Capture exact Prettier output when needed
+        if: steps.p05_format.outcome == 'failure'
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bunx prettier --write \
+            scripts/audit-p05-discovery-pdp.mjs \
+            scripts/test-p05-discovery-pdp.mjs \
+            src/catalog/catalog-state.ts \
+            src/catalog/p05-discovery.server.ts \
+            src/catalog/production-catalog.ts \
+            src/components/product/ProductPurchasePanel.tsx \
+            src/routes/api.catalog.ts \
+            src/routes/products.tsx \
+            'src/routes/product.$id.tsx'
+          mkdir -p artifacts/formatted-p05
+          for file in \
+            scripts/audit-p05-discovery-pdp.mjs \
+            scripts/test-p05-discovery-pdp.mjs \
+            src/catalog/catalog-state.ts \
+            src/catalog/p05-discovery.server.ts \
+            src/catalog/production-catalog.ts \
+            src/components/product/ProductPurchasePanel.tsx \
+            src/routes/api.catalog.ts \
+            src/routes/products.tsx \
+            'src/routes/product.$id.tsx'
+          do
+            mkdir -p "artifacts/formatted-p05/$(dirname "$file")"
+            cp "$file" "artifacts/formatted-p05/$file"
+          done
+
+      - name: Enforce P05 format result
+        if: steps.p05_format.outcome == 'failure'
+        run: exit 1
 
       - name: Production build regression
         run: bun run build
@@ -99,3 +136,4 @@ jobs:
             artifacts/reports/p05-discovery-pdp-behavior.json
             artifacts/runtime/p05-discovery-pdp-server.txt
             artifacts/runtime/p05-discovery-pdp-chrome.txt
+            artifacts/formatted-p05/
