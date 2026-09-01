@@ -241,15 +241,38 @@ const p05FormatFiles = [
 ];
 const p05Commands = [
   ["node", ["scripts/audit-p05-discovery-pdp.mjs"]],
-  [
-    "node",
-    ["scripts/qa/retry-gate.mjs", "--", "node", "scripts/test-p05-discovery-pdp.mjs"],
-  ],
+  ["node", ["scripts/qa/retry-gate.mjs", "--", "node", "scripts/test-p05-discovery-pdp.mjs"]],
   ["bunx", ["prettier", "--check", ...p05FormatFiles]],
 ];
 for (const [command, args] of p05Commands) {
   const result = spawnSync(command, args, { stdio: "inherit" });
   if (result.status !== 0) failures.push(`P05 permanent gate failed: ${command} ${args.join(" ")}`);
+}
+
+const p06FormatFiles = [
+  "docs/handoffs/P06-CART-CHECKOUT-ORDERS.md",
+  "scripts/audit-p06-cart-checkout-orders.mjs",
+  "scripts/test-p06-cart-checkout-orders.mjs",
+  "src/commerce/commerce-api.ts",
+  "src/commerce/commerce-proxy.server.ts",
+  "src/commerce/ProductionCartPage.tsx",
+  "src/commerce/ProductionCheckoutPage.tsx",
+  "src/commerce/production-cart-route.tsx",
+  "src/commerce/production-checkout-route.tsx",
+  "src/routes/api.commerce.$.ts",
+  "src/auth/ProductionAccountPage.tsx",
+  "src/auth/production-account-route.tsx",
+  "src/components/product/ProductPurchasePanel.tsx",
+  "vite.config.ts",
+];
+const p06Commands = [
+  ["node", ["scripts/audit-p06-cart-checkout-orders.mjs"]],
+  ["node", ["scripts/test-p06-cart-checkout-orders.mjs"]],
+  ["bunx", ["prettier", "--check", ...p06FormatFiles]],
+];
+for (const [command, args] of p06Commands) {
+  const result = spawnSync(command, args, { stdio: "inherit" });
+  if (result.status !== 0) failures.push(`P06 permanent gate failed: ${command} ${args.join(" ")}`);
 }
 
 if (failures.length) {
@@ -259,5 +282,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including the permanent P05 source/browser/format gate.",
+  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including permanent P05 and P06 gates.",
 );

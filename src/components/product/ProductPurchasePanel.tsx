@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { MAX_CART_ITEM_QUANTITY } from "@/cart/cart-domain";
 import type { DiscoveryShoe } from "@/catalog/discovery-types";
 import { registerBackInStockForRuntime } from "@/catalog/production-catalog";
+import { putCommerceCartItem } from "@/commerce/commerce-api";
 import { SizeGuideDialog } from "@/components/product/SizeGuideDialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -63,10 +64,20 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
     if (quantity > quantityMax) setQuantity(quantityMax);
   }, [quantity, quantityMax]);
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!selectedAvailable) return;
     if (selectedSize === null) {
       toast.error("پیش از افزودن، یک سایز را انتخاب کنید.");
+      return;
+    }
+
+    if (import.meta.env.PROD && selectedVariant) {
+      try {
+        await putCommerceCartItem(selectedVariant.id, quantity);
+        toast.success(`${quantity} عدد در سبد سروری ثبت شد.`);
+      } catch {
+        toast.error("افزودن به سبد انجام نشد؛ موجودی را دوباره بررسی کنید.");
+      }
       return;
     }
 
@@ -224,7 +235,7 @@ export function ProductPurchasePanel({ shoe, onShare }: ProductPurchasePanelProp
         <Button
           size="lg"
           disabled={!canAdd}
-          onClick={handleAdd}
+          onClick={() => void handleAdd()}
           data-testid="product-add-to-cart"
           className="min-h-14 rounded-full font-fa font-bold"
         >

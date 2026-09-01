@@ -29,6 +29,7 @@ const expectedReportFragments = [
   "f17-production-content",
   "f18-final-acceptance",
   "p05-discovery-pdp",
+  "p06-cart-checkout-orders",
 ];
 
 function walk(directory) {

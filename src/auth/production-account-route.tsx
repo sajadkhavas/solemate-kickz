@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import {
-  ProductionAccountPage,
-  type ProductionAccountSection,
-} from "@/auth/ProductionAccountPage";
+import { ProductionAccountPage, type ProductionAccountSection } from "@/auth/ProductionAccountPage";
 
 const SECTIONS = ["overview", "profile", "addresses", "orders"] as const;
 
@@ -30,6 +27,6 @@ export const Route = createFileRoute("/account")({
 });
 
 function AccountRouteComponent() {
-  const { section } = Route.useSearch();
-  return <ProductionAccountPage section={section} />;
+  const { section, order } = Route.useSearch();
+  return <ProductionAccountPage section={section} orderId={order} />;
 }
