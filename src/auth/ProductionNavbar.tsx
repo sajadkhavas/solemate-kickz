@@ -34,3 +34,5 @@ export function Navbar() {
     </>
   );
 }
+
+export { Navbar as ProductionNavbar };
