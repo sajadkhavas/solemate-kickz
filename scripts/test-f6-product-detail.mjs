@@ -208,7 +208,11 @@ async function run(baseUrl) {
       client,
       `document.activeElement === document.querySelector('[data-testid="size-guide-trigger"]')`,
     );
-    record("Size guide is truthful and restores focus", /نمودار رسمی/.test(guide ?? ""), guide);
+    record(
+      "Size guide is truthful and restores focus",
+      /تضمین نیست/.test(guide ?? "") && /جدول منبع‌دار/.test(guide ?? ""),
+      guide,
+    );
 
     const wishlistBefore = await evaluate(
       client,
