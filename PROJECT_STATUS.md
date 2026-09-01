@@ -6,6 +6,9 @@
 **P05 START_SHA:** `aac48e32dec082a4e79ae9c703c2a214e8fa1a68`  
 **P05 accepted implementation END_SHA:** `395fd1bd3d683f3fa8633b9a58d2a67a5195af5b`  
 **P05 accepted implementation CI:** Frontend CI #1160 / run `33497008084` — PASS  
+**P05 documentation closure head:** `3ce9f2ea4ff9703ac7960feb10a5c061746376ab`  
+**P05 documentation closure CI:** Frontend CI #1168 / run `33498373681` — PASS  
+**Frontend final P05 main:** `48085b8f48574f7520eeda7c1b898320847b5bcc`  
 **Backend final P05 main:** `8be9f01223908eb3359512b213a0b835f43cadfa`  
 **Purpose:** a new contributor or AI chat must be able to continue SOLE without asking the owner to repeat project history.
 
@@ -29,6 +32,7 @@ SOLE is a sneaker commerce product.
 
 - **Frontend:** TanStack Start + React, SSR/streaming, Vite and pinned Node/Bun toolchain.
 - **Backend:** `sajadkhavas/sole-backend`, Laravel 13 + PHP 8.3+ + Filament 5 + MySQL.
+- **Frontend P05 final main:** `48085b8f48574f7520eeda7c1b898320847b5bcc`, after accepted frontend PR #42.
 - **Backend P05 final main:** `8be9f01223908eb3359512b213a0b835f43cadfa`, after accepted backend PR #9.
 - **Primary donor reference:** `sajadkhavas/lbb-backend@bc6f53f9cc9b79d8e089fe35b543ad32f5c33217` — read-only.
 - **Selective media donor reference:** `sajadkhavas/winimi-bakery-backend@19d294d8dd835571ee73b9330dff830ed1dda0ed` — read-only.
@@ -54,7 +58,7 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 | P02 | Media and catalog ingestion | frontend accepted `11c16357a846d01020f4774002ee11d8e63b2d2a`; backend merge `36eca2810495591b44f1f86c975f4ff287374e81` | Completed |
 | P03 | Authentication and customer security | frontend accepted `7b4ca63494ec8d8f2557087f1d8d3b04707bf7c0`, CI `33424062662`; backend final main `3d97a73aa193e7d53fa4f7beb45abf4b591bf968`; frontend PR #37 | Completed |
 | P04 | Size and fit intelligence | frontend accepted `a59e859331308fbfcf90efb1b29b9f03dc1e7dbb`, CI `33480367490`; backend main `3bdfac22c1aebf6f218c786cfbe7805a0c496505`; frontend PR #38 | Completed |
-| P05 | Discovery and PDP conversion | frontend accepted `395fd1bd3d683f3fa8633b9a58d2a67a5195af5b`, CI `33497008084`; backend merge `8be9f01223908eb3359512b213a0b835f43cadfa`; frontend PR #42 | Completed / closure merge pending |
+| P05 | Discovery and PDP conversion | frontend accepted `395fd1bd3d683f3fa8633b9a58d2a67a5195af5b`, CI `33497008084`; closure CI `33498373681`; frontend merge `48085b8f48574f7520eeda7c1b898320847b5bcc`; backend merge `8be9f01223908eb3359512b213a0b835f43cadfa`; frontend PR #42; issue #41 closed | Completed |
 
 ### P03 accepted outcomes
 
@@ -99,7 +103,9 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 - Legacy F7/F13 quantity audits were evolved to allow authoritative variant inventory to further restrict the unchanged maximum client safety cap.
 - Temporary diagnostic/write-enabled workflows were removed before acceptance; Foundation's one-permanent-quality-workflow invariant is restored.
 - Frontend CI #1160 / run `33497008084` passed the complete cumulative gate including P05 enforcement, typecheck, lint, all format gates, production build, unchanged F12 budgets, VPS build/runtime smoke, every visual QA suite, Foundation completion, aggregate evidence and clean-tree verification.
+- Frontend closure CI #1168 / run `33498373681` passed on exact closure head `3ce9f2ea4ff9703ac7960feb10a5c061746376ab` before PR #42 merged as `48085b8f48574f7520eeda7c1b898320847b5bcc`.
 - Backend exact-head quality #34 / run `33489508558` passed; PR #9 merged as `8be9f01223908eb3359512b213a0b835f43cadfa`; post-merge quality #35 / run `33494159795` also passed.
+- Review threads were zero unresolved at frontend merge and tracking issue #41 was closed as completed.
 - No production server activation, production data mutation or provider credential enrollment occurred.
 
 ## 4. Remaining production phases
@@ -161,12 +167,12 @@ Mandatory handoff fields remain: `PHASE`, `STATUS`, `START_SHA`, `END_SHA`, `BRA
 
 ## 8. Next action
 
-**P06 — Cart, Checkout & Orders** is next after frontend PR #42 closure is merged and tracking issue #41 is closed.
+**P06 — Cart, Checkout & Orders** is now ready to start.
 
-Start P06 only from the verified post-P05 frontend and backend `main` SHAs. P06 must replace the remaining local/demo cart-checkout order boundary with backend-authoritative cart/order lifecycle truth while retaining the no-fabrication rules established by earlier phases. Payment provider activation, shipping fulfillment and returns remain P07 responsibilities.
+Start P06 from the verified post-P05 frontend `main` SHA `48085b8f48574f7520eeda7c1b898320847b5bcc` and backend `main` SHA `8be9f01223908eb3359512b213a0b835f43cadfa`. P06 must replace the remaining local/demo cart-checkout order boundary with backend-authoritative cart/order lifecycle truth while retaining the no-fabrication rules established by earlier phases. Payment provider activation, shipping fulfillment and returns remain P07 responsibilities.
 
 ## 9. Acceptance baseline
 
 P05 backend exact head `5ebab6b3b48407a23f9d1736d32ca91accbb626c` passed Backend quality #34 / run `33489508558`, merged through PR #9 as `8be9f01223908eb3359512b213a0b835f43cadfa`, and post-merge main passed quality #35 / run `33494159795`.
 
-Frontend accepted implementation `395fd1bd3d683f3fa8633b9a58d2a67a5195af5b` passed full Frontend CI #1160 / run `33497008084`, including the permanent P05 source/browser/format gate, unchanged F12 budgets, all cumulative browser/visual/SEO suites, production and VPS builds, runtime smoke, Foundation completion, P05-required aggregate evidence and clean-tree verification. Documentation-closure exact-head CI and final frontend main merge SHA are recorded on PR #42 and issue #41 after the closure commit exists.
+Frontend accepted implementation `395fd1bd3d683f3fa8633b9a58d2a67a5195af5b` passed full Frontend CI #1160 / run `33497008084`, including the permanent P05 source/browser/format gate, unchanged F12 budgets, all cumulative browser/visual/SEO suites, production and VPS builds, runtime smoke, Foundation completion, P05-required aggregate evidence and clean-tree verification. Documentation closure head `3ce9f2ea4ff9703ac7960feb10a5c061746376ab` passed exact-head Frontend CI #1168 / run `33498373681`; frontend PR #42 then merged as `48085b8f48574f7520eeda7c1b898320847b5bcc` with zero unresolved review threads and issue #41 closed as completed.
