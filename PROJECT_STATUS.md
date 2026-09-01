@@ -1,10 +1,11 @@
 # SOLE Project Status — Authoritative Chat Handoff
 
 **Repository:** `sajadkhavas/solemate-kickz`  
-**Status last reconciled:** 2026-08-31  
+**Status last reconciled:** 2026-09-01  
 **Current accepted frontend phase:** P03 — Authentication & Customer Security  
 **P03 START_SHA:** `3a908fc6b7be87d7c0c06c85d7d2806be29b6fd1`  
-**P03 accepted implementation END_SHA:** `d67b82236ac9d28741ac6336895f70c5aa046082`  
+**P03 accepted implementation END_SHA:** `7b4ca63494ec8d8f2557087f1d8d3b04707bf7c0`  
+**P03 accepted implementation CI:** Frontend CI #1110 / run `33424062662` — PASS  
 **Backend final P03 main:** `3d97a73aa193e7d53fa4f7beb45abf4b591bf968`  
 **Purpose:** a new contributor or AI chat must be able to continue SOLE without asking the owner to repeat project history.
 
@@ -33,7 +34,7 @@ SOLE is a sneaker commerce product.
 - **Selective media donor reference:** `sajadkhavas/winimi-bakery-backend@19d294d8dd835571ee73b9330dff830ed1dda0ed` — read-only.
 - **Truth rule:** backend owns customer identity/session/profile/privacy truth as well as catalog/inventory/media truth. Donor data, donor secrets and donor history are never imported.
 
-Production catalog remains backend-authoritative from P02. P03 adds backend-authoritative customer identity/profile/privacy and production route isolation for `/auth` and `/account`. Development fixtures remain deterministic and development-only.
+Production catalog remains backend-authoritative from P02. P03 adds backend-authoritative customer identity/profile/privacy and production route isolation for `/auth` and `/account`. Production auth/account use a lightweight customer-only shell so shared demo/store/navigation dependencies do not pollute the production entry chunk. Development fixtures remain deterministic and development-only.
 
 ## 3. Completed work
 
@@ -49,7 +50,7 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 | P00 | Immutable production foundation | accepted implementation `4a62f760ba4f4dee25075a9e9f39183d6b27d896` | Completed |
 | P01 | Backend, admin and product truth | frontend PR #32; backend merge `c9e2f66bab300882e2306bcd52346a81fb1a2e6b` | Completed |
 | P02 | Media and catalog ingestion | frontend accepted `11c16357a846d01020f4774002ee11d8e63b2d2a`; backend merge `36eca2810495591b44f1f86c975f4ff287374e81` | Completed |
-| P03 | Authentication and customer security | frontend accepted implementation `d67b82236ac9d28741ac6336895f70c5aa046082`; backend final main `3d97a73aa193e7d53fa4f7beb45abf4b591bf968`; frontend PR #37 | Completed / merge closure pending |
+| P03 | Authentication and customer security | frontend accepted implementation `7b4ca63494ec8d8f2557087f1d8d3b04707bf7c0`, CI `33424062662`; backend final main `3d97a73aa193e7d53fa4f7beb45abf4b591bf968`; frontend PR #37 | Completed / merge closure pending |
 
 ### P03 accepted outcomes
 
@@ -66,10 +67,13 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 - allow-listed same-origin TanStack auth BFF; no generic proxy
 - production `/auth` and `/account` replace development demo authority only in production builds
 - production account exposes real session/profile/address/consent/privacy controls
+- production auth/account use lightweight customer-only Navbar/Footer/mobile navigation without store/search/notification/demo authority
+- route-aware Vite/Rolldown code splitting preserves the pre-existing F12 homepage/non-3D budgets without increasing limits
 - real orders are not fabricated; order integration is deferred to P06
 - generated `/api/auth/$` route is registered in exact cumulative route gates
 - P03 security audit is permanently chained into the production-program gate
 - all temporary synchronization workflows are removed before acceptance
+- full Frontend CI #1110 / run `33424062662` passed source, behavior, TypeScript, lint, format, production build, F12 budgets, Node runtime smoke, all visual suites, aggregate evidence and clean-tree checks
 - no server activation, production data mutation or production provider credential enrollment occurred
 
 ## 4. Remaining production phases
@@ -138,4 +142,4 @@ Start P04 only from the verified post-P03 frontend and backend `main` SHAs. P04 
 
 ## 9. Acceptance baseline
 
-P03 backend evidence is green across functional exact-head, initial post-merge, privacy-contract exact-head and final post-merge gates. Frontend security audit is wired into the permanent production-program gate. Exact closure-head Frontend CI and final frontend merge SHA are recorded externally on PR #37 and issue #36 because those values are created only after this closure document exists.
+P03 backend evidence is green across functional exact-head, initial post-merge, privacy-contract exact-head and final post-merge gates. Frontend security audit is wired into the permanent production-program gate. Frontend accepted implementation `7b4ca63494ec8d8f2557087f1d8d3b04707bf7c0` passed full Frontend CI #1110 / run `33424062662`, including unchanged F12 performance budgets. The exact documentation-closure CI and final frontend merge SHA are recorded on PR #37 and issue #36 because those values are created only after this closure documentation commit exists.
