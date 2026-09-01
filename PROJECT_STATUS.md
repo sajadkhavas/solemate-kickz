@@ -6,6 +6,9 @@
 **P06 START_SHA:** `1b7798e94dc4cb9b8b03972e26e8e9dcf8dafb0f`
 **P06 accepted implementation END_SHA:** `cbb5c014a22878f0efde05fccbf3995e89c5570a`
 **P06 accepted implementation CI:** Frontend CI #1181 / run `33532454934` — PASS
+**P06 documentation closure head:** `b520b51fffb2fc020c21e66eb1cee8396dd3d726`
+**P06 documentation closure CI:** Frontend CI #1183 / run `33533963751` — PASS
+**Frontend final P06 main:** `93d145deac79aebcdfd406f44aefc0da170cb494`
 **Backend final P06 main:** `269616149acbd8977fd55c2bfde6fd65bffbe45a`
 **P05 START_SHA:** `aac48e32dec082a4e79ae9c703c2a214e8fa1a68`  
 **P05 accepted implementation END_SHA:** `395fd1bd3d683f3fa8633b9a58d2a67a5195af5b`  
@@ -183,7 +186,7 @@ Mandatory handoff fields remain: `PHASE`, `STATUS`, `START_SHA`, `END_SHA`, `BRA
 
 **P07 — Payment, Shipping & Returns** is the next registered phase.
 
-Start P07 only after the P06 frontend closure head merges. Use backend `main` SHA `269616149acbd8977fd55c2bfde6fd65bffbe45a` and the resulting frontend P06 merge SHA as exact baselines. P07 owns payment-provider adapters and verified outcomes, shipping/fulfillment transitions, refunds and returns; provider/server activation remains deferred by the production program.
+Start P07 from frontend `main` SHA `93d145deac79aebcdfd406f44aefc0da170cb494` and backend `main` SHA `269616149acbd8977fd55c2bfde6fd65bffbe45a` as exact baselines. P07 owns payment-provider adapters and verified outcomes, shipping/fulfillment transitions, refunds and returns; provider/server activation remains deferred by the production program.
 
 ## 9. Acceptance baseline
 
@@ -191,4 +194,4 @@ P05 backend exact head `5ebab6b3b48407a23f9d1736d32ca91accbb626c` passed Backend
 
 Frontend accepted implementation `395fd1bd3d683f3fa8633b9a58d2a67a5195af5b` passed full Frontend CI #1160 / run `33497008084`, including the permanent P05 source/browser/format gate, unchanged F12 budgets, all cumulative browser/visual/SEO suites, production and VPS builds, runtime smoke, Foundation completion, P05-required aggregate evidence and clean-tree verification. Documentation closure head `3ce9f2ea4ff9703ac7960feb10a5c061746376ab` passed exact-head Frontend CI #1168 / run `33498373681`; frontend PR #42 then merged as `48085b8f48574f7520eeda7c1b898320847b5bcc` with zero unresolved review threads and issue #41 closed as completed.
 
-P06 backend exact head `752e044337b24cbc4b3c1e84f72d466bc186a1ce` passed Backend quality #36 / run `33530472189` and merged through PR #10 as `269616149acbd8977fd55c2bfde6fd65bffbe45a`. Frontend accepted implementation `cbb5c014a22878f0efde05fccbf3995e89c5570a` passed full Frontend CI #1181 / run `33532454934`; closure is recorded through PR #45 and issue #44.
+P06 backend exact head `752e044337b24cbc4b3c1e84f72d466bc186a1ce` passed Backend quality #36 / run `33530472189` and merged through PR #10 as `269616149acbd8977fd55c2bfde6fd65bffbe45a`. Frontend accepted implementation `cbb5c014a22878f0efde05fccbf3995e89c5570a` passed full Frontend CI #1181 / run `33532454934`; closure head `b520b51fffb2fc020c21e66eb1cee8396dd3d726` passed CI #1183 / run `33533963751`, PR #45 merged as `93d145deac79aebcdfd406f44aefc0da170cb494`, and issue #44 closed as completed.

@@ -202,6 +202,8 @@
       "backendQualityRun": "33530472189",
       "backendPullRequest": "https://github.com/sajadkhavas/sole-backend/pull/10",
       "frontendQualityRun": "33532454934",
+      "frontendClosureQualityRun": "33533963751",
+      "frontendMergeSha": "93d145deac79aebcdfd406f44aefc0da170cb494",
       "frontendPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/45",
       "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/44",
       "performanceContract": "Accepted F12 limits remain unchanged; lightweight Production cart/checkout/account routes add no budget increase.",

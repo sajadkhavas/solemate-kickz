@@ -3,11 +3,13 @@
 ## Phase record
 
 - PHASE: P06
-- STATUS: COMPLETED / ACCEPTED / BACKEND MERGED / FRONTEND CLOSURE PENDING
+- STATUS: COMPLETED / REGISTERED / MERGED / CLOSED
 - START_SHA: `1b7798e94dc4cb9b8b03972e26e8e9dcf8dafb0f`
 - END_SHA: `cbb5c014a22878f0efde05fccbf3995e89c5570a`
 - BRANCH: `phase/sole-p06-cart-checkout-orders`
 - PR: https://github.com/sajadkhavas/solemate-kickz/pull/45
+- CLOSURE_SHA: `b520b51fffb2fc020c21e66eb1cee8396dd3d726`
+- FRONTEND_MERGE_SHA: `93d145deac79aebcdfd406f44aefc0da170cb494`
 - BACKEND_START_SHA: `8be9f01223908eb3359512b213a0b835f43cadfa`
 - BACKEND_END_SHA: `752e044337b24cbc4b3c1e84f72d466bc186a1ce`
 - BACKEND_MERGE_SHA: `269616149acbd8977fd55c2bfde6fd65bffbe45a`
@@ -38,6 +40,7 @@ Backend adds the cart/order schema, models, services, state/expiry command, API 
 - Backend exact-head: Backend quality #36 / run `33530472189` passed on `752e044337b24cbc4b3c1e84f72d466bc186a1ce`; PR #10 merged as `269616149acbd8977fd55c2bfde6fd65bffbe45a`.
 - Frontend local: P06 source audit, P06 behavior contract `5/5`, F2 `27/27`, F7 `40/40`, P03 audit, typecheck, lint, production build and unchanged F12 budgets passed. Local browser execution was unavailable because the workspace had no Chrome/Chromium; GitHub CI owns exact browser and visual acceptance.
 - Frontend exact-head: Frontend CI #1181 / run `33532454934` passed the complete cumulative gate on END_SHA, including P06, production/VPS builds, runtime smoke, browser/visual suites, aggregate evidence and clean-tree verification.
+- Frontend closure: Frontend CI #1183 / run `33533963751` passed on exact closure SHA; PR #45 merged as `93d145deac79aebcdfd406f44aefc0da170cb494`, with zero unresolved review threads, and issue #44 closed as completed.
 - Earlier CI #1175, #1177 and #1179 exposed and then verified controlled evolution of historical F2/F7/P03 assertions; no gate was removed or relaxed and the accepted evidence is exact-head CI #1181.
 
 ## Routes and viewports
