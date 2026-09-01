@@ -7,9 +7,11 @@ Production-oriented sneaker commerce platform.
 ## Current state
 
 - Frontend program **F0–F18: completed and released to `main`**
-- Production program **P00–P05: completed/accepted**
+- Production program **P00–P05: completed/accepted/merged**
 - Remaining production phases **P06–P14: registered**
 - P05 frontend accepted implementation: `395fd1bd3d683f3fa8633b9a58d2a67a5195af5b`; full Frontend CI #1160 / run `33497008084` PASS
+- P05 frontend closure head: `3ce9f2ea4ff9703ac7960feb10a5c061746376ab`; exact-head Frontend CI #1168 / run `33498373681` PASS
+- Frontend P05 final merged `main`: `48085b8f48574f7520eeda7c1b898320847b5bcc`; PR #42 merged with zero unresolved review threads and issue #41 closed as completed
 - Backend: [`sajadkhavas/sole-backend`](https://github.com/sajadkhavas/sole-backend), Laravel 13 + Filament 5 + PHP 8.3+ + MySQL
 - Backend P05 final merged `main`: `8be9f01223908eb3359512b213a0b835f43cadfa`; post-merge quality run `33494159795` PASS
 - Frontend: TanStack Start / React full-document SSR / Node production runtime
