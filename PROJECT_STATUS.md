@@ -2,7 +2,11 @@
 
 **Repository:** `sajadkhavas/solemate-kickz`  
 **Status last reconciled:** 2026-09-01  
-**Current accepted frontend phase:** P05 — Discovery & PDP Conversion  
+**Current accepted frontend phase:** P06 — Cart, Checkout & Orders
+**P06 START_SHA:** `1b7798e94dc4cb9b8b03972e26e8e9dcf8dafb0f`
+**P06 accepted implementation END_SHA:** `cbb5c014a22878f0efde05fccbf3995e89c5570a`
+**P06 accepted implementation CI:** Frontend CI #1181 / run `33532454934` — PASS
+**Backend final P06 main:** `269616149acbd8977fd55c2bfde6fd65bffbe45a`
 **P05 START_SHA:** `aac48e32dec082a4e79ae9c703c2a214e8fa1a68`  
 **P05 accepted implementation END_SHA:** `395fd1bd3d683f3fa8633b9a58d2a67a5195af5b`  
 **P05 accepted implementation CI:** Frontend CI #1160 / run `33497008084` — PASS  
@@ -50,15 +54,16 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 
 ### Production program
 
-| Phase | Scope | Evidence | State |
-| --- | --- | --- | --- |
-| Program registration | P00–P14 roadmap/registry | frontend PR #24 | Completed |
-| P00 | Immutable production foundation | accepted implementation `4a62f760ba4f4dee25075a9e9f39183d6b27d896` | Completed |
-| P01 | Backend, admin and product truth | frontend PR #32; backend merge `c9e2f66bab300882e2306bcd52346a81fb1a2e6b` | Completed |
-| P02 | Media and catalog ingestion | frontend accepted `11c16357a846d01020f4774002ee11d8e63b2d2a`; backend merge `36eca2810495591b44f1f86c975f4ff287374e81` | Completed |
-| P03 | Authentication and customer security | frontend accepted `7b4ca63494ec8d8f2557087f1d8d3b04707bf7c0`, CI `33424062662`; backend final main `3d97a73aa193e7d53fa4f7beb45abf4b591bf968`; frontend PR #37 | Completed |
-| P04 | Size and fit intelligence | frontend accepted `a59e859331308fbfcf90efb1b29b9f03dc1e7dbb`, CI `33480367490`; backend main `3bdfac22c1aebf6f218c786cfbe7805a0c496505`; frontend PR #38 | Completed |
-| P05 | Discovery and PDP conversion | frontend accepted `395fd1bd3d683f3fa8633b9a58d2a67a5195af5b`, CI `33497008084`; closure CI `33498373681`; frontend merge `48085b8f48574f7520eeda7c1b898320847b5bcc`; backend merge `8be9f01223908eb3359512b213a0b835f43cadfa`; frontend PR #42; issue #41 closed | Completed |
+| Phase                | Scope                                | Evidence                                                                                                                                                                                                                                                         | State     |
+| -------------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| Program registration | P00–P14 roadmap/registry             | frontend PR #24                                                                                                                                                                                                                                                  | Completed |
+| P00                  | Immutable production foundation      | accepted implementation `4a62f760ba4f4dee25075a9e9f39183d6b27d896`                                                                                                                                                                                               | Completed |
+| P01                  | Backend, admin and product truth     | frontend PR #32; backend merge `c9e2f66bab300882e2306bcd52346a81fb1a2e6b`                                                                                                                                                                                        | Completed |
+| P02                  | Media and catalog ingestion          | frontend accepted `11c16357a846d01020f4774002ee11d8e63b2d2a`; backend merge `36eca2810495591b44f1f86c975f4ff287374e81`                                                                                                                                           | Completed |
+| P03                  | Authentication and customer security | frontend accepted `7b4ca63494ec8d8f2557087f1d8d3b04707bf7c0`, CI `33424062662`; backend final main `3d97a73aa193e7d53fa4f7beb45abf4b591bf968`; frontend PR #37                                                                                                   | Completed |
+| P04                  | Size and fit intelligence            | frontend accepted `a59e859331308fbfcf90efb1b29b9f03dc1e7dbb`, CI `33480367490`; backend main `3bdfac22c1aebf6f218c786cfbe7805a0c496505`; frontend PR #38                                                                                                         | Completed |
+| P05                  | Discovery and PDP conversion         | frontend accepted `395fd1bd3d683f3fa8633b9a58d2a67a5195af5b`, CI `33497008084`; closure CI `33498373681`; frontend merge `48085b8f48574f7520eeda7c1b898320847b5bcc`; backend merge `8be9f01223908eb3359512b213a0b835f43cadfa`; frontend PR #42; issue #41 closed | Completed |
+| P06                  | Cart, checkout and orders            | frontend accepted `cbb5c014a22878f0efde05fccbf3995e89c5570a`, CI `33532454934`; backend exact-head CI `33530472189`; backend merge `269616149acbd8977fd55c2bfde6fd65bffbe45a`; frontend PR #45; backend PR #10; issue #44                                        | Completed |
 
 ### P03 accepted outcomes
 
@@ -108,21 +113,30 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 - Review threads were zero unresolved at frontend merge and tracking issue #41 was closed as completed.
 - No production server activation, production data mutation or provider credential enrollment occurred.
 
+### P06 accepted outcomes
+
+- Guest carts use an opaque capability cookie and can be adopted by an authenticated customer; backend price, availability, quantity and totals are authoritative.
+- Checkout requires an authenticated customer and owned address, fails closed without valid operator shipping policy, and creates the order once through UUID idempotency/fingerprint enforcement.
+- Inventory is allocated across locations under deterministic transaction locks, reserved until expiry and released atomically on expiry/cancellation.
+- Order lines and address/pricing snapshots are durable, state changes are controlled and events append-only; Production account order history is real rather than fixture-backed.
+- The same-origin commerce BFF is exact-route allow-listed, forwards secure session/cart authority and stores the cart UUID only in an HttpOnly SameSite cookie.
+- P06 is permanently chained into cumulative CI; accepted backend run `33530472189` and frontend run `33532454934` passed without changing performance budgets.
+- Payment, shipping-provider fulfillment, refunds and returns remain P07; no production activation, data mutation or credential enrollment occurred.
+
 ## 4. Remaining production phases
 
-P06–P14 remain: **9 phases and 57 planned steps**.
+P07–P14 remain: **8 phases and 50 planned steps**.
 
-| Phase | Scope | Planned steps | Depends on | Server required? |
-| --- | --- | ---: | --- | --- |
-| P06 | Cart, checkout and orders | 7 | P02, P03 | No |
-| P07 | Payment, shipping and returns | 7 | P06 | No; provider activation deferred |
-| P08 | Trust, support and post-purchase | 5 | P07 | No |
-| P09 | Loyalty, CRM and notifications | 6 | P03, P07 | No |
-| P10 | SEO, content and merchant feeds | 6 | P02, P08 | No |
-| P11 | Observability, RUM and CRO | 6 | P07, P10 | No |
-| P12 | Production readiness | 7 | P00–P11 | **Activate server here** |
-| P13 | Staging acceptance | 6 | P12 | Yes |
-| P14 | Production release | 7 | P13 | Yes |
+| Phase | Scope                            | Planned steps | Depends on | Server required?                 |
+| ----- | -------------------------------- | ------------: | ---------- | -------------------------------- |
+| P07   | Payment, shipping and returns    |             7 | P06        | No; provider activation deferred |
+| P08   | Trust, support and post-purchase |             5 | P07        | No                               |
+| P09   | Loyalty, CRM and notifications   |             6 | P03, P07   | No                               |
+| P10   | SEO, content and merchant feeds  |             6 | P02, P08   | No                               |
+| P11   | Observability, RUM and CRO       |             6 | P07, P10   | No                               |
+| P12   | Production readiness             |             7 | P00–P11    | **Activate server here**         |
+| P13   | Staging acceptance               |             6 | P12        | Yes                              |
+| P14   | Production release               |             7 | P13        | Yes                              |
 
 ## 5. Cost and server strategy
 
@@ -167,12 +181,14 @@ Mandatory handoff fields remain: `PHASE`, `STATUS`, `START_SHA`, `END_SHA`, `BRA
 
 ## 8. Next action
 
-**P06 — Cart, Checkout & Orders** is now ready to start.
+**P07 — Payment, Shipping & Returns** is the next registered phase.
 
-Start P06 from the verified post-P05 frontend `main` SHA `48085b8f48574f7520eeda7c1b898320847b5bcc` and backend `main` SHA `8be9f01223908eb3359512b213a0b835f43cadfa`. P06 must replace the remaining local/demo cart-checkout order boundary with backend-authoritative cart/order lifecycle truth while retaining the no-fabrication rules established by earlier phases. Payment provider activation, shipping fulfillment and returns remain P07 responsibilities.
+Start P07 only after the P06 frontend closure head merges. Use backend `main` SHA `269616149acbd8977fd55c2bfde6fd65bffbe45a` and the resulting frontend P06 merge SHA as exact baselines. P07 owns payment-provider adapters and verified outcomes, shipping/fulfillment transitions, refunds and returns; provider/server activation remains deferred by the production program.
 
 ## 9. Acceptance baseline
 
 P05 backend exact head `5ebab6b3b48407a23f9d1736d32ca91accbb626c` passed Backend quality #34 / run `33489508558`, merged through PR #9 as `8be9f01223908eb3359512b213a0b835f43cadfa`, and post-merge main passed quality #35 / run `33494159795`.
 
 Frontend accepted implementation `395fd1bd3d683f3fa8633b9a58d2a67a5195af5b` passed full Frontend CI #1160 / run `33497008084`, including the permanent P05 source/browser/format gate, unchanged F12 budgets, all cumulative browser/visual/SEO suites, production and VPS builds, runtime smoke, Foundation completion, P05-required aggregate evidence and clean-tree verification. Documentation closure head `3ce9f2ea4ff9703ac7960feb10a5c061746376ab` passed exact-head Frontend CI #1168 / run `33498373681`; frontend PR #42 then merged as `48085b8f48574f7520eeda7c1b898320847b5bcc` with zero unresolved review threads and issue #41 closed as completed.
+
+P06 backend exact head `752e044337b24cbc4b3c1e84f72d466bc186a1ce` passed Backend quality #36 / run `33530472189` and merged through PR #10 as `269616149acbd8977fd55c2bfde6fd65bffbe45a`. Frontend accepted implementation `cbb5c014a22878f0efde05fccbf3995e89c5570a` passed full Frontend CI #1181 / run `33532454934`; closure is recorded through PR #45 and issue #44.
