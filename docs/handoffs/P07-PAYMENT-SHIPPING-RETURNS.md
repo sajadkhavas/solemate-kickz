@@ -13,7 +13,9 @@
 - Backend merge SHA: `0abe7ce7c6cea34107f15d0d67e046942e428fcb`
 - Backend review threads before merge: `0`
 - Frontend implementation PR: `#48`
-- Frontend status: `IN PROGRESS`
+- Frontend implementation END_SHA: `f9ecafa36065fc3349cb283889e0618b25c119d6`
+- Frontend implementation CI: Frontend CI `#1214` / `33555570220` — PASS
+- Frontend status: `COMPLETED / ACCEPTED / CLOSURE PENDING`
 
 ## P07.1 — Payment gateway adapter
 
@@ -62,15 +64,36 @@
 
 Backend acceptance is complete on exact implementation head `63ce16267a489f56736419edeac3f683125dc2da`; its Quality run `#44` / `33551751760` passed Pint, PHP syntax, MySQL migrate/fresh, rollback/re-migrate, SQLite and MySQL suites, inventory concurrency, route/operator boot, dependency audit and production config cache. Backend PR #11 was merged only after review-thread count was confirmed as zero.
 
-Frontend acceptance still requires:
+Frontend acceptance is complete on exact implementation head `f9ecafa36065fc3349cb283889e0618b25c119d6`. Dedicated P07 Gate #11 / `33552361775` first passed the focused source, safety, regression, TypeScript, lint, format, production-build and performance checks. The temporary dedicated workflow was then removed and P07 was permanently chained into the single cumulative quality workflow. Frontend CI #1214 / `33555570220` passed all 72 steps on the final implementation head, including P07 audit/contracts, required P07 cumulative evidence, P06 regressions, production/VPS builds, runtime smoke, unchanged F12 budgets, all browser/visual/SEO/PWA suites, Foundation completion and clean-tree verification.
 
-- P07 source audit and P07 safety-contract tests;
-- evolved P06 cart/checkout/payment-truth regression;
-- Frontend TypeScript, lint and selected-file Prettier gates;
-- production/VPS build and runtime gates;
-- unchanged F12 performance budgets and cumulative browser/visual/SEO/PWA gates;
-- exact Frontend implementation SHA and CI evidence recorded before closure;
-- zero unresolved review discussion before Frontend merge.
+## Files, dependencies and commands
+
+- Backend: payment/shipping adapters, attempts, reconciliation/events, shipment lifecycle, returns/refunds, migrations, command/operator surface, OpenAPI contract and feature/concurrency tests.
+- Frontend: exact allow-listed commerce BFF extensions, typed commerce schemas/client, verified payment callback UI, authoritative shipping selection, lifecycle orders/returns/refunds and permanent P07 quality scripts.
+- No new provider credential, production secret or live carrier dependency was added.
+- Local and CI commands covered P07/P06 source and safety contracts, TypeScript, lint, Prettier, production build, F12 budgets, Laravel Pint/PHP syntax, SQLite/MySQL suites, migration rollback/re-migrate, inventory concurrency, routes, dependency audit and production configuration cache.
+
+## Routes, accessibility and performance
+
+- Production `/checkout` owns shipping quote selection, payment initiation and Backend verification of validated callback input.
+- Production `/account?section=orders` owns shipment, tracking, return and refund lifecycle display/actions.
+- Loading/error/status messages remain textual and keyboard-operable; the Browser never announces paid from query parameters alone.
+- Accepted F12 budgets are unchanged. Exact-head CI kept the 3D module isolated and passed production/VPS build and all mobile/desktop visual gates.
+
+## Known limitations and out-of-scope findings
+
+- ZarinPal and external carrier credentials remain unenrolled and providers remain fail-closed until controlled production readiness.
+- Live refund execution is intentionally deferred; P07 records the guarded refund request/reconciliation boundary without claiming monetary completion.
+- Public support/SLA, customer communication and verified review workflows remain P08.
+
+## Official references
+
+- https://docs.zarinpal.com/paymentGateway/
+- https://github.com/ZarinPal/zarinpal-php-sdk
+- https://laravel.com/docs/13.x/database#database-transactions
+- https://laravel.com/docs/13.x/queries#pessimistic-locking
+- https://laravel.com/docs/13.x/http-client
+- https://www.rfc-editor.org/rfc/rfc2104
 
 ## Security and truth boundaries
 
@@ -86,3 +109,7 @@ Frontend acceptance still requires:
 - Backend rollback target: `269616149acbd8977fd55c2bfde6fd65bffbe45a`
 
 Rollback removes P07 payment/shipping/return/refund lifecycle extensions while preserving the accepted P06 cart, checkout, reservation and order-history baseline. Database rollback is covered by the Backend migration rollback gate.
+
+## Next phase
+
+P08 — Trust, Support & Post-purchase, after P07 closure CI, zero unresolved review threads and merge.
