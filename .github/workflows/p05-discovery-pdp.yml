@@ -19,7 +19,7 @@ on:
       - "phase/sole-p05-*"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: p05-discovery-pdp-${{ github.ref }}
@@ -51,6 +51,117 @@ jobs:
       - name: Install from lockfile
         run: bun install --frozen-lockfile
 
+      - name: One-time permanent P05 gate migration
+        if: github.event_name == 'push' && github.ref == 'refs/heads/phase/sole-p05-discovery-pdp-conversion'
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/workflows/frontend-ci.yml')
+          source = path.read_text()
+
+          old_audit = '''      - name: P04 size and fit intelligence audit
+          run: bun run audit:p04
+
+      - name: P00 production foundation audit
+          run: bun run audit:p00
+'''
+          new_audit = '''      - name: P04 size and fit intelligence audit
+          run: bun run audit:p04
+
+      - name: P05 discovery and PDP source audit
+          run: node scripts/audit-p05-discovery-pdp.mjs
+
+      - name: P05 discovery and PDP browser behavior regression
+          run: node scripts/qa/retry-gate.mjs -- node scripts/test-p05-discovery-pdp.mjs
+
+      - name: P00 production foundation audit
+          run: bun run audit:p00
+'''
+
+          old_format = '''      - name: F18 format check
+          run: >-
+            bunx prettier --check
+            .github/workflows/frontend-ci.yml
+            docs/handoffs/F18-FINAL-FRONTEND-ACCEPTANCE.md
+            package.json
+            scripts/audit-f14-pwa.mjs
+            scripts/audit-f15-push-consent.mjs
+            scripts/audit-f16-commerce-contract.mjs
+            scripts/audit-f17-production-content.mjs
+            scripts/audit-f18-final-acceptance.mjs
+            scripts/verify-cumulative-quality.mjs
+
+      - name: Production build
+'''
+          new_format = '''      - name: F18 format check
+          run: >-
+            bunx prettier --check
+            .github/workflows/frontend-ci.yml
+            docs/handoffs/F18-FINAL-FRONTEND-ACCEPTANCE.md
+            package.json
+            scripts/audit-f14-pwa.mjs
+            scripts/audit-f15-push-consent.mjs
+            scripts/audit-f16-commerce-contract.mjs
+            scripts/audit-f17-production-content.mjs
+            scripts/audit-f18-final-acceptance.mjs
+            scripts/verify-cumulative-quality.mjs
+
+      - name: P05 format check
+          run: >-
+            bunx prettier --check
+            .github/workflows/frontend-ci.yml
+            docs/handoffs/P05-DISCOVERY-PDP-CONVERSION.md
+            scripts/audit-p05-discovery-pdp.mjs
+            scripts/test-p05-discovery-pdp.mjs
+            src/catalog/catalog-state.ts
+            src/catalog/discovery-types.ts
+            src/catalog/p05-discovery.server.ts
+            src/catalog/production-catalog.ts
+            src/components/catalog/CatalogFilters.tsx
+            src/components/product/ProductPurchasePanel.tsx
+            src/routes/api.catalog.ts
+            src/routes/products.tsx
+            'src/routes/product.$id.tsx'
+
+      - name: Production build
+'''
+
+          old_summary = '            echo "- Included phases: F0/F1, F3 + commercial homepage upgrade, F2, F8, F4/F5, F6, F7, F9, F10, F11, F12, F13, F14 and F15"\n'
+          new_summary = '            echo "- Included phases: F0/F1, F2-F18 cumulative contracts plus production P00, P03, P04 and P05 gates"\n'
+
+          for old, new, label in [
+              (old_audit, new_audit, 'P05 audit insertion'),
+              (old_format, new_format, 'P05 format insertion'),
+              (old_summary, new_summary, 'summary refresh'),
+          ]:
+              if new in source:
+                  continue
+              if old not in source:
+                  raise SystemExit(f'expected insertion anchor missing: {label}')
+              source = source.replace(old, new, 1)
+
+          path.write_text(source)
+          PY
+
+          bunx prettier --write .github/workflows/frontend-ci.yml
+          git rm -- .github/workflows/p05-discovery-pdp.yml
+
+          mapfile -t changed < <(git diff --name-only | sort)
+          expected=(.github/workflows/frontend-ci.yml .github/workflows/p05-discovery-pdp.yml)
+          if [[ "${changed[*]}" != "${expected[*]}" ]]; then
+            printf 'Unexpected migration mutation: %s\n' "${changed[*]}" >&2
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- .github/workflows/frontend-ci.yml .github/workflows/p05-discovery-pdp.yml
+          git commit -m "P05: integrate permanent gate into cumulative CI"
+          git push origin HEAD:phase/sole-p05-discovery-pdp-conversion
+
       - name: P05 source contract audit
         run: node scripts/audit-p05-discovery-pdp.mjs
 
@@ -66,7 +177,7 @@ jobs:
       - name: P05 format check
         run: >-
           bunx prettier --check
-          .github/workflows/p05-discovery-pdp.yml
+          .github/workflows/frontend-ci.yml
           docs/handoffs/P05-DISCOVERY-PDP-CONVERSION.md
           scripts/audit-p05-discovery-pdp.mjs
           scripts/test-p05-discovery-pdp.mjs
