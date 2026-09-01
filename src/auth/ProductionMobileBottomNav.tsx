@@ -22,3 +22,5 @@ export function MobileBottomNav() {
     </nav>
   );
 }
+
+export { MobileBottomNav as ProductionMobileBottomNav };
