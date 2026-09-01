@@ -19,7 +19,7 @@ on:
       - "phase/sole-p05-*"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: p05-discovery-pdp-${{ github.ref }}
@@ -50,6 +50,60 @@ jobs:
 
       - name: Install from lockfile
         run: bun install --frozen-lockfile
+
+      - name: One-time exact formatter commit
+        if: github.event_name == 'push' && github.ref == 'refs/heads/phase/sole-p05-discovery-pdp-conversion'
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          allowed="$RUNNER_TEMP/p05-format-allowed.txt"
+          actual="$RUNNER_TEMP/p05-format-actual.txt"
+          cat >"$allowed" <<'EOF'
+          scripts/audit-p05-discovery-pdp.mjs
+          scripts/test-p05-discovery-pdp.mjs
+          src/catalog/catalog-state.ts
+          src/catalog/p05-discovery.server.ts
+          src/catalog/production-catalog.ts
+          src/components/product/ProductPurchasePanel.tsx
+          src/routes/api.catalog.ts
+          src/routes/product.$id.tsx
+          src/routes/products.tsx
+          EOF
+          sort -o "$allowed" "$allowed"
+          bunx prettier --write \
+            scripts/audit-p05-discovery-pdp.mjs \
+            scripts/test-p05-discovery-pdp.mjs \
+            src/catalog/catalog-state.ts \
+            src/catalog/p05-discovery.server.ts \
+            src/catalog/production-catalog.ts \
+            src/components/product/ProductPurchasePanel.tsx \
+            src/routes/api.catalog.ts \
+            src/routes/products.tsx \
+            'src/routes/product.$id.tsx'
+          git diff --name-only | sort >"$actual"
+          if [[ ! -s "$actual" ]]; then
+            echo "FORMATTER_CHANGE=NO"
+            exit 0
+          fi
+          if [[ "$(cat "$actual")" != "$(cat "$allowed")" ]]; then
+            echo "Unexpected formatter mutation set:" >&2
+            cat "$actual" >&2
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- \
+            scripts/audit-p05-discovery-pdp.mjs \
+            scripts/test-p05-discovery-pdp.mjs \
+            src/catalog/catalog-state.ts \
+            src/catalog/p05-discovery.server.ts \
+            src/catalog/production-catalog.ts \
+            src/components/product/ProductPurchasePanel.tsx \
+            src/routes/api.catalog.ts \
+            src/routes/products.tsx \
+            'src/routes/product.$id.tsx'
+          git commit -m "P05: apply exact locked Prettier output"
+          git push origin HEAD:phase/sole-p05-discovery-pdp-conversion
 
       - name: P05 source contract audit
         run: node scripts/audit-p05-discovery-pdp.mjs
