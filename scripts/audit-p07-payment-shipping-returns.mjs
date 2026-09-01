@@ -55,11 +55,11 @@ if (proxy.includes('splat === "shipping/provider-events"'))
 
 for (const marker of [
   "getCommerceShippingQuotes",
+  "createCommerceOrder(addressId, quoteId",
   "verifyCommercePayment",
   'verified.status !== "paid"',
   "trustedZarinPal",
   'target.protocol === "https:"',
-  "shipping_quote_id",
   "نتیجه مرورگر به‌تنهایی معتبر نیست",
 ])
   if (!checkout.includes(marker)) failures.push(`P07 checkout missing ${marker}`);
