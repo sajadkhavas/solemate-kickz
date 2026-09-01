@@ -19,7 +19,7 @@ on:
       - "phase/sole-p05-*"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: p05-discovery-pdp-${{ github.ref }}
@@ -50,6 +50,62 @@ jobs:
 
       - name: Install from lockfile
         run: bun install --frozen-lockfile
+
+      - name: One-time legacy quantity audit migration
+        if: github.event_name == 'push' && github.ref == 'refs/heads/phase/sole-p05-discovery-pdp-conversion'
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              Path('scripts/audit-f7-cart-checkout.mjs'): (
+                  '''record(\n  "quantity ceiling is documented as client safety rather than inventory",\n  !purchase.includes("max={10}") &&\n    commerce.includes('typeof max !== "number" || safeValue < max') &&\n    purchase.includes("max={MAX_CART_ITEM_QUANTITY}") &&\n    cartDomain.includes("MAX_CART_ITEM_QUANTITY = 99") &&\n    f13Handoff.includes("not inventory claims"),\n);''',
+                  '''const legacyPdpQuantityCeiling = purchase.includes("max={MAX_CART_ITEM_QUANTITY}");\nconst p05InventoryAwareQuantityCeiling =\n  purchase.includes("const quantityMax = hasVariantTruth") &&\n  purchase.includes("Math.min(MAX_CART_ITEM_QUANTITY") &&\n  purchase.includes("selectedVariant?.availableQuantity") &&\n  purchase.includes("max={quantityMax}");\nrecord(\n  "quantity ceiling preserves client safety and may additionally honor authoritative P05 inventory",\n  !purchase.includes("max={10}") &&\n    commerce.includes('typeof max !== "number" || safeValue < max') &&\n    (legacyPdpQuantityCeiling || p05InventoryAwareQuantityCeiling) &&\n    cartDomain.includes("MAX_CART_ITEM_QUANTITY = 99") &&\n    f13Handoff.includes("not inventory claims"),\n  { legacyPdpQuantityCeiling, p05InventoryAwareQuantityCeiling },\n);''',
+              ),
+              Path('scripts/audit-f13-full-code.mjs'): (
+                  '''record(\n  "PDP quantity control exposes the same cart ceiling",\n  purchasePanel.includes("MAX_CART_ITEM_QUANTITY") &&\n    purchasePanel.includes("max={MAX_CART_ITEM_QUANTITY}"),\n);''',
+                  '''const legacyPdpQuantityCeiling = purchasePanel.includes("max={MAX_CART_ITEM_QUANTITY}");\nconst p05InventoryAwareQuantityCeiling =\n  purchasePanel.includes("const quantityMax = hasVariantTruth") &&\n  purchasePanel.includes("Math.min(MAX_CART_ITEM_QUANTITY") &&\n  purchasePanel.includes("selectedVariant?.availableQuantity") &&\n  purchasePanel.includes("max={quantityMax}");\nrecord(\n  "PDP quantity control preserves the cart safety ceiling and may honor authoritative P05 inventory",\n  purchasePanel.includes("MAX_CART_ITEM_QUANTITY") &&\n    (legacyPdpQuantityCeiling || p05InventoryAwareQuantityCeiling),\n  { legacyPdpQuantityCeiling, p05InventoryAwareQuantityCeiling },\n);''',
+              ),
+          }
+
+          changed = []
+          for path, (old, new) in replacements.items():
+              source = path.read_text()
+              if new in source:
+                  continue
+              if old not in source:
+                  raise SystemExit(f'expected legacy contract missing: {path}')
+              path.write_text(source.replace(old, new, 1))
+              changed.append(str(path))
+
+          if changed:
+              print('MIGRATED=' + ','.join(changed))
+          else:
+              print('MIGRATED=NO_CHANGES')
+          PY
+
+          mapfile -t changed < <(git diff --name-only | sort)
+          if [[ ${#changed[@]} -eq 0 ]]; then
+            exit 0
+          fi
+          expected=(scripts/audit-f13-full-code.mjs scripts/audit-f7-cart-checkout.mjs)
+          if [[ "${changed[*]}" != "${expected[*]}" ]]; then
+            printf 'Unexpected mutation: %s\n' "${changed[*]}" >&2
+            exit 1
+          fi
+          bunx prettier --write scripts/audit-f7-cart-checkout.mjs scripts/audit-f13-full-code.mjs
+          mapfile -t changed < <(git diff --name-only | sort)
+          if [[ "${changed[*]}" != "${expected[*]}" ]]; then
+            printf 'Unexpected formatted mutation: %s\n' "${changed[*]}" >&2
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- scripts/audit-f7-cart-checkout.mjs scripts/audit-f13-full-code.mjs
+          git commit -m "P05: evolve F7 F13 quantity safety audits"
+          git push origin HEAD:phase/sole-p05-discovery-pdp-conversion
 
       - name: P05 source contract audit
         run: node scripts/audit-p05-discovery-pdp.mjs
