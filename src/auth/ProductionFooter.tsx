@@ -10,3 +10,5 @@ export function Footer() {
     </footer>
   );
 }
+
+export { Footer as ProductionFooter };
