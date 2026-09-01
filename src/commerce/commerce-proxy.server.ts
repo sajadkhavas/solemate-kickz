@@ -16,6 +16,8 @@ function targetFor(method: string, splat: string): Target | null {
   const normalized = method.toUpperCase();
   if (splat === "cart" && normalized === "GET")
     return { path: "/api/v1/commerce/cart", method: "GET" };
+  if (splat === "shipping/quotes" && normalized === "POST")
+    return { path: "/api/v1/commerce/shipping/quotes", method: "POST" };
   if (splat === "checkout" && normalized === "POST")
     return { path: "/api/v1/commerce/checkout", method: "POST" };
   if (splat === "orders" && normalized === "GET")
@@ -28,6 +30,23 @@ function targetFor(method: string, splat: string): Target | null {
   const order = /^orders\/([0-9a-f-]{36})$/.exec(splat);
   if (order && normalized === "GET")
     return { path: `/api/v1/commerce/orders/${order[1]}`, method: "GET" };
+  const paymentStart = /^orders\/([0-9a-f-]{36})\/payments$/.exec(splat);
+  if (paymentStart && normalized === "POST")
+    return { path: `/api/v1/commerce/orders/${paymentStart[1]}/payments`, method: "POST" };
+  const paymentVerify = /^payments\/([0-9a-f-]{36})\/verify$/.exec(splat);
+  if (paymentVerify && normalized === "POST")
+    return { path: `/api/v1/commerce/payments/${paymentVerify[1]}/verify`, method: "POST" };
+  const paymentReconcile = /^payments\/([0-9a-f-]{36})\/reconcile$/.exec(splat);
+  if (paymentReconcile && normalized === "POST")
+    return { path: `/api/v1/commerce/payments/${paymentReconcile[1]}/reconcile`, method: "POST" };
+  const returnRequest = /^orders\/([0-9a-f-]{36})\/returns$/.exec(splat);
+  if (returnRequest && normalized === "POST")
+    return { path: `/api/v1/commerce/orders/${returnRequest[1]}/returns`, method: "POST" };
+  const refundRequest = /^orders\/([0-9a-f-]{36})\/refunds$/.exec(splat);
+  if (refundRequest && normalized === "POST")
+    return { path: `/api/v1/commerce/orders/${refundRequest[1]}/refunds`, method: "POST" };
+
+  // Provider webhooks are intentionally not proxied through the storefront.
   return null;
 }
 
