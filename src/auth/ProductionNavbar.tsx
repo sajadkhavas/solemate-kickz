@@ -3,7 +3,8 @@ export function Navbar() {
     <>
       <div className="border-b border-primary/30 bg-primary text-primary-foreground">
         <p className="mx-auto flex min-h-9 max-w-[1280px] items-center justify-center px-4 text-center font-fa text-[11px] font-semibold sm:text-xs">
-          حساب کاربری Production از Backend امن SOLE دریافت می‌شود؛ قابلیت‌های متصل‌نشده fail-closed می‌مانند
+          حساب کاربری Production از Backend امن SOLE دریافت می‌شود؛ قابلیت‌های متصل‌نشده fail-closed
+          می‌مانند
         </p>
       </div>
       <header className="sticky top-0 z-[var(--z-sticky)] border-b border-border bg-background/95 backdrop-blur-xl">
@@ -34,3 +35,5 @@ export function Navbar() {
     </>
   );
 }
+
+export { Navbar as ProductionNavbar };

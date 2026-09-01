@@ -7,8 +7,10 @@ Production-oriented sneaker commerce platform.
 ## Current state
 
 - Frontend program **F0–F18: completed and released to `main`**
-- Production program **P00–P06: completed/accepted**
-- Remaining production phases **P07–P14: registered**
+- Production program **P00–P07: completed/accepted**
+- Remaining production phases **P08–P14: registered**
+- P07 frontend accepted implementation: `f9ecafa36065fc3349cb283889e0618b25c119d6`; Frontend CI #1214 / run `33555570220` PASS; PR #48
+- P07 backend accepted implementation: `63ce16267a489f56736419edeac3f683125dc2da`; Backend Quality #44 / run `33551751760` PASS; PR #11 merged as `0abe7ce7c6cea34107f15d0d67e046942e428fcb`
 - P06 frontend accepted implementation: `cbb5c014a22878f0efde05fccbf3995e89c5570a`; full Frontend CI #1181 / run `33532454934` PASS; PR #45
 - P06 frontend closure head: `b520b51fffb2fc020c21e66eb1cee8396dd3d726`; closure CI #1183 / run `33533963751` PASS; PR #45 merged as `93d145deac79aebcdfd406f44aefc0da170cb494`; issue #44 closed as completed
 - P06 backend accepted implementation: `752e044337b24cbc4b3c1e84f72d466bc186a1ce`; Backend quality #36 / run `33530472189` PASS; PR #10 merged as `269616149acbd8977fd55c2bfde6fd65bffbe45a`
@@ -25,11 +27,12 @@ Production-oriented sneaker commerce platform.
 - P05 back-in-stock intent requires explicit purpose-specific consent; notification delivery remains deferred to P09
 - P05 permanent source/browser/format enforcement is chained into the single cumulative Frontend CI production-program gate, and aggregate evidence requires the P05 report
 - P06 guest cart capability, authoritative price/inventory/checkout, idempotent order creation, expiring reservation and real customer order history are complete
-- Next phase: **P07 — Payment, Shipping & Returns**
+- P07 verified-payment, authoritative shipping, fulfillment, returns and refund-request lifecycle is complete; live providers remain fail-closed
+- Next phase: **P08 — Trust, Support & Post-purchase**
 
-P02 established backend-authoritative catalog/media truth. P03 established backend-authoritative customer identity, profile/address ownership, consent and privacy workflows. P04 added source-backed size/fit guidance. P05 converted discovery and PDP decision surfaces to authoritative production catalog/variant truth. P06 replaces the remaining Production cart/order fixture boundary with backend-authoritative cart, checkout, inventory reservation and order history while payment and fulfillment remain deferred to P07.
+P02 established backend-authoritative catalog/media truth. P03 established backend-authoritative customer identity, profile/address ownership, consent and privacy workflows. P04 added source-backed size/fit guidance. P05 converted discovery and PDP decision surfaces to authoritative production catalog/variant truth. P06 established authoritative cart, checkout, reservation and orders. P07 adds verified-payment, shipping quote, fulfillment, return and refund-request lifecycle boundaries while keeping live provider activation deferred.
 
-Production order creation is durable and server-authoritative; payment success, fulfillment, refunds and returns are intentionally not fabricated and remain P07 responsibilities.
+Payment success requires Backend provider verification; shipping, returns and refund requests are durable and server-authoritative. Live charge/refund and carrier activation remain intentionally unavailable until controlled production readiness.
 
 The authoritative progress matrix, exact SHAs, CI evidence, engineering rules and mandatory handoff procedure live in [PROJECT_STATUS.md](./PROJECT_STATUS.md).
 

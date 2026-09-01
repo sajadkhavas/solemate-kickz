@@ -29,7 +29,10 @@ const results = [
   ],
   [
     "Payment success is not fabricated",
-    files.checkout.includes("پرداخت هنوز فعال نیست") && !files.checkout.includes("پرداخت موفق"),
+    files.checkout.includes("verifyCommercePayment") &&
+      files.checkout.includes('verified.status !== "paid"') &&
+      files.checkout.includes("نتیجه مرورگر به‌تنهایی معتبر نیست") &&
+      !files.checkout.includes('paymentCallback.Status === "OK"'),
   ],
 ];
 const report = {

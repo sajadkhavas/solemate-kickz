@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { ProductionAccountPage, type ProductionAccountSection } from "@/auth/ProductionAccountPage";
+import { ProductionOrdersPage } from "@/commerce/ProductionOrdersPage";
 
 const SECTIONS = ["overview", "profile", "addresses", "orders"] as const;
 
@@ -19,7 +20,10 @@ export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
       { title: "حساب من — SOLE" },
-      { name: "description", content: "پروفایل، آدرس و کنترل‌های حریم خصوصی حساب مشتری SOLE." },
+      {
+        name: "description",
+        content: "پروفایل، آدرس، سفارش، پرداخت، ارسال و کنترل‌های حریم خصوصی حساب مشتری SOLE.",
+      },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -28,5 +32,6 @@ export const Route = createFileRoute("/account")({
 
 function AccountRouteComponent() {
   const { section, order } = Route.useSearch();
+  if (section === "orders") return <ProductionOrdersPage orderId={order} />;
   return <ProductionAccountPage section={section} orderId={order} />;
 }
