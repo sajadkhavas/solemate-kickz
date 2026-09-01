@@ -5,11 +5,15 @@
 - Frontend START_SHA: `85557b3f2b34c49507c037dcd4a2a7596956b859`
 - Backend START_SHA: `269616149acbd8977fd55c2bfde6fd65bffbe45a`
 - Frontend branch: `phase/sole-p07-payment-shipping-returns`
-- Backend branch: `phase/sole-p07-payment-shipping-returns`
+- Backend implementation branch: `phase/sole-p07-payment-shipping-returns`
 - Tracking issue: `#47`
-- Backend PR: `sajadkhavas/sole-backend#11`
-- Frontend implementation PR: recorded after exact-head acceptance
-- Status during implementation: `IN PROGRESS`
+- Backend implementation END_SHA: `63ce16267a489f56736419edeac3f683125dc2da`
+- Backend Quality: run `#44` / `33551751760` — PASS
+- Backend PR: `sajadkhavas/sole-backend#11` — MERGED
+- Backend merge SHA: `0abe7ce7c6cea34107f15d0d67e046942e428fcb`
+- Backend review threads before merge: `0`
+- Frontend implementation PR: `#48`
+- Frontend status: `IN PROGRESS`
 
 ## P07.1 — Payment gateway adapter
 
@@ -56,19 +60,17 @@
 
 ## P07.7 — QA and closure
 
-Permanent acceptance includes:
+Backend acceptance is complete on exact implementation head `63ce16267a489f56736419edeac3f683125dc2da`; its Quality run `#44` / `33551751760` passed Pint, PHP syntax, MySQL migrate/fresh, rollback/re-migrate, SQLite and MySQL suites, inventory concurrency, route/operator boot, dependency audit and production config cache. Backend PR #11 was merged only after review-thread count was confirmed as zero.
 
-- Backend Pint and PHP syntax;
-- MySQL migrate/fresh, rollback and re-migrate;
-- SQLite and MySQL regression suites;
-- inventory concurrency and production config cache;
+Frontend acceptance still requires:
+
 - P07 source audit and P07 safety-contract tests;
 - evolved P06 cart/checkout/payment-truth regression;
 - Frontend TypeScript, lint and selected-file Prettier gates;
 - production/VPS build and runtime gates;
 - unchanged F12 performance budgets and cumulative browser/visual/SEO/PWA gates;
-- exact implementation SHAs and CI evidence recorded before closure;
-- zero unresolved review discussion before merge.
+- exact Frontend implementation SHA and CI evidence recorded before closure;
+- zero unresolved review discussion before Frontend merge.
 
 ## Security and truth boundaries
 
