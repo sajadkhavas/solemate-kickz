@@ -61,7 +61,8 @@ for (const marker of [
   'source === "@/components/sections/Footer"',
   'source === "@/components/MobileBottomNav"',
 ]) {
-  if (!vite.includes(marker)) failures.push(`production customer shell isolation missing ${marker}`);
+  if (!vite.includes(marker))
+    failures.push(`production customer shell isolation missing ${marker}`);
 }
 for (const marker of [
   "rolldownOptions",
@@ -135,7 +136,8 @@ for (const marker of [
   "saveAddress",
   "deleteAddress",
   "logoutCustomer",
-  "سفارش‌های واقعی هنوز متصل نشده‌اند",
+  "getCommerceOrders",
+  "هنوز سفارشی ثبت نشده است",
 ]) {
   if (!accountPage.includes(marker)) failures.push(`production account UI missing ${marker}`);
 }
@@ -155,7 +157,7 @@ for (const [name, source, route] of [
 for (const marker of ["ApiAuthSplatRouteImport", "'/api/auth/$': typeof ApiAuthSplatRoute"]) {
   if (!routeTree.includes(marker)) failures.push(`generated route tree missing ${marker}`);
 }
-if (!f2Audit.includes('"/api/auth/$"') || !f7Audit.includes('"/api/auth/$"')) {
+if (!f2Audit.includes('"/api/auth/$"') || !f7Audit.includes("ApiAuthSplatRouteImport")) {
   failures.push("cumulative exact-route gates must register the controlled P03 auth server route");
 }
 
@@ -168,7 +170,8 @@ for (const [name, source] of [
     failures.push(`${name} must state backend authority`);
   }
   for (const forbidden of ["@/store", "SearchDialog", "NotificationCenter", "framer-motion"]) {
-    if (source.includes(forbidden)) failures.push(`${name} imports heavy/demo shell dependency ${forbidden}`);
+    if (source.includes(forbidden))
+      failures.push(`${name} imports heavy/demo shell dependency ${forbidden}`);
   }
 }
 if (!productionNavbar.includes("fail-closed")) {

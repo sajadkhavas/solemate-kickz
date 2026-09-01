@@ -20,6 +20,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as ApiCatalogRouteImport } from './routes/api.catalog'
+import { Route as ApiCommerceSplatRouteImport } from './routes/api.commerce.$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api.auth.$'
 
 const WishlistRoute = WishlistRouteImport.update({
@@ -77,6 +78,11 @@ const ApiCatalogRoute = ApiCatalogRouteImport.update({
   path: '/api/catalog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCommerceSplatRoute = ApiCommerceSplatRouteImport.update({
+  id: '/api/commerce/$',
+  path: '/api/commerce/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/api/catalog': typeof ApiCatalogRoute
   '/product/$id': typeof ProductIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/commerce/$': typeof ApiCommerceSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/api/catalog': typeof ApiCatalogRoute
   '/product/$id': typeof ProductIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/commerce/$': typeof ApiCommerceSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/api/catalog': typeof ApiCatalogRoute
   '/product/$id': typeof ProductIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/commerce/$': typeof ApiCommerceSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/api/catalog'
     | '/product/$id'
     | '/api/auth/$'
+    | '/api/commerce/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/api/catalog'
     | '/product/$id'
     | '/api/auth/$'
+    | '/api/commerce/$'
   id:
     | '__root__'
     | '/'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/api/catalog'
     | '/product/$id'
     | '/api/auth/$'
+    | '/api/commerce/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,6 +196,7 @@ export interface RootRouteChildren {
   ApiCatalogRoute: typeof ApiCatalogRoute
   ProductIdRoute: typeof ProductIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiCommerceSplatRoute: typeof ApiCommerceSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCatalogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/commerce/$': {
+      id: '/api/commerce/$'
+      path: '/api/commerce/$'
+      fullPath: '/api/commerce/$'
+      preLoaderRoute: typeof ApiCommerceSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -288,6 +308,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCatalogRoute: ApiCatalogRoute,
   ProductIdRoute: ProductIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiCommerceSplatRoute: ApiCommerceSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

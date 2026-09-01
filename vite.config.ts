@@ -22,6 +22,12 @@ const productionAuthRouteModule = fileURLToPath(
 const productionAccountRouteModule = fileURLToPath(
   new URL("./src/auth/production-account-route.tsx", import.meta.url),
 );
+const productionCartRouteModule = fileURLToPath(
+  new URL("./src/commerce/production-cart-route.tsx", import.meta.url),
+);
+const productionCheckoutRouteModule = fileURLToPath(
+  new URL("./src/commerce/production-checkout-route.tsx", import.meta.url),
+);
 const productionNavbarModule = fileURLToPath(
   new URL("./src/auth/ProductionNavbar.tsx", import.meta.url),
 );
@@ -35,7 +41,9 @@ const productionMobileBottomNavModule = fileURLToPath(
 function isProductionCustomerPage(importer?: string) {
   return (
     importer?.includes("/src/auth/ProductionAuthPage.tsx") ||
-    importer?.includes("/src/auth/ProductionAccountPage.tsx")
+    importer?.includes("/src/auth/ProductionAccountPage.tsx") ||
+    importer?.includes("/src/commerce/ProductionCartPage.tsx") ||
+    importer?.includes("/src/commerce/ProductionCheckoutPage.tsx")
   );
 }
 
@@ -50,6 +58,8 @@ const productionTruthGuard = {
     if (importer?.includes("/src/routeTree.gen.ts")) {
       if (source === "./routes/auth") return productionAuthRouteModule;
       if (source === "./routes/account") return productionAccountRouteModule;
+      if (source === "./routes/cart") return productionCartRouteModule;
+      if (source === "./routes/checkout") return productionCheckoutRouteModule;
     }
 
     if (isProductionCustomerPage(importer)) {
