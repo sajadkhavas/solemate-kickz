@@ -29,8 +29,10 @@ export const catalogSearchSchema = z.object({
     z.coerce.number().int().min(CATALOG_MIN_PRICE).max(CATALOG_MAX_PRICE).optional(),
     undefined,
   ),
+  availability: fallback(z.enum(["all", "in_stock", "out_of_stock"]), "all").default("all"),
   quick: fallback(z.enum(["all", "new", "sale", "limited"]), "all").default("all"),
   view: fallback(z.enum(["grid", "list"]), "grid").default("grid"),
+  page: fallback(z.coerce.number().int().min(1), 1).default(1),
 });
 
 export type CatalogSearch = z.infer<typeof catalogSearchSchema>;
@@ -61,9 +63,12 @@ export function filterCatalog(shoes: Shoe[], search: CatalogSearch): Shoe[] {
     .filter((shoe) => {
       if (search.brand && shoe.brand !== search.brand) return false;
       if (search.category && shoe.category !== search.category) return false;
-      if (selectedSizes.length && !selectedSizes.some((size) => shoe.sizes.includes(size)))
+      if (selectedSizes.length && !selectedSizes.some((size) => shoe.sizes.includes(size))) {
         return false;
+      }
       if (productPrice(shoe) > maximumPrice) return false;
+      if (search.availability === "in_stock" && shoe.isSoldOut) return false;
+      if (search.availability === "out_of_stock" && !shoe.isSoldOut) return false;
       if (search.quick === "new" && !shoe.isNew) return false;
       if (search.quick === "sale" && !shoe.sale_price) return false;
       if (search.quick === "limited" && !shoe.isLimited) return false;
@@ -78,8 +83,9 @@ export function filterCatalog(shoes: Shoe[], search: CatalogSearch): Shoe[] {
     .sort((first, second) => {
       if (search.sort === "price-asc") return productPrice(first) - productPrice(second);
       if (search.sort === "price-desc") return productPrice(second) - productPrice(first);
-      if (search.sort === "popular")
+      if (search.sort === "popular") {
         return second.reviews - first.reviews || second.rating - first.rating;
+      }
       return Number(second.isNew) - Number(first.isNew) || second.id - first.id;
     });
 }
@@ -91,6 +97,7 @@ export function hasCatalogFilters(search: CatalogSearch) {
     search.q ||
     parseSizeParam(search.sizes).length ||
     (search.priceMax && search.priceMax < CATALOG_MAX_PRICE) ||
+    search.availability !== "all" ||
     search.quick !== "all",
   );
 }

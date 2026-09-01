@@ -28,6 +28,7 @@ const expectedReportFragments = [
   "f16-commerce-contract",
   "f17-production-content",
   "f18-final-acceptance",
+  "p05-discovery-pdp",
 ];
 
 function walk(directory) {

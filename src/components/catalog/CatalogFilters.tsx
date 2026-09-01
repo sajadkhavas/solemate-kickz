@@ -6,17 +6,22 @@ import {
   CATALOG_PRICE_STEP,
   CATALOG_SIZES,
 } from "@/catalog/catalog-state";
+import type { CatalogFacets } from "@/catalog/discovery-types";
 import { Button } from "@/components/ui/button";
-import { BRANDS, CATEGORIES, SHOES } from "@/data/shoes";
+import { CATEGORIES } from "@/data/shoes";
 
 interface CatalogFiltersProps {
   brand?: string;
   category?: string;
   sizes: number[];
   priceMax: number;
+  availability: "all" | "in_stock" | "out_of_stock";
+  facets: CatalogFacets;
+  total: number;
   onBrandChange: (value?: string) => void;
   onCategoryChange: (value?: string) => void;
   onSizesChange: (value: number[]) => void;
+  onAvailabilityChange: (value: "all" | "in_stock" | "out_of_stock") => void;
   onPriceMaxChange: (value: number) => void;
   onClear: () => void;
   onApply?: () => void;
@@ -27,9 +32,13 @@ export function CatalogFilters({
   category,
   sizes,
   priceMax,
+  availability,
+  facets,
+  total,
   onBrandChange,
   onCategoryChange,
   onSizesChange,
+  onAvailabilityChange,
   onPriceMaxChange,
   onClear,
   onApply,
@@ -52,24 +61,22 @@ export function CatalogFilters({
             }`}
           >
             <span className="font-fa">همه برندها</span>
-            <span className="font-mono-num text-xs opacity-70">{SHOES.length}</span>
+            <span className="font-mono-num text-xs opacity-70">{total}</span>
           </button>
-          {BRANDS.map((item) => {
-            const count = SHOES.filter((shoe) => shoe.brand === item).length;
-            if (!count) return null;
-            const active = brand === item;
+          {facets.brands.map((item) => {
+            const active = brand === item.value;
             return (
               <button
-                key={item}
+                key={item.value}
                 type="button"
                 aria-pressed={active}
-                onClick={() => onBrandChange(active ? undefined : item)}
+                onClick={() => onBrandChange(active ? undefined : item.value)}
                 className={`flex min-h-11 w-full items-center justify-between rounded-lg px-3 text-sm transition-colors ${
                   active ? "bg-neon font-bold text-ink" : "hover:bg-surface-2"
                 }`}
               >
-                <bdi dir="ltr">{item}</bdi>
-                <span className="font-mono-num text-xs opacity-70">{count}</span>
+                <bdi dir="ltr">{item.value}</bdi>
+                <span className="font-mono-num text-xs opacity-70">{item.count}</span>
               </button>
             );
           })}
@@ -89,20 +96,50 @@ export function CatalogFilters({
           >
             همه دسته‌ها
           </button>
-          {CATEGORIES.map((item) => {
-            const active = category === item.id;
+          {facets.categories.map((item) => {
+            const fallback = CATEGORIES.find((categoryItem) => categoryItem.id === item.value);
+            const active = category === item.value;
             return (
               <button
-                key={item.id}
+                key={item.value}
                 type="button"
                 aria-pressed={active}
-                onClick={() => onCategoryChange(active ? undefined : item.id)}
-                className={`flex min-h-11 w-full items-center gap-2 rounded-lg px-3 font-fa text-sm transition-colors ${
+                onClick={() => onCategoryChange(active ? undefined : item.value)}
+                className={`flex min-h-11 w-full items-center justify-between gap-2 rounded-lg px-3 font-fa text-sm transition-colors ${
                   active ? "bg-neon font-bold text-ink" : "hover:bg-surface-2"
                 }`}
               >
-                <span aria-hidden="true">{item.icon}</span>
-                {item.fa}
+                <span>{item.label ?? fallback?.fa ?? item.value}</span>
+                <span className="font-mono-num text-xs opacity-70">{item.count}</span>
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend className="eyebrow mb-3 text-neon">موجودی</legend>
+        <div className="grid gap-2">
+          {[
+            ["all", "همه محصولات"],
+            ["in_stock", "فقط موجود"],
+            ["out_of_stock", "فقط ناموجود"],
+          ].map(([value, label]) => {
+            const state = value as "all" | "in_stock" | "out_of_stock";
+            const active = availability === state;
+            return (
+              <button
+                key={state}
+                type="button"
+                aria-pressed={active}
+                onClick={() => onAvailabilityChange(state)}
+                className={`min-h-11 rounded-lg border px-3 text-start font-fa text-sm transition-colors ${
+                  active
+                    ? "border-neon bg-neon font-bold text-ink"
+                    : "border-border bg-background hover:border-neon"
+                }`}
+              >
+                {label}
               </button>
             );
           })}
@@ -114,13 +151,14 @@ export function CatalogFilters({
         <div className="grid grid-cols-4 gap-2">
           {CATALOG_SIZES.map((size) => {
             const active = sizes.includes(size);
+            const facet = facets.sizes.find((item) => Number(item.value) === size);
             return (
               <button
                 key={size}
                 type="button"
                 data-testid="catalog-size-filter"
                 data-size={size}
-                aria-label={`فیلتر سایز ${size}`}
+                aria-label={`فیلتر سایز ${size}${facet ? `، ${facet.count} محصول` : ""}`}
                 aria-pressed={active}
                 onClick={() => toggleSize(size)}
                 className={`min-h-11 rounded-lg border font-mono-num text-sm transition-colors ${

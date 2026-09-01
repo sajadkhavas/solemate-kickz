@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 
 const failures = [];
@@ -224,6 +225,33 @@ if (p02?.status === "completed") {
   }
 }
 
+const p05FormatFiles = [
+  "docs/handoffs/P05-DISCOVERY-PDP-CONVERSION.md",
+  "scripts/audit-p05-discovery-pdp.mjs",
+  "scripts/test-p05-discovery-pdp.mjs",
+  "src/catalog/catalog-state.ts",
+  "src/catalog/discovery-types.ts",
+  "src/catalog/p05-discovery.server.ts",
+  "src/catalog/production-catalog.ts",
+  "src/components/catalog/CatalogFilters.tsx",
+  "src/components/product/ProductPurchasePanel.tsx",
+  "src/routes/api.catalog.ts",
+  "src/routes/products.tsx",
+  "src/routes/product.$id.tsx",
+];
+const p05Commands = [
+  ["node", ["scripts/audit-p05-discovery-pdp.mjs"]],
+  [
+    "node",
+    ["scripts/qa/retry-gate.mjs", "--", "node", "scripts/test-p05-discovery-pdp.mjs"],
+  ],
+  ["bunx", ["prettier", "--check", ...p05FormatFiles]],
+];
+for (const [command, args] of p05Commands) {
+  const result = spawnSync(command, args, { stdio: "inherit" });
+  if (result.status !== 0) failures.push(`P05 permanent gate failed: ${command} ${args.join(" ")}`);
+}
+
 if (failures.length) {
   console.error("Production program audit failed:");
   for (const failure of failures) console.error(`- ${failure}`);
@@ -231,5 +259,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Production program audit passed: P00-P14 and accepted production boundaries are registered.",
+  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including the permanent P05 source/browser/format gate.",
 );

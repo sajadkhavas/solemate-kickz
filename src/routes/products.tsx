@@ -8,12 +8,12 @@ import {
   CATALOG_MAX_PRICE,
   type CatalogSearch,
   catalogSearchSchema,
-  filterCatalog,
   hasCatalogFilters,
   parseSizeParam,
   serialiseSizes,
 } from "@/catalog/catalog-state";
-import { catalogForRuntime } from "@/catalog/production-catalog";
+import type { DiscoveryResult } from "@/catalog/discovery-types";
+import { discoverCatalogForRuntime } from "@/catalog/production-catalog";
 import { CatalogFilters } from "@/components/catalog/CatalogFilters";
 import { QuickViewDialog } from "@/components/catalog/QuickViewDialog";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
@@ -28,20 +28,35 @@ const DEFAULT_CATALOG_SEARCH = {
   sort: "newest",
   quick: "all",
   view: "grid",
+  availability: "all",
+  page: 1,
 } as const;
 
 export const Route = createFileRoute("/products")({
-  loader: async () => ({ catalog: await catalogForRuntime(SHOES) }),
   validateSearch: zodValidator(catalogSearchSchema),
   search: {
     middlewares: [stripSearchParams(DEFAULT_CATALOG_SEARCH)],
   },
+  loaderDeps: ({ search }) => ({
+    q: search.q,
+    brand: search.brand,
+    category: search.category,
+    sizes: search.sizes,
+    priceMax: search.priceMax,
+    availability: search.availability,
+    quick: search.quick,
+    sort: search.sort,
+    page: search.page,
+  }),
+  loader: async ({ deps }) => ({
+    discovery: await discoverCatalogForRuntime({ ...deps, view: "grid" }, SHOES),
+  }),
   head: () => ({
     meta: [
       { title: "کاتالوگ کفش — SOLE" },
       {
         name: "description",
-        content: "مرور و فیلتر محصولات SOLE بر اساس برند، دسته، سایز و قیمت.",
+        content: "مرور و فیلتر محصولات SOLE بر اساس برند، دسته، سایز، موجودی و قیمت.",
       },
       { property: "og:title", content: "کاتالوگ کفش — SOLE" },
     ],
@@ -60,27 +75,26 @@ const QUICK_FILTERS = [
 function ProductsPage() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
-  const { catalog } = Route.useLoaderData() as { catalog: Shoe[] };
+  const { discovery } = Route.useLoaderData() as { discovery: DiscoveryResult };
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [quickViewShoe, setQuickViewShoe] = useState<Shoe | null>(null);
   const [quickViewOpener, setQuickViewOpener] = useState<HTMLElement | null>(null);
   const [localQuery, setLocalQuery] = useState(search.q ?? "");
   const [interactive, setInteractive] = useState(false);
 
-  useEffect(() => {
-    setInteractive(true);
-  }, []);
+  useEffect(() => setInteractive(true), []);
   useEffect(() => setLocalQuery(search.q ?? ""), [search.q]);
 
   const selectedSizes = useMemo(() => parseSizeParam(search.sizes), [search.sizes]);
-  const products = useMemo(() => filterCatalog(catalog, search), [catalog, search]);
+  const products = discovery.products;
   const activeFilters = hasCatalogFilters(search);
 
   const updateSearch = (patch: Partial<CatalogSearch>, options: { replace?: boolean } = {}) => {
+    const explicitPage = Object.prototype.hasOwnProperty.call(patch, "page");
     navigate({
       to: "/products",
       replace: options.replace,
-      search: { ...search, ...patch } as never,
+      search: { ...search, ...patch, page: explicitPage ? patch.page : 1 } as never,
     });
   };
 
@@ -91,6 +105,8 @@ function ProductsPage() {
         sort: search.sort,
         quick: "all",
         view: search.view,
+        availability: "all",
+        page: 1,
       } as never,
     });
   };
@@ -102,16 +118,16 @@ function ProductsPage() {
     updateSearch({ q: submittedQuery.trim() || undefined });
   };
 
-  const setSizeFilters = (sizes: number[]) => {
-    updateSearch({ sizes: serialiseSizes(sizes) });
-  };
+  const setSizeFilters = (sizes: number[]) => updateSearch({ sizes: serialiseSizes(sizes) });
 
   const openQuickView = (shoe: Shoe, opener: HTMLElement) => {
     setQuickViewOpener(opener);
     setQuickViewShoe(shoe);
   };
 
-  const categoryLabel = CATEGORIES.find((item) => item.id === search.category)?.fa;
+  const categoryLabel =
+    discovery.facets.categories.find((item) => item.value === search.category)?.label ??
+    CATEGORIES.find((item) => item.id === search.category)?.fa;
 
   return (
     <div className="min-h-screen bg-ink text-foreground">
@@ -125,7 +141,8 @@ function ProductsPage() {
             انتخاب <span className="text-neon">کفش</span>
           </h1>
           <p className="mt-3 max-w-2xl font-fa text-sm leading-7 text-muted-foreground sm:text-base">
-            فیلترها، مرتب‌سازی و نوع نمایش در نشانی صفحه ذخیره می‌شوند.
+            جستجو، فیلتر، مرتب‌سازی و صفحه در نشانی ذخیره می‌شوند؛ در Production نتیجه از کاتالوگ
+            رسمی سرور می‌آید.
           </p>
 
           <form
@@ -146,7 +163,7 @@ function ProductsPage() {
                 setLocalQuery("");
                 updateSearch({ q: undefined });
               }}
-              placeholder="برند، مدل، رنگ، شناسه یا برچسب"
+              placeholder="برند، مدل، رنگ یا شناسه"
               autoComplete="off"
               className="bg-surface"
             />
@@ -216,6 +233,12 @@ function ProductsPage() {
                   onRemove={() => updateSearch({ priceMax: undefined })}
                 />
               ) : null}
+              {search.availability !== "all" ? (
+                <FilterChip
+                  label={search.availability === "in_stock" ? "فقط موجود" : "فقط ناموجود"}
+                  onRemove={() => updateSearch({ availability: "all" })}
+                />
+              ) : null}
               <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
                 پاک‌کردن همه
               </Button>
@@ -233,9 +256,13 @@ function ProductsPage() {
                 category={search.category}
                 sizes={selectedSizes}
                 priceMax={search.priceMax ?? CATALOG_MAX_PRICE}
+                availability={search.availability}
+                facets={discovery.facets}
+                total={discovery.total}
                 onBrandChange={(brand) => updateSearch({ brand })}
                 onCategoryChange={(category) => updateSearch({ category })}
                 onSizesChange={setSizeFilters}
+                onAvailabilityChange={(availability) => updateSearch({ availability })}
                 onPriceMaxChange={(priceMax) =>
                   updateSearch(
                     { priceMax: priceMax === CATALOG_MAX_PRICE ? undefined : priceMax },
@@ -265,7 +292,7 @@ function ProductsPage() {
                   aria-live="polite"
                   aria-atomic="true"
                 >
-                  <span className="font-mono-num text-foreground">{products.length}</span> محصول
+                  <span className="font-mono-num text-foreground">{discovery.total}</span> محصول
                 </p>
               </div>
 
@@ -312,38 +339,90 @@ function ProductsPage() {
                   <option value="newest">جدیدترین</option>
                   <option value="price-asc">قیمت: کم به زیاد</option>
                   <option value="price-desc">قیمت: زیاد به کم</option>
-                  <option value="popular">بیشترین بازخورد داده</option>
+                  <option value="popular">چیدمان پیشنهادی فروشگاه</option>
                 </select>
               </div>
             </div>
 
-            {products.length ? (
-              <div
-                data-testid="catalog-results"
-                className={
-                  search.view === "grid"
-                    ? "grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 xl:grid-cols-3"
-                    : "space-y-4"
-                }
-              >
-                {products.map((shoe, index) => (
-                  <ShoeCard
-                    key={shoe.id}
-                    shoe={shoe}
-                    index={index}
-                    variant={search.view}
-                    onQuickView={openQuickView}
-                  />
-                ))}
-              </div>
+            {discovery.state === "unavailable" ? (
+              <EmptyState
+                title="کاتالوگ رسمی موقتاً در دسترس نیست"
+                description="برای جلوگیری از نمایش اطلاعات ساختگی، در حالت Production نتیجه محلی جایگزین نمی‌شود."
+                className="min-h-72 border border-dashed border-border bg-surface"
+              />
+            ) : products.length ? (
+              <>
+                <div
+                  data-testid="catalog-results"
+                  className={
+                    search.view === "grid"
+                      ? "grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 xl:grid-cols-3"
+                      : "space-y-4"
+                  }
+                >
+                  {products.map((shoe, index) => (
+                    <ShoeCard
+                      key={shoe.id}
+                      shoe={shoe}
+                      index={index}
+                      variant={search.view}
+                      onQuickView={openQuickView}
+                    />
+                  ))}
+                </div>
+
+                {discovery.lastPage > 1 ? (
+                  <nav
+                    aria-label="صفحه‌بندی کاتالوگ"
+                    className="mt-8 flex items-center justify-center gap-3"
+                  >
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={discovery.currentPage <= 1}
+                      onClick={() => updateSearch({ page: discovery.currentPage - 1 })}
+                    >
+                      صفحه قبل
+                    </Button>
+                    <span className="font-fa text-sm text-muted-foreground">
+                      صفحه{" "}
+                      <span className="font-mono-num text-foreground">{discovery.currentPage}</span>{" "}
+                      از <span className="font-mono-num text-foreground">{discovery.lastPage}</span>
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={discovery.currentPage >= discovery.lastPage}
+                      onClick={() => updateSearch({ page: discovery.currentPage + 1 })}
+                    >
+                      صفحه بعد
+                    </Button>
+                  </nav>
+                ) : null}
+              </>
             ) : (
               <EmptyState
                 title="محصولی با این فیلترها پیدا نشد"
-                description="فیلترها را تغییر دهید یا همه آن‌ها را پاک کنید."
+                description={
+                  discovery.recovery?.suggestedQuery
+                    ? `منظورتان «${discovery.recovery.suggestedQuery}» بود؟`
+                    : "فیلترها را تغییر دهید یا همه آن‌ها را پاک کنید."
+                }
                 action={
-                  <Button type="button" onClick={clearFilters}>
-                    نمایش همه محصولات
-                  </Button>
+                  discovery.recovery?.suggestedQuery ? (
+                    <Button
+                      type="button"
+                      onClick={() =>
+                        updateSearch({ q: discovery.recovery?.suggestedQuery ?? undefined })
+                      }
+                    >
+                      جستجوی پیشنهاد اصلاح‌شده
+                    </Button>
+                  ) : (
+                    <Button type="button" onClick={clearFilters}>
+                      نمایش همه محصولات
+                    </Button>
+                  )
                 }
                 className="min-h-72 border border-dashed border-border bg-surface"
               />
@@ -380,9 +459,13 @@ function ProductsPage() {
               category={search.category}
               sizes={selectedSizes}
               priceMax={search.priceMax ?? CATALOG_MAX_PRICE}
+              availability={search.availability}
+              facets={discovery.facets}
+              total={discovery.total}
               onBrandChange={(brand) => updateSearch({ brand })}
               onCategoryChange={(category) => updateSearch({ category })}
               onSizesChange={setSizeFilters}
+              onAvailabilityChange={(availability) => updateSearch({ availability })}
               onPriceMaxChange={(priceMax) =>
                 updateSearch(
                   { priceMax: priceMax === CATALOG_MAX_PRICE ? undefined : priceMax },

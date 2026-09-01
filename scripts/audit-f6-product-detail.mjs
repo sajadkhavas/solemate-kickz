@@ -95,12 +95,19 @@ record(
     purchase.includes("addToCart(shoe.id, selectedSize, quantity)"),
   null,
 );
-record(
-  "sold-out behavior uses only the dataset flag",
+const legacySoldOutBoundary =
   purchase.includes("shoe.isSoldOut") &&
-    !route.includes("soldOutSizes") &&
-    !route.includes("lowStock"),
-  null,
+  !route.includes("soldOutSizes") &&
+  !route.includes("lowStock");
+const p05VariantBoundary =
+  legacySoldOutBoundary &&
+  purchase.includes("richShoe.variants") &&
+  purchase.includes("selectedVariant?.availability") &&
+  purchase.includes("availableQuantity");
+record(
+  "sold-out behavior uses accepted fixture truth or P05 variant authority",
+  legacySoldOutBoundary || p05VariantBoundary,
+  { legacySoldOutBoundary, p05VariantBoundary },
 );
 record(
   "mobile purchase bar is implemented",
@@ -166,11 +173,18 @@ record(
   forbiddenClaims.every((claim) => !route.includes(claim) && !purchase.includes(claim)),
   forbiddenClaims.filter((claim) => route.includes(claim) || purchase.includes(claim)),
 );
-record(
-  "dataset boundary is explicit",
+const legacyDatasetBoundary =
   purchase.includes("Dataset فعلی اطلاعاتی درباره موجودی هر سایز") &&
-    purchase.includes("Variant مستقل موجودی نیستند"),
-  null,
+  purchase.includes("Variant مستقل موجودی نیستند");
+const p05DatasetBoundary =
+  purchase.includes("Dataset فعلی اطلاعاتی درباره موجودی هر سایز") &&
+  purchase.includes("اطلاعات رسمی محصول") &&
+  purchase.includes("richShoe.variants") &&
+  !purchase.includes("فقط ۳ جفت باقی مونده");
+record(
+  "fixture and Production product-truth boundaries are explicit",
+  legacyDatasetBoundary || p05DatasetBoundary,
+  { legacyDatasetBoundary, p05DatasetBoundary },
 );
 record(
   "phase scripts are registered",

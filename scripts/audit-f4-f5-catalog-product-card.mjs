@@ -23,6 +23,7 @@ const allowedBranch =
 const products = read("src/routes/products.tsx");
 const card = read("src/components/ShoeCard.tsx");
 const state = read("src/catalog/catalog-state.ts");
+const runtimeCatalog = read("src/catalog/production-catalog.ts");
 const filters = read("src/components/catalog/CatalogFilters.tsx");
 const quickView = read("src/components/catalog/QuickViewDialog.tsx");
 const packageJson = JSON.parse(read("package.json"));
@@ -51,11 +52,20 @@ check(
     state.includes(`${key}:`),
   ),
 );
-check(
-  "catalog uses permanent filter function over runtime catalog truth",
+const legacyRuntimeCatalog =
   products.includes("filterCatalog(catalog, search)") &&
-    products.includes("catalogForRuntime(SHOES)") &&
-    products.includes("Route.useLoaderData()"),
+  products.includes("catalogForRuntime(SHOES)") &&
+  products.includes("Route.useLoaderData()");
+const p05RuntimeCatalog =
+  products.includes("discoverCatalogForRuntime") &&
+  products.includes("loaderDeps") &&
+  products.includes("Route.useLoaderData()") &&
+  runtimeCatalog.includes("discoverCatalogForRuntime") &&
+  runtimeCatalog.includes("if (!import.meta.env.PROD)");
+check(
+  "catalog uses permanent runtime catalog truth boundary",
+  legacyRuntimeCatalog || p05RuntimeCatalog,
+  { legacyRuntimeCatalog, p05RuntimeCatalog },
 );
 check(
   "sizes are serialized in URL",
