@@ -55,14 +55,26 @@ for (const marker of [
   if (!runtime.includes(marker)) failures.push(`P05 runtime boundary missing ${marker}`);
 }
 
-for (const marker of ["loaderDeps", "availability", "suggestedQuery", "lastPage", "چیدمان پیشنهادی فروشگاه"]) {
+for (const marker of [
+  "loaderDeps",
+  "availability",
+  "suggestedQuery",
+  "lastPage",
+  "چیدمان پیشنهادی فروشگاه",
+]) {
   if (!catalogRoute.includes(marker)) failures.push(`P05 catalog route missing ${marker}`);
 }
 if (catalogRoute.includes("بیشترین بازخورد داده")) {
   failures.push("P05 must not label merchandising priority as customer popularity");
 }
 
-for (const marker of ["فقط موجود", "فقط ناموجود", "facets.brands", "facets.categories", "facets.sizes"]) {
+for (const marker of [
+  "فقط موجود",
+  "فقط ناموجود",
+  "facets.brands",
+  "facets.categories",
+  "facets.sizes",
+]) {
   if (!filters.includes(marker)) failures.push(`P05 filter UI missing ${marker}`);
 }
 
@@ -71,7 +83,8 @@ for (const marker of [
   "registerBackInStockForRuntime",
   "رضایت می‌دهم",
   "ارسال اعلان در P09",
-  "socialProof",
+  "decisionSupport",
+  "امتیاز و نظر: تا وجود شواهد تأییدشده P08 نمایش داده نمی‌شود",
   "زمان یا وعده‌ای بدون داده معتبر",
 ]) {
   if (!purchase.includes(marker)) failures.push(`P05 PDP conversion boundary missing ${marker}`);
@@ -80,7 +93,12 @@ for (const marker of [
 if (!productRoute.includes("relatedCatalogForRuntime")) {
   failures.push("P05 PDP must use authoritative related inventory in production");
 }
-for (const marker of ["Cache-Control", "no-store", "back_in_stock", "registerProductionBackInStock"]) {
+for (const marker of [
+  "Cache-Control",
+  "no-store",
+  "back_in_stock",
+  "registerProductionBackInStock",
+]) {
   if (!apiRoute.includes(marker)) failures.push(`P05 BFF route missing ${marker}`);
 }
 
