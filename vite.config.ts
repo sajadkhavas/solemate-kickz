@@ -16,13 +16,46 @@ const isProductionBuild = isNodeServerBuild || isExplicitProductionBuild;
 const productionCatalogModule = fileURLToPath(
   new URL("./src/data/production-shoes.ts", import.meta.url),
 );
+const productionAuthRouteModule = fileURLToPath(
+  new URL("./src/auth/production-auth-route.tsx", import.meta.url),
+);
+const productionAccountRouteModule = fileURLToPath(
+  new URL("./src/auth/production-account-route.tsx", import.meta.url),
+);
+const productionNavbarModule = fileURLToPath(
+  new URL("./src/auth/ProductionNavbar.tsx", import.meta.url),
+);
+const productionFooterModule = fileURLToPath(
+  new URL("./src/auth/ProductionFooter.tsx", import.meta.url),
+);
+const productionMobileBottomNavModule = fileURLToPath(
+  new URL("./src/auth/ProductionMobileBottomNav.tsx", import.meta.url),
+);
 
-const productionCatalogGuard = {
-  name: "sole-production-catalog-guard",
+function isProductionCustomerPage(importer?: string) {
+  return (
+    importer?.includes("/src/auth/ProductionAuthPage.tsx") ||
+    importer?.includes("/src/auth/ProductionAccountPage.tsx")
+  );
+}
+
+const productionTruthGuard = {
+  name: "sole-production-truth-guard",
   enforce: "pre" as const,
-  resolveId(source: string) {
-    if (isProductionBuild && source === "@/data/shoes") {
-      return productionCatalogModule;
+  resolveId(source: string, importer?: string) {
+    if (!isProductionBuild) return null;
+
+    if (source === "@/data/shoes") return productionCatalogModule;
+
+    if (importer?.includes("/src/routeTree.gen.ts")) {
+      if (source === "./routes/auth") return productionAuthRouteModule;
+      if (source === "./routes/account") return productionAccountRouteModule;
+    }
+
+    if (isProductionCustomerPage(importer)) {
+      if (source === "@/components/Navbar") return productionNavbarModule;
+      if (source === "@/components/sections/Footer") return productionFooterModule;
+      if (source === "@/components/MobileBottomNav") return productionMobileBottomNavModule;
     }
 
     return null;
@@ -30,10 +63,27 @@ const productionCatalogGuard = {
 };
 
 export default defineConfig({
-  // Local development and browser QA retain their deterministic fixture catalog.
-  // Production builds resolve the same import to a fail-closed module with no product truth.
+  // Local development and browser QA retain deterministic fixture catalog/account surfaces.
+  // Production builds replace product truth and auth/account routes with backend-authoritative modules.
   vite: {
-    plugins: [productionCatalogGuard],
+    plugins: [productionTruthGuard],
+    build: {
+      rolldownOptions: {
+        output: {
+          codeSplitting: {
+            groups: [
+              {
+                name: "shared",
+                minShareCount: 2,
+                minSize: 20_000,
+                entriesAware: true,
+                priority: 5,
+              },
+            ],
+          },
+        },
+      },
+    },
   },
   // Keep Lovable's normal preview/build behavior unchanged. Self-hosted VPS builds
   // opt in explicitly through `bun run build:vps`, which sets SOLE_DEPLOY_TARGET.

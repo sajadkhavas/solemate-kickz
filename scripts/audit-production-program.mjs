@@ -100,7 +100,8 @@ for (const [index, phase] of (registry?.phases ?? []).entries()) {
 }
 
 for (const field of ["START_SHA", "END_SHA", "QA_RESULT", "ROLLBACK_IMPACT"]) {
-  if (!registry?.requiredPhaseEvidence?.includes(field)) failures.push(`phase evidence missing ${field}`);
+  if (!registry?.requiredPhaseEvidence?.includes(field))
+    failures.push(`phase evidence missing ${field}`);
 }
 for (const field of [
   "CURRENT_SHA",
@@ -109,7 +110,8 @@ for (const field of [
   "ROLLBACK_TARGET",
   "HEALTH_CHECK_RESULT",
 ]) {
-  if (!registry?.requiredReleaseEvidence?.includes(field)) failures.push(`release evidence missing ${field}`);
+  if (!registry?.requiredReleaseEvidence?.includes(field))
+    failures.push(`release evidence missing ${field}`);
 }
 
 if (!/KillMode=control-group/.test(service)) {
@@ -130,7 +132,10 @@ for (const [name, source] of [
 if (!/Production program contract audit[\s\S]*audit:production-program/.test(workflow)) {
   failures.push("CI must run the production program audit");
 }
-if (pkg?.scripts?.["audit:production-program"] !== "node scripts/audit-production-program.mjs") {
+if (
+  pkg?.scripts?.["audit:production-program"] !==
+  "node scripts/audit-production-program.mjs && bun run audit:p03"
+) {
   failures.push("package script audit:production-program is missing");
 }
 
@@ -146,7 +151,7 @@ if (p01) {
     if (!p01Handoff.includes(marker)) failures.push(`P01 handoff missing ${marker}`);
   }
   if (
-    !viteConfig.includes("sole-production-catalog-guard") ||
+    !viteConfig.includes("sole-production-truth-guard") ||
     !viteConfig.includes('source === "@/data/shoes"')
   ) {
     failures.push("production build must redirect the development shoe dataset");
@@ -154,9 +159,16 @@ if (p01) {
   if (!productionCatalog.includes("export const SHOES: Shoe[] = []")) {
     failures.push("production catalog fixture boundary must remain fail closed");
   }
-  for (const forbidden of ["Silver Bullet", "Air Max 97", "SOLE-0001", "images.unsplash.com/photo-"]) {
+  for (const forbidden of [
+    "Silver Bullet",
+    "Air Max 97",
+    "SOLE-0001",
+    "images.unsplash.com/photo-",
+  ]) {
     if (productionCatalog.includes(forbidden)) {
-      failures.push(`production catalog contains forbidden development product truth: ${forbidden}`);
+      failures.push(
+        `production catalog contains forbidden development product truth: ${forbidden}`,
+      );
     }
   }
   for (const marker of ["/v1/catalog/products", "price_minor", "available_quantity"]) {
@@ -182,13 +194,7 @@ if (p02?.status === "completed") {
   for (const marker of ["P02.1", "P02.2", "P02.3", "P02.4", "P02.5", "P02.6"]) {
     if (!p02Handoff.includes(marker)) failures.push(`P02 handoff missing ${marker}`);
   }
-  for (const marker of [
-    "version: 1.1.0",
-    "MediaSource:",
-    "CatalogMedia:",
-    "sha256",
-    "media:",
-  ]) {
+  for (const marker of ["version: 1.1.0", "MediaSource:", "CatalogMedia:", "sha256", "media:"]) {
     if (!catalogOpenapi.includes(marker)) failures.push(`P02 catalog OpenAPI missing ${marker}`);
   }
   for (const marker of [
@@ -224,4 +230,6 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Production program audit passed: P00-P14 and accepted production boundaries are registered.");
+console.log(
+  "Production program audit passed: P00-P14 and accepted production boundaries are registered.",
+);
