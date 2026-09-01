@@ -52,10 +52,12 @@ for (const marker of [
   "crypto.randomUUID",
   "getAddresses",
   "ثبت سفارش و رزرو موجودی",
-  "پرداخت هنوز فعال نیست",
-  "P07",
+  "getCommerceShippingQuotes",
+  "verifyCommercePayment",
 ])
-  if (!checkout.includes(marker)) failures.push(`P06 checkout UI missing ${marker}`);
+  if (!checkout.includes(marker)) failures.push(`P06/P07 checkout UI missing ${marker}`);
+if (!checkout.includes('verified.status !== "paid"'))
+  failures.push("P06/P07 checkout must reject a callback that Backend did not verify as paid");
 for (const marker of ["getCommerceOrders", "CommerceOrder", "reservation_expires_at"])
   if (!account.includes(marker) && marker !== "reservation_expires_at")
     failures.push(`P06 order account missing ${marker}`);
