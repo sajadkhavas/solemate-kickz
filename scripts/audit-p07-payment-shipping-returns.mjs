@@ -36,7 +36,8 @@ for (const marker of [
 
 const refundStart = api.indexOf("export const requestCommerceRefund");
 const refundEnd = api.indexOf("export async function getCommerceOrders", refundStart);
-const refundSlice = refundStart >= 0 && refundEnd > refundStart ? api.slice(refundStart, refundEnd) : "";
+const refundSlice =
+  refundStart >= 0 && refundEnd > refundStart ? api.slice(refundStart, refundEnd) : "";
 if (!refundSlice || /amount_minor|amountMinor/.test(refundSlice))
   failures.push("P07 browser refund request must not submit a monetary amount");
 
@@ -87,9 +88,14 @@ for (const marker of [
 ])
   if (!orders.includes(marker)) failures.push(`P07 order lifecycle surface missing ${marker}`);
 if (/name=["']amount/.test(orders) || /amount_minor\s*:/.test(orders))
-  failures.push("P07 order lifecycle surface must not expose a client-controlled refund amount field");
+  failures.push(
+    "P07 order lifecycle surface must not expose a client-controlled refund amount field",
+  );
 
-if (!accountRoute.includes('section === "orders"') || !accountRoute.includes("ProductionOrdersPage"))
+if (
+  !accountRoute.includes('section === "orders"') ||
+  !accountRoute.includes("ProductionOrdersPage")
+)
   failures.push("P07 production account route must surface authoritative lifecycle orders");
 
 for (const marker of ["P07.1", "P07.2", "P07.3", "P07.4", "P07.5", "P07.6", "P07.7"])

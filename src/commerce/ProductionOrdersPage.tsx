@@ -1,5 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { CreditCard, MapPin, PackageCheck, RotateCcw, ShieldCheck, Truck, UserRound } from "lucide-react";
+import {
+  CreditCard,
+  MapPin,
+  PackageCheck,
+  RotateCcw,
+  ShieldCheck,
+  Truck,
+  UserRound,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getCustomerSession, type CustomerSession } from "@/auth/customer-auth";
@@ -70,14 +78,19 @@ export function ProductionOrdersPage({ orderId }: { orderId?: string }) {
         `درخواست بازپرداخت ${formatMinor(refund.amount_minor, selected.currency)} ثبت شد. مبلغ توسط Backend محاسبه شده و اجرای پولی Provider جداگانه کنترل می‌شود.`,
       );
     } catch {
-      setStatus("درخواست بازپرداخت ثبت نشد؛ پرداخت تأییدشده یا مبلغ قابل بازپرداخت باقی نمانده است.");
+      setStatus(
+        "درخواست بازپرداخت ثبت نشد؛ پرداخت تأییدشده یا مبلغ قابل بازپرداخت باقی نمانده است.",
+      );
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground" data-testid="p07-production-orders-page">
+    <div
+      className="min-h-screen bg-background text-foreground"
+      data-testid="p07-production-orders-page"
+    >
       <ProductionNavbar />
       <main className="px-[var(--space-page-gutter)] py-10 pb-[calc(var(--safe-bottom-nav)+env(safe-area-inset-bottom)+3rem)] md:py-16">
         <section className="mx-auto max-w-[1280px]">
@@ -160,7 +173,9 @@ function AccountNav() {
             search={{ section }}
             aria-current={section === "orders" ? "page" : undefined}
             className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm ${
-              section === "orders" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-interactive"
+              section === "orders"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:bg-interactive"
             }`}
           >
             <Icon className="size-4" aria-hidden="true" />
@@ -201,7 +216,9 @@ function OrderList({ orders }: { orders: CommerceOrder[] }) {
                   <bdi dir="ltr">{order.id}</bdi>
                 </strong>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  سفارش: {statusLabel(order.status)} · پرداخت: {order.payment?.status ?? "شروع نشده"} · ارسال: {order.shipment?.status ?? "شروع نشده"}
+                  سفارش: {statusLabel(order.status)} · پرداخت:{" "}
+                  {order.payment?.status ?? "شروع نشده"} · ارسال:{" "}
+                  {order.shipment?.status ?? "شروع نشده"}
                 </p>
               </div>
               <strong>{formatMinor(order.total_minor, order.currency)}</strong>
@@ -238,7 +255,11 @@ function OrderDetail({
 }) {
   const delivered = order.status === "fulfilled" && order.shipment?.status === "delivered";
   const returnExists = Boolean(order.return);
-  const refundable = Boolean(order.payment?.status === "paid") && !order.refunds.some((item) => ["requested", "processing", "manual_review", "completed"].includes(item.status));
+  const refundable =
+    Boolean(order.payment?.status === "paid") &&
+    !order.refunds.some((item) =>
+      ["requested", "processing", "manual_review", "completed"].includes(item.status),
+    );
 
   return (
     <section className="space-y-6" data-testid="p07-order-lifecycle">
@@ -251,9 +272,17 @@ function OrderDetail({
         </h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <TruthCard icon={<PackageCheck />} title="سفارش" value={statusLabel(order.status)} />
-          <TruthCard icon={<CreditCard />} title="پرداخت" value={order.payment?.status ?? "شروع نشده"} />
+          <TruthCard
+            icon={<CreditCard />}
+            title="پرداخت"
+            value={order.payment?.status ?? "شروع نشده"}
+          />
           <TruthCard icon={<Truck />} title="ارسال" value={order.shipment?.status ?? "شروع نشده"} />
-          <TruthCard icon={<RotateCcw />} title="مرجوعی" value={order.return?.status ?? "ثبت نشده"} />
+          <TruthCard
+            icon={<RotateCcw />}
+            title="مرجوعی"
+            value={order.return?.status ?? "ثبت نشده"}
+          />
         </div>
         {order.shipment?.tracking_number ? (
           <p className="mt-5 rounded-xl border border-border p-3 text-sm">
@@ -326,7 +355,9 @@ function OrderDetail({
       {returnExists ? (
         <div className="rounded-2xl border border-border bg-surface p-6">
           <h3 className="text-xl font-black">مرجوعی</h3>
-          <p className="mt-2 text-sm text-muted-foreground">وضعیت ثبت‌شده: {order.return?.status}</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            وضعیت ثبت‌شده: {order.return?.status}
+          </p>
         </div>
       ) : null}
 
@@ -334,7 +365,8 @@ function OrderDetail({
         <div className="rounded-2xl border border-warning/40 bg-warning/5 p-6">
           <h3 className="text-xl font-black">درخواست بازپرداخت</h3>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            مبلغ از Client ارسال نمی‌شود؛ Backend remaining refundable amount را از پرداخت تأییدشده محاسبه می‌کند. ثبت درخواست به معنی اجرای پولی Provider نیست.
+            مبلغ از Client ارسال نمی‌شود؛ Backend remaining refundable amount را از پرداخت تأییدشده
+            محاسبه می‌کند. ثبت درخواست به معنی اجرای پولی Provider نیست.
           </p>
           <label className="mt-4 block text-sm font-medium">
             دلیل
@@ -361,7 +393,10 @@ function OrderDetail({
           <h3 className="text-xl font-black">بازپرداخت‌ها</h3>
           <div className="mt-4 space-y-3">
             {order.refunds.map((refund) => (
-              <div key={refund.id} className="flex flex-wrap justify-between gap-3 rounded-xl border border-border p-4 text-sm">
+              <div
+                key={refund.id}
+                className="flex flex-wrap justify-between gap-3 rounded-xl border border-border p-4 text-sm"
+              >
                 <span>{refund.status}</span>
                 <strong>{formatMinor(refund.amount_minor, order.currency)}</strong>
               </div>
@@ -373,7 +408,15 @@ function OrderDetail({
   );
 }
 
-function TruthCard({ icon, title, value }: { icon: React.ReactNode; title: string; value: string }) {
+function TruthCard({
+  icon,
+  title,
+  value,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  value: string;
+}) {
   return (
     <div className="rounded-xl border border-border p-4">
       <div className="flex items-center gap-2 text-primary">{icon}</div>

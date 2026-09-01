@@ -35,11 +35,7 @@ type PaymentCallback = {
   Status?: string;
 };
 
-export function ProductionCheckoutPage({
-  paymentCallback,
-}: {
-  paymentCallback: PaymentCallback;
-}) {
+export function ProductionCheckoutPage({ paymentCallback }: { paymentCallback: PaymentCallback }) {
   const [session, setSession] = useState<CustomerSession | null>();
   const [addresses, setAddresses] = useState<CustomerAddress[]>([]);
   const [cart, setCart] = useState<CommerceCart | null>();
@@ -300,7 +296,9 @@ export function ProductionCheckoutPage({
                     ))}
                   </fieldset>
                 ) : addressId ? (
-                  <p className="mt-4 text-sm text-muted-foreground">روش ارسال معتبری دریافت نشده است.</p>
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    روش ارسال معتبری دریافت نشده است.
+                  </p>
                 ) : null}
               </div>
             </section>
@@ -309,8 +307,8 @@ export function ProductionCheckoutPage({
               <ShieldCheck className="size-6 text-primary" />
               <h2 className="mt-3 text-xl font-bold">تأیید سروری</h2>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                Checkout فقط quote معتبر همین سبد، مشتری و آدرس را مصرف می‌کند. هزینه ارسال از Client
-                قابل تغییر نیست.
+                Checkout فقط quote معتبر همین سبد، مشتری و آدرس را مصرف می‌کند. هزینه ارسال از
+                Client قابل تغییر نیست.
               </p>
               <dl className="mt-5 space-y-2 text-sm">
                 <div className="flex justify-between gap-3">
@@ -322,7 +320,9 @@ export function ProductionCheckoutPage({
                 <div className="flex justify-between gap-3">
                   <dt>ارسال انتخاب‌شده</dt>
                   <dd className="font-bold">
-                    {selectedQuote ? formatMinor(selectedQuote.amount_minor, selectedQuote.currency) : "—"}
+                    {selectedQuote
+                      ? formatMinor(selectedQuote.amount_minor, selectedQuote.currency)
+                      : "—"}
                   </dd>
                 </div>
               </dl>
@@ -407,8 +407,8 @@ export function ProductionCheckoutPage({
           <section className="mt-10 rounded-2xl border border-border bg-surface p-8 text-center">
             <h2 className="text-2xl font-black">نتیجه پرداخت هنوز قطعی نیست</h2>
             <p className="mt-3 text-sm leading-7 text-muted-foreground">
-              اگر Verify سروری موفق نباشد، SOLE هرگز صرفاً بر اساس پارامترهای URL پرداخت را موفق اعلام
-              نمی‌کند.
+              اگر Verify سروری موفق نباشد، SOLE هرگز صرفاً بر اساس پارامترهای URL پرداخت را موفق
+              اعلام نمی‌کند.
             </p>
             <Button asChild variant="outline" className="mt-5">
               <Link to="/account" search={{ section: "orders" }}>
@@ -424,7 +424,8 @@ export function ProductionCheckoutPage({
 
 function etaLabel(quote: CommerceShippingQuote): string {
   if (quote.eta_min_days === null && quote.eta_max_days === null) return "زمان تحویل اعلام نشده";
-  if (quote.eta_min_days === quote.eta_max_days) return `${quote.eta_min_days ?? quote.eta_max_days} روز`;
+  if (quote.eta_min_days === quote.eta_max_days)
+    return `${quote.eta_min_days ?? quote.eta_max_days} روز`;
   if (quote.eta_min_days === null) return `حداکثر ${quote.eta_max_days} روز`;
   if (quote.eta_max_days === null) return `حداقل ${quote.eta_min_days} روز`;
   return `${quote.eta_min_days} تا ${quote.eta_max_days} روز`;

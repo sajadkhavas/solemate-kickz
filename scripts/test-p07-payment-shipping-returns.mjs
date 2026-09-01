@@ -10,13 +10,15 @@ const files = {
 };
 const refundStart = files.api.indexOf("export const requestCommerceRefund");
 const refundEnd = files.api.indexOf("export async function getCommerceOrders", refundStart);
-const refundSlice = refundStart >= 0 && refundEnd > refundStart ? files.api.slice(refundStart, refundEnd) : "";
+const refundSlice =
+  refundStart >= 0 && refundEnd > refundStart ? files.api.slice(refundStart, refundEnd) : "";
 
 const results = [
   [
     "Provider webhook is not reachable through the storefront BFF",
-    files.proxy.includes("Provider webhooks are intentionally not proxied through the storefront") &&
-      !files.proxy.includes('splat === "shipping/provider-events"'),
+    files.proxy.includes(
+      "Provider webhooks are intentionally not proxied through the storefront",
+    ) && !files.proxy.includes('splat === "shipping/provider-events"'),
   ],
   [
     "Payment callback is validated and verified by Backend before paid UI",
