@@ -14,7 +14,7 @@
     "start:vps": "node .output/server/index.mjs",
     "smoke:vps": "node scripts/deployment/smoke-node-server.mjs",
     "audit:deploy": "node scripts/audit-deployment-readiness.mjs",
-    "audit:production-program": "node scripts/audit-production-program.mjs && bun run audit:p03",
+    "audit:production-program": "node scripts/audit-production-program.mjs && bun run audit:p03 && bun run audit:p04",
     "validate:env": "node scripts/deployment/validate-environment.mjs",
     "health:release": "node scripts/deployment/health-check-release.mjs",
     "audit:p00": "node scripts/audit-p00-production-foundation.mjs",
@@ -79,7 +79,9 @@
     "audit:f18": "node scripts/audit-f18-final-acceptance.mjs",
     "format:f18": "prettier --write .github/workflows/frontend-ci.yml docs/handoffs/F18-FINAL-FRONTEND-ACCEPTANCE.md package.json scripts/audit-f14-pwa.mjs scripts/audit-f15-push-consent.mjs scripts/audit-f16-commerce-contract.mjs scripts/audit-f17-production-content.mjs scripts/audit-f18-final-acceptance.mjs scripts/verify-cumulative-quality.mjs",
     "format:f17": "prettier --write .github/workflows/frontend-ci.yml content/production-content.json contracts/production-content.schema.json docs/content/PRODUCTION-CONTENT-CONTRACT.md docs/handoffs/F17-PRODUCTION-CONTENT-CONTRACT.md package.json scripts/audit-f17-production-content.mjs scripts/verify-cumulative-quality.mjs",
-    "audit:p03": "node scripts/audit-p03-auth-customer-security.mjs"
+    "audit:p03": "node scripts/audit-p03-auth-customer-security.mjs",
+    "audit:p04": "node scripts/audit-p04-size-fit-intelligence.mjs",
+    "format:p04": "prettier --write .github/workflows/frontend-ci.yml package.json scripts/audit-p04-size-fit-intelligence.mjs src/catalog/production-catalog.server.ts src/components/product/ProductPurchasePanel.tsx src/components/product/SizeGuideDialog.tsx src/data/shoes.ts"
   },
   "dependencies": {
     "@google/model-viewer": "^3.5.0",

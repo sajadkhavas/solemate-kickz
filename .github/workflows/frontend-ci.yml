@@ -139,6 +139,9 @@ jobs:
       - name: Production program contract audit
         run: bun run audit:production-program
 
+      - name: P04 size and fit intelligence audit
+        run: bun run audit:p04
+
       - name: P00 production foundation audit
         run: bun run audit:p00
 

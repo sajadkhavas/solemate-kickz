@@ -144,7 +144,9 @@ record(
 );
 record(
   "size guide avoids fabricated conversion data",
-  sizeGuide.includes("نمودار رسمی") && !sizeGuide.includes("<table"),
+  sizeGuide.includes('sizeGuide?: Shoe["sizeGuide"]') &&
+    sizeGuide.includes("برای این مدل هنوز جدول منبع‌دار منتشر نشده است") &&
+    !sizeGuide.includes("<table"),
   null,
 );
 
