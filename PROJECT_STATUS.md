@@ -2,7 +2,12 @@
 
 **Repository:** `sajadkhavas/solemate-kickz`  
 **Status last reconciled:** 2026-09-02
-**Current accepted frontend phase:** P08 — Trust, Support & Post-purchase
+**Current accepted frontend phase:** P09 — Loyalty, CRM & Notifications
+**P09 START_SHA:** `d92aa3affe02b24ce40a3ed6062e8c333087b806`
+**P09 accepted implementation END_SHA:** `11e84a91da8c516504389f4f3374eb014cb707a7`
+**P09 accepted implementation CI:** Frontend CI #1247 / run `33636810572` — PASS (all 137 steps)
+**Frontend P09 implementation merge:** `2a0802624ebd2e477d6c0cf89dce27bf25d8e6ed`
+**Backend final P09 main:** `6b9fef79ee0585423b7f763974f87c82a67c9cf1`
 **P08 START_SHA:** `613af206925eafa68f847ad2ebe5e46d0fa1a17a`
 **P08 accepted implementation END_SHA:** `941192bcb19d6cd157ab6ba89926a90595284209`
 **P08 accepted implementation CI:** Frontend CI #1221 / run `33601208706` — PASS
@@ -83,6 +88,7 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 | P06                  | Cart, checkout and orders            | frontend accepted `cbb5c014a22878f0efde05fccbf3995e89c5570a`, CI `33532454934`; backend exact-head CI `33530472189`; backend merge `269616149acbd8977fd55c2bfde6fd65bffbe45a`; frontend PR #45; backend PR #10; issue #44                                        | Completed |
 | P07                  | Payment, shipping and returns        | frontend accepted `f9ecafa36065fc3349cb283889e0618b25c119d6`, CI `33555570220`; focused CI `33552361775`; backend CI `33551751760`; backend merge `0abe7ce7c6cea34107f15d0d67e046942e428fcb`; frontend PR #48; backend PR #11; issue #47                         | Completed |
 | P08                  | Trust, support and post-purchase     | frontend accepted `941192bcb19d6cd157ab6ba89926a90595284209`, CI `33601208706`; backend CI `33601878601`; backend merge `63409594be2b60083401c997fe71bbacb7209e5f`; frontend PR #51; backend PR #12; issue #50                                                   | Completed |
+| P09                  | Loyalty, CRM and notifications       | frontend accepted `11e84a91da8c516504389f4f3374eb014cb707a7`, CI `33636810572`; backend CI `33611927354`; backend merge `6b9fef79ee0585423b7f763974f87c82a67c9cf1`; frontend PR #56; backend PR #13; issue #55                                                   | Completed |
 
 ### P03 accepted outcomes
 
@@ -154,11 +160,25 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 - Live gateway refund, external carrier activation and credentials remain fail-closed; no Production charge/refund/deploy/data mutation occurred.
 - P07 is permanently chained into the single cumulative quality workflow and its report is required by aggregate evidence; Backend run `33551751760` and Frontend run `33555570220` passed with unchanged F12 budgets.
 
-P09–P14 remain: **6 phases and 38 planned steps**.
+### P08 accepted outcomes
+
+- Governed trust facts, owner-scoped support cases, authoritative tracking and truthful transactional communication are durable and backend-owned.
+- Verified reviews remain private until moderation; live delivery providers and unsupported policy claims fail closed.
+- Backend run `33601878601` and Frontend run `33601208706` passed with unchanged F12 budgets.
+
+### P09 accepted outcomes
+
+- Authenticated wishlist truth is durable, owner-scoped and backend-authoritative; legacy local state migrates only after backend acceptance.
+- Notification consent, unsubscribe, channel preferences, quiet hours and frequency caps are explicit and backend-owned.
+- Back-in-stock, price-drop and lifecycle signals originate only from authoritative facts and use durable outbox/audit records.
+- External delivery fails closed without provider evidence; no live provider or credential was activated.
+- Loyalty uses an idempotent earn/redeem/release/expire ledger with transaction locking, server-derived balance/history and adversarial overspend/replay coverage.
+- P09 is permanently chained into cumulative Frontend CI; Backend run `33611927354` and Frontend run `33636810572` passed with unchanged F12 budgets.
+
+P10–P14 remain: **5 phases and 32 planned steps**.
 
 | Phase | Scope                           | Planned steps | Depends on | Server required?         |
 | ----- | ------------------------------- | ------------: | ---------- | ------------------------ |
-| P09   | Loyalty, CRM and notifications  |             6 | P03, P07   | No                       |
 | P10   | SEO, content and merchant feeds |             6 | P02, P08   | No                       |
 | P11   | Observability, RUM and CRO      |             6 | P07, P10   | No                       |
 | P12   | Production readiness            |             7 | P00–P11    | **Activate server here** |
@@ -208,9 +228,9 @@ Mandatory handoff fields remain: `PHASE`, `STATUS`, `START_SHA`, `END_SHA`, `BRA
 
 ## 8. Next action
 
-**P09 — Loyalty, CRM & Notifications** is the next registered phase.
+**P10 — SEO, Content & Merchant** is the next registered phase.
 
-At P09 start, verify and record the live frontend `main` after the P08 final-record documentation merge; use backend `main` SHA `63409594be2b60083401c997fe71bbacb7209e5f` as the exact backend baseline. P09 owns consent-aware wishlist, back-in-stock delivery orchestration and loyalty ledger work; Production activation remains deferred.
+At P10 start, verify and record the live frontend `main` after the P09 closure merge and backend `main` `6b9fef79ee0585423b7f763974f87c82a67c9cf1`. P10 owns governed content, route SEO, schema/sitemaps/redirects and verified merchant-feed readiness; Production activation remains deferred.
 
 ## 9. Acceptance baseline
 
@@ -221,3 +241,7 @@ Frontend accepted implementation `395fd1bd3d683f3fa8633b9a58d2a67a5195af5b` pass
 P06 backend exact head `752e044337b24cbc4b3c1e84f72d466bc186a1ce` passed Backend quality #36 / run `33530472189` and merged through PR #10 as `269616149acbd8977fd55c2bfde6fd65bffbe45a`. Frontend accepted implementation `cbb5c014a22878f0efde05fccbf3995e89c5570a` passed full Frontend CI #1181 / run `33532454934`; closure head `b520b51fffb2fc020c21e66eb1cee8396dd3d726` passed CI #1183 / run `33533963751`, PR #45 merged as `93d145deac79aebcdfd406f44aefc0da170cb494`, and issue #44 closed as completed.
 
 P07 backend exact head `63ce16267a489f56736419edeac3f683125dc2da` passed Backend Quality #44 / run `33551751760` and merged through PR #11 as `0abe7ce7c6cea34107f15d0d67e046942e428fcb`. Focused Frontend P07 Gate #11 / run `33552361775` passed before its temporary workflow was retired; final frontend implementation `f9ecafa36065fc3349cb283889e0618b25c119d6` passed permanent cumulative Frontend CI #1214 / run `33555570220`. Closure head `f17d96180c2248ccae1d1a617cf99a2307ca6376` passed CI #1216 / run `33557739574`; PR #48 merged as `caa1c0baf5a20f56251b87fab995cac4f508f1d0`, and issue #47 closed as completed.
+
+P08 backend exact head `a9ab4df60160963bb998cfc3be10cac54a774a87` passed Backend Quality #50 / run `33601878601` and merged through PR #12 as `63409594be2b60083401c997fe71bbacb7209e5f`. Frontend implementation `941192bcb19d6cd157ab6ba89926a90595284209` passed all 137 steps in Frontend CI #1221 / run `33601208706`; closure CI #1223 / run `33602638893` passed, PR #51 merged as `846101e7480d09903efd879c8db61b1b375b98e5`, and issue #50 closed as completed.
+
+P09 backend exact head `293f6432e790a9874b979ae30961fb9cd258bad7` passed Backend Quality #54 / run `33611927354` and merged through PR #13 as `6b9fef79ee0585423b7f763974f87c82a67c9cf1`. Frontend implementation `11e84a91da8c516504389f4f3374eb014cb707a7` passed all 137 steps in Frontend CI #1247 / run `33636810572` and merged through PR #56 as `2a0802624ebd2e477d6c0cf89dce27bf25d8e6ed` with zero unresolved review threads. Final closure CI/merge evidence is recorded in the P09 handoff and tracking issue #55.
