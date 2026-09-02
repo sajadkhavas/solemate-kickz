@@ -259,6 +259,8 @@
       "backendQualityRun": "33601878601",
       "backendPullRequest": "https://github.com/sajadkhavas/sole-backend/pull/12",
       "frontendQualityRun": "33601208706",
+      "frontendClosureQualityRun": "33602638893",
+      "frontendMergeSha": "846101e7480d09903efd879c8db61b1b375b98e5",
       "frontendPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/51",
       "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/50",
       "performanceContract": "Accepted F12 limits remain unchanged; P08 remains inside the route-split account and order surfaces and does not expand the global shell.",
