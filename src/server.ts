@@ -3,6 +3,7 @@ import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 import { createSeoInfrastructureResponse, withErrorNoindex } from "./seo/seo-server";
+import { createP10InfrastructureResponse } from "./seo/p10-seo-infrastructure";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -50,6 +51,8 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
 
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    const p10Response = await createP10InfrastructureResponse(request);
+    if (p10Response) return p10Response;
     const infrastructureResponse = createSeoInfrastructureResponse(request);
     if (infrastructureResponse) return infrastructureResponse;
 

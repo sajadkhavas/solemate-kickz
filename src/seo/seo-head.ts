@@ -146,7 +146,57 @@ function utilityHead(pathname: UtilityPath): HeadResult {
   };
 }
 
-function productHead(id: string): HeadResult {
+type AuthoritativeProductHead = {
+  shoe?: {
+    id: number;
+    slug?: string;
+    name: string;
+    brand: string;
+    colorway: string;
+    image: string;
+    images: string[];
+    sku: string;
+  };
+};
+
+function productHead(id: string, loaderData?: AuthoritativeProductHead): HeadResult {
+  const authoritative = loaderData?.shoe;
+  if (authoritative?.slug) {
+    const title = `${authoritative.brand} ${authoritative.name} — SOLE`;
+    const description = `${authoritative.brand} ${authoritative.name}، رنگ ${authoritative.colorway}؛ جزئیات محصول منتشرشده در کاتالوگ رسمی SOLE.`;
+    const canonical = toSiteUrl(`/product/${authoritative.id}`);
+    const meta: Array<Record<string, string>> = [
+      { title },
+      { name: "description", content: description },
+      { name: "robots", content: canonical ? "index, follow" : "noindex, follow" },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: authoritative.image },
+      { name: "twitter:card", content: "summary_large_image" },
+    ];
+    const links = canonical ? [{ rel: "canonical", href: canonical }] : [];
+    if (canonical) meta.push({ property: "og:url", content: canonical });
+    const scripts = canonical
+      ? [
+          {
+            type: "application/ld+json",
+            children: safeJsonLd({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              name: authoritative.name,
+              sku: authoritative.sku,
+              brand: { "@type": "Brand", name: authoritative.brand },
+              color: authoritative.colorway,
+              image: authoritative.images,
+              url: canonical,
+            }),
+          },
+        ]
+      : [];
+    return { meta, links, scripts };
+  }
+
   const shoe = SHOES.find((item) => item.id === Number(id));
   if (!shoe) {
     return {
@@ -194,7 +244,7 @@ export function installSeoRouteHeads() {
   AboutRoute.update({ head: () => routeHead("/about") });
   BrandsRoute.update({ head: () => routeHead("/brands") });
   ProductsRoute.update({ head: () => routeHead("/products") });
-  ProductRoute.update({ head: ({ params }) => productHead(params.id) });
+  ProductRoute.update({ head: ({ params, loaderData }) => productHead(params.id, loaderData) });
   AuthRoute.update({ head: () => utilityHead("/auth") });
   CartRoute.update({ head: () => utilityHead("/cart") });
   CheckoutRoute.update({ head: () => utilityHead("/checkout") });
