@@ -323,6 +323,15 @@ for (const [command, args] of p08Commands) {
   if (result.status !== 0) failures.push(`P08 permanent gate failed: ${command} ${args.join(" ")}`);
 }
 
+const p09Commands = [
+  ["node", ["scripts/audit-p09-loyalty-crm-notifications.mjs"]],
+  ["node", ["scripts/test-p09-loyalty-crm-notifications.mjs"]],
+];
+for (const [command, args] of p09Commands) {
+  const result = spawnSync(command, args, { stdio: "inherit" });
+  if (result.status !== 0) failures.push(`P09 permanent gate failed: ${command} ${args.join(" ")}`);
+}
+
 if (failures.length) {
   console.error("Production program audit failed:");
   for (const failure of failures) console.error(`- ${failure}`);
@@ -330,5 +339,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including permanent P05-P08 gates.",
+  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including permanent P05-P09 gates.",
 );
