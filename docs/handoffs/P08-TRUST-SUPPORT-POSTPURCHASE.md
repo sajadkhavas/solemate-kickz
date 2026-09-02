@@ -1,10 +1,20 @@
 # P08 — Trust, Support & Post-purchase
 
-Status: IMPLEMENTED — closure evidence pending exact-head CI and merge.
+Status: COMPLETED / ACCEPTED — exact implementation CI passed; closure CI and frontend merge are the remaining mechanical gates on this documentation commit.
 
 Frontend START_SHA: `613af206925eafa68f847ad2ebe5e46d0fa1a17a`
 
 Backend START_SHA: `0abe7ce7c6cea34107f15d0d67e046942e428fcb`
+
+Frontend implementation END_SHA: `941192bcb19d6cd157ab6ba89926a90595284209`
+
+Frontend CI: #1221 / run `33601208706` — PASS (137 steps)
+
+Backend implementation END_SHA: `a9ab4df60160963bb998cfc3be10cac54a774a87`
+
+Backend CI: #50 / run `33601878601` — PASS
+
+Backend PR #12 merged as `63409594be2b60083401c997fe71bbacb7209e5f`.
 
 ## P08.1 Governed trust content
 
@@ -34,4 +44,4 @@ Only an owned item from a fulfilled order is reviewable. A unique review starts 
 
 This phase does not activate a production server, mutate production data, enroll credentials, send an external notification, publish unmoderated reviews, or invent legal/SLA commitments.
 
-Closure fields remain pending until the implementation and closure commits pass exact-head CI and their PRs merge.
+Frontend PR #51 is the controlled implementation/closure PR. Issue #50 is closed only after its closure head passes and PR #51 merges.
