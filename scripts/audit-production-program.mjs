@@ -332,6 +332,31 @@ for (const [command, args] of p09Commands) {
   if (result.status !== 0) failures.push(`P09 permanent gate failed: ${command} ${args.join(" ")}`);
 }
 
+const p10FormatFiles = [
+  "docs/handoffs/P10-SEO-CONTENT-MERCHANT.md",
+  "scripts/audit-p10-seo-content-merchant.mjs",
+  "scripts/test-p10-seo-content-merchant.mjs",
+  "scripts/audit-production-program.mjs",
+  "scripts/verify-cumulative-quality.mjs",
+  "src/seo/p10-seo.server.ts",
+  "src/seo/p10-seo.ts",
+  "src/seo/p10-seo-infrastructure.ts",
+  "src/seo/seo-head.ts",
+  "src/server.ts",
+  "src/routes/api.seo.ts",
+  "src/routes/pages.$slug.tsx",
+  "package.json",
+];
+const p10Commands = [
+  ["node", ["scripts/audit-p10-seo-content-merchant.mjs"]],
+  ["node", ["scripts/test-p10-seo-content-merchant.mjs"]],
+  ["bunx", ["prettier", "--check", ...p10FormatFiles]],
+];
+for (const [command, args] of p10Commands) {
+  const result = spawnSync(command, args, { stdio: "inherit" });
+  if (result.status !== 0) failures.push(`P10 permanent gate failed: ${command} ${args.join(" ")}`);
+}
+
 if (failures.length) {
   console.error("Production program audit failed:");
   for (const failure of failures) console.error(`- ${failure}`);
@@ -339,5 +364,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including permanent P05-P09 gates.",
+  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including permanent P05-P10 gates.",
 );

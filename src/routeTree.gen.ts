@@ -19,6 +19,8 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
+import { Route as PagesSlugRouteImport } from './routes/pages.$slug'
+import { Route as ApiSeoRouteImport } from './routes/api.seo'
 import { Route as ApiCatalogRouteImport } from './routes/api.catalog'
 import { Route as ApiCommerceSplatRouteImport } from './routes/api.commerce.$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api.auth.$'
@@ -73,6 +75,16 @@ const ProductIdRoute = ProductIdRouteImport.update({
   path: '/product/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PagesSlugRoute = PagesSlugRouteImport.update({
+  id: '/pages/$slug',
+  path: '/pages/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSeoRoute = ApiSeoRouteImport.update({
+  id: '/api/seo',
+  path: '/api/seo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCatalogRoute = ApiCatalogRouteImport.update({
   id: '/api/catalog',
   path: '/api/catalog',
@@ -100,6 +112,8 @@ export interface FileRoutesByFullPath {
   '/products': typeof ProductsRoute
   '/wishlist': typeof WishlistRoute
   '/api/catalog': typeof ApiCatalogRoute
+  '/api/seo': typeof ApiSeoRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/commerce/$': typeof ApiCommerceSplatRoute
@@ -115,6 +129,8 @@ export interface FileRoutesByTo {
   '/products': typeof ProductsRoute
   '/wishlist': typeof WishlistRoute
   '/api/catalog': typeof ApiCatalogRoute
+  '/api/seo': typeof ApiSeoRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/commerce/$': typeof ApiCommerceSplatRoute
@@ -131,6 +147,8 @@ export interface FileRoutesById {
   '/products': typeof ProductsRoute
   '/wishlist': typeof WishlistRoute
   '/api/catalog': typeof ApiCatalogRoute
+  '/api/seo': typeof ApiSeoRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/commerce/$': typeof ApiCommerceSplatRoute
@@ -148,6 +166,8 @@ export interface FileRouteTypes {
     | '/products'
     | '/wishlist'
     | '/api/catalog'
+    | '/api/seo'
+    | '/pages/$slug'
     | '/product/$id'
     | '/api/auth/$'
     | '/api/commerce/$'
@@ -163,6 +183,8 @@ export interface FileRouteTypes {
     | '/products'
     | '/wishlist'
     | '/api/catalog'
+    | '/api/seo'
+    | '/pages/$slug'
     | '/product/$id'
     | '/api/auth/$'
     | '/api/commerce/$'
@@ -178,6 +200,8 @@ export interface FileRouteTypes {
     | '/products'
     | '/wishlist'
     | '/api/catalog'
+    | '/api/seo'
+    | '/pages/$slug'
     | '/product/$id'
     | '/api/auth/$'
     | '/api/commerce/$'
@@ -194,6 +218,8 @@ export interface RootRouteChildren {
   ProductsRoute: typeof ProductsRoute
   WishlistRoute: typeof WishlistRoute
   ApiCatalogRoute: typeof ApiCatalogRoute
+  ApiSeoRoute: typeof ApiSeoRoute
+  PagesSlugRoute: typeof PagesSlugRoute
   ProductIdRoute: typeof ProductIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiCommerceSplatRoute: typeof ApiCommerceSplatRoute
@@ -271,6 +297,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pages/$slug': {
+      id: '/pages/$slug'
+      path: '/pages/$slug'
+      fullPath: '/pages/$slug'
+      preLoaderRoute: typeof PagesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/seo': {
+      id: '/api/seo'
+      path: '/api/seo'
+      fullPath: '/api/seo'
+      preLoaderRoute: typeof ApiSeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/catalog': {
       id: '/api/catalog'
       path: '/api/catalog'
@@ -306,6 +346,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProductsRoute: ProductsRoute,
   WishlistRoute: WishlistRoute,
   ApiCatalogRoute: ApiCatalogRoute,
+  ApiSeoRoute: ApiSeoRoute,
+  PagesSlugRoute: PagesSlugRoute,
   ProductIdRoute: ProductIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiCommerceSplatRoute: ApiCommerceSplatRoute,

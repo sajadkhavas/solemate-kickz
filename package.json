@@ -89,6 +89,11 @@
     "format:p07": "prettier --write docs/handoffs/P07-PAYMENT-SHIPPING-RETURNS.md package.json scripts/audit-p06-cart-checkout-orders.mjs scripts/test-p06-cart-checkout-orders.mjs scripts/audit-p07-payment-shipping-returns.mjs scripts/test-p07-payment-shipping-returns.mjs scripts/audit-production-program.mjs scripts/verify-cumulative-quality.mjs src/auth/production-account-route.tsx src/auth/ProductionNavbar.tsx src/auth/ProductionFooter.tsx src/auth/ProductionMobileBottomNav.tsx src/commerce/commerce-api.ts src/commerce/commerce-proxy.server.ts src/commerce/ProductionCheckoutPage.tsx src/commerce/ProductionOrdersPage.tsx src/commerce/production-checkout-route.tsx",
     "audit:p08": "node scripts/audit-p08-trust-support-postpurchase.mjs",
     "test:p08": "node scripts/test-p08-trust-support-postpurchase.mjs",
+    "audit:p09": "node scripts/audit-p09-loyalty-crm-notifications.mjs",
+    "test:p09": "node scripts/test-p09-loyalty-crm-notifications.mjs",
+    "audit:p10": "node scripts/audit-p10-seo-content-merchant.mjs",
+    "test:p10": "node scripts/test-p10-seo-content-merchant.mjs",
+    "format:p10": "prettier --write docs/handoffs/P10-SEO-CONTENT-MERCHANT.md package.json scripts/audit-p10-seo-content-merchant.mjs scripts/test-p10-seo-content-merchant.mjs scripts/audit-production-program.mjs scripts/verify-cumulative-quality.mjs src/seo/p10-seo.server.ts src/seo/p10-seo.ts src/seo/p10-seo-infrastructure.ts src/seo/seo-head.ts src/server.ts src/routes/api.seo.ts 'src/routes/pages.$slug.tsx'",
     "format:p08": "prettier --write docs/handoffs/P08-TRUST-SUPPORT-POSTPURCHASE.md package.json scripts/audit-p08-trust-support-postpurchase.mjs scripts/test-p08-trust-support-postpurchase.mjs scripts/audit-production-program.mjs scripts/verify-cumulative-quality.mjs src/auth/ProductionAccountPage.tsx src/auth/production-account-route.tsx src/commerce/commerce-api.ts src/commerce/commerce-proxy.server.ts src/commerce/ProductionOrdersPage.tsx src/postpurchase/postpurchase-api.ts src/postpurchase/ProductionSupportPage.tsx",
     "format:p04": "prettier --write .github/workflows/frontend-ci.yml package.json scripts/audit-p04-size-fit-intelligence.mjs src/catalog/production-catalog.server.ts src/components/product/ProductPurchasePanel.tsx src/components/product/SizeGuideDialog.tsx src/data/shoes.ts"
   },
