@@ -1,0 +1,57 @@
+name: P09 one-shot formatter
+
+on:
+  push:
+    branches:
+      - "phase/sole-p09-loyalty-crm-notifications"
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.event.head_commit.message == 'ci(p09): add one-shot formatter'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout phase branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase/sole-p09-loyalty-crm-notifications
+          fetch-depth: 0
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+          no-cache: true
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Format P09 with lockfile Prettier
+        shell: bash
+        run: |
+          bunx prettier --write \
+            .github/workflows/p09.yml \
+            scripts/audit-p09-loyalty-crm-notifications.mjs \
+            scripts/test-p09-loyalty-crm-notifications.mjs \
+            src/engagement/engagement-api.ts \
+            src/engagement/engagement-proxy.server.ts \
+            src/engagement/production-wishlist-store.ts \
+            src/engagement/ProductionWishlistPage.tsx \
+            src/engagement/ProductionShoeCard.tsx \
+            src/engagement/ProductionProductPurchasePanel.tsx \
+            src/engagement/ProductionNotificationCenter.tsx \
+            src/engagement/ProductionLoyaltyPage.tsx \
+            src/engagement/production-wishlist-route.tsx \
+            'src/routes/api.commerce.$.ts' \
+            src/auth/production-account-route.tsx \
+            src/auth/ProductionNavbar.tsx \
+            vite.config.ts
+      - name: Commit formatted files and remove one-shot workflow
+        shell: bash
+        run: |
+          git rm .github/workflows/p09-format-once.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "style(p09): apply lockfile Prettier"
+          git push origin HEAD:phase/sole-p09-loyalty-crm-notifications
