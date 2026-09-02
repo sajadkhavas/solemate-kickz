@@ -8,7 +8,7 @@
 **P08 accepted implementation CI:** Frontend CI #1221 / run `33601208706` — PASS
 **P08 documentation closure head:** `478fa70efca777e35e1703dd9a2cc12a621a1897`
 **P08 documentation closure CI:** Frontend CI #1223 / run `33602638893` — PASS
-**Frontend final P08 main:** `846101e7480d09903efd879c8db61b1b375b98e5`
+**Frontend P08 implementation/closure merge:** `846101e7480d09903efd879c8db61b1b375b98e5`
 **Backend final P08 main:** `63409594be2b60083401c997fe71bbacb7209e5f`
 **P07 START_SHA:** `85557b3f2b34c49507c037dcd4a2a7596956b859`
 **P07 accepted implementation END_SHA:** `f9ecafa36065fc3349cb283889e0618b25c119d6`
@@ -210,7 +210,7 @@ Mandatory handoff fields remain: `PHASE`, `STATUS`, `START_SHA`, `END_SHA`, `BRA
 
 **P09 — Loyalty, CRM & Notifications** is the next registered phase.
 
-Start P09 from frontend `main` SHA `846101e7480d09903efd879c8db61b1b375b98e5` and backend `main` SHA `63409594be2b60083401c997fe71bbacb7209e5f` as exact baselines. P09 owns consent-aware wishlist, back-in-stock delivery orchestration and loyalty ledger work; Production activation remains deferred.
+At P09 start, verify and record the live frontend `main` after the P08 final-record documentation merge; use backend `main` SHA `63409594be2b60083401c997fe71bbacb7209e5f` as the exact backend baseline. P09 owns consent-aware wishlist, back-in-stock delivery orchestration and loyalty ledger work; Production activation remains deferred.
 
 ## 9. Acceptance baseline
 
