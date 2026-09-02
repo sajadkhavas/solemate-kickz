@@ -43,24 +43,42 @@ jobs:
       - name: Lint
         run: bun run lint
       - name: P09 format check
-        run: >-
-          bunx prettier --check
-          .github/workflows/p09.yml
-          scripts/audit-p09-loyalty-crm-notifications.mjs
-          scripts/test-p09-loyalty-crm-notifications.mjs
-          src/engagement/engagement-api.ts
-          src/engagement/engagement-proxy.server.ts
-          src/engagement/production-wishlist-store.ts
-          src/engagement/ProductionWishlistPage.tsx
-          src/engagement/ProductionShoeCard.tsx
-          src/engagement/ProductionProductPurchasePanel.tsx
-          src/engagement/ProductionNotificationCenter.tsx
-          src/engagement/ProductionLoyaltyPage.tsx
-          src/engagement/production-wishlist-route.tsx
-          src/routes/api.commerce.$.ts
-          src/auth/production-account-route.tsx
-          src/auth/ProductionNavbar.tsx
-          vite.config.ts
+        shell: bash
+        run: |
+          bunx prettier --write \
+            .github/workflows/p09.yml \
+            scripts/audit-p09-loyalty-crm-notifications.mjs \
+            scripts/test-p09-loyalty-crm-notifications.mjs \
+            src/engagement/engagement-api.ts \
+            src/engagement/engagement-proxy.server.ts \
+            src/engagement/production-wishlist-store.ts \
+            src/engagement/ProductionWishlistPage.tsx \
+            src/engagement/ProductionShoeCard.tsx \
+            src/engagement/ProductionProductPurchasePanel.tsx \
+            src/engagement/ProductionNotificationCenter.tsx \
+            src/engagement/ProductionLoyaltyPage.tsx \
+            src/engagement/production-wishlist-route.tsx \
+            'src/routes/api.commerce.$.ts' \
+            src/auth/production-account-route.tsx \
+            src/auth/ProductionNavbar.tsx \
+            vite.config.ts
+          git diff --exit-code -- \
+            .github/workflows/p09.yml \
+            scripts/audit-p09-loyalty-crm-notifications.mjs \
+            scripts/test-p09-loyalty-crm-notifications.mjs \
+            src/engagement/engagement-api.ts \
+            src/engagement/engagement-proxy.server.ts \
+            src/engagement/production-wishlist-store.ts \
+            src/engagement/ProductionWishlistPage.tsx \
+            src/engagement/ProductionShoeCard.tsx \
+            src/engagement/ProductionProductPurchasePanel.tsx \
+            src/engagement/ProductionNotificationCenter.tsx \
+            src/engagement/ProductionLoyaltyPage.tsx \
+            src/engagement/production-wishlist-route.tsx \
+            'src/routes/api.commerce.$.ts' \
+            src/auth/production-account-route.tsx \
+            src/auth/ProductionNavbar.tsx \
+            vite.config.ts
       - name: Production build
         run: bun run build
       - name: Preserve fixed F12 performance budget
