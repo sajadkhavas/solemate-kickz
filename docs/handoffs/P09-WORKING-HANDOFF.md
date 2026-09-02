@@ -1,55 +1,81 @@
-# P09 Working Handoff — Loyalty, CRM & Notifications
+# P09 Final Handoff — Loyalty, CRM & Notifications
 
-Status: `STARTED / SAFE CHECKPOINT / NOT IMPLEMENTED / NOT PR-READY / NOT CLOSED`
+Status: `COMPLETED / IMPLEMENTATION MERGED / FINAL CLOSURE RECORD`
 
 Updated: 2026-09-02
 
-## Exact baselines
+## Exact evidence
 
 - Frontend START_SHA: `d92aa3affe02b24ce40a3ed6062e8c333087b806`
+- Frontend accepted implementation END_SHA: `11e84a91da8c516504389f4f3374eb014cb707a7`
+- Frontend implementation CI: Frontend CI #1247 / run `33636810572` — PASS on the exact accepted head after a runner-only F10 rerun; all 137 steps passed.
+- Frontend implementation PR: `sajadkhavas/solemate-kickz#56`
+- Frontend implementation merge SHA: `2a0802624ebd2e477d6c0cf89dce27bf25d8e6ed`
 - Backend START_SHA: `63409594be2b60083401c997fe71bbacb7209e5f`
-- Branch in both repositories: `phase/sole-p09-loyalty-crm-notifications`
+- Backend accepted implementation END_SHA: `293f6432e790a9874b979ae30961fb9cd258bad7`
+- Backend Quality #54 / run `33611927354` — PASS on the exact accepted backend head.
+- Backend PR: `sajadkhavas/sole-backend#13`
+- Backend merge SHA: `6b9fef79ee0585423b7f763974f87c82a67c9cf1`
 - Tracking issue: `sajadkhavas/solemate-kickz#55`
+- Open review threads at merge: `0` on both implementation PRs.
 
-## Registered scope
+## Accepted scope
 
-1. P09.1 durable authenticated wishlist with ownership and safe migration from local state.
-2. P09.2 channel consent/preferences, unsubscribe, quiet hours and frequency caps.
-3. P09.3 back-in-stock, price-drop and lifecycle signals through a durable outbox.
-4. P09.4 delivery-attempt audit and fail-closed adapters without fabricated delivery.
-5. P09.5 idempotent loyalty ledger with explicit earn, redeem, release and expire rules.
-6. P09.6 Production UI, permanent adversarial QA, registry/handoff closure and merges.
+### P09.1 — Durable authenticated wishlist
 
-## Completed checkpoint work
+- Wishlist truth is backend-owned and customer-scoped.
+- Production cards, PDP and wishlist page use the backend-authoritative engagement boundary.
+- Legacy local wishlist state is migrated only after backend acceptance; malformed local fixtures do not become production authority.
+- Cross-customer access is rejected by the backend ownership boundary.
 
-- Live P08 final-record frontend `main` and backend `main` were fetched and verified before branching.
-- Both remote P09 branches were created from the exact baselines above.
-- Issue #55 was created with six unchecked acceptance parts and production guardrails.
-- Backend checkpoint commit `d1663c5eff35c9824d0d8efbf55a7b098ac0a4d3` was published to the P09 branch.
-- The checkpoint adds the first migration and model layer for:
-  - `customer_wishlist_items`;
-  - `notification_preferences`;
-  - `notification_signals`;
-  - append-only `notification_delivery_attempts`;
-  - append-only `loyalty_ledger_entries`;
-  - authenticated ownership/unsubscribe/signal timestamps on existing `back_in_stock_intents`.
+### P09.2 — Consent, preferences, unsubscribe, quiet hours and caps
 
-## Important truth about the checkpoint
+- Notification preferences are explicit per channel.
+- Unsubscribe is durable and authoritative.
+- Quiet-hour and daily-cap policy is backend-owned; the browser cannot declare delivery eligibility.
+- Production UI exposes the current server policy instead of inventing local consent state.
 
-The Backend checkpoint is deliberately **not accepted implementation evidence**. PHP/Pint/migrations/tests/CI have not yet run on it. No controller, service, scheduler, command, operator resource, Frontend API/UI or permanent P09 gate has been implemented yet. No PR has been created. P09 must remain `registered` in the phase registry and every Issue #55 checkbox must remain unchecked.
+### P09.3 — Durable lifecycle signal orchestration
 
-## Mandatory next actions
+- Back-in-stock, price-drop and lifecycle signals use durable backend records/outbox orchestration.
+- Signals are created only from authoritative inventory, price or lifecycle facts.
+- Missing consent or policy eligibility fails closed.
 
-1. Fetch both P09 branches and verify the exact heads; Backend must be `d1663c5eff35c9824d0d8efbf55a7b098ac0a4d3`, Frontend contains this handoff commit.
-2. Review the migration against Laravel 13/MySQL and run Pint before adding behavior; fix checkpoint schema rather than treating it as final.
-3. Implement Backend domain services and owner-scoped API for wishlist, preferences/unsubscribe, signals/delivery audit and loyalty balance/history/redeem/release/expire.
-4. Bind signal generation only to authoritative inventory/price/order facts. Missing consent, configured adapter, frequency allowance or quiet-hour eligibility must fail closed and create truthful audit evidence.
-5. Add adversarial Backend tests for cross-user access, idempotency, duplicate delivery, revoked consent, caps, quiet hours, ledger overspend, expiry and concurrent redemption.
-6. Pass exact-head Backend Quality before merging its PR.
-7. Replace Production local wishlist/notification authority with owner-scoped Backend surfaces while keeping development fixtures deterministic. Add loyalty history/balance and explicit non-cash terms without cosmetic points.
-8. Add `audit:p09`, `test:p09`, cumulative report requirement, format list and handoff. Run full 137-step Frontend CI with unchanged F12 budgets.
-9. Only after exact-head green runs: update registry/PROJECT_STATUS/README, merge both PRs, close Issue #55 as completed, remove this working-status wording or convert this file into the final P09 handoff.
+### P09.4 — Delivery-attempt audit and fail-closed providers
 
-## Guardrails
+- Delivery attempts are auditable and append-only.
+- No external provider is claimed as successful without provider evidence.
+- P09 does not enroll credentials, activate a live provider, or fabricate delivery state.
 
-No production activation, production-data mutation, credential enrollment, live provider delivery, inferred consent, fabricated price drop/delivery, quiet-hour or cap bypass, client-authoritative points, negative balance, or unreviewed loyalty promise is authorized in P09.
+### P09.5 — Server-authoritative loyalty ledger
+
+- Loyalty is an idempotent backend ledger with explicit earn, redeem, release and expire semantics.
+- Balance and history are derived from server ledger truth.
+- Production UI is read-only for balance/history and does not implement cosmetic/client-authoritative points.
+- Negative balance, replay and concurrent overspend are guarded by backend tests and transaction/locking behavior.
+
+### P09.6 — Production UI and permanent QA
+
+- Production wishlist, notification center and loyalty surfaces are connected through the controlled engagement BFF.
+- `audit:p09` / `test:p09` are permanently chained into the production-program audit.
+- The accepted Frontend CI preserved TypeScript, lint, format, production build, VPS build/runtime smoke, all visual QA, aggregate evidence and clean-tree verification.
+- Existing F12 performance limits were not increased or relaxed.
+
+## QA notes
+
+The first cumulative frontend attempt exposed a stale P03 source guard that matched the generic string `NotificationCenter`; it was corrected to continue forbidding the legacy/demo notification component while allowing the P09 production component. A later F10 browser attempt failed on one runner despite zero F10 source changes and no runtime/module exception. The exact same accepted commit was rerun on a fresh runner and F10 behavior passed without weakening the F10 test or changing 3D code. The final accepted implementation run `33636810572` completed every step successfully.
+
+## Rollback impact
+
+- Frontend rollback target: `d92aa3affe02b24ce40a3ed6062e8c333087b806` (pre-P09 accepted `main`).
+- Backend rollback target: `63409594be2b60083401c997fe71bbacb7209e5f` (pre-P09 backend `main`).
+- Rollback removes P09 wishlist ownership/migration, notification policy/orchestration/audit and loyalty-ledger extensions while preserving P08 and earlier accepted phases.
+- No production deployment, production-data mutation, live notification-provider activation, provider credential enrollment or fabricated delivery occurred during P09.
+
+## Guardrails carried forward
+
+No production activation, production-data mutation, credential enrollment, inferred consent, fabricated price-drop/delivery claim, quiet-hour/cap bypass, client-authoritative loyalty balance, negative ledger balance or unreviewed loyalty promise is authorized by this phase.
+
+## Next phase
+
+P10 — SEO, Content & Merchant — remains registered and must start from the final accepted P09 `main` after this closure PR itself passes cumulative CI and merges.
