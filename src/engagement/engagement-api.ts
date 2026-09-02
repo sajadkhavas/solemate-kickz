@@ -61,6 +61,11 @@ const loyaltySchema = z.object({
   }),
 });
 
+const wishlistMigrationSchema = z.object({
+  data: z.array(wishlistItemSchema),
+  accepted_variant_ids: z.array(z.number().int().positive()),
+});
+
 export class EngagementApiError extends Error {
   constructor(
     message: string,
@@ -71,7 +76,7 @@ export class EngagementApiError extends Error {
   }
 }
 
-async function request<T>(path: string, schema: z.ZodType<T>, init?: RequestInit): Promise<T> {
+async function fetchEngagement(path: string, init?: RequestInit): Promise<Response> {
   const response = await fetch(`/api/engagement/${path}`, {
     ...init,
     credentials: "same-origin",
@@ -81,24 +86,20 @@ async function request<T>(path: string, schema: z.ZodType<T>, init?: RequestInit
       ...init?.headers,
     },
   });
-
   if (!response.ok) {
     throw new EngagementApiError(`Engagement request failed (${response.status})`, response.status);
   }
+  return response;
+}
 
+async function request<T>(path: string, schema: z.ZodType<T>, init?: RequestInit): Promise<T> {
+  const response = await fetchEngagement(path, init);
   const payload = await response.json();
   return schema.parse(payload.data);
 }
 
 async function requestVoid(path: string, init: RequestInit): Promise<void> {
-  const response = await fetch(`/api/engagement/${path}`, {
-    ...init,
-    credentials: "same-origin",
-    headers: { Accept: "application/json", ...init.headers },
-  });
-  if (!response.ok && response.status !== 204) {
-    throw new EngagementApiError(`Engagement request failed (${response.status})`, response.status);
-  }
+  await fetchEngagement(path, init);
 }
 
 export type WishlistItem = z.infer<typeof wishlistItemSchema>;
@@ -112,20 +113,21 @@ export const addWishlistVariant = (variantId: number) =>
   request(`wishlist/${variantId}`, z.array(wishlistItemSchema), { method: "PUT" });
 export const removeWishlistVariant = (variantId: number) =>
   requestVoid(`wishlist/${variantId}`, { method: "DELETE" });
-export const migrateWishlistVariants = (variantIds: number[]) =>
-  request(
-    "wishlist/migrate",
-    z.object({
-      data: z.array(wishlistItemSchema),
-      accepted_variant_ids: z.array(z.number().int().positive()),
-    }),
-    { method: "POST", body: JSON.stringify({ variant_ids: variantIds }) },
-  );
+export async function migrateWishlistVariants(variantIds: number[]) {
+  const response = await fetchEngagement("wishlist/migrate", {
+    method: "POST",
+    body: JSON.stringify({ variant_ids: variantIds }),
+  });
+  return wishlistMigrationSchema.parse(await response.json());
+}
 export const getNotificationPreferences = () =>
   request("notification-preferences", z.array(preferenceSchema));
 export const updateNotificationPreference = (
   channel: NotificationChannel,
-  input: Pick<NotificationPreference, "enabled" | "daily_cap" | "quiet_start" | "quiet_end" | "timezone">,
+  input: Pick<
+    NotificationPreference,
+    "enabled" | "daily_cap" | "quiet_start" | "quiet_end" | "timezone"
+  >,
 ) =>
   request(`notification-preferences/${channel}`, preferenceSchema, {
     method: "PUT",

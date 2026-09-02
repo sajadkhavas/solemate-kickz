@@ -2,12 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { Heart, LoaderCircle, LogIn, RefreshCw, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { MobileBottomNav } from "@/components/MobileBottomNav";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/sections/Footer";
-import { Button } from "@/components/ui/button";
+import { ProductionFooter as Footer } from "@/auth/ProductionFooter";
+import { ProductionMobileBottomNav as MobileBottomNav } from "@/auth/ProductionMobileBottomNav";
+import { ProductionNavbar as Navbar } from "@/auth/ProductionNavbar";
 import { catalogForRuntime } from "@/catalog/production-catalog";
-import { SHOES } from "@/data/shoes";
+import { Button } from "@/components/ui/button";
+import { formatPrice, SHOES } from "@/data/shoes";
 import { removeWishlistVariant } from "@/engagement/engagement-api";
 import {
   loadProductionWishlist,
@@ -63,7 +63,11 @@ export function ProductionWishlistPage() {
             </p>
           </div>
 
-          {migration ? <p role="status" className="mt-5 rounded-xl border border-border p-3 text-sm">{migration}</p> : null}
+          {migration ? (
+            <p role="status" className="mt-5 rounded-xl border border-border p-3 text-sm">
+              {migration}
+            </p>
+          ) : null}
 
           {wishlist.status === "idle" || wishlist.status === "loading" ? (
             <div className="grid min-h-64 place-items-center" role="status">
@@ -76,15 +80,23 @@ export function ProductionWishlistPage() {
             <div className="mt-8 rounded-[var(--radius-xl)] border border-dashed border-border-strong bg-surface p-8 text-center">
               <LogIn aria-hidden="true" className="mx-auto size-10 text-primary" />
               <h2 className="mt-4 font-display text-2xl font-black">برای علاقه‌مندی وارد شوید</h2>
-              <p className="mt-2 font-fa text-muted-foreground">لیست production به حساب احراز هویت‌شده متصل است.</p>
-              <Button asChild className="mt-5"><Link to="/auth">ورود امن</Link></Button>
+              <p className="mt-2 font-fa text-muted-foreground">
+                لیست production به حساب احراز هویت‌شده متصل است.
+              </p>
+              <Button asChild className="mt-5">
+                <Link to="/auth">ورود امن</Link>
+              </Button>
             </div>
           ) : null}
 
           {wishlist.status === "error" ? (
             <div className="mt-8 rounded-xl border border-destructive/40 p-6" role="alert">
               <p>{wishlist.error}</p>
-              <Button variant="outline" className="mt-4" onClick={() => void loadProductionWishlist(true)}>
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={() => void loadProductionWishlist(true)}
+              >
                 <RefreshCw aria-hidden="true" /> تلاش دوباره
               </Button>
             </div>
@@ -94,26 +106,39 @@ export function ProductionWishlistPage() {
             <div className="mt-8 rounded-[var(--radius-xl)] border border-dashed border-border-strong bg-surface p-10 text-center">
               <Heart aria-hidden="true" className="mx-auto size-10 text-muted-foreground" />
               <h2 className="mt-4 font-display text-2xl font-black">هنوز موردی ذخیره نشده</h2>
-              <Button asChild variant="outline" className="mt-5"><Link to="/shop">مشاهده فروشگاه</Link></Button>
+              <Button asChild variant="outline" className="mt-5">
+                <Link to="/products">مشاهده فروشگاه</Link>
+              </Button>
             </div>
           ) : null}
 
           {wishlist.status === "ready" && wishlist.items.length > 0 ? (
             <ul className="mt-8 grid gap-4">
               {wishlist.items.map((item) => (
-                <li key={item.id} className="flex flex-col gap-4 rounded-[var(--radius-xl)] border border-border bg-surface p-5 sm:flex-row sm:items-center sm:justify-between">
+                <li
+                  key={item.id}
+                  className="flex flex-col gap-4 rounded-[var(--radius-xl)] border border-border bg-surface p-5 sm:flex-row sm:items-center sm:justify-between"
+                >
                   <div>
                     <p className="eyebrow text-muted-foreground">Variant #{item.variant_id}</p>
-                    <h2 className="mt-1 font-display text-xl font-black">{item.product_name ?? "محصول"}</h2>
+                    <h2 className="mt-1 font-display text-xl font-black">
+                      {item.product_name ?? "محصول"}
+                    </h2>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {[item.variant_title, item.size, item.color].filter(Boolean).join(" · ")}
                     </p>
-                    <p className="mt-2 font-mono-num text-sm">{item.price_minor.toLocaleString("fa-IR")} {item.currency}</p>
+                    <p className="mt-2 font-mono-num text-sm">
+                      {item.currency === "IRR"
+                        ? formatPrice(item.price_minor / 10)
+                        : `${item.price_minor.toLocaleString("fa-IR")} ${item.currency}`}
+                    </p>
                   </div>
                   <div className="flex gap-2">
-                    {item.product_slug ? (
-                      <Button asChild variant="outline"><Link to="/product/$id" params={{ id: item.product_slug }}>مشاهده</Link></Button>
-                    ) : null}
+                    <Button asChild variant="outline">
+                      <Link to="/product/$id" params={{ id: String(item.product_id) }}>
+                        مشاهده
+                      </Link>
+                    </Button>
                     <Button
                       type="button"
                       variant="ghost"
