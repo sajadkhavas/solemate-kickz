@@ -239,9 +239,11 @@ record(
 );
 record(
   "F2 route gate remains strict for the integrated authorized route set",
-  f2Audit.includes("exact Foundation plus authorized F7/F9/P02/P03/P06 additions") &&
+  f2Audit.includes("exact Foundation plus authorized F7/F9/P02/P03/P06/P10 additions") &&
     f2Audit.includes('"/api/commerce/$"') &&
+    f2Audit.includes('"/api/seo"') &&
     f2Audit.includes('"/checkout"') &&
+    f2Audit.includes('"/pages/$slug"') &&
     f2Audit.includes('"/wishlist"') &&
     f2Audit.includes("JSON.stringify(currentRoutes) === JSON.stringify(expectedRoutes)"),
 );
