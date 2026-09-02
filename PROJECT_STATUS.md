@@ -2,7 +2,12 @@
 
 **Repository:** `sajadkhavas/solemate-kickz`  
 **Status last reconciled:** 2026-09-02
-**Current accepted frontend phase:** P09 — Loyalty, CRM & Notifications
+**Current accepted frontend phase:** P10 — SEO, Content & Merchant
+**P10 START_SHA:** `c5c09684921d81f61a7985f32e3e32742d050552`
+**P10 accepted implementation END_SHA:** `3eace6accffc0d50cfa355ef0fc75361aab40869`
+**P10 accepted implementation CI:** Frontend CI #1263 / run `33649237103` — PASS (all 137 steps)
+**Frontend P10 implementation merge:** `8f5f5de1c001bb7d659119cb67ccda95fb0e143b`
+**Backend final P10 main:** `d06e4922a7aad1aac17f34c3315e0694f35bc42c`
 **P09 START_SHA:** `d92aa3affe02b24ce40a3ed6062e8c333087b806`
 **P09 accepted implementation END_SHA:** `11e84a91da8c516504389f4f3374eb014cb707a7`
 **P09 accepted implementation CI:** Frontend CI #1247 / run `33636810572` — PASS (all 137 steps)
@@ -88,6 +93,7 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 | P06                  | Cart, checkout and orders            | frontend accepted `cbb5c014a22878f0efde05fccbf3995e89c5570a`, CI `33532454934`; backend exact-head CI `33530472189`; backend merge `269616149acbd8977fd55c2bfde6fd65bffbe45a`; frontend PR #45; backend PR #10; issue #44                                        | Completed |
 | P07                  | Payment, shipping and returns        | frontend accepted `f9ecafa36065fc3349cb283889e0618b25c119d6`, CI `33555570220`; focused CI `33552361775`; backend CI `33551751760`; backend merge `0abe7ce7c6cea34107f15d0d67e046942e428fcb`; frontend PR #48; backend PR #11; issue #47                         | Completed |
 | P08                  | Trust, support and post-purchase     | frontend accepted `941192bcb19d6cd157ab6ba89926a90595284209`, CI `33601208706`; backend CI `33601878601`; backend merge `63409594be2b60083401c997fe71bbacb7209e5f`; frontend PR #51; backend PR #12; issue #50                                                   | Completed |
+| P10                  | SEO, content and merchant feeds       | frontend accepted `3eace6accffc0d50cfa355ef0fc75361aab40869`, CI `33649237103`; backend CI `33649233597`; backend merge `d06e4922a7aad1aac17f34c3315e0694f35bc42c`; frontend PR #59; backend PR #14; issue #58                                                        | Completed |
 | P09                  | Loyalty, CRM and notifications       | frontend accepted `11e84a91da8c516504389f4f3374eb014cb707a7`, CI `33636810572`; backend CI `33611927354`; backend merge `6b9fef79ee0585423b7f763974f87c82a67c9cf1`; frontend PR #56; backend PR #13; issue #55                                                   | Completed |
 
 ### P03 accepted outcomes
@@ -175,11 +181,19 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 - Loyalty uses an idempotent earn/redeem/release/expire ledger with transaction locking, server-derived balance/history and adversarial overspend/replay coverage.
 - P09 is permanently chained into cumulative Frontend CI; Backend run `33611927354` and Frontend run `33636810572` passed with unchanged F12 budgets.
 
-P10–P14 remain: **5 phases and 32 planned steps**.
+### P10 accepted outcomes
+
+- Governed content uses backend-owned draft, review, publish and append-only rollback revisions.
+- Route policy, exact same-origin redirects, canonical, robots and schema are authoritative and invalid/unpublished states fail closed.
+- Segmented sitemaps contain published truth only; merchant output requires verified catalog, media, price, inventory and HTTPS site authority.
+- Merchant output is readiness-only and was not submitted to any provider.
+- P10 is permanently chained into cumulative Frontend CI; Backend run `33649233597` and Frontend run `33649237103` passed with unchanged F12 budgets.
+- No production activation, production-data mutation or credential enrollment occurred.
+
+P11–P14 remain: **4 phases and 26 planned steps**.
 
 | Phase | Scope                           | Planned steps | Depends on | Server required?         |
 | ----- | ------------------------------- | ------------: | ---------- | ------------------------ |
-| P10   | SEO, content and merchant feeds |             6 | P02, P08   | No                       |
 | P11   | Observability, RUM and CRO      |             6 | P07, P10   | No                       |
 | P12   | Production readiness            |             7 | P00–P11    | **Activate server here** |
 | P13   | Staging acceptance              |             6 | P12        | Yes                      |
@@ -228,9 +242,9 @@ Mandatory handoff fields remain: `PHASE`, `STATUS`, `START_SHA`, `END_SHA`, `BRA
 
 ## 8. Next action
 
-**P10 — SEO, Content & Merchant** is the next registered phase.
+**P11 — Observability, RUM & CRO** is the next registered phase.
 
-At P10 start, verify and record the live frontend `main` after the P09 closure merge and backend `main` `6b9fef79ee0585423b7f763974f87c82a67c9cf1`. P10 owns governed content, route SEO, schema/sitemaps/redirects and verified merchant-feed readiness; Production activation remains deferred.
+At P11 start, verify and record frontend main after the P10 closure merge and backend main `d06e4922a7aad1aac17f34c3315e0694f35bc42c`. P11 owns observability, privacy-safe RUM and evidence-based CRO; Production activation remains deferred.
 
 ## 9. Acceptance baseline
 
