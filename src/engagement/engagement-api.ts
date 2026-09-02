@@ -77,7 +77,7 @@ export class EngagementApiError extends Error {
 }
 
 async function fetchEngagement(path: string, init?: RequestInit): Promise<Response> {
-  const response = await fetch(`/api/engagement/${path}`, {
+  const response = await fetch(`/api/commerce/engagement/${path}`, {
     ...init,
     credentials: "same-origin",
     headers: {

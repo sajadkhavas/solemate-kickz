@@ -57,7 +57,7 @@ jobs:
           src/engagement/ProductionNotificationCenter.tsx
           src/engagement/ProductionLoyaltyPage.tsx
           src/engagement/production-wishlist-route.tsx
-          src/routes/api.engagement.$.ts
+          src/routes/api.commerce.$.ts
           src/auth/production-account-route.tsx
           src/auth/ProductionNavbar.tsx
           vite.config.ts

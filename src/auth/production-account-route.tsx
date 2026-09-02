@@ -34,7 +34,9 @@ export const Route = createFileRoute("/account")({
 });
 
 function AccountRouteComponent() {
-  const { section, order } = Route.useSearch();
+  const search = Route.useSearch();
+  const section = String(search.section) as P09AccountSection;
+  const order = search.order;
   if (section === "orders") return <ProductionOrdersPage orderId={order} />;
   if (section === "support") return <ProductionSupportPage />;
   if (section === "loyalty") return <ProductionLoyaltyPage />;

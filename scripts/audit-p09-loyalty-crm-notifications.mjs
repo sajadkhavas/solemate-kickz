@@ -10,10 +10,11 @@ async function source(path) {
   }
 }
 
-const [api, proxy, store, wishlist, notification, loyalty, vite, accountRoute, registry, handoff] =
+const [api, proxy, bffRoute, store, wishlist, notification, loyalty, vite, accountRoute, registry, handoff] =
   await Promise.all([
     source("src/engagement/engagement-api.ts"),
     source("src/engagement/engagement-proxy.server.ts"),
+    source("src/routes/api.commerce.$.ts"),
     source("src/engagement/production-wishlist-store.ts"),
     source("src/engagement/ProductionWishlistPage.tsx"),
     source("src/engagement/ProductionNotificationCenter.tsx"),
@@ -33,6 +34,7 @@ for (const marker of [
 ]) {
   if (!api.includes(marker)) failures.push(`P09 client missing ${marker}`);
 }
+if (!api.includes("/api/commerce/engagement/")) failures.push("P09 client must use the registered BFF wildcard");
 for (const marker of [
   "/api/v1/customer/wishlist",
   "/api/v1/customer/notification-preferences",
@@ -41,6 +43,8 @@ for (const marker of [
 ]) {
   if (!proxy.includes(marker)) failures.push(`P09 BFF missing ${marker}`);
 }
+if (!bffRoute.includes('splat.startsWith("engagement/")') || !bffRoute.includes("proxyEngagementRequest"))
+  failures.push("registered commerce BFF route does not delegate P09 engagement safely");
 if (!store.includes("localStorage.getItem(\"sole-store\")") || !store.includes("clearLegacyWishlist"))
   failures.push("legacy wishlist migration contract missing");
 if (!wishlist.includes("data-testid=\"p09-production-wishlist\"") || wishlist.includes('to="/shop"'))
