@@ -1,6 +1,6 @@
 # P08 — Trust, Support & Post-purchase
 
-Status: COMPLETED / ACCEPTED — exact implementation CI passed; closure CI and frontend merge are the remaining mechanical gates on this documentation commit.
+Status: COMPLETED / REGISTERED / MERGED / CLOSED.
 
 Frontend START_SHA: `613af206925eafa68f847ad2ebe5e46d0fa1a17a`
 
@@ -9,6 +9,12 @@ Backend START_SHA: `0abe7ce7c6cea34107f15d0d67e046942e428fcb`
 Frontend implementation END_SHA: `941192bcb19d6cd157ab6ba89926a90595284209`
 
 Frontend CI: #1221 / run `33601208706` — PASS (137 steps)
+
+Frontend closure head: `478fa70efca777e35e1703dd9a2cc12a621a1897`
+
+Frontend closure CI: #1223 / run `33602638893` — PASS (137 steps)
+
+Frontend PR #51 merged as `846101e7480d09903efd879c8db61b1b375b98e5`.
 
 Backend implementation END_SHA: `a9ab4df60160963bb998cfc3be10cac54a774a87`
 
@@ -44,4 +50,4 @@ Only an owned item from a fulfilled order is reviewable. A unique review starts 
 
 This phase does not activate a production server, mutate production data, enroll credentials, send an external notification, publish unmoderated reviews, or invent legal/SLA commitments.
 
-Frontend PR #51 is the controlled implementation/closure PR. Issue #50 is closed only after its closure head passes and PR #51 merges.
+Frontend PR #51 merged with zero unresolved review threads. Issue #50 has all five registered parts checked and is closed as `completed`.
