@@ -105,19 +105,23 @@ const authorizedAdditions = [
   "/api/auth/$",
   "/api/catalog",
   "/api/commerce/$",
+  "/api/seo",
   "/checkout",
+  "/pages/$slug",
   "/wishlist",
 ];
 const expectedRoutes = [...new Set([...baselineRoutes, ...authorizedAdditions])].sort();
 add(
-  "generated route set is exact Foundation plus authorized F7/F9/P02/P03/P06 additions",
+  "generated route set is exact Foundation plus authorized F7/F9/P02/P03/P06/P10 additions",
   JSON.stringify(currentRoutes) === JSON.stringify(expectedRoutes) &&
     files.routeTree.includes("CheckoutRouteImport") &&
     files.routeTree.includes("WishlistRouteImport") &&
     files.routeTree.includes("AccountRouteImport") &&
     files.routeTree.includes("ApiCatalogRouteImport") &&
     files.routeTree.includes("ApiAuthSplatRouteImport") &&
-    files.routeTree.includes("ApiCommerceSplatRouteImport"),
+    files.routeTree.includes("ApiCommerceSplatRouteImport") &&
+    files.routeTree.includes("ApiSeoRouteImport") &&
+    files.routeTree.includes("PagesSlugRouteImport"),
   { baselineRoutes, authorizedAdditions, expectedRoutes, currentRoutes },
 );
 
@@ -314,28 +318,3 @@ add(
 const failed = checks.filter((check) => !check.pass);
 const report = {
   schemaVersion: 2,
-  audit: "f2-navigation-search",
-  generatedAt: new Date().toISOString(),
-  repository: "sajadkhavas/solemate-kickz",
-  branch,
-  foundationSha: FOUNDATION_SHA,
-  head,
-  summary: {
-    total: checks.length,
-    passed: checks.length - failed.length,
-    failed: failed.length,
-  },
-  checks,
-  pass: failed.length === 0,
-};
-
-fs.mkdirSync(path.dirname(REPORT_PATH), { recursive: true });
-fs.writeFileSync(REPORT_PATH, `${JSON.stringify(report, null, 2)}\n`);
-console.log(JSON.stringify(report.summary));
-if (failed.length) {
-  for (const check of failed) {
-    console.error(`FAILED: ${check.name}`, check.evidence);
-  }
-}
-console.log(`F2 audit report: ${path.relative(ROOT, REPORT_PATH)}`);
-if (!report.pass) process.exitCode = 1;
