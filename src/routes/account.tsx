@@ -27,7 +27,7 @@ import { Price } from "@/components/ui/commerce-primitives";
 import { SHOES } from "@/data/shoes";
 import { type DemoAccountProfile, useStore } from "@/store";
 
-const ACCOUNT_SECTIONS = ["overview", "profile", "addresses", "orders"] as const;
+const ACCOUNT_SECTIONS = ["overview", "profile", "addresses", "orders", "support"] as const;
 type AccountSection = (typeof ACCOUNT_SECTIONS)[number];
 
 type AccountSearch = {

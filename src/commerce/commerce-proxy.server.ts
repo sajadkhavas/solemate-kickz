@@ -22,6 +22,14 @@ function targetFor(method: string, splat: string): Target | null {
     return { path: "/api/v1/commerce/checkout", method: "POST" };
   if (splat === "orders" && normalized === "GET")
     return { path: "/api/v1/commerce/orders", method: "GET" };
+  if (splat === "trust/content" && normalized === "GET")
+    return { path: "/api/v1/trust/content", method: "GET" };
+  if (splat === "support/cases" && (normalized === "GET" || normalized === "POST"))
+    return { path: "/api/v1/support/cases", method: normalized };
+  if (splat === "communications" && normalized === "GET")
+    return { path: "/api/v1/communications", method: "GET" };
+  if (splat === "reviews" && normalized === "POST")
+    return { path: "/api/v1/reviews", method: "POST" };
 
   const item = /^cart\/items\/(\d+)$/.exec(splat);
   if (item && (normalized === "PUT" || normalized === "DELETE")) {
@@ -30,6 +38,15 @@ function targetFor(method: string, splat: string): Target | null {
   const order = /^orders\/([0-9a-f-]{36})$/.exec(splat);
   if (order && normalized === "GET")
     return { path: `/api/v1/commerce/orders/${order[1]}`, method: "GET" };
+  const tracking = /^orders\/([0-9a-f-]{36})\/tracking$/.exec(splat);
+  if (tracking && normalized === "GET")
+    return { path: `/api/v1/commerce/orders/${tracking[1]}/tracking`, method: "GET" };
+  const supportCase = /^support\/cases\/([0-9a-f-]{36})$/.exec(splat);
+  if (supportCase && normalized === "GET")
+    return { path: `/api/v1/support/cases/${supportCase[1]}`, method: "GET" };
+  const supportMessage = /^support\/cases\/([0-9a-f-]{36})\/messages$/.exec(splat);
+  if (supportMessage && normalized === "POST")
+    return { path: `/api/v1/support/cases/${supportMessage[1]}/messages`, method: "POST" };
   const paymentStart = /^orders\/([0-9a-f-]{36})\/payments$/.exec(splat);
   if (paymentStart && normalized === "POST")
     return { path: `/api/v1/commerce/orders/${paymentStart[1]}/payments`, method: "POST" };

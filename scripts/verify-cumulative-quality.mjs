@@ -31,6 +31,7 @@ const expectedReportFragments = [
   "p05-discovery-pdp",
   "p06-cart-checkout-orders",
   "p07-payment-shipping-returns",
+  "p08-trust-support-postpurchase",
 ];
 
 function walk(directory) {

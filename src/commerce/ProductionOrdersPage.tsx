@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import {
   CreditCard,
+  Headphones,
   MapPin,
   PackageCheck,
   RotateCcw,
@@ -22,6 +23,11 @@ import {
 } from "@/commerce/commerce-api";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/data/shoes";
+import {
+  getOrderTracking,
+  submitVerifiedReview,
+  type OrderTracking,
+} from "@/postpurchase/postpurchase-api";
 
 export function ProductionOrdersPage({ orderId }: { orderId?: string }) {
   const [session, setSession] = useState<CustomerSession | null>();
@@ -162,6 +168,7 @@ function AccountNav() {
     { section: "profile", label: "پروفایل", icon: UserRound },
     { section: "addresses", label: "آدرس‌ها", icon: MapPin },
     { section: "orders", label: "سفارش‌ها", icon: PackageCheck },
+    { section: "support", label: "پشتیبانی", icon: Headphones },
   ] as const;
   return (
     <aside className="rounded-2xl border border-border bg-surface p-3 lg:sticky lg:top-28 lg:self-start">
@@ -289,6 +296,7 @@ function OrderDetail({
             کد رهگیری: <bdi dir="ltr">{order.shipment.tracking_number}</bdi>
           </p>
         ) : null}
+        <TrackingTimeline orderId={order.id} />
         <div className="mt-6 space-y-3">
           {order.items.map((item) => (
             <div key={item.sku} className="rounded-xl border border-border p-4">
@@ -314,6 +322,8 @@ function OrderDetail({
           </div>
         </dl>
       </div>
+
+      {delivered ? <VerifiedReview order={order} /> : null}
 
       {delivered && !returnExists ? (
         <div className="rounded-2xl border border-border bg-surface p-6">
@@ -403,6 +413,107 @@ function OrderDetail({
             ))}
           </div>
         </div>
+      ) : null}
+    </section>
+  );
+}
+
+function TrackingTimeline({ orderId }: { orderId: string }) {
+  const [tracking, setTracking] = useState<OrderTracking>();
+  useEffect(() => {
+    void getOrderTracking(orderId)
+      .then(setTracking)
+      .catch(() => setTracking(undefined));
+  }, [orderId]);
+  return (
+    <section className="mt-6" data-testid="p08-order-tracking">
+      <h3 className="text-lg font-black">مسیر واقعی سفارش</h3>
+      {tracking?.events.length ? (
+        <ol className="mt-3 space-y-2">
+          {tracking.events.map((event, index) => (
+            <li
+              key={`${event.type}-${event.at}-${index}`}
+              className="rounded-xl border border-border p-3 text-sm"
+            >
+              <strong>{event.status}</strong> · {event.reason}
+              {event.at ? (
+                <time className="mr-2 text-muted-foreground">
+                  {new Date(event.at).toLocaleString("fa-IR")}
+                </time>
+              ) : null}
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className="mt-2 text-sm text-muted-foreground">
+          هنوز رویداد رهگیری بیشتری ثبت نشده است.
+        </p>
+      )}
+    </section>
+  );
+}
+
+function VerifiedReview({ order }: { order: CommerceOrder }) {
+  const [rating, setRating] = useState(5);
+  const [body, setBody] = useState("");
+  const [status, setStatus] = useState("");
+  const [busy, setBusy] = useState(false);
+  const item = order.items[0];
+  const submit = async () => {
+    if (!item) return;
+    setBusy(true);
+    setStatus("");
+    try {
+      await submitVerifiedReview({ order_item_id: item.id, rating, body });
+      setBody("");
+      setStatus("نظر خرید تأییدشده برای بررسی moderation ثبت شد و هنوز عمومی نیست.");
+    } catch {
+      setStatus("ثبت نظر انجام نشد یا این قلم قبلاً بررسی شده است.");
+    } finally {
+      setBusy(false);
+    }
+  };
+  if (!item) return null;
+  return (
+    <section
+      className="rounded-2xl border border-border bg-surface p-6"
+      data-testid="p08-verified-review"
+    >
+      <h3 className="text-xl font-black">نظر خرید تأییدشده</h3>
+      <p className="mt-2 text-sm text-muted-foreground">
+        نظر ابتدا pending است و فقط پس از moderation می‌تواند منتشر شود.
+      </p>
+      <label className="mt-4 block text-sm">
+        امتیاز
+        <select
+          value={rating}
+          onChange={(event) => setRating(Number(event.target.value))}
+          className="mt-2 min-h-11 w-full rounded-xl border border-input bg-background px-3"
+        >
+          {[5, 4, 3, 2, 1].map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="mt-4 block text-sm">
+        متن
+        <textarea
+          required
+          maxLength={5000}
+          value={body}
+          onChange={(event) => setBody(event.target.value)}
+          className="mt-2 min-h-24 w-full rounded-xl border border-input bg-background p-3"
+        />
+      </label>
+      <Button disabled={busy || !body.trim()} onClick={() => void submit()} className="mt-4">
+        {busy ? "در حال ثبت…" : "ارسال برای بررسی"}
+      </Button>
+      {status ? (
+        <p role="status" className="mt-3 text-sm">
+          {status}
+        </p>
       ) : null}
     </section>
   );

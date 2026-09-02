@@ -2,8 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { ProductionAccountPage, type ProductionAccountSection } from "@/auth/ProductionAccountPage";
 import { ProductionOrdersPage } from "@/commerce/ProductionOrdersPage";
+import { ProductionSupportPage } from "@/postpurchase/ProductionSupportPage";
 
-const SECTIONS = ["overview", "profile", "addresses", "orders"] as const;
+const SECTIONS = ["overview", "profile", "addresses", "orders", "support"] as const;
 
 type AccountSearch = {
   section: ProductionAccountSection;
@@ -33,5 +34,6 @@ export const Route = createFileRoute("/account")({
 function AccountRouteComponent() {
   const { section, order } = Route.useSearch();
   if (section === "orders") return <ProductionOrdersPage orderId={order} />;
+  if ((section as string) === "support") return <ProductionSupportPage />;
   return <ProductionAccountPage section={section} orderId={order} />;
 }

@@ -89,6 +89,7 @@ const orderSchema = z.object({
   ),
   items: z.array(
     z.object({
+      id: z.number().int().positive(),
       sku: z.string(),
       product_name: z.string(),
       variant_title: z.string(),
