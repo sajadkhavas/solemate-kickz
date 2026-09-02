@@ -169,7 +169,12 @@ for (const [name, source] of [
   if (!source.includes("Backend") && name !== "production mobile navigation") {
     failures.push(`${name} must state backend authority`);
   }
-  for (const forbidden of ["@/store", "SearchDialog", "NotificationCenter", "framer-motion"]) {
+  for (const forbidden of [
+    "@/store",
+    "SearchDialog",
+    "@/components/notifications/NotificationCenter",
+    "framer-motion",
+  ]) {
     if (source.includes(forbidden))
       failures.push(`${name} imports heavy/demo shell dependency ${forbidden}`);
   }

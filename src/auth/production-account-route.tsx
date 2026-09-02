@@ -2,19 +2,21 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { ProductionAccountPage, type ProductionAccountSection } from "@/auth/ProductionAccountPage";
 import { ProductionOrdersPage } from "@/commerce/ProductionOrdersPage";
+import { ProductionLoyaltyPage } from "@/engagement/ProductionLoyaltyPage";
 import { ProductionSupportPage } from "@/postpurchase/ProductionSupportPage";
 
-const SECTIONS = ["overview", "profile", "addresses", "orders", "support"] as const;
+const SECTIONS = ["overview", "profile", "addresses", "orders", "support", "loyalty"] as const;
+type P09AccountSection = ProductionAccountSection | "loyalty";
 
 type AccountSearch = {
-  section: ProductionAccountSection;
+  section: P09AccountSection;
   order?: string;
 };
 
 export const Route = createFileRoute("/account")({
   validateSearch: (search: Record<string, unknown>): AccountSearch => ({
-    section: SECTIONS.includes(search.section as ProductionAccountSection)
-      ? (search.section as ProductionAccountSection)
+    section: SECTIONS.includes(search.section as P09AccountSection)
+      ? (search.section as P09AccountSection)
       : "overview",
     order: typeof search.order === "string" && search.order.trim() ? search.order : undefined,
   }),
@@ -23,7 +25,7 @@ export const Route = createFileRoute("/account")({
       { title: "حساب من — SOLE" },
       {
         name: "description",
-        content: "پروفایل، آدرس، سفارش، پرداخت، ارسال و کنترل‌های حریم خصوصی حساب مشتری SOLE.",
+        content: "پروفایل، آدرس، سفارش، پشتیبانی و امتیازهای سرورمحور حساب مشتری SOLE.",
       },
       { name: "robots", content: "noindex, nofollow" },
     ],
@@ -32,8 +34,11 @@ export const Route = createFileRoute("/account")({
 });
 
 function AccountRouteComponent() {
-  const { section, order } = Route.useSearch();
+  const search = Route.useSearch();
+  const section = String(search.section) as P09AccountSection;
+  const order = search.order;
   if (section === "orders") return <ProductionOrdersPage orderId={order} />;
-  if ((section as string) === "support") return <ProductionSupportPage />;
-  return <ProductionAccountPage section={section} orderId={order} />;
+  if (section === "support") return <ProductionSupportPage />;
+  if (section === "loyalty") return <ProductionLoyaltyPage />;
+  return <ProductionAccountPage section={section as ProductionAccountSection} orderId={order} />;
 }

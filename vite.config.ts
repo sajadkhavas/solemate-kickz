@@ -28,6 +28,18 @@ const productionCartRouteModule = fileURLToPath(
 const productionCheckoutRouteModule = fileURLToPath(
   new URL("./src/commerce/production-checkout-route.tsx", import.meta.url),
 );
+const productionWishlistRouteModule = fileURLToPath(
+  new URL("./src/engagement/production-wishlist-route.tsx", import.meta.url),
+);
+const productionShoeCardModule = fileURLToPath(
+  new URL("./src/engagement/ProductionShoeCard.tsx", import.meta.url),
+);
+const productionProductPurchasePanelModule = fileURLToPath(
+  new URL("./src/engagement/ProductionProductPurchasePanel.tsx", import.meta.url),
+);
+const productionNotificationCenterModule = fileURLToPath(
+  new URL("./src/engagement/ProductionNotificationCenter.tsx", import.meta.url),
+);
 const productionNavbarModule = fileURLToPath(
   new URL("./src/auth/ProductionNavbar.tsx", import.meta.url),
 );
@@ -43,7 +55,9 @@ function isProductionCustomerPage(importer?: string) {
     importer?.includes("/src/auth/ProductionAuthPage.tsx") ||
     importer?.includes("/src/auth/ProductionAccountPage.tsx") ||
     importer?.includes("/src/commerce/ProductionCartPage.tsx") ||
-    importer?.includes("/src/commerce/ProductionCheckoutPage.tsx")
+    importer?.includes("/src/commerce/ProductionCheckoutPage.tsx") ||
+    importer?.includes("/src/engagement/ProductionWishlistPage.tsx") ||
+    importer?.includes("/src/engagement/ProductionLoyaltyPage.tsx")
   );
 }
 
@@ -54,12 +68,18 @@ const productionTruthGuard = {
     if (!isProductionBuild) return null;
 
     if (source === "@/data/shoes") return productionCatalogModule;
+    if (source === "@/components/ShoeCard") return productionShoeCardModule;
+    if (source === "@/components/product/ProductPurchasePanel")
+      return productionProductPurchasePanelModule;
+    if (source === "@/components/notifications/NotificationCenter")
+      return productionNotificationCenterModule;
 
     if (importer?.includes("/src/routeTree.gen.ts")) {
       if (source === "./routes/auth") return productionAuthRouteModule;
       if (source === "./routes/account") return productionAccountRouteModule;
       if (source === "./routes/cart") return productionCartRouteModule;
       if (source === "./routes/checkout") return productionCheckoutRouteModule;
+      if (source === "./routes/wishlist") return productionWishlistRouteModule;
     }
 
     if (isProductionCustomerPage(importer)) {
@@ -74,7 +94,7 @@ const productionTruthGuard = {
 
 export default defineConfig({
   // Local development and browser QA retain deterministic fixture catalog/account surfaces.
-  // Production builds replace product truth and auth/account routes with backend-authoritative modules.
+  // Production builds replace product truth and customer routes with backend-authoritative modules.
   vite: {
     plugins: [productionTruthGuard],
     build: {
