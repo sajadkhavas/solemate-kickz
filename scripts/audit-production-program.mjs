@@ -135,7 +135,7 @@ if (!/Production program contract audit[\s\S]*audit:production-program/.test(wor
 }
 if (
   pkg?.scripts?.["audit:production-program"] !==
-  "node scripts/audit-production-program.mjs && bun run audit:p03 && bun run audit:p04"
+  "node scripts/audit-production-program.mjs && bun run audit:p03 && bun run audit:p04 && bun run audit:p08 && bun run test:p08"
 ) {
   failures.push("package script audit:production-program is missing");
 }
@@ -301,6 +301,28 @@ for (const [command, args] of p07Commands) {
   if (result.status !== 0) failures.push(`P07 permanent gate failed: ${command} ${args.join(" ")}`);
 }
 
+const p08FormatFiles = [
+  "docs/handoffs/P08-TRUST-SUPPORT-POSTPURCHASE.md",
+  "scripts/audit-p08-trust-support-postpurchase.mjs",
+  "scripts/test-p08-trust-support-postpurchase.mjs",
+  "src/auth/ProductionAccountPage.tsx",
+  "src/auth/production-account-route.tsx",
+  "src/commerce/commerce-api.ts",
+  "src/commerce/commerce-proxy.server.ts",
+  "src/commerce/ProductionOrdersPage.tsx",
+  "src/postpurchase/postpurchase-api.ts",
+  "src/postpurchase/ProductionSupportPage.tsx",
+];
+const p08Commands = [
+  ["node", ["scripts/audit-p08-trust-support-postpurchase.mjs"]],
+  ["node", ["scripts/test-p08-trust-support-postpurchase.mjs"]],
+  ["bunx", ["prettier", "--check", ...p08FormatFiles]],
+];
+for (const [command, args] of p08Commands) {
+  const result = spawnSync(command, args, { stdio: "inherit" });
+  if (result.status !== 0) failures.push(`P08 permanent gate failed: ${command} ${args.join(" ")}`);
+}
+
 if (failures.length) {
   console.error("Production program audit failed:");
   for (const failure of failures) console.error(`- ${failure}`);
@@ -308,5 +330,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including permanent P05, P06 and P07 gates.",
+  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including permanent P05-P08 gates.",
 );

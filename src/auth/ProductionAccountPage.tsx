@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {
   CircleUserRound,
   Download,
+  Headphones,
   LogOut,
   MapPin,
   PackageCheck,
@@ -35,7 +36,7 @@ import { Button } from "@/components/ui/button";
 import { getCommerceOrders, type CommerceOrder } from "@/commerce/commerce-api";
 import { formatPrice } from "@/data/shoes";
 
-export type ProductionAccountSection = "overview" | "profile" | "addresses" | "orders";
+export type ProductionAccountSection = "overview" | "profile" | "addresses" | "orders" | "support";
 
 export function ProductionAccountPage({
   section,
@@ -198,6 +199,7 @@ function AccountNav({ section }: { section: ProductionAccountSection }) {
     { id: "profile", label: "پروفایل", icon: UserRound },
     { id: "addresses", label: "آدرس‌ها", icon: MapPin },
     { id: "orders", label: "سفارش‌ها", icon: PackageCheck },
+    { id: "support", label: "پشتیبانی", icon: Headphones },
   ] as const;
 
   return (
