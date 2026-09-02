@@ -18,6 +18,20 @@ Updated: 2026-09-02
 - Backend merge SHA: `6b9fef79ee0585423b7f763974f87c82a67c9cf1`
 - Tracking issue: `sajadkhavas/solemate-kickz#55`
 - Open review threads at merge: `0` on both implementation PRs.
+- Implementation branch: `phase/sole-p09-loyalty-crm-notifications`
+- Closure branch: `phase/sole-p09-final-closure`
+
+## Scope, exclusions and dependencies
+
+- Scope: durable owner-scoped wishlist, explicit notification policy, authoritative lifecycle signals, append-only delivery audit, server-authoritative loyalty ledger, Production UI/BFF integration and permanent cumulative QA.
+- Exclusions: live provider activation, credential enrollment, production deployment/data mutation, fabricated delivery/price evidence, inferred consent and client-authoritative points.
+- Dependencies: accepted P03 identity/consent boundary, P05 inventory/back-in-stock intent, P07 order/payment lifecycle and P08 truthful communication boundary.
+
+## Files and commands
+
+- Frontend implementation files are the reviewed change set of PR #56; Backend implementation files are the reviewed change set of PR #13. This closure changes `README.md`, `PROJECT_STATUS.md`, `contracts/production-phase-registry.json` and this handoff only.
+- Backend acceptance command topology: Composer install, Pint check, migrations/schema validation and the complete Backend Quality workflow including adversarial P09 tests.
+- Frontend acceptance command topology: frozen install, `audit:p09`, `test:p09`, TypeScript, lint, locked formatting, Production/VPS builds, runtime smoke, visual/browser suites, F12 budgets, aggregate evidence and clean-tree verification through the single permanent Frontend CI workflow.
 
 ## Accepted scope
 
@@ -64,6 +78,22 @@ Updated: 2026-09-02
 ## QA notes
 
 The first cumulative frontend attempt exposed a stale P03 source guard that matched the generic string `NotificationCenter`; it was corrected to continue forbidding the legacy/demo notification component while allowing the P09 production component. A later F10 browser attempt failed on one runner despite zero F10 source changes and no runtime/module exception. The exact same accepted commit was rerun on a fresh runner and F10 behavior passed without weakening the F10 test or changing 3D code. The final accepted implementation run `33636810572` completed every step successfully.
+
+## Route, accessibility, performance and security evidence
+
+- Routes/viewports: Production wishlist, account notification preferences/center and loyalty balance/history were exercised inside the cumulative mobile and desktop browser/visual matrix.
+- Accessibility: semantic controls, labels, keyboard behavior and status/error announcements remain covered by the cumulative accessibility/browser suites.
+- Performance: F12 route/shared/3D budgets passed unchanged; no budget was increased or bypassed.
+- Security/privacy: all customer records are owner-scoped; browser input cannot assert consent, eligibility, delivery success or loyalty balance; provider absence fails closed and delivery attempts remain auditable.
+- Known limitations: external notification delivery remains unavailable until a reviewed provider and credentials are activated in a later controlled production-readiness phase.
+- Out-of-scope findings: the runner-specific F10 failure was non-reproducible on the exact unchanged head and passed on the fresh accepted run; no 3D source or F10 gate was weakened.
+
+## Official references
+
+- Laravel 13 documentation: https://laravel.com/docs/13.x
+- Laravel database transactions: https://laravel.com/docs/13.x/database#database-transactions
+- Laravel queues: https://laravel.com/docs/13.x/queues
+- OWASP Transaction Authorization Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Transaction_Authorization_Cheat_Sheet.html
 
 ## Rollback impact
 
