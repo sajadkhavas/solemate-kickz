@@ -318,3 +318,28 @@ add(
 const failed = checks.filter((check) => !check.pass);
 const report = {
   schemaVersion: 2,
+  audit: "f2-navigation-search",
+  generatedAt: new Date().toISOString(),
+  repository: "sajadkhavas/solemate-kickz",
+  branch,
+  foundationSha: FOUNDATION_SHA,
+  head,
+  summary: {
+    total: checks.length,
+    passed: checks.length - failed.length,
+    failed: failed.length,
+  },
+  checks,
+  pass: failed.length === 0,
+};
+
+fs.mkdirSync(path.dirname(REPORT_PATH), { recursive: true });
+fs.writeFileSync(REPORT_PATH, `${JSON.stringify(report, null, 2)}\n`);
+console.log(JSON.stringify(report.summary));
+if (failed.length) {
+  for (const check of failed) {
+    console.error(`FAILED: ${check.name}`, check.evidence);
+  }
+}
+console.log(`F2 audit report: ${path.relative(ROOT, REPORT_PATH)}`);
+if (!report.pass) process.exitCode = 1;
