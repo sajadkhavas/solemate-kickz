@@ -105,6 +105,7 @@ const authorizedAdditions = [
   "/api/auth/$",
   "/api/catalog",
   "/api/commerce/$",
+  "/api/observability/$",
   "/api/seo",
   "/checkout",
   "/pages/$slug",
@@ -112,7 +113,7 @@ const authorizedAdditions = [
 ];
 const expectedRoutes = [...new Set([...baselineRoutes, ...authorizedAdditions])].sort();
 add(
-  "generated route set is exact Foundation plus authorized F7/F9/P02/P03/P06/P10 additions",
+  "generated route set is exact Foundation plus authorized F7/F9/P02/P03/P06/P10/P11 additions",
   JSON.stringify(currentRoutes) === JSON.stringify(expectedRoutes) &&
     files.routeTree.includes("CheckoutRouteImport") &&
     files.routeTree.includes("WishlistRouteImport") &&
@@ -120,6 +121,7 @@ add(
     files.routeTree.includes("ApiCatalogRouteImport") &&
     files.routeTree.includes("ApiAuthSplatRouteImport") &&
     files.routeTree.includes("ApiCommerceSplatRouteImport") &&
+    files.routeTree.includes("ApiObservabilitySplatRouteImport") &&
     files.routeTree.includes("ApiSeoRouteImport") &&
     files.routeTree.includes("PagesSlugRouteImport"),
   { baselineRoutes, authorizedAdditions, expectedRoutes, currentRoutes },

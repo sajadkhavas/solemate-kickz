@@ -27,6 +27,9 @@ Updated: 2026-09-02
 - Frontend production RUM/consent/BFF integration and permanent P11 CI gates are not yet accepted.
 - No production provider, credential, deployment or production-data mutation is authorized.
 - P11 remains `registered` in the production phase registry until both repositories are green and merged.
+- Frontend implements a first-party, same-origin, consent-gated and non-blocking RUM boundary. Browser events are taxonomy-allow-listed and cannot express Backend-only commerce outcomes.
+- The account surface exposes a reversible analytics consent switch; no analytics is emitted before Backend consent authority grants it.
+- The observability BFF is exact-route allow-listed, forwards first-party session/CSRF authority, bounds timeout to five seconds and fails closed.
 
 ## Standards locked
 

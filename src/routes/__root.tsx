@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { useStore } from "@/store";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { RumReporter } from "@/observability/RumReporter";
 
 function NotFoundComponent() {
   return (
@@ -212,6 +213,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <MotionConfig reducedMotion="user">
         <StoreHydration />
+        <RumReporter />
         <RouteAccessibility />
         <CartDrawer />
         <MagneticCursor />
