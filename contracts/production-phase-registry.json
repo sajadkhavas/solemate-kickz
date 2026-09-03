@@ -428,7 +428,37 @@
         "P07",
         "P10"
       ],
-      "status": "registered"
+      "status": "completed",
+      "startSha": "230a79cfacad474860ee779f0012c5549e611172",
+      "endSha": "aac9ebd657b406b47e15ce259d97d13136dc76ae",
+      "branch": "phase/sole-p11-observability-rum-cro",
+      "startedAt": "2026-09-02",
+      "acceptedAt": "2026-09-03",
+      "qaResult": "PASS — Backend Quality #67 / run 33729120674 passed the exact backend implementation head and post-merge Quality #68 / run 33729319234 passed. Frontend CI #1284 / run 33730146775 passed all 137 cumulative steps on the exact frontend implementation END_SHA, including permanent P11 contracts, typecheck, lint, format, production/VPS builds, unchanged F12 budgets, runtime smoke, all visual QA, aggregate evidence and clean-tree verification.",
+      "rollbackImpact": "Frontend rollback target is START_SHA 230a79cfacad474860ee779f0012c5549e611172; backend rollback target is d06e4922a7aad1aac17f34c3315e0694f35bc42c. Rollback removes first-party observability, RUM, funnel and CRO foundations while preserving P10. No production activation, production-data mutation or provider credential enrollment occurred.",
+      "serverRequired": false,
+      "backendRepository": "sajadkhavas/sole-backend",
+      "backendStartSha": "d06e4922a7aad1aac17f34c3315e0694f35bc42c",
+      "backendAcceptedEndSha": "d1f10f60977f4b007e3bd2950082c28b4873f221",
+      "backendMergeSha": "88283eff2237a4cbc6f36f3e20960329420e64c0",
+      "backendQualityRun": "33729120674",
+      "backendPostMergeQualityRun": "33729319234",
+      "backendPullRequest": "https://github.com/sajadkhavas/sole-backend/pull/15",
+      "frontendQualityRun": "33730146775",
+      "frontendMergeSha": "782f49c026e245044d889ab2d98583649b323afc",
+      "frontendPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/62",
+      "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/61",
+      "performanceContract": "Accepted F12 limits remain unchanged; pre-consent RUM is network-silent, telemetry is non-blocking and model-viewer remains isolated.",
+      "privacyContract": "Analytics requires explicit reversible consent; events use a bounded taxonomy and route templates without raw URL, query, body, identity or free-form PII. Commerce outcomes remain server-authoritative.",
+      "completedParts": [
+        "P11.1",
+        "P11.2",
+        "P11.3",
+        "P11.4",
+        "P11.5",
+        "P11.6",
+        "P11.7"
+      ]
     },
     {
       "id": "P12",
