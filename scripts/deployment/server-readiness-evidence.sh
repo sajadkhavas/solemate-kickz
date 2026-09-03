@@ -118,11 +118,15 @@ fi
 
 if git config --system --get-all safe.directory 2>/dev/null | grep -Fxq '*'; then fail GIT_SAFE_DIRECTORY_WILDCARD_ABSENT; else pass GIT_SAFE_DIRECTORY_WILDCARD_ABSENT; fi
 
-sha256sum "$REPORT" > "$REPORT.sha256"
-chmod 0600 "$REPORT" "$REPORT.sha256"
-value EVIDENCE_SHA256_FILE "$REPORT.sha256"
 if (( FAILURES > 0 )); then
   value READINESS_RESULT FAIL
-  exit 1
+  RESULT=1
+else
+  value READINESS_RESULT PASS
+  RESULT=0
 fi
-value READINESS_RESULT PASS
+sha256sum "$REPORT" > "$REPORT.sha256"
+chmod 0600 "$REPORT" "$REPORT.sha256"
+printf 'EVIDENCE_REPORT=%s\n' "$REPORT"
+printf 'EVIDENCE_SHA256_FILE=%s\n' "$REPORT.sha256"
+exit "$RESULT"
