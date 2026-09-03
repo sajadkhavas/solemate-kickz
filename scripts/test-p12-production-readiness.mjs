@@ -28,6 +28,10 @@ check(
 );
 check("P00 capacity minimum remains enforced", evidence.includes("MEMORY_P00_MINIMUM"));
 check("evidence is checksummed", evidence.includes("sha256sum"));
+check(
+  "evidence checksum covers final readiness result",
+  evidence.indexOf("value READINESS_RESULT") < evidence.indexOf('sha256sum "$REPORT"'),
+);
 check("rehearsal has explicit inactive guard", rehearsal.includes("INACTIVE_ONLY"));
 check("rehearsal performs disposable restore", rehearsal.includes("mysql-restore-drill.sh"));
 check("rehearsal never authorizes public activation", rehearsal.includes("PUBLIC_ACTIVATION=NO"));
