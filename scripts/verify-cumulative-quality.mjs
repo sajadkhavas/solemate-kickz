@@ -6,22 +6,22 @@ import process from "node:process";
 const ROOT = process.cwd();
 const ARTIFACTS = path.join(ROOT, "artifacts");
 
-const p12FormatFiles = [
-  "deploy/nginx/sole-http-limits.conf.example",
-  "deploy/nginx/sole-sites.conf.example",
-  "deploy/systemd/sole-frontend.service.example",
-  "docs/handoffs/P12-WORKING-HANDOFF.md",
-  "docs/production/P12-SERVER-REHEARSAL.md",
-  "scripts/audit-p12-production-readiness.mjs",
+const p12ShellFiles = [
   "scripts/deployment/prepare-immutable-release.sh",
   "scripts/deployment/server-readiness-evidence.sh",
   "scripts/deployment/server-readiness-rehearsal.sh",
+];
+const p12FormatFiles = [
+  "docs/handoffs/P12-WORKING-HANDOFF.md",
+  "docs/production/P12-SERVER-REHEARSAL.md",
+  "scripts/audit-p12-production-readiness.mjs",
   "scripts/test-p12-production-readiness.mjs",
   "scripts/verify-cumulative-quality.mjs",
 ];
 const p12Commands = [
   ["node", ["scripts/audit-p12-production-readiness.mjs"]],
   ["node", ["scripts/test-p12-production-readiness.mjs"]],
+  ...p12ShellFiles.map((file) => ["bash", ["-n", file]]),
   ["bunx", ["prettier", "--check", ...p12FormatFiles]],
 ];
 for (const [command, args] of p12Commands) {
