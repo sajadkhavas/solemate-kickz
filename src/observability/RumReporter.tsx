@@ -42,7 +42,7 @@ export function RumReporter() {
     if (!("PerformanceObserver" in window)) return;
     const navigation = performance.getEntriesByType("navigation")[0];
     if (navigation instanceof PerformanceNavigationTiming)
-          emit("rum_ttfb", navigation.responseStart);
+      emit("rum_ttfb", navigation.responseStart);
     for (const [type, name] of [
       ["largest-contentful-paint", "rum_lcp"],
       ["event", "rum_inp"],
@@ -68,8 +68,7 @@ export function RumReporter() {
       } catch {
         // Unsupported observers are omitted; no synthetic field value is emitted.
       }
-        }
-
+    }
 
     return () => {
       active = false;
