@@ -43,7 +43,7 @@ for (const marker of [
   "largest-contentful-paint",
   '"event"',
   "layout-shift",
-  "getAnalyticsConsent",
+  "hasLocalAnalyticsConsent",
 ])
   if (!reporter.includes(marker)) failures.push(`RUM reporter missing ${marker}`);
 for (const marker of [
