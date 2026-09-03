@@ -6,6 +6,7 @@ FRONTEND_ROOT="${SOLE_ROOT:-/var/www/sole}"
 BACKEND_ROOT="${SOLE_BACKEND_ROOT:-/var/www/sole-backend}"
 EXPECTED_FRONTEND_SHA="${EXPECTED_FRONTEND_SHA:-}"
 EXPECTED_BACKEND_SHA="${EXPECTED_BACKEND_SHA:-}"
+FRONTEND_CANDIDATE="${SOLE_FRONTEND_CANDIDATE:-}"
 BACKEND_CANDIDATE="${SOLE_BACKEND_CANDIDATE:-}"
 EVIDENCE_DIR="${SOLE_EVIDENCE_DIR:-/var/tmp/sole-p12-evidence}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
@@ -32,13 +33,10 @@ fi
 for command in git node php composer mysql nginx systemctl systemd-analyze ss curl sha256sum; do
   if command -v "$command" >/dev/null 2>&1; then pass "COMMAND_${command^^}"; else fail "COMMAND_${command^^}"; fi
 done
-command -v bun >/dev/null 2>&1 && value BUN_VERSION "$(bun --version 2>/dev/null || true)" || value BUN_VERSION LOCAL_RUNTIME_ONLY
-command -v node >/dev/null 2>&1 && value NODE_VERSION "$(node --version 2>/dev/null || true)"
-command -v php >/dev/null 2>&1 && value PHP_VERSION "$(php -r 'echo PHP_VERSION;' 2>/dev/null || true)"
-command -v mysql >/dev/null 2>&1 && value MYSQL_CLIENT_VERSION "$(mysql --version 2>/dev/null | sed 's/[[:space:]]\+/ /g')"
 
 MEM_KB="$(awk '/MemTotal:/ {print $2}' /proc/meminfo)"
 SWAP_KB="$(awk '/SwapTotal:/ {print $2}' /proc/meminfo)"
+DISK_FREE_KB="$(df -Pk / | awk 'NR==2 {print $4}')"
 value MEMORY_TOTAL_MB "$((MEM_KB / 1024))"
 value SWAP_TOTAL_MB "$((SWAP_KB / 1024))"
 value CPU_COUNT "$(getconf _NPROCESSORS_ONLN)"
@@ -46,21 +44,51 @@ value LOAD_AVERAGE "$(cut -d' ' -f1-3 /proc/loadavg)"
 value ROOT_DISK "$(df -Pk / | awk 'NR==2 {print $2":"$3":"$4":"$5}')"
 value ROOT_INODES "$(df -Pi / | awk 'NR==2 {print $2":"$3":"$4":"$5}')"
 value OPEN_FILE_LIMIT "$(ulimit -n)"
+(( MEM_KB >= 786432 )) && pass MEMORY_P00_MINIMUM || fail MEMORY_P00_MINIMUM
+(( DISK_FREE_KB >= 2097152 )) && pass DISK_P00_MINIMUM || fail DISK_P00_MINIMUM
+
+if [[ -x "$FRONTEND_ROOT/current/.runtime/node/bin/node" ]]; then
+  NODE_PINNED="$($FRONTEND_ROOT/current/.runtime/node/bin/node --version)"
+  value FRONTEND_PINNED_NODE "$NODE_PINNED"
+  [[ "$NODE_PINNED" == 'v22.23.1' ]] && pass FRONTEND_PINNED_NODE_VERSION || fail FRONTEND_PINNED_NODE_VERSION
+else
+  fail FRONTEND_PINNED_NODE_VERSION
+fi
+if [[ -x "$FRONTEND_ROOT/current/.runtime/bun" ]]; then
+  BUN_PINNED="$($FRONTEND_ROOT/current/.runtime/bun --version)"
+  value FRONTEND_PINNED_BUN "$BUN_PINNED"
+  [[ "$BUN_PINNED" == '1.3.14' ]] && pass FRONTEND_PINNED_BUN_VERSION || fail FRONTEND_PINNED_BUN_VERSION
+else
+  fail FRONTEND_PINNED_BUN_VERSION
+fi
+value PHP_VERSION "$(php -r 'echo PHP_VERSION;' 2>/dev/null || true)"
+value MYSQL_CLIENT_VERSION "$(mysql --version 2>/dev/null | sed 's/[[:space:]]\+/ /g')"
 
 check_release() {
-  local label="$1" root="$2" expected="$3" current target sha
+  local label="$1" root="$2" current target sha
   current="$root/current"
   if [[ ! -L "$current" ]]; then fail "${label}_CURRENT_SYMLINK"; return; fi
-  target="$(readlink -f "$current")"
+  target="$(readlink -f "$current" 2>/dev/null || true)"
+  if [[ -z "$target" || ! -d "$target" ]]; then fail "${label}_CURRENT_TARGET"; return; fi
   [[ "$target" == "$root/releases/"* ]] && pass "${label}_CURRENT_INSIDE_RELEASES" || fail "${label}_CURRENT_INSIDE_RELEASES"
-  sha="$(git -C "$target" rev-parse HEAD 2>/dev/null || true)"
+  sha="$(git -c safe.directory="$target" -C "$target" rev-parse HEAD 2>/dev/null || true)"
   value "${label}_CURRENT_SHA" "$sha"
-  if [[ "$sha" == "$expected" ]]; then pass "${label}_EXPECTED_SHA_ACTIVE"; else value "${label}_EXPECTED_SHA_ACTIVE" NOT_REQUIRED_FOR_INACTIVE_P12_CANDIDATE; fi
   value "${label}_CURRENT_PERMS" "$(stat -c '%U:%G:%a' "$target")"
   value "${label}_SHARED_PERMS" "$(stat -c '%U:%G:%a' "$root/shared" 2>/dev/null || echo MISSING)"
 }
-check_release FRONTEND "$FRONTEND_ROOT" "$EXPECTED_FRONTEND_SHA"
-check_release BACKEND "$BACKEND_ROOT" "$EXPECTED_BACKEND_SHA"
+check_release FRONTEND "$FRONTEND_ROOT"
+check_release BACKEND "$BACKEND_ROOT"
+
+check_candidate() {
+  local label="$1" candidate="$2" expected="$3" sha
+  if [[ -z "$candidate" ]]; then value "${label}_CANDIDATE" NOT_REQUESTED; return; fi
+  [[ -d "$candidate" ]] || { fail "${label}_CANDIDATE_EXISTS"; return; }
+  sha="$(git -c safe.directory="$candidate" -C "$candidate" rev-parse HEAD 2>/dev/null || true)"
+  value "${label}_CANDIDATE_SHA" "$sha"
+  [[ "$sha" == "$expected" ]] && pass "${label}_CANDIDATE_EXACT_SHA" || fail "${label}_CANDIDATE_EXACT_SHA"
+}
+check_candidate FRONTEND "$FRONTEND_CANDIDATE" "$EXPECTED_FRONTEND_SHA"
+check_candidate BACKEND "$BACKEND_CANDIDATE" "$EXPECTED_BACKEND_SHA"
 
 for unit in nginx.service php8.3-fpm.service mysql.service redis-server.service sole-frontend.service sole-backend-queue.service sole-backend-scheduler.timer; do
   safe="${unit//[^A-Za-z0-9]/_}"
@@ -82,15 +110,13 @@ for port in 3306 6379; do
   if grep -Eq "^(0\\.0\\.0\\.0|\\*|\\[::\\]):${port}$" <<<"$LISTENERS"; then fail "PORT_${port}_NOT_PUBLIC"; else pass "PORT_${port}_NOT_PUBLIC"; fi
 done
 
-if [[ -n "$BACKEND_CANDIDATE" ]]; then
-  [[ -d "$BACKEND_CANDIDATE" ]] || fail BACKEND_CANDIDATE_EXISTS
-  CANDIDATE_SHA="$(git -C "$BACKEND_CANDIDATE" rev-parse HEAD 2>/dev/null || true)"
-  value BACKEND_CANDIDATE_SHA "$CANDIDATE_SHA"
-  [[ "$CANDIDATE_SHA" == "$EXPECTED_BACKEND_SHA" ]] && pass BACKEND_CANDIDATE_EXACT_SHA || fail BACKEND_CANDIDATE_EXACT_SHA
+if [[ -n "$BACKEND_CANDIDATE" && -d "$BACKEND_CANDIDATE" ]]; then
   if (cd "$BACKEND_CANDIDATE" && php artisan sole:production:check --json --connections) >>"$REPORT" 2>&1; then pass BACKEND_RUNTIME_CONNECTIONS; else fail BACKEND_RUNTIME_CONNECTIONS; fi
 else
   value BACKEND_RUNTIME_CONNECTIONS NOT_REQUESTED_NO_CANDIDATE
 fi
+
+if git config --system --get-all safe.directory 2>/dev/null | grep -Fxq '*'; then fail GIT_SAFE_DIRECTORY_WILDCARD_ABSENT; else pass GIT_SAFE_DIRECTORY_WILDCARD_ABSENT; fi
 
 sha256sum "$REPORT" > "$REPORT.sha256"
 chmod 0600 "$REPORT" "$REPORT.sha256"
