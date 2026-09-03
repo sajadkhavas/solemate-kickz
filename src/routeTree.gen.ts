@@ -22,6 +22,7 @@ import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PagesSlugRouteImport } from './routes/pages.$slug'
 import { Route as ApiSeoRouteImport } from './routes/api.seo'
 import { Route as ApiCatalogRouteImport } from './routes/api.catalog'
+import { Route as ApiObservabilitySplatRouteImport } from './routes/api.observability.$'
 import { Route as ApiCommerceSplatRouteImport } from './routes/api.commerce.$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api.auth.$'
 
@@ -90,6 +91,11 @@ const ApiCatalogRoute = ApiCatalogRouteImport.update({
   path: '/api/catalog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiObservabilitySplatRoute = ApiObservabilitySplatRouteImport.update({
+  id: '/api/observability/$',
+  path: '/api/observability/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCommerceSplatRoute = ApiCommerceSplatRouteImport.update({
   id: '/api/commerce/$',
   path: '/api/commerce/$',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/product/$id': typeof ProductIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/commerce/$': typeof ApiCommerceSplatRoute
+  '/api/observability/$': typeof ApiObservabilitySplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/product/$id': typeof ProductIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/commerce/$': typeof ApiCommerceSplatRoute
+  '/api/observability/$': typeof ApiObservabilitySplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -152,6 +160,7 @@ export interface FileRoutesById {
   '/product/$id': typeof ProductIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/commerce/$': typeof ApiCommerceSplatRoute
+  '/api/observability/$': typeof ApiObservabilitySplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -171,6 +180,7 @@ export interface FileRouteTypes {
     | '/product/$id'
     | '/api/auth/$'
     | '/api/commerce/$'
+    | '/api/observability/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/product/$id'
     | '/api/auth/$'
     | '/api/commerce/$'
+    | '/api/observability/$'
   id:
     | '__root__'
     | '/'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/product/$id'
     | '/api/auth/$'
     | '/api/commerce/$'
+    | '/api/observability/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -223,6 +235,7 @@ export interface RootRouteChildren {
   ProductIdRoute: typeof ProductIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiCommerceSplatRoute: typeof ApiCommerceSplatRoute
+  ApiObservabilitySplatRoute: typeof ApiObservabilitySplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -318,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCatalogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/observability/$': {
+      id: '/api/observability/$'
+      path: '/api/observability/$'
+      fullPath: '/api/observability/$'
+      preLoaderRoute: typeof ApiObservabilitySplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/commerce/$': {
       id: '/api/commerce/$'
       path: '/api/commerce/$'
@@ -351,6 +371,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductIdRoute: ProductIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiCommerceSplatRoute: ApiCommerceSplatRoute,
+  ApiObservabilitySplatRoute: ApiObservabilitySplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

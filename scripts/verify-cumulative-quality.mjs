@@ -34,6 +34,7 @@ const expectedReportFragments = [
   "p08-trust-support-postpurchase",
   "p09-loyalty-crm-notifications",
   "p10-seo-content-merchant",
+  "p11-observability-rum-cro",
 ];
 
 function walk(directory) {

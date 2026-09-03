@@ -35,6 +35,7 @@ import { Footer } from "@/components/sections/Footer";
 import { Button } from "@/components/ui/button";
 import { getCommerceOrders, type CommerceOrder } from "@/commerce/commerce-api";
 import { formatPrice } from "@/data/shoes";
+import { AnalyticsConsentPanel } from "@/observability/AnalyticsConsentPanel";
 
 export type ProductionAccountSection = "overview" | "profile" | "addresses" | "orders" | "support";
 
@@ -288,6 +289,8 @@ function Overview({
           ) : null}
         </div>
       </section>
+
+      <AnalyticsConsentPanel onStatus={onStatus} />
 
       <section className="rounded-[var(--radius-xl)] border border-danger/30 bg-danger/5 p-6">
         <h2 className="font-display text-2xl font-black">مدیریت حذف حساب</h2>

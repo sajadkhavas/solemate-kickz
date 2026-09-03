@@ -357,6 +357,32 @@ for (const [command, args] of p10Commands) {
   if (result.status !== 0) failures.push(`P10 permanent gate failed: ${command} ${args.join(" ")}`);
 }
 
+const p11FormatFiles = [
+  "docs/handoffs/P11-WORKING-HANDOFF.md",
+  "scripts/audit-p11-observability-rum-cro.mjs",
+  "scripts/test-p11-observability-rum-cro.mjs",
+  "scripts/audit-production-program.mjs",
+  "scripts/verify-cumulative-quality.mjs",
+  "src/observability/contracts.ts",
+  "src/observability/client.ts",
+  "src/observability/RumReporter.tsx",
+  "src/observability/AnalyticsConsentPanel.tsx",
+  "src/observability/observability-proxy.server.ts",
+  "src/routes/api.observability.$.ts",
+  "src/routes/__root.tsx",
+  "src/auth/ProductionAccountPage.tsx",
+  "package.json",
+];
+const p11Commands = [
+  ["node", ["scripts/audit-p11-observability-rum-cro.mjs"]],
+  ["node", ["scripts/test-p11-observability-rum-cro.mjs"]],
+  ["bunx", ["prettier", "--check", ...p11FormatFiles]],
+];
+for (const [command, args] of p11Commands) {
+  const result = spawnSync(command, args, { stdio: "inherit" });
+  if (result.status !== 0) failures.push(`P11 permanent gate failed: ${command} ${args.join(" ")}`);
+}
+
 if (failures.length) {
   console.error("Production program audit failed:");
   for (const failure of failures) console.error(`- ${failure}`);
@@ -364,5 +390,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including permanent P05-P10 gates.",
+  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including permanent P05-P11 gates.",
 );
