@@ -31,7 +31,10 @@ check("evidence is checksummed", evidence.includes("sha256sum"));
 check("rehearsal has explicit inactive guard", rehearsal.includes("INACTIVE_ONLY"));
 check("rehearsal performs disposable restore", rehearsal.includes("mysql-restore-drill.sh"));
 check("rehearsal never authorizes public activation", rehearsal.includes("PUBLIC_ACTIVATION=NO"));
-check("nginx only executes index.php", nginx.includes("location = /index.php") && nginx.includes("location ~ \\.php$"));
+check(
+  "nginx only executes index.php",
+  nginx.includes("location = /index.php") && nginx.includes("location ~ \\.php$"),
+);
 check("frontend systemd keeps process group kill", service.includes("KillMode=control-group"));
 check(
   "ownership bootstrap rejects wildcard git trust",
