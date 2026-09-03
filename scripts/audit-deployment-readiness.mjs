@@ -143,7 +143,7 @@ requireMatch("systemd service must bind loopback", service, /127\.0\.0\.1/);
 requireMatch(
   "systemd service must use local Node production output",
   service,
-  /\.runtime\/node\/bin\/node\s+\.output\/server\/index\.mjs/,
+  /\.runtime\/node\/bin\/node\s+(?:\/var\/www\/sole\/current\/)?\.output\/server\/index\.mjs/,
 );
 requireMatch("systemd service must have a hard memory limit", service, /MemoryMax=/);
 if (/\b(vite dev|vite preview|bun run dev)\b/.test(service)) {
