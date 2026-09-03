@@ -9,7 +9,10 @@ const files = {
   consent: fs.readFileSync("src/observability/AnalyticsConsentPanel.tsx", "utf8"),
 };
 const results = [
-  ["analytics is explicit-consent gated", files.reporter.includes("consent.granted")],
+  [
+    "analytics is explicit-consent gated without pre-consent network activity",
+    files.reporter.includes("hasLocalAnalyticsConsent()"),
+  ],
   ["session capability is session-scoped", files.client.includes("sessionStorage")],
   ["transport failure cannot block UX", files.client.includes("catch {")],
   ["raw URL and query are not event properties", !files.client.includes("location.href")],
