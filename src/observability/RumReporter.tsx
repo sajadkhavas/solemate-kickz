@@ -1,7 +1,7 @@
 import { useLocation } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-import { getAnalyticsConsent, sendAnalyticsEvent } from "./client";
+import { hasLocalAnalyticsConsent, sendAnalyticsEvent } from "./client";
 import { routeTemplate } from "./contracts";
 
 type RumName = "rum_lcp" | "rum_inp" | "rum_cls" | "rum_ttfb";
@@ -22,6 +22,8 @@ export function RumReporter() {
   const location = useLocation();
 
   useEffect(() => {
+    if (!hasLocalAnalyticsConsent()) return;
+
     let active = true;
     const observers: PerformanceObserver[] = [];
     const route = routeTemplate(location.pathname);
@@ -37,40 +39,37 @@ export function RumReporter() {
       });
     };
 
-    void getAnalyticsConsent()
-      .then((consent) => {
-        if (!active || !consent.granted || !("PerformanceObserver" in window)) return;
-        const navigation = performance.getEntriesByType("navigation")[0];
-        if (navigation instanceof PerformanceNavigationTiming)
+    if (!("PerformanceObserver" in window)) return;
+    const navigation = performance.getEntriesByType("navigation")[0];
+    if (navigation instanceof PerformanceNavigationTiming)
           emit("rum_ttfb", navigation.responseStart);
-        for (const [type, name] of [
-          ["largest-contentful-paint", "rum_lcp"],
-          ["event", "rum_inp"],
-          ["layout-shift", "rum_cls"],
-        ] as const) {
-          try {
-            const observer = new PerformanceObserver((list) => {
-              const entries = list.getEntries();
-              const last = entries.at(-1) as PerformanceEntry & {
-                value?: number;
-                duration?: number;
-                hadRecentInput?: boolean;
-              };
-              if (!last || last.hadRecentInput) return;
-              emit(name, name === "rum_cls" ? (last.value ?? 0) : last.duration || last.startTime);
-            });
-            observer.observe({
-              type,
-              buffered: true,
-              ...(type === "event" ? { durationThreshold: 40 } : {}),
-            } as PerformanceObserverInit);
-            observers.push(observer);
-          } catch {
-            // Unsupported observers are omitted; no synthetic field value is emitted.
-          }
+    for (const [type, name] of [
+      ["largest-contentful-paint", "rum_lcp"],
+      ["event", "rum_inp"],
+      ["layout-shift", "rum_cls"],
+    ] as const) {
+      try {
+        const observer = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          const last = entries.at(-1) as PerformanceEntry & {
+            value?: number;
+            duration?: number;
+            hadRecentInput?: boolean;
+          };
+          if (!last || last.hadRecentInput) return;
+          emit(name, name === "rum_cls" ? (last.value ?? 0) : last.duration || last.startTime);
+        });
+        observer.observe({
+          type,
+          buffered: true,
+          ...(type === "event" ? { durationThreshold: 40 } : {}),
+        } as PerformanceObserverInit);
+        observers.push(observer);
+      } catch {
+        // Unsupported observers are omitted; no synthetic field value is emitted.
+      }
         }
-      })
-      .catch(() => undefined);
+
 
     return () => {
       active = false;
