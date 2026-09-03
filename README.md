@@ -7,8 +7,12 @@ Production-oriented sneaker commerce platform.
 ## Current state
 
 - Frontend program **F0–F18: completed and released to `main`**
-- Production program **P00–P10: completed/accepted**
-- Remaining production phases **P11–P14: registered**
+- Production program **P00–P11: completed/accepted**
+- Remaining production phases **P12–P14: registered**
+- P11 frontend accepted implementation: `aac9ebd657b406b47e15ce259d97d13136dc76ae`; Frontend CI #1284 / run `33730146775` PASS on all 137 steps; PR #62 merged as `782f49c026e245044d889ab2d98583649b323afc`
+- P11 backend accepted implementation: `d1f10f60977f4b007e3bd2950082c28b4873f221`; Backend Quality #67 / run `33729120674` PASS; PR #15 merged as `88283eff2237a4cbc6f36f3e20960329420e64c0`; post-merge Quality #68 / run `33729319234` PASS
+- P11 delivers W3C request correlation, privacy-safe RED/error telemetry, explicit-consent first-party RUM, server-authoritative funnel evidence and governed CRO experiments
+- P11 performed no production activation, production-data mutation or provider credential enrollment
 - P10 frontend accepted implementation: `3eace6accffc0d50cfa355ef0fc75361aab40869`; Frontend CI #1263 / run `33649237103` PASS on the exact head; PR #59 merged as `8f5f5de1c001bb7d659119cb67ccda95fb0e143b`
 - P10 backend accepted implementation: `cb2a0173e16cb26a30639bf8cfe0cb4b7ab97620`; Backend Quality #60 / run `33649233597` PASS; PR #14 merged as `d06e4922a7aad1aac17f34c3315e0694f35bc42c`
 - P10 delivers governed draft/review/publish/rollback content, backend-owned SEO route/redirect policy, SSR canonical/robots/schema, segmented published-truth sitemaps and readiness-only merchant output
@@ -36,9 +40,9 @@ Production-oriented sneaker commerce platform.
 - P08 governed trust content, owned support, authoritative tracking, truthful communications and moderated verified reviews are complete
 - P09 loyalty/CRM/notification policy is complete with server authority and fail-closed delivery adapters
 - P10 SEO/content/merchant readiness is complete with published-truth authority and fail-closed indexing/feed behavior
-- Next phase: **P11 — Observability, RUM & CRO**
+- Next phase: **P12 — Production Readiness** (server activation requires explicit authorization)
 
-P02 established backend-authoritative catalog/media truth. P03 established backend-authoritative customer identity, profile/address ownership, consent and privacy workflows. P04 added source-backed size/fit guidance. P05 converted discovery and PDP decision surfaces to authoritative production catalog/variant truth. P06 established authoritative cart, checkout, reservation and orders. P07 added verified-payment, shipping quote, fulfillment, return and refund-request lifecycle boundaries. P08 added governed trust facts, support ownership, post-purchase tracking/communications and moderated verified reviews. P09 adds durable customer engagement, policy-governed notification orchestration and server-authoritative loyalty without activating external delivery providers. P10 adds governed content publication, backend-owned SEO policy, segmented sitemaps and verified merchant-feed readiness without submitting to a provider.
+P02 established backend-authoritative catalog/media truth. P03 established backend-authoritative customer identity, profile/address ownership, consent and privacy workflows. P04 added source-backed size/fit guidance. P05 converted discovery and PDP decision surfaces to authoritative production catalog/variant truth. P06 established authoritative cart, checkout, reservation and orders. P07 added verified-payment, shipping quote, fulfillment, return and refund-request lifecycle boundaries. P08 added governed trust facts, support ownership, post-purchase tracking/communications and moderated verified reviews. P09 added durable customer engagement, policy-governed notification orchestration and server-authoritative loyalty. P10 added governed content publication, backend-owned SEO policy, segmented sitemaps and verified merchant-feed readiness. P11 adds privacy-safe first-party observability, consented RUM, authoritative funnel evidence and governed CRO without production activation.
 
 Payment success requires Backend provider verification; shipping, returns and refund requests are durable and server-authoritative. Live charge/refund, carrier and notification-provider activation remain intentionally unavailable until controlled production readiness.
 
