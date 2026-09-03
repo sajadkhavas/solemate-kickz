@@ -2,6 +2,8 @@
 
 P12 is server-required but is not the public release. The sequence is deliberately split into read-only inventory and controlled inactive rehearsal.
 
+The required evidence invariant is `PUBLIC_ACTIVATION=NO`.
+
 ## 1. Read-only inventory
 
 Run `scripts/deployment/server-readiness-evidence.sh` with the exact frontend/backend candidate SHAs. It records only versions, capacity summaries, service state, path ownership/modes, active Git SHAs, listener addresses, nginx syntax, selected systemd hardening properties and the boolean/enum output of the Backend readiness command. It does not print `.env`, service environment, process environment, database credentials, provider credentials, request bodies or customer data.
