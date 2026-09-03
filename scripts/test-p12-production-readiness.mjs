@@ -22,7 +22,10 @@ check("database public bind fails", evidence.includes("PORT_${port}_NOT_PUBLIC")
 check("nginx config is syntax tested", evidence.includes("nginx -t"));
 check("systemd security is measured", evidence.includes("systemd-analyze security"));
 check("backend runtime connections are checked", evidence.includes("--connections"));
-check("pinned frontend runtime versions are checked", evidence.includes("v22.23.1") && evidence.includes("1.3.14"));
+check(
+  "pinned frontend runtime versions are checked",
+  evidence.includes("v22.23.1") && evidence.includes("1.3.14"),
+);
 check("P00 capacity minimum remains enforced", evidence.includes("MEMORY_P00_MINIMUM"));
 check("evidence is checksummed", evidence.includes("sha256sum"));
 check("rehearsal has explicit inactive guard", rehearsal.includes("INACTIVE_ONLY"));
@@ -30,7 +33,10 @@ check("rehearsal performs disposable restore", rehearsal.includes("mysql-restore
 check("rehearsal never authorizes public activation", rehearsal.includes("PUBLIC_ACTIVATION=NO"));
 check("nginx only executes index.php", nginx.includes("location = /index.php") && nginx.includes("location ~ \\.php$"));
 check("frontend systemd keeps process group kill", service.includes("KillMode=control-group"));
-check("ownership bootstrap rejects wildcard git trust", ownership.includes("GLOBAL_GIT_SAFE_DIRECTORY_WILDCARD_FORBIDDEN"));
+check(
+  "ownership bootstrap rejects wildcard git trust",
+  ownership.includes("GLOBAL_GIT_SAFE_DIRECTORY_WILDCARD_FORBIDDEN"),
+);
 check("incident runbooks include rollback decision", runbooks.includes("Rollback decision"));
 check("handoff declares server required", handoff.includes("SERVER_REQUIRED: `true`"));
 check("handoff remains not accepted", handoff.includes("NOT ACCEPTED"));
