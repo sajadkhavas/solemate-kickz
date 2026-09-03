@@ -7,7 +7,24 @@ import {
 } from "./contracts";
 
 const SESSION_KEY = "sole.analytics.session.v1";
+const CONSENT_KEY = "sole.analytics.consent.v1";
 let csrfReady = false;
+
+export function hasLocalAnalyticsConsent(): boolean {
+  try {
+    return localStorage.getItem(CONSENT_KEY) === "granted";
+  } catch {
+    return false;
+  }
+}
+
+function rememberAnalyticsConsent(granted: boolean): void {
+  try {
+    localStorage.setItem(CONSENT_KEY, granted ? "granted" : "denied");
+  } catch {
+    // Storage can be unavailable; telemetry remains disabled in that case.
+  }
+}
 
 function sessionId(): string | null {
   try {
@@ -47,17 +64,21 @@ async function csrf(): Promise<void> {
 }
 
 export async function getAnalyticsConsent(): Promise<AnalyticsConsent> {
-  return (await request<{ data: AnalyticsConsent }>("consent")).data;
+  const consent = (await request<{ data: AnalyticsConsent }>("consent")).data;
+  rememberAnalyticsConsent(consent.granted);
+  return consent;
 }
 
 export async function setAnalyticsConsent(granted: boolean): Promise<AnalyticsConsent> {
   await csrf();
-  return (
+  const consent = (
     await request<{ data: AnalyticsConsent }>("consent", {
       method: "PUT",
       body: JSON.stringify({ granted, policy_version: ANALYTICS_POLICY_VERSION }),
     })
   ).data;
+  rememberAnalyticsConsent(consent.granted);
+  return consent;
 }
 
 export async function sendAnalyticsEvent(
