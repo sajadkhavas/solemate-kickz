@@ -1,7 +1,7 @@
 # P12 Final Handoff — Pre-server Production Readiness
 
 - PHASE: `P12 — Pre-server Production Readiness`
-- STATUS: `ACCEPTED IMPLEMENTATION / CLOSURE IN PROGRESS`
+- STATUS: `COMPLETED / ACCEPTED / REGISTERED / MERGED / CLOSED`
 - FRONTEND START_SHA: `91b4b121603ff3496d680f4dd9e38ce47a89049a`
 - BACKEND START_SHA: `88283eff2237a4cbc6f36f3e20960329420e64c0`
 - BRANCH: `phase/sole-p12-production-readiness` in both repositories
@@ -12,6 +12,11 @@
 - BACKEND CI: Backend Quality #72 / run `33766011186` — PASS
 - FRONTEND PR: `sajadkhavas/solemate-kickz#65`
 - BACKEND PR: `sajadkhavas/sole-backend#16`
+- FRONTEND CLOSURE HEAD: `c9c430fbd3d643c032366ff08c20e13061bc1ab1`
+- FRONTEND CLOSURE CI: Frontend CI #1311 / run `33975276629` — PASS, all 137 steps
+- FRONTEND MERGE SHA: `19228db8999c8e27c140ba4d56081246db3aad80`
+- BACKEND MERGE SHA: `8d865cfe6ef7e533badc4bfa16aef6d0cd5c397c`
+- BACKEND POST-MERGE CI: Backend Quality #73 / run `33975335840` — PASS
 - SERVER_REQUIRED: `false` — real server rehearsal is transferred intact to P14
 - Started: 2026-09-03
 
@@ -46,6 +51,9 @@ Customer-specific production onboarding occurs after a commercial contract as `C
 
 - Backend exact head `fdc4bba9fd53ae5f009daeb17a24c10d026f5bb7` passed Backend Quality #72 / run `33766011186`.
 - Frontend exact head `4ea42bf297db343e76e6c540470abbe1468e56ff` passed all 137 steps in Frontend CI #1309 / run `33765790987`.
+- The re-baseline closure head `c9c430fbd3d643c032366ff08c20e13061bc1ab1` passed all 137 steps in Frontend CI #1311 / run `33975276629`.
+- Backend PR #16 merged as `8d865cfe6ef7e533badc4bfa16aef6d0cd5c397c` with zero review threads; post-merge Backend Quality #73 / run `33975335840` passed.
+- Frontend PR #65 merged as `19228db8999c8e27c140ba4d56081246db3aad80` with zero review threads.
 - The accepted F12 budgets were not increased. Production build, VPS build, runtime smoke, cumulative browser/visual suites, P12 contracts, aggregate evidence and clean-tree verification passed.
 - No VPS was accessed; no production activation, credential enrollment, provider action or production-data mutation occurred.
 

@@ -366,15 +366,34 @@
         "P10",
         "P11"
       ],
-      "status": "registered",
+      "status": "completed",
       "title": "Pre-server Production Readiness",
       "serverRequired": false,
       "startSha": "91b4b121603ff3496d680f4dd9e38ce47a89049a",
       "endSha": "4ea42bf297db343e76e6c540470abbe1468e56ff",
+      "branch": "phase/sole-p12-production-readiness",
+      "startedAt": "2026-09-03",
+      "acceptedAt": "2026-09-05",
+      "qaResult": "PASS — Backend exact head passed Quality #72 / run 33766011186 and merged through PR #16 as 8d865cfe6ef7e533badc4bfa16aef6d0cd5c397c; post-merge Quality #73 / run 33975335840 passed. Frontend implementation run 33765790987 and re-baseline closure run 33975276629 each passed all 137 steps with unchanged F12 budgets; PR #65 merged as 19228db8999c8e27c140ba4d56081246db3aad80.",
+      "rollbackImpact": "Frontend rollback target is START_SHA 91b4b121603ff3496d680f4dd9e38ce47a89049a and backend rollback target is 88283eff2237a4cbc6f36f3e20960329420e64c0. Rollback removes P12 readiness templates, scripts and policies while preserving P00-P11. No server activation, credential enrollment, provider action or production-data mutation occurred.",
       "backendStartSha": "88283eff2237a4cbc6f36f3e20960329420e64c0",
       "backendEndSha": "fdc4bba9fd53ae5f009daeb17a24c10d026f5bb7",
+      "frontendMergeSha": "19228db8999c8e27c140ba4d56081246db3aad80",
+      "backendMergeSha": "8d865cfe6ef7e533badc4bfa16aef6d0cd5c397c",
+      "frontendClosureRunId": "33975276629",
+      "backendPostMergeRunId": "33975335840",
       "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/64",
-      "completedParts": ["P12.1", "P12.2", "P12.3", "P12.4", "P12.5", "P12.6", "P12.7", "P12.8"]
+      "completedParts": [
+        "P12.1",
+        "P12.2",
+        "P12.3",
+        "P12.4",
+        "P12.5",
+        "P12.6",
+        "P12.7",
+        "P12.8",
+        "P12.9"
+      ]
     },
     {
       "id": "P13",
