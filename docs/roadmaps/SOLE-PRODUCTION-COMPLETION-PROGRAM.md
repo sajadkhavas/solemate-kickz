@@ -22,9 +22,9 @@ The frontend program F0-F18 is accepted as the visual and interaction baseline. 
 | P09   | `phase/sole-p09-loyalty-crm-notifications`   | Consent-aware wishlist, back-in-stock, push/email/SMS orchestration and loyalty ledger               | P03, P07   |
 | P10   | `phase/sole-p10-seo-content-merchant`        | CMS/editorial workflow, route SEO matrix, schema, sitemap and merchant-feed readiness                | P02, P08   |
 | P11   | `phase/sole-p11-observability-rum-cro`       | Logs, metrics, traces, RUM, analytics taxonomy, funnel dashboards and experiment guardrails          | P07, P10   |
-| P12   | `phase/sole-p12-production-readiness`        | Security/performance review, backup/restore, runbooks and deploy/rollback rehearsal                  | P00-P11    |
-| P13   | `phase/sole-p13-staging-acceptance`          | Production-like E2E, visual, load, failure, reconciliation and disaster-recovery acceptance          | P12        |
-| P14   | `phase/sole-p14-production-release`          | Exact-SHA production activation, public health verification and post-launch observation              | P13        |
+| P12   | `phase/sole-p12-production-readiness`        | Portable security/performance, backup/restore, runbook and deploy/rollback readiness                 | P00-P11    |
+| P13   | `phase/sole-p13-admin-operations-acceptance` | Complete order/payment/shipping/returns/support/review/notification/loyalty admin operations and QA  | P12        |
+| P14   | `phase/sole-p14-demo-vps-final-acceptance`   | Exact-SHA demo VPS deployment, full-system acceptance, recovery and portable release evidence        | P13        |
 
 ## Phase definitions
 
@@ -76,17 +76,17 @@ Provide a governed CMS workflow and enforce SEO during every route/content chang
 
 Create a versioned event taxonomy, privacy-aware analytics, server correlation IDs, structured logs, error monitoring, RED metrics, Core Web Vitals RUM and funnel dashboards. Experiments require a hypothesis, guardrails, sample plan and rollback; analytics must not block rendering or violate consent.
 
-### P12 — Production readiness
+### P12 — Pre-server production readiness
 
-Complete threat review, secret rotation plan, dependency/security gates, database backup/restore proof, queue/retry policy, capacity and bundle/SSR budgets, alert ownership, incident runbooks, release/rollback scripts, Nginx/systemd review and Git ownership bootstrap. Resolve every severity-1/2 readiness finding.
+Complete threat review, secret rotation plan, dependency/security gates, portable database backup/restore tooling, queue/retry policy, bundle/SSR limits, alert ownership, incident runbooks, release/rollback scripts, Nginx/systemd review and Git ownership bootstrap. Resolve every severity-1/2 readiness finding. Real-host execution evidence is mandatory in P14 and is not waived by pre-server acceptance.
 
-### P13 — Staging acceptance
+### P13 — Admin Operations & Complete Platform Acceptance
 
-Deploy the exact candidate SHA through the production release mechanism to staging. Run desktop/mobile visual regression, full commerce E2E, accessibility, SEO, CWV, load/soak, provider sandbox, webhook replay, process termination, port-leak, backup restore, rollback and external-reachability tests. Snapshot updates are not allowed during the gate.
+Complete the Filament operational surface for orders, payments/reconciliation, shipments/tracking, returns/refunds, support, review moderation, notification delivery evidence and loyalty ledger operations. Enforce least privilege, explicit state transitions, immutable financial truth and append-only audit. Run backend authorization/state-machine/concurrency tests plus complete frontend cumulative acceptance without requiring a paid server.
 
-### P14 — Production release
+### P14 — Demo VPS deployment & final acceptance
 
-Freeze the candidate, record `CURRENT_SHA`, `NEW_SHA`, `RELEASE_PATH` and `ROLLBACK_TARGET`, activate atomically, verify loopback and public health, observe logs/metrics and reconcile initial transactions. Roll back automatically on gate failure. Close only after the observation window and a signed release record.
+Deploy the exact accepted candidate to the low-cost integration/demo VPS through the real release mechanism. Run real-host inventory, capacity-envelope measurement, desktop/mobile E2E, provider-safe flows, webhook replay, process/port ownership, backup plus disposable restore, atomic activation/rollback, failure recovery, loopback/public health and observation. Record `CURRENT_SHA`, `NEW_SHA`, `RELEASE_PATH` and `ROLLBACK_TARGET`. Customer-specific production onboarding follows later as `C01` after a commercial contract.
 
 ## Definition of Done for every phase
 

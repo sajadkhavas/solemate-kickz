@@ -45,8 +45,11 @@ check(
   ownership.includes("GLOBAL_GIT_SAFE_DIRECTORY_WILDCARD_FORBIDDEN"),
 );
 check("incident runbooks include rollback decision", runbooks.includes("Rollback decision"));
-check("handoff declares server required", handoff.includes("SERVER_REQUIRED: `true`"));
-check("handoff remains not accepted", handoff.includes("NOT ACCEPTED"));
+check("handoff closes pre-server scope", handoff.includes("SERVER_REQUIRED: `false`"));
+check(
+  "real-host evidence is transferred without waiver",
+  handoff.includes("transferred intact to P14") && handoff.includes("not a waiver"),
+);
 
 const failed = checks.filter((entry) => !entry.pass);
 const report = {

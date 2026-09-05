@@ -34,9 +34,7 @@
     {
       "id": "P00",
       "slug": "production-foundation",
-      "dependsOn": [
-        "F18"
-      ],
+      "dependsOn": ["F18"],
       "status": "completed",
       "startSha": "6566bdcb259cae3a853162f2072ce7a700f28845",
       "endSha": "4a62f760ba4f4dee25075a9e9f39183d6b27d896",
@@ -47,9 +45,7 @@
     {
       "id": "P01",
       "slug": "backend-admin-product-truth",
-      "dependsOn": [
-        "P00"
-      ],
+      "dependsOn": ["P00"],
       "status": "completed",
       "startSha": "c03f345071c6f7f34a67ebc63e9975233c45dd79",
       "endSha": "1248091fa5157e733d70120bb26ca9a07169263b",
@@ -71,22 +67,12 @@
       "frontendClosureQualityRun": "33262459382",
       "frontendPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/32",
       "supersededFrontendDraftPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/31",
-      "completedParts": [
-        "P01.1",
-        "P01.2",
-        "P01.3",
-        "P01.4",
-        "P01.5",
-        "P01.6",
-        "P01.7"
-      ]
+      "completedParts": ["P01.1", "P01.2", "P01.3", "P01.4", "P01.5", "P01.6", "P01.7"]
     },
     {
       "id": "P02",
       "slug": "media-catalog-ingestion",
-      "dependsOn": [
-        "P01"
-      ],
+      "dependsOn": ["P01"],
       "status": "completed",
       "startSha": "9423700cc8197d69a14a19e5cc29f092f51da115",
       "endSha": "11c16357a846d01020f4774002ee11d8e63b2d2a",
@@ -107,21 +93,12 @@
       "frontendQualityRun": "33405521318",
       "frontendPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/35",
       "supersededFrontendDraftPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/33",
-      "completedParts": [
-        "P02.1",
-        "P02.2",
-        "P02.3",
-        "P02.4",
-        "P02.5",
-        "P02.6"
-      ]
+      "completedParts": ["P02.1", "P02.2", "P02.3", "P02.4", "P02.5", "P02.6"]
     },
     {
       "id": "P03",
       "slug": "auth-customer-security",
-      "dependsOn": [
-        "P01"
-      ],
+      "dependsOn": ["P01"],
       "status": "completed",
       "startSha": "3a908fc6b7be87d7c0c06c85d7d2806be29b6fd1",
       "endSha": "7b4ca63494ec8d8f2557087f1d8d3b04707bf7c0",
@@ -150,22 +127,12 @@
       "frontendPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/37",
       "frontendClosureQualityRun": "recorded-on-pr-37-and-issue-36",
       "performanceContract": "Unchanged F12 limits PASS after lightweight production customer shell plus Vite/Rolldown entries-aware route splitting; no budget increase.",
-      "completedParts": [
-        "P03.1",
-        "P03.2",
-        "P03.3",
-        "P03.4",
-        "P03.5",
-        "P03.6"
-      ]
+      "completedParts": ["P03.1", "P03.2", "P03.3", "P03.4", "P03.5", "P03.6"]
     },
     {
       "id": "P04",
       "slug": "size-fit-intelligence",
-      "dependsOn": [
-        "P02",
-        "P03"
-      ],
+      "dependsOn": ["P02", "P03"],
       "status": "completed",
       "startSha": "5da25a6faca25cc7b23f04efd7a779970afa66a5",
       "endSha": "a59e859331308fbfcf90efb1b29b9f03dc1e7dbb",
@@ -185,21 +152,12 @@
       "frontendPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/38",
       "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/39",
       "privacyContract": "Raw foot length is processed ephemerally and never persisted; fit analytics store only allow-listed aggregate-safe fields.",
-      "completedParts": [
-        "P04.1",
-        "P04.2",
-        "P04.3",
-        "P04.4",
-        "P04.5"
-      ]
+      "completedParts": ["P04.1", "P04.2", "P04.3", "P04.4", "P04.5"]
     },
     {
       "id": "P05",
       "slug": "discovery-pdp-conversion",
-      "dependsOn": [
-        "P02",
-        "P04"
-      ],
+      "dependsOn": ["P02", "P04"],
       "status": "completed",
       "startSha": "aac48e32dec082a4e79ae9c703c2a214e8fa1a68",
       "endSha": "395fd1bd3d683f3fa8633b9a58d2a67a5195af5b",
@@ -222,22 +180,12 @@
       "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/41",
       "performanceContract": "Accepted F12 limits remain unchanged; P05 adds no budget increase and model-viewer remains isolated from non-3D routes.",
       "privacyContract": "Back-in-stock intent is purpose-specific and consented; the backend stores an encrypted contact email and SHA-256 idempotency hash, while notification delivery remains deferred to P09.",
-      "completedParts": [
-        "P05.1",
-        "P05.2",
-        "P05.3",
-        "P05.4",
-        "P05.5",
-        "P05.6"
-      ]
+      "completedParts": ["P05.1", "P05.2", "P05.3", "P05.4", "P05.5", "P05.6"]
     },
     {
       "id": "P06",
       "slug": "cart-checkout-orders",
-      "dependsOn": [
-        "P02",
-        "P03"
-      ],
+      "dependsOn": ["P02", "P03"],
       "status": "completed",
       "startSha": "1b7798e94dc4cb9b8b03972e26e8e9dcf8dafb0f",
       "endSha": "cbb5c014a22878f0efde05fccbf3995e89c5570a",
@@ -260,22 +208,12 @@
       "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/44",
       "performanceContract": "Accepted F12 limits remain unchanged; lightweight Production cart/checkout/account routes add no budget increase.",
       "privacyContract": "The opaque guest-cart UUID is held in an HttpOnly SameSite cookie; checkout requires authenticated address ownership and stores only durable order/address snapshots. P06 accepts no payment-card data.",
-      "completedParts": [
-        "P06.1",
-        "P06.2",
-        "P06.3",
-        "P06.4",
-        "P06.5",
-        "P06.6",
-        "P06.7"
-      ]
+      "completedParts": ["P06.1", "P06.2", "P06.3", "P06.4", "P06.5", "P06.6", "P06.7"]
     },
     {
       "id": "P07",
       "slug": "payment-shipping-returns",
-      "dependsOn": [
-        "P06"
-      ],
+      "dependsOn": ["P06"],
       "status": "completed",
       "startSha": "85557b3f2b34c49507c037dcd4a2a7596956b859",
       "endSha": "f9ecafa36065fc3349cb283889e0618b25c119d6",
@@ -299,22 +237,12 @@
       "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/47",
       "performanceContract": "Accepted F12 limits remain unchanged; P07 keeps payment/shipping lifecycle code inside the existing lightweight Production commerce surfaces and preserves isolated 3D loading.",
       "privacyContract": "Browser callback input is untrusted and cannot declare payment success; provider secrets remain Backend-only; the Browser supplies neither refund amount nor provider webhook data.",
-      "completedParts": [
-        "P07.1",
-        "P07.2",
-        "P07.3",
-        "P07.4",
-        "P07.5",
-        "P07.6",
-        "P07.7"
-      ]
+      "completedParts": ["P07.1", "P07.2", "P07.3", "P07.4", "P07.5", "P07.6", "P07.7"]
     },
     {
       "id": "P08",
       "slug": "trust-support-postpurchase",
-      "dependsOn": [
-        "P07"
-      ],
+      "dependsOn": ["P07"],
       "status": "completed",
       "startSha": "613af206925eafa68f847ad2ebe5e46d0fa1a17a",
       "endSha": "941192bcb19d6cd157ab6ba89926a90595284209",
@@ -337,23 +265,12 @@
       "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/50",
       "performanceContract": "Accepted F12 limits remain unchanged; P08 remains inside the route-split account and order surfaces and does not expand the global shell.",
       "privacyContract": "Support and tracking remain owner-scoped; policy/SLA and delivery claims fail closed; transactional delivery status is never inferred; verified reviews remain private pending moderation.",
-      "completedParts": [
-        "P08.1",
-        "P08.2",
-        "P08.3",
-        "P08.4",
-        "P08.5",
-        "P08.6",
-        "P08.7"
-      ]
+      "completedParts": ["P08.1", "P08.2", "P08.3", "P08.4", "P08.5", "P08.6", "P08.7"]
     },
     {
       "id": "P09",
       "slug": "loyalty-crm-notifications",
-      "dependsOn": [
-        "P03",
-        "P07"
-      ],
+      "dependsOn": ["P03", "P07"],
       "status": "completed",
       "startSha": "d92aa3affe02b24ce40a3ed6062e8c333087b806",
       "endSha": "11e84a91da8c516504389f4f3374eb014cb707a7",
@@ -375,22 +292,12 @@
       "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/55",
       "performanceContract": "Accepted F12 limits remain unchanged; P09 stays in route-split engagement/account surfaces and does not expand the global shell.",
       "privacyContract": "Wishlist and loyalty are owner-scoped; consent, unsubscribe, caps and quiet hours are backend-authoritative; delivery status is never inferred and external adapters fail closed without provider evidence.",
-      "completedParts": [
-        "P09.1",
-        "P09.2",
-        "P09.3",
-        "P09.4",
-        "P09.5",
-        "P09.6"
-      ]
+      "completedParts": ["P09.1", "P09.2", "P09.3", "P09.4", "P09.5", "P09.6"]
     },
     {
       "id": "P10",
       "slug": "seo-content-merchant",
-      "dependsOn": [
-        "P02",
-        "P08"
-      ],
+      "dependsOn": ["P02", "P08"],
       "status": "completed",
       "startSha": "c5c09684921d81f61a7985f32e3e32742d050552",
       "endSha": "3eace6accffc0d50cfa355ef0fc75361aab40869",
@@ -412,22 +319,12 @@
       "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/58",
       "performanceContract": "Accepted F12 limits remain unchanged; P10 keeps content and SEO infrastructure route-split and leaves model-viewer isolated from non-3D routes.",
       "privacyContract": "Only published content and verified catalog truth are public; invalid/unpublished states fail closed, redirects are same-origin, and merchant output is readiness-only with no provider submission.",
-      "completedParts": [
-        "P10.1",
-        "P10.2",
-        "P10.3",
-        "P10.4",
-        "P10.5",
-        "P10.6"
-      ]
+      "completedParts": ["P10.1", "P10.2", "P10.3", "P10.4", "P10.5", "P10.6"]
     },
     {
       "id": "P11",
       "slug": "observability-rum-cro",
-      "dependsOn": [
-        "P07",
-        "P10"
-      ],
+      "dependsOn": ["P07", "P10"],
       "status": "completed",
       "startSha": "230a79cfacad474860ee779f0012c5549e611172",
       "endSha": "aac9ebd657b406b47e15ce259d97d13136dc76ae",
@@ -450,15 +347,7 @@
       "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/61",
       "performanceContract": "Accepted F12 limits remain unchanged; pre-consent RUM is network-silent, telemetry is non-blocking and model-viewer remains isolated.",
       "privacyContract": "Analytics requires explicit reversible consent; events use a bounded taxonomy and route templates without raw URL, query, body, identity or free-form PII. Commerce outcomes remain server-authoritative.",
-      "completedParts": [
-        "P11.1",
-        "P11.2",
-        "P11.3",
-        "P11.4",
-        "P11.5",
-        "P11.6",
-        "P11.7"
-      ]
+      "completedParts": ["P11.1", "P11.2", "P11.3", "P11.4", "P11.5", "P11.6", "P11.7"]
     },
     {
       "id": "P12",
@@ -477,23 +366,37 @@
         "P10",
         "P11"
       ],
-      "status": "registered"
+      "status": "registered",
+      "title": "Pre-server Production Readiness",
+      "serverRequired": false,
+      "startSha": "91b4b121603ff3496d680f4dd9e38ce47a89049a",
+      "endSha": "4ea42bf297db343e76e6c540470abbe1468e56ff",
+      "backendStartSha": "88283eff2237a4cbc6f36f3e20960329420e64c0",
+      "backendEndSha": "fdc4bba9fd53ae5f009daeb17a24c10d026f5bb7",
+      "trackingIssue": "https://github.com/sajadkhavas/solemate-kickz/issues/64",
+      "completedParts": ["P12.1", "P12.2", "P12.3", "P12.4", "P12.5", "P12.6", "P12.7", "P12.8"]
     },
     {
       "id": "P13",
-      "slug": "staging-acceptance",
-      "dependsOn": [
-        "P12"
-      ],
-      "status": "registered"
+      "slug": "admin-operations-platform-acceptance",
+      "dependsOn": ["P12"],
+      "status": "registered",
+      "title": "Admin Operations & Complete Platform Acceptance",
+      "serverRequired": false
     },
     {
       "id": "P14",
-      "slug": "production-release",
-      "dependsOn": [
-        "P13"
-      ],
-      "status": "registered"
+      "slug": "demo-vps-final-acceptance",
+      "dependsOn": ["P13"],
+      "status": "registered",
+      "title": "Demo VPS Deployment & Final Acceptance",
+      "serverRequired": true,
+      "carriesForward": [
+        "P12 real-host inventory",
+        "P12 capacity measurement",
+        "P12 backup/restore proof",
+        "P12 release/rollback rehearsal"
+      ]
     }
   ]
 }
