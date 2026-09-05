@@ -32,6 +32,29 @@ for (const [command, args] of p12Commands) {
   }
 }
 
+const p13FormatFiles = [
+  "contracts/p13-admin-operations.json",
+  "contracts/production-phase-registry.json",
+  "docs/handoffs/P13-WORKING-HANDOFF.md",
+  "package.json",
+  "scripts/audit-p13-admin-operations.mjs",
+  "scripts/test-p13-admin-operations.mjs",
+  "scripts/audit-production-program.mjs",
+  "scripts/verify-cumulative-quality.mjs",
+];
+const p13Commands = [
+  ["node", ["scripts/audit-p13-admin-operations.mjs"]],
+  ["node", ["scripts/test-p13-admin-operations.mjs"]],
+  ["bunx", ["prettier", "--check", ...p13FormatFiles]],
+];
+for (const [command, args] of p13Commands) {
+  const result = spawnSync(command, args, { stdio: "inherit" });
+  if (result.status !== 0) {
+    console.error(`P13 permanent gate failed: ${command} ${args.join(" ")}`);
+    process.exit(1);
+  }
+}
+
 const expectedReportFragments = [
   "f0-f1-foundation",
   "f0-f1-behavior",
@@ -63,6 +86,7 @@ const expectedReportFragments = [
   "p10-seo-content-merchant",
   "p11-observability-rum-cro",
   "p12-production-readiness",
+  "p13-admin-operations",
 ];
 
 function walk(directory) {
