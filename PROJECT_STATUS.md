@@ -2,7 +2,12 @@
 
 **Repository:** `sajadkhavas/solemate-kickz`  
 **Status last reconciled:** 2026-09-05
-**Current accepted frontend phase:** P12 — Pre-server Production Readiness
+**Current accepted frontend phase:** P13 — Admin Operations & Complete Platform Acceptance (closure in progress)
+**P13 START_SHA:** `8bf8b9aef62356fca8dad62d1e8918c7f9225e20`
+**P13 accepted implementation END_SHA:** `20d804b07cd81262c48f4cbc0bd0731571e4c8d6`
+**P13 accepted implementation CI:** Frontend CI #1317 / run `33979524608` — PASS (all 137 steps)
+**Backend P13 implementation:** `915510e6d599e86fb7dba5082a9ebcc658b3ae70`; Backend Quality #76 / run `33979809586` — PASS
+**Backend P13 merge:** `c65830c6eeae24ef42989feadffd8f4b22e99230`
 **P12 START_SHA:** `91b4b121603ff3496d680f4dd9e38ce47a89049a`
 **P12 accepted implementation END_SHA:** `4ea42bf297db343e76e6c540470abbe1468e56ff`
 **P12 accepted implementation CI:** Frontend CI #1309 / run `33765790987` — PASS (all 137 steps)
@@ -108,6 +113,8 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 | P10                  | SEO, content and merchant feeds      | frontend accepted `3eace6accffc0d50cfa355ef0fc75361aab40869`, CI `33649237103`; backend CI `33649233597`; backend merge `d06e4922a7aad1aac17f34c3315e0694f35bc42c`; frontend PR #59; backend PR #14; issue #58                                                   | Completed |
 | P09                  | Loyalty, CRM and notifications       | frontend accepted `11e84a91da8c516504389f4f3374eb014cb707a7`, CI `33636810572`; backend CI `33611927354`; backend merge `6b9fef79ee0585423b7f763974f87c82a67c9cf1`; frontend PR #56; backend PR #13; issue #55                                                   | Completed |
 | P11                  | Observability, RUM and CRO           | frontend accepted `aac9ebd657b406b47e15ce259d97d13136dc76ae`, CI `33730146775`; backend CI `33729120674`; backend merge `88283eff2237a4cbc6f36f3e20960329420e64c0`; frontend PR #62; backend PR #15; issue #61                                                   | Completed |
+| P12                  | Pre-server production readiness      | frontend CI `33765790987`, closure CI `33975276629`; backend CI `33766011186`; frontend final main `8bf8b9aef62356fca8dad62d1e8918c7f9225e20`; backend merge `8d865cfe6ef7e533badc4bfa16aef6d0cd5c397c`; issue #64                                               | Completed |
+| P13                  | Admin operations & acceptance        | frontend implementation `20d804b07cd81262c48f4cbc0bd0731571e4c8d6`, CI `33979524608`; backend implementation `915510e6d599e86fb7dba5082a9ebcc658b3ae70`, CI `33979809586`; backend merge `c65830c6eeae24ef42989feadffd8f4b22e99230`; PRs #68/#17; issue #67      | Closure   |
 
 ### P03 accepted outcomes
 
@@ -264,9 +271,7 @@ Mandatory handoff fields remain: `PHASE`, `STATUS`, `START_SHA`, `END_SHA`, `BRA
 
 ## 8. Next action
 
-**P12 — Pre-server Production Readiness** is in closure after exact-head backend and frontend acceptance.
-
-Accepted implementation heads are frontend `4ea42bf297db343e76e6c540470abbe1468e56ff` (Frontend CI #1309 / `33765790987`, all 137 steps PASS) and backend `fdc4bba9fd53ae5f009daeb17a24c10d026f5bb7` (Backend Quality #72 / `33766011186`, PASS). After P12 merges, P13 starts from the exact new main SHAs. Server activation and real-host evidence begin only in P14 with explicit owner authorization.
+**P13 — Admin Operations & Complete Platform Acceptance** has accepted implementation evidence on both repositories. Backend PR #17 is merged; frontend PR #68 now requires exact-head closure CI and merge. After Issue #67 closes, start P14 from the resulting frontend main `HEAD` and backend `c65830c6eeae24ef42989feadffd8f4b22e99230`. Server activation and all real-host evidence begin only in P14 with explicit owner authorization.
 
 ## 9. Acceptance baseline
 
