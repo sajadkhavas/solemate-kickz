@@ -1,0 +1,92 @@
+# Replace every __PLACEHOLDER__ before installation and run `nginx -t`.
+# This file assumes deploy/nginx/sole-http-limits.conf.example is included in nginx http {}.
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name __SOLE_WEB_HOST__;
+    return 308 https://__SOLE_WEB_HOST__$request_uri;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name __SOLE_API_HOST__;
+    return 308 https://__SOLE_API_HOST__$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name __SOLE_WEB_HOST__;
+
+    ssl_certificate __SOLE_WEB_FULLCHAIN__;
+    ssl_certificate_key __SOLE_WEB_PRIVKEY__;
+
+    client_max_body_size 2m;
+    limit_conn sole_connections 40;
+
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+
+    location / {
+        proxy_pass http://127.0.0.1:4173;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_connect_timeout 3s;
+        proxy_send_timeout 30s;
+        proxy_read_timeout 30s;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name __SOLE_API_HOST__;
+
+    ssl_certificate __SOLE_API_FULLCHAIN__;
+    ssl_certificate_key __SOLE_API_PRIVKEY__;
+
+    root /var/www/sole-backend/current/public;
+    index index.php;
+    client_max_body_size 12m;
+    limit_conn sole_connections 40;
+
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+
+    location ^~ /api/ {
+        limit_req zone=sole_api_general burst=120 nodelay;
+        try_files $uri /index.php?$query_string;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /index.php {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+        fastcgi_param DOCUMENT_ROOT $document_root;
+        fastcgi_param HTTPS on;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_connect_timeout 3s;
+        fastcgi_send_timeout 30s;
+        fastcgi_read_timeout 30s;
+    }
+
+    location ~ \.php$ {
+        return 404;
+    }
+
+    location ~ /\. {
+        deny all;
+    }
+}

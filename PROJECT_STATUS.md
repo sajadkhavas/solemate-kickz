@@ -98,9 +98,9 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 | P06                  | Cart, checkout and orders            | frontend accepted `cbb5c014a22878f0efde05fccbf3995e89c5570a`, CI `33532454934`; backend exact-head CI `33530472189`; backend merge `269616149acbd8977fd55c2bfde6fd65bffbe45a`; frontend PR #45; backend PR #10; issue #44                                        | Completed |
 | P07                  | Payment, shipping and returns        | frontend accepted `f9ecafa36065fc3349cb283889e0618b25c119d6`, CI `33555570220`; focused CI `33552361775`; backend CI `33551751760`; backend merge `0abe7ce7c6cea34107f15d0d67e046942e428fcb`; frontend PR #48; backend PR #11; issue #47                         | Completed |
 | P08                  | Trust, support and post-purchase     | frontend accepted `941192bcb19d6cd157ab6ba89926a90595284209`, CI `33601208706`; backend CI `33601878601`; backend merge `63409594be2b60083401c997fe71bbacb7209e5f`; frontend PR #51; backend PR #12; issue #50                                                   | Completed |
-| P10                  | SEO, content and merchant feeds       | frontend accepted `3eace6accffc0d50cfa355ef0fc75361aab40869`, CI `33649237103`; backend CI `33649233597`; backend merge `d06e4922a7aad1aac17f34c3315e0694f35bc42c`; frontend PR #59; backend PR #14; issue #58                                                        | Completed |
+| P10                  | SEO, content and merchant feeds      | frontend accepted `3eace6accffc0d50cfa355ef0fc75361aab40869`, CI `33649237103`; backend CI `33649233597`; backend merge `d06e4922a7aad1aac17f34c3315e0694f35bc42c`; frontend PR #59; backend PR #14; issue #58                                                   | Completed |
 | P09                  | Loyalty, CRM and notifications       | frontend accepted `11e84a91da8c516504389f4f3374eb014cb707a7`, CI `33636810572`; backend CI `33611927354`; backend merge `6b9fef79ee0585423b7f763974f87c82a67c9cf1`; frontend PR #56; backend PR #13; issue #55                                                   | Completed |
-| P11                  | Observability, RUM and CRO            | frontend accepted `aac9ebd657b406b47e15ce259d97d13136dc76ae`, CI `33730146775`; backend CI `33729120674`; backend merge `88283eff2237a4cbc6f36f3e20960329420e64c0`; frontend PR #62; backend PR #15; issue #61                                                   | Completed |
+| P11                  | Observability, RUM and CRO           | frontend accepted `aac9ebd657b406b47e15ce259d97d13136dc76ae`, CI `33730146775`; backend CI `33729120674`; backend merge `88283eff2237a4cbc6f36f3e20960329420e64c0`; frontend PR #62; backend PR #15; issue #61                                                   | Completed |
 
 ### P03 accepted outcomes
 
@@ -206,17 +206,17 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 - Backend Quality #67 / run `33729120674`, post-merge #68 / run `33729319234` and Frontend CI #1284 / run `33730146775` passed with unchanged F12 budgets.
 - No production activation, production-data mutation or provider credential enrollment occurred.
 
-P12–P14 remain: **3 phases and 20 planned steps**.
+P12–P14 were re-baselined on 2026-09-05 for a portable product-first delivery model. P12 closes pre-server readiness, P13 completes the manager operations surface, and P14 performs full deployment and acceptance on the demo VPS. Customer production onboarding follows separately as C01 after a contract.
 
 | Phase | Scope                           | Planned steps | Depends on | Server required?         |
 | ----- | ------------------------------- | ------------: | ---------- | ------------------------ |
-| P12   | Production readiness            |             7 | P00–P11    | **Activate server here** |
-| P13   | Staging acceptance              |             6 | P12        | Yes                      |
-| P14   | Production release              |             7 | P13        | Yes                      |
+| P12   | Pre-server production readiness |             9 | P00–P11    | No                       |
+| P13   | Admin operations & acceptance   |            10 | P12        | No                       |
+| P14   | Demo VPS final acceptance       |            10 | P13        | **Activate server here** |
 
 ## 5. Cost and server strategy
 
-Do **not** keep a paid VPS running during P06–P11. Use GitHub Actions and controlled local/CI services for application development and production-like validation. Activate server infrastructure at P12, then perform P13 staging and P14 production.
+Use GitHub Actions and controlled local/CI services through P13. Activate the low-cost integration/demo VPS only in P14, where every deferred real-host inventory, capacity, backup/restore, deploy/rollback and health proof remains mandatory. After a customer contract, C01 repeats deployment and provider/domain enrollment on the customer's infrastructure.
 
 No prototype route, mock provider default, placeholder secret, fake product/customer/order truth or donor secret may cross into production.
 
@@ -257,9 +257,9 @@ Mandatory handoff fields remain: `PHASE`, `STATUS`, `START_SHA`, `END_SHA`, `BRA
 
 ## 8. Next action
 
-**P12 — Production Readiness** is the next registered phase.
+**P12 — Pre-server Production Readiness** is in closure after exact-head backend and frontend acceptance.
 
-Before P12 starts, verify the final P11 closure merge and backend main `88283eff2237a4cbc6f36f3e20960329420e64c0`. P12 is the first server-required phase; infrastructure activation, credentials and external production changes require explicit owner authorization.
+Accepted implementation heads are frontend `4ea42bf297db343e76e6c540470abbe1468e56ff` (Frontend CI #1309 / `33765790987`, all 137 steps PASS) and backend `fdc4bba9fd53ae5f009daeb17a24c10d026f5bb7` (Backend Quality #72 / `33766011186`, PASS). After P12 merges, P13 starts from the exact new main SHAs. Server activation and real-host evidence begin only in P14 with explicit owner authorization.
 
 ## 9. Acceptance baseline
 
@@ -274,6 +274,5 @@ P07 backend exact head `63ce16267a489f56736419edeac3f683125dc2da` passed Backend
 P08 backend exact head `a9ab4df60160963bb998cfc3be10cac54a774a87` passed Backend Quality #50 / run `33601878601` and merged through PR #12 as `63409594be2b60083401c997fe71bbacb7209e5f`. Frontend implementation `941192bcb19d6cd157ab6ba89926a90595284209` passed all 137 steps in Frontend CI #1221 / run `33601208706`; closure CI #1223 / run `33602638893` passed, PR #51 merged as `846101e7480d09903efd879c8db61b1b375b98e5`, and issue #50 closed as completed.
 
 P09 backend exact head `293f6432e790a9874b979ae30961fb9cd258bad7` passed Backend Quality #54 / run `33611927354` and merged through PR #13 as `6b9fef79ee0585423b7f763974f87c82a67c9cf1`. Frontend implementation `11e84a91da8c516504389f4f3374eb014cb707a7` passed all 137 steps in Frontend CI #1247 / run `33636810572` and merged through PR #56 as `2a0802624ebd2e477d6c0cf89dce27bf25d8e6ed` with zero unresolved review threads. Final closure CI/merge evidence is recorded in the P09 handoff and tracking issue #55.
-
 
 P11 backend exact head `d1f10f60977f4b007e3bd2950082c28b4873f221` passed Backend Quality #67 / run `33729120674`, merged through PR #15 as `88283eff2237a4cbc6f36f3e20960329420e64c0`, and post-merge Quality #68 / run `33729319234` passed. Frontend implementation `aac9ebd657b406b47e15ce259d97d13136dc76ae` passed all 137 steps in Frontend CI #1284 / run `33730146775` and merged through PR #62 as `782f49c026e245044d889ab2d98583649b323afc` with zero unresolved review threads.

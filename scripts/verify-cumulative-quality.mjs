@@ -1,9 +1,36 @@
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 
 const ROOT = process.cwd();
 const ARTIFACTS = path.join(ROOT, "artifacts");
+
+const p12ShellFiles = [
+  "scripts/deployment/prepare-immutable-release.sh",
+  "scripts/deployment/server-readiness-evidence.sh",
+  "scripts/deployment/server-readiness-rehearsal.sh",
+];
+const p12FormatFiles = [
+  "docs/handoffs/P12-WORKING-HANDOFF.md",
+  "docs/production/P12-SERVER-REHEARSAL.md",
+  "scripts/audit-p12-production-readiness.mjs",
+  "scripts/test-p12-production-readiness.mjs",
+  "scripts/verify-cumulative-quality.mjs",
+];
+const p12Commands = [
+  ["node", ["scripts/audit-p12-production-readiness.mjs"]],
+  ["node", ["scripts/test-p12-production-readiness.mjs"]],
+  ...p12ShellFiles.map((file) => ["bash", ["-n", file]]),
+  ["bunx", ["prettier", "--check", ...p12FormatFiles]],
+];
+for (const [command, args] of p12Commands) {
+  const result = spawnSync(command, args, { stdio: "inherit" });
+  if (result.status !== 0) {
+    console.error(`P12 permanent gate failed: ${command} ${args.join(" ")}`);
+    process.exit(1);
+  }
+}
 
 const expectedReportFragments = [
   "f0-f1-foundation",
@@ -35,6 +62,7 @@ const expectedReportFragments = [
   "p09-loyalty-crm-notifications",
   "p10-seo-content-merchant",
   "p11-observability-rum-cro",
+  "p12-production-readiness",
 ];
 
 function walk(directory) {
