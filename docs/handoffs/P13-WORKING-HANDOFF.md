@@ -1,14 +1,19 @@
-# P13 Working Handoff — Admin Operations & Complete Platform Acceptance
+# P13 Final Handoff — Admin Operations & Complete Platform Acceptance
 
 - PHASE: `P13 — Admin Operations & Complete Platform Acceptance`
-- STATUS: `IN PROGRESS / NOT ACCEPTED / NOT MERGED / NOT CLOSED`
+- STATUS: `IMPLEMENTED / ACCEPTED / BACKEND MERGED / CLOSURE IN PROGRESS`
 - FRONTEND START_SHA: `8bf8b9aef62356fca8dad62d1e8918c7f9225e20`
 - BACKEND START_SHA: `8d865cfe6ef7e533badc4bfa16aef6d0cd5c397c`
-- FRONTEND END_SHA: `PENDING`
-- BACKEND END_SHA: `PENDING`
+- FRONTEND END_SHA: `20d804b07cd81262c48f4cbc0bd0731571e4c8d6`
+- BACKEND END_SHA: `915510e6d599e86fb7dba5082a9ebcc658b3ae70`
 - BRANCH: `phase/sole-p13-admin-operations-acceptance` in both repositories
 - TRACKING ISSUE: `sajadkhavas/solemate-kickz#67`
-- PR: `PENDING`
+- FRONTEND PR: `sajadkhavas/solemate-kickz#68`
+- BACKEND PR: `sajadkhavas/sole-backend#17`
+- BACKEND MERGE SHA: `c65830c6eeae24ef42989feadffd8f4b22e99230`
+- BACKEND CI: Backend Quality #76 / run `33979809586` — PASS
+- FRONTEND IMPLEMENTATION CI: Frontend CI #1317 / run `33979524608` — PASS, all 137 steps
+- FRONTEND CLOSURE CI: `PENDING`
 - Started: 2026-09-05
 
 ## Scope and acceptance map
@@ -34,7 +39,7 @@
 
 ## Files changed
 
-Pending final reconciliation. Backend work is bounded to Filament operational resources, policies, guarded services/model invariants, QA and workflow integration. Frontend work is bounded to the P13 contract, permanent cumulative audit/report and phase evidence.
+Backend adds ten Filament operational resources, ten deny-by-default model policies, an operations-manager role, read-only auditor coverage, guarded action orchestration, support/review model invariants, explicit provider reconciliation and permanent P13 tests/workflow enforcement. Frontend adds the P13 machine contract, permanent audit/contract report, cumulative verifier requirement and final phase evidence.
 
 ## Dependencies
 
@@ -43,8 +48,8 @@ P12 accepted frontend `8bf8b9aef62356fca8dad62d1e8918c7f9225e20` and backend `8d
 ## Commands and QA result
 
 - `bash scripts/production/audit-p13-admin-operations.sh` — local Backend source contract PASS.
-- Backend PHP/Pint/SQLite/MySQL/concurrency/production configuration: pending exact-head CI.
-- Frontend P13 audit/test, typecheck, lint, format, build, unchanged F12 budgets, runtime/browser/visual cumulative acceptance and clean-tree: pending exact-head CI.
+- Backend Quality #76 / run `33979809586`: PASS on exact head `915510e6d599e86fb7dba5082a9ebcc658b3ae70`, including PHP syntax, Pint, P12/P13 contracts, migrations/RBAC, SQLite/MySQL tests, inventory/loyalty concurrency, dependency audit and production configuration.
+- Frontend CI #1317 / run `33979524608`: PASS on exact implementation head `20d804b07cd81262c48f4cbc0bd0731571e4c8d6`, all 137 steps including P13 audit/report, typecheck, lint, format, production/VPS build, unchanged F12 budgets, runtime smoke, all browser/visual QA, cumulative evidence and clean-tree.
 
 ## Routes and viewports
 
@@ -78,4 +83,4 @@ Frontend rollback target is `8bf8b9aef62356fca8dad62d1e8918c7f9225e20`; Backend 
 
 ## Next phase
 
-P14 — Demo VPS Deployment & Final Acceptance, only after P13 exact-head gates, merge and closure are complete.
+P14 — Demo VPS Deployment & Final Acceptance, only after P13 closure CI, frontend merge and Issue #67 closure are complete.

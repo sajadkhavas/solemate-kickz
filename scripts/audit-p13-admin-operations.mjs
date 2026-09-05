@@ -57,8 +57,28 @@ if (contract?.mutationRules?.browserFinancialAuthority !== false) {
   failures.push("browser financial authority must remain false");
 }
 const phase = registry?.phases?.find((candidate) => candidate.id === "P13");
-if (!phase || phase.serverRequired !== false || phase.status !== "registered") {
-  failures.push("P13 must remain registered and server-free until final closure");
+if (
+  !phase ||
+  phase.serverRequired !== false ||
+  !["registered", "completed"].includes(phase.status)
+) {
+  failures.push("P13 must remain registered/completed and server-free");
+}
+if (phase?.status === "completed") {
+  for (const field of [
+    "startSha",
+    "endSha",
+    "backendStartSha",
+    "backendEndSha",
+    "backendMergeSha",
+    "backendQualityRun",
+    "frontendQualityRun",
+    "qaResult",
+    "rollbackImpact",
+  ]) {
+    if (!phase[field]) failures.push(`completed P13 missing ${field}`);
+  }
+  if (phase.completedParts?.length !== 10) failures.push("completed P13 must record ten parts");
 }
 for (const marker of [
   "Admin Operations & Complete Platform Acceptance",
