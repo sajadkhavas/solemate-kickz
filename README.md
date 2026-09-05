@@ -7,9 +7,10 @@ Production-oriented sneaker commerce platform.
 ## Current state
 
 - Frontend program **F0–F18: completed and released to `main`**
-- Production program **P00–P11: completed/accepted**
-- P12 pre-server production-readiness implementation is accepted; closure/merge is in progress
-- Remaining after P12: **P13 Admin Operations & Complete Platform Acceptance**, then **P14 Demo VPS Deployment & Final Acceptance**
+- Production program **P00–P12: completed/accepted/merged**
+- P12 frontend PR #65 merged as `19228db8999c8e27c140ba4d56081246db3aad80`; closure CI #1311 / `33975276629` passed all 137 steps
+- P12 backend PR #16 merged as `8d865cfe6ef7e533badc4bfa16aef6d0cd5c397c`; post-merge Backend Quality #73 / `33975335840` passed
+- Remaining: **P13 Admin Operations & Complete Platform Acceptance**, then **P14 Demo VPS Deployment & Final Acceptance**
 - P11 frontend accepted implementation: `aac9ebd657b406b47e15ce259d97d13136dc76ae`; Frontend CI #1284 / run `33730146775` PASS on all 137 steps; PR #62 merged as `782f49c026e245044d889ab2d98583649b323afc`
 - P11 backend accepted implementation: `d1f10f60977f4b007e3bd2950082c28b4873f221`; Backend Quality #67 / run `33729120674` PASS; PR #15 merged as `88283eff2237a4cbc6f36f3e20960329420e64c0`; post-merge Quality #68 / run `33729319234` PASS
 - P11 delivers W3C request correlation, privacy-safe RED/error telemetry, explicit-consent first-party RUM, server-authoritative funnel evidence and governed CRO experiments
