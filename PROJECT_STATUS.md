@@ -2,11 +2,12 @@
 
 **Repository:** `sajadkhavas/solemate-kickz`  
 **Status last reconciled:** 2026-09-05
-**Current accepted frontend phase:** P13 — Admin Operations & Complete Platform Acceptance (ready to merge)
+**Current accepted frontend phase:** P13 — Admin Operations & Complete Platform Acceptance (completed, registered and merged)
 **P13 START_SHA:** `8bf8b9aef62356fca8dad62d1e8918c7f9225e20`
 **P13 accepted implementation END_SHA:** `20d804b07cd81262c48f4cbc0bd0731571e4c8d6`
 **P13 accepted implementation CI:** Frontend CI #1317 / run `33979524608` — PASS (all 137 steps)
-**P13 closure head and CI:** `33c721eb775795d9ab335b3b0c77d7910a43ecbe`; Frontend CI #1319 / run `33980294191` — PASS (all 137 steps)
+**P13 closure head and CI:** `300cce6ebea701d3329e470d0c7af416a0cfee78`; Frontend CI #1321 / run `34033821447` — PASS on retry (all 137 steps; unchanged gates)
+**Frontend P13 merge:** `6417bb0a2d6c1a535ce8b8d783059da6bcc9b54c`
 **Backend P13 implementation:** `915510e6d599e86fb7dba5082a9ebcc658b3ae70`; Backend Quality #76 / run `33979809586` — PASS
 **Backend P13 merge:** `c65830c6eeae24ef42989feadffd8f4b22e99230`
 **P12 START_SHA:** `91b4b121603ff3496d680f4dd9e38ce47a89049a`
@@ -115,7 +116,7 @@ All frontend phases F0 through F18 are completed and released. Detailed accepted
 | P09                  | Loyalty, CRM and notifications       | frontend accepted `11e84a91da8c516504389f4f3374eb014cb707a7`, CI `33636810572`; backend CI `33611927354`; backend merge `6b9fef79ee0585423b7f763974f87c82a67c9cf1`; frontend PR #56; backend PR #13; issue #55                                                   | Completed |
 | P11                  | Observability, RUM and CRO           | frontend accepted `aac9ebd657b406b47e15ce259d97d13136dc76ae`, CI `33730146775`; backend CI `33729120674`; backend merge `88283eff2237a4cbc6f36f3e20960329420e64c0`; frontend PR #62; backend PR #15; issue #61                                                   | Completed |
 | P12                  | Pre-server production readiness      | frontend CI `33765790987`, closure CI `33975276629`; backend CI `33766011186`; frontend final main `8bf8b9aef62356fca8dad62d1e8918c7f9225e20`; backend merge `8d865cfe6ef7e533badc4bfa16aef6d0cd5c397c`; issue #64                                               | Completed |
-| P13                  | Admin operations & acceptance        | frontend implementation `20d804b07cd81262c48f4cbc0bd0731571e4c8d6`, CI `33979524608`; closure head `33c721eb775795d9ab335b3b0c77d7910a43ecbe`, CI `33980294191`; backend implementation `915510e6d599e86fb7dba5082a9ebcc658b3ae70`, CI `33979809586`; backend merge `c65830c6eeae24ef42989feadffd8f4b22e99230`; PRs #68/#17; issue #67 | Ready to merge |
+| P13                  | Admin operations & acceptance        | frontend implementation `20d804b07cd81262c48f4cbc0bd0731571e4c8d6`, CI `33979524608`; closure `300cce6ebea701d3329e470d0c7af416a0cfee78`, CI `34033821447`; frontend merge `6417bb0a2d6c1a535ce8b8d783059da6bcc9b54c`; backend merge `c65830c6eeae24ef42989feadffd8f4b22e99230`; PRs #68/#17; issue #67 | Completed |
 
 ### P03 accepted outcomes
 
@@ -272,7 +273,7 @@ Mandatory handoff fields remain: `PHASE`, `STATUS`, `START_SHA`, `END_SHA`, `BRA
 
 ## 8. Next action
 
-**P13 — Admin Operations & Complete Platform Acceptance** has accepted implementation evidence on both repositories. Backend PR #17 is merged; frontend PR #68 now requires exact-head closure CI and merge. After Issue #67 closes, start P14 from the resulting frontend main `HEAD` and backend `c65830c6eeae24ef42989feadffd8f4b22e99230`. Server activation and all real-host evidence begin only in P14 with explicit owner authorization.
+**P13 — Admin Operations & Complete Platform Acceptance** is completed, accepted, registered and merged on both repositories. Frontend PR #68 merged as `6417bb0a2d6c1a535ce8b8d783059da6bcc9b54c`; Backend PR #17 merged as `c65830c6eeae24ef42989feadffd8f4b22e99230`. P14 starts from these baselines. Server activation and all real-host evidence begin only in P14 with explicit owner authorization.
 
 ## 9. Acceptance baseline
 

@@ -7,12 +7,12 @@ Production-oriented sneaker commerce platform.
 ## Current state
 
 - Frontend program **F0–F18: completed and released to `main`**
-- Production program **P00–P13: accepted; P13 ready to merge**
-- P13 frontend implementation `20d804b07cd81262c48f4cbc0bd0731571e4c8d6` passed Frontend CI #1317 / `33979524608`; closure head `33c721eb775795d9ab335b3b0c77d7910a43ecbe` passed all 137 steps in CI #1319 / `33980294191`; PR #68 is ready to merge
+- Production program **P00–P13: completed, registered and merged**
+- P13 frontend implementation `20d804b07cd81262c48f4cbc0bd0731571e4c8d6` passed Frontend CI #1317 / `33979524608`; final closure head `300cce6ebea701d3329e470d0c7af416a0cfee78` passed all 137 steps in CI #1321 / `34033821447`; PR #68 merged as `6417bb0a2d6c1a535ce8b8d783059da6bcc9b54c`
 - P13 backend `915510e6d599e86fb7dba5082a9ebcc658b3ae70` passed Backend Quality #76 / `33979809586`; PR #17 merged as `c65830c6eeae24ef42989feadffd8f4b22e99230`
 - P12 frontend PR #65 merged as `19228db8999c8e27c140ba4d56081246db3aad80`; closure CI #1311 / `33975276629` passed all 137 steps
 - P12 backend PR #16 merged as `8d865cfe6ef7e533badc4bfa16aef6d0cd5c397c`; post-merge Backend Quality #73 / `33975335840` passed
-- Remaining technical phase after P13 closure: **P14 Demo VPS Deployment & Final Acceptance**
+- Remaining technical phase: **P14 Demo VPS Deployment & Final Acceptance**
 - P11 frontend accepted implementation: `aac9ebd657b406b47e15ce259d97d13136dc76ae`; Frontend CI #1284 / run `33730146775` PASS on all 137 steps; PR #62 merged as `782f49c026e245044d889ab2d98583649b323afc`
 - P11 backend accepted implementation: `d1f10f60977f4b007e3bd2950082c28b4873f221`; Backend Quality #67 / run `33729120674` PASS; PR #15 merged as `88283eff2237a4cbc6f36f3e20960329420e64c0`; post-merge Quality #68 / run `33729319234` PASS
 - P11 delivers W3C request correlation, privacy-safe RED/error telemetry, explicit-consent first-party RUM, server-authoritative funnel evidence and governed CRO experiments
