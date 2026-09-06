@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "phase": "P13",
+  "backendRepository": "sajadkhavas/sole-backend",
+  "frontendStartSha": "8bf8b9aef62356fca8dad62d1e8918c7f9225e20",
+  "backendStartSha": "8d865cfe6ef7e533badc4bfa16aef6d0cd5c397c",
+  "serverRequired": false,
+  "resources": [
+    "orders",
+    "payment-attempts",
+    "payment-reconciliations",
+    "shipments",
+    "return-requests",
+    "refund-requests",
+    "support-cases",
+    "product-reviews",
+    "notification-delivery-attempts",
+    "loyalty-ledger-entries"
+  ],
+  "mutationRules": {
+    "genericEditForbidden": true,
+    "genericDeleteForbidden": true,
+    "explicitPermissionRequired": true,
+    "databaseLockRequired": true,
+    "domainStateMachineRequired": true,
+    "appendOnlyAuditRequired": true,
+    "browserFinancialAuthority": false
+  },
+  "excluded": [
+    "VPS deployment",
+    "credential enrollment",
+    "live provider activation",
+    "Production data mutation",
+    "F12 budget changes"
+  ]
+}

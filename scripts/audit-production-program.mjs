@@ -135,7 +135,7 @@ if (!/Production program contract audit[\s\S]*audit:production-program/.test(wor
 }
 if (
   pkg?.scripts?.["audit:production-program"] !==
-  "node scripts/audit-production-program.mjs && bun run audit:p03 && bun run audit:p04 && bun run audit:p08 && bun run test:p08"
+  "node scripts/audit-production-program.mjs && bun run audit:p03 && bun run audit:p04 && bun run audit:p08 && bun run test:p08 && bun run audit:p13 && bun run test:p13"
 ) {
   failures.push("package script audit:production-program is missing");
 }
@@ -383,6 +383,26 @@ for (const [command, args] of p11Commands) {
   if (result.status !== 0) failures.push(`P11 permanent gate failed: ${command} ${args.join(" ")}`);
 }
 
+const p13FormatFiles = [
+  "contracts/p13-admin-operations.json",
+  "contracts/production-phase-registry.json",
+  "docs/handoffs/P13-WORKING-HANDOFF.md",
+  "package.json",
+  "scripts/audit-p13-admin-operations.mjs",
+  "scripts/test-p13-admin-operations.mjs",
+  "scripts/audit-production-program.mjs",
+  "scripts/verify-cumulative-quality.mjs",
+];
+const p13Commands = [
+  ["node", ["scripts/audit-p13-admin-operations.mjs"]],
+  ["node", ["scripts/test-p13-admin-operations.mjs"]],
+  ["bunx", ["prettier", "--check", ...p13FormatFiles]],
+];
+for (const [command, args] of p13Commands) {
+  const result = spawnSync(command, args, { stdio: "inherit" });
+  if (result.status !== 0) failures.push(`P13 permanent gate failed: ${command} ${args.join(" ")}`);
+}
+
 if (failures.length) {
   console.error("Production program audit failed:");
   for (const failure of failures) console.error(`- ${failure}`);
@@ -390,5 +410,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including permanent P05-P11 gates.",
+  "Production program audit passed: P00-P14 and accepted production boundaries are registered, including permanent P05-P13 gates.",
 );

@@ -14,7 +14,7 @@
     "start:vps": "node .output/server/index.mjs",
     "smoke:vps": "node scripts/deployment/smoke-node-server.mjs",
     "audit:deploy": "node scripts/audit-deployment-readiness.mjs",
-    "audit:production-program": "node scripts/audit-production-program.mjs && bun run audit:p03 && bun run audit:p04 && bun run audit:p08 && bun run test:p08",
+    "audit:production-program": "node scripts/audit-production-program.mjs && bun run audit:p03 && bun run audit:p04 && bun run audit:p08 && bun run test:p08 && bun run audit:p13 && bun run test:p13",
     "validate:env": "node scripts/deployment/validate-environment.mjs",
     "health:release": "node scripts/deployment/health-check-release.mjs",
     "audit:p00": "node scripts/audit-p00-production-foundation.mjs",
@@ -96,6 +96,9 @@
     "format:p10": "prettier --write docs/handoffs/P10-SEO-CONTENT-MERCHANT.md package.json scripts/audit-p10-seo-content-merchant.mjs scripts/test-p10-seo-content-merchant.mjs scripts/audit-production-program.mjs scripts/verify-cumulative-quality.mjs src/seo/p10-seo.server.ts src/seo/p10-seo.ts src/seo/p10-seo-infrastructure.ts src/seo/seo-head.ts src/server.ts src/routes/api.seo.ts 'src/routes/pages.$slug.tsx'",
     "audit:p11": "node scripts/audit-p11-observability-rum-cro.mjs",
     "test:p11": "node scripts/test-p11-observability-rum-cro.mjs",
+    "audit:p13": "node scripts/audit-p13-admin-operations.mjs",
+    "test:p13": "node scripts/test-p13-admin-operations.mjs",
+    "format:p13": "prettier --write contracts/p13-admin-operations.json contracts/production-phase-registry.json docs/handoffs/P13-WORKING-HANDOFF.md package.json scripts/audit-p13-admin-operations.mjs scripts/test-p13-admin-operations.mjs scripts/audit-production-program.mjs scripts/verify-cumulative-quality.mjs",
     "format:p11": "prettier --write docs/handoffs/P11-WORKING-HANDOFF.md package.json scripts/audit-p11-observability-rum-cro.mjs scripts/test-p11-observability-rum-cro.mjs scripts/audit-production-program.mjs scripts/verify-cumulative-quality.mjs src/observability/contracts.ts src/observability/client.ts src/observability/RumReporter.tsx src/observability/AnalyticsConsentPanel.tsx src/observability/observability-proxy.server.ts 'src/routes/api.observability.$.ts' src/routes/__root.tsx src/auth/ProductionAccountPage.tsx",
     "format:p08": "prettier --write docs/handoffs/P08-TRUST-SUPPORT-POSTPURCHASE.md package.json scripts/audit-p08-trust-support-postpurchase.mjs scripts/test-p08-trust-support-postpurchase.mjs scripts/audit-production-program.mjs scripts/verify-cumulative-quality.mjs src/auth/ProductionAccountPage.tsx src/auth/production-account-route.tsx src/commerce/commerce-api.ts src/commerce/commerce-proxy.server.ts src/commerce/ProductionOrdersPage.tsx src/postpurchase/postpurchase-api.ts src/postpurchase/ProductionSupportPage.tsx",
     "format:p04": "prettier --write .github/workflows/frontend-ci.yml package.json scripts/audit-p04-size-fit-intelligence.mjs src/catalog/production-catalog.server.ts src/components/product/ProductPurchasePanel.tsx src/components/product/SizeGuideDialog.tsx src/data/shoes.ts"
