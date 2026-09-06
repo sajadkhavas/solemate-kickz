@@ -415,6 +415,8 @@
       "frontendPullRequest": "https://github.com/sajadkhavas/solemate-kickz/pull/68",
       "backendQualityRun": "33979809586",
       "frontendQualityRun": "33979524608",
+      "frontendClosureHead": "33c721eb775795d9ab335b3b0c77d7910a43ecbe",
+      "frontendClosureRun": "33980294191",
       "acceptedAt": "2026-09-05",
       "qaResult": "PASS — Backend exact head 915510e6d599e86fb7dba5082a9ebcc658b3ae70 passed Backend Quality #76 / run 33979809586 and merged through PR #17 as c65830c6eeae24ef42989feadffd8f4b22e99230. Frontend implementation head 20d804b07cd81262c48f4cbc0bd0731571e4c8d6 passed all 137 steps in Frontend CI #1317 / run 33979524608 with unchanged F12 budgets.",
       "rollbackImpact": "Frontend rollback target is 8bf8b9aef62356fca8dad62d1e8918c7f9225e20 and backend rollback target is 8d865cfe6ef7e533badc4bfa16aef6d0cd5c397c. Rollback removes the P13 admin operations surface and permanent P13 acceptance gate while preserving P00-P12. Append-only business evidence created after activation must not be deleted by code rollback. No server, credential, provider or Production-data mutation occurred.",

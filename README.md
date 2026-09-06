@@ -7,8 +7,8 @@ Production-oriented sneaker commerce platform.
 ## Current state
 
 - Frontend program **F0–F18: completed and released to `main`**
-- Production program **P00–P13: implementation accepted; P13 closure in progress**
-- P13 frontend implementation `20d804b07cd81262c48f4cbc0bd0731571e4c8d6` passed all 137 steps in Frontend CI #1317 / `33979524608`; PR #68 owns closure
+- Production program **P00–P13: accepted; P13 ready to merge**
+- P13 frontend implementation `20d804b07cd81262c48f4cbc0bd0731571e4c8d6` passed Frontend CI #1317 / `33979524608`; closure head `33c721eb775795d9ab335b3b0c77d7910a43ecbe` passed all 137 steps in CI #1319 / `33980294191`; PR #68 is ready to merge
 - P13 backend `915510e6d599e86fb7dba5082a9ebcc658b3ae70` passed Backend Quality #76 / `33979809586`; PR #17 merged as `c65830c6eeae24ef42989feadffd8f4b22e99230`
 - P12 frontend PR #65 merged as `19228db8999c8e27c140ba4d56081246db3aad80`; closure CI #1311 / `33975276629` passed all 137 steps
 - P12 backend PR #16 merged as `8d865cfe6ef7e533badc4bfa16aef6d0cd5c397c`; post-merge Backend Quality #73 / `33975335840` passed

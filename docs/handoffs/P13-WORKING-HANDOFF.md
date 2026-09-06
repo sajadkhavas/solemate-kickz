@@ -1,7 +1,7 @@
 # P13 Final Handoff — Admin Operations & Complete Platform Acceptance
 
 - PHASE: `P13 — Admin Operations & Complete Platform Acceptance`
-- STATUS: `IMPLEMENTED / ACCEPTED / BACKEND MERGED / CLOSURE IN PROGRESS`
+- STATUS: `IMPLEMENTED / ACCEPTED / BACKEND MERGED / READY TO MERGE`
 - FRONTEND START_SHA: `8bf8b9aef62356fca8dad62d1e8918c7f9225e20`
 - BACKEND START_SHA: `8d865cfe6ef7e533badc4bfa16aef6d0cd5c397c`
 - FRONTEND END_SHA: `20d804b07cd81262c48f4cbc0bd0731571e4c8d6`
@@ -13,7 +13,8 @@
 - BACKEND MERGE SHA: `c65830c6eeae24ef42989feadffd8f4b22e99230`
 - BACKEND CI: Backend Quality #76 / run `33979809586` — PASS
 - FRONTEND IMPLEMENTATION CI: Frontend CI #1317 / run `33979524608` — PASS, all 137 steps
-- FRONTEND CLOSURE CI: `PENDING`
+- FRONTEND CLOSURE HEAD: `33c721eb775795d9ab335b3b0c77d7910a43ecbe`
+- FRONTEND CLOSURE CI: Frontend CI #1319 / run `33980294191` — PASS, all 137 steps
 - Started: 2026-09-05
 
 ## Scope and acceptance map
@@ -50,6 +51,7 @@ P12 accepted frontend `8bf8b9aef62356fca8dad62d1e8918c7f9225e20` and backend `8d
 - `bash scripts/production/audit-p13-admin-operations.sh` — local Backend source contract PASS.
 - Backend Quality #76 / run `33979809586`: PASS on exact head `915510e6d599e86fb7dba5082a9ebcc658b3ae70`, including PHP syntax, Pint, P12/P13 contracts, migrations/RBAC, SQLite/MySQL tests, inventory/loyalty concurrency, dependency audit and production configuration.
 - Frontend CI #1317 / run `33979524608`: PASS on exact implementation head `20d804b07cd81262c48f4cbc0bd0731571e4c8d6`, all 137 steps including P13 audit/report, typecheck, lint, format, production/VPS build, unchanged F12 budgets, runtime smoke, all browser/visual QA, cumulative evidence and clean-tree.
+- Frontend CI #1319 / run `33980294191`: PASS on exact closure head `33c721eb775795d9ab335b3b0c77d7910a43ecbe`, all 137 steps.
 
 ## Routes and viewports
 
