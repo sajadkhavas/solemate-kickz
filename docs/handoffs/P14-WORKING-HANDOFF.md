@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.7-R2-D2_SIGNED_QUARANTINE_FAILURE_CLASSIFICATION
+next: P14.7-R2-D3_NGINX_SIGNED_REQUEST_CONTEXT_DIAGNOSTIC
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -315,7 +315,7 @@ D1 attempt evidence (2026-09-08 UTC):
 - This is a diagnostic-script failure only. The command was read-only; no database, source, service, symlink, Nginx, Cloudflare, or VPN mutation occurred.
 - D1 is not accepted yet. Remaining row/state, model/resource, route, media-config, storage and final health evidence must be rerun with corrected quoting.
 
-Exact next recovery: `P14.7-R2-D2_SIGNED_QUARANTINE_FAILURE_CLASSIFICATION`.
+Exact next recovery: `P14.7-R2-D3_NGINX_SIGNED_REQUEST_CONTEXT_DIAGNOSTIC`.
 
 Pending:
 
@@ -503,6 +503,22 @@ Status: **FAIL safely; real media ingestion remains blocked**.
 - No MediaAsset/variant/attachment row was created and no real image ingestion began.
 - Do not weaken the route, disable signature checks, publish quarantine, or proceed to real media until failure classification distinguishes storage, Laravel route/request and Nginx behavior.
 
+
+### P14.7 R2-D2 — signed quarantine failure classification
+
+Status: **cleanup/non-mutation PASS; Nginx delivery unresolved**.
+
+- Previous canary cleanup was independently proven; no residue existed.
+- New canary existed on the configured quarantine disk with exact SHA-256 `79512313…760cb`.
+- Signed URL used the expected path and only `expires`/`signature` query keys; its secret value was not exposed.
+- Laravel route matching succeeded for `storage.media_quarantine`.
+- In-process Laravel request returned HTTP 200. Its empty `getContent()` hash is not valid content-integrity evidence because storage delivery uses a streamed/binary response.
+- The same signed request through loopback Nginx returned HTTP 404.
+- Therefore the actionable failure is at the Nginx/FastCGI request-context or delivery boundary, not direct storage existence.
+- Canary cleanup, zero media database rows, evidence checksum, services and VPN all passed.
+- Evidence: `/root/sole-p14-backups/p14-7-signed-route-diagnostic-20260908T131356Z`.
+- Do not ingest real images or change Nginx until D3 captures the response class/file identity, framework route implementation and actual FastCGI URL/signature context.
+
 ## 7. Current completion map
 
 | Acceptance item | State |
@@ -539,6 +555,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.7-R2-D2_SIGNED_QUARANTINE_FAILURE_CLASSIFICATION`
+`P14.7-R2-D3_NGINX_SIGNED_REQUEST_CONTEXT_DIAGNOSTIC`
 
 The first D1 attempt confirmed exact active SHAs, production invariants, all 11 tables and zero rows, then stopped on a read-only PHP quoting error. D1-R1 must complete the remaining contract discovery before any catalog write. Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
