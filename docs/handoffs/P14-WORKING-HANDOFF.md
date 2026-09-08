@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.7-R2-D3_NGINX_SIGNED_REQUEST_CONTEXT_DIAGNOSTIC
+next: P14.7-R2-D4_ROBUST_NGINX_SIGNED_CONTEXT_DIAGNOSTIC
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -315,7 +315,7 @@ D1 attempt evidence (2026-09-08 UTC):
 - This is a diagnostic-script failure only. The command was read-only; no database, source, service, symlink, Nginx, Cloudflare, or VPN mutation occurred.
 - D1 is not accepted yet. Remaining row/state, model/resource, route, media-config, storage and final health evidence must be rerun with corrected quoting.
 
-Exact next recovery: `P14.7-R2-D3_NGINX_SIGNED_REQUEST_CONTEXT_DIAGNOSTIC`.
+Exact next recovery: `P14.7-R2-D4_ROBUST_NGINX_SIGNED_CONTEXT_DIAGNOSTIC`.
 
 Pending:
 
@@ -519,6 +519,19 @@ Status: **cleanup/non-mutation PASS; Nginx delivery unresolved**.
 - Evidence: `/root/sole-p14-backups/p14-7-signed-route-diagnostic-20260908T131356Z`.
 - Do not ingest real images or change Nginx until D3 captures the response class/file identity, framework route implementation and actual FastCGI URL/signature context.
 
+
+### P14.7 R2-D3 — diagnostic-script Reflection failure
+
+Status: **failed safely before Nginx request classification**.
+
+- Exact active backend lock passed and a new non-sensitive canary/signed URL was created without exposing the signature.
+- Laravel route match again proved scheme `https`, host `api.sole.testwebs.ir`, port `443`, and route `storage.media_quarantine`.
+- The route action was not a Closure, so an unconditional second `ReflectionFunction` call failed; its error text then reached Bash arithmetic and `set -u` stopped on an unbound variable.
+- The harmless PHP warning about importing global `ReflectionFunction` is unrelated.
+- The cleanup trap ran on exit, but D4 must independently prove the exact canary is absent.
+- No MediaAsset rows or real product images were created; Nginx was not modified.
+- D4 removes Reflection entirely, reads framework source by fixed package path/search, inspects the binary response safely, and compares baseline/forwarded Nginx requests.
+
 ## 7. Current completion map
 
 | Acceptance item | State |
@@ -555,6 +568,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.7-R2-D3_NGINX_SIGNED_REQUEST_CONTEXT_DIAGNOSTIC`
+`P14.7-R2-D4_ROBUST_NGINX_SIGNED_CONTEXT_DIAGNOSTIC`
 
 The first D1 attempt confirmed exact active SHAs, production invariants, all 11 tables and zero rows, then stopped on a read-only PHP quoting error. D1-R1 must complete the remaining contract discovery before any catalog write. Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
