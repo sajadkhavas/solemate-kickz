@@ -561,6 +561,20 @@ Status: **diagnosis PASS; bounded repair required**.
 - Evidence: `/root/sole-p14-backups/p14-7-stream-d5-20260908T134336Z`.
 - R1 must first simulate 8081 vs 443 inside Laravel. Only on exact reproduction may it back up the Nginx site, add a scoped `fastcgi_param SERVER_PORT 443`, validate/reload, and automatically roll back if unsigned/signed checks or VPN health fail.
 
+
+### P14 server identity interlock — correct VPS reconfirmed
+
+Status: **PASS; no mutation**.
+
+- A prior repair invocation printed only its header on prompt host `hwsrv-1335736` and exited before path/SHA checks or mutation; it is not accepted as SOLE server evidence.
+- Read-only identity verification on the intended host passed: `hwsrv-1333842.hostwindsdns.com`.
+- Machine identity was captured by SHA-256 without publishing the raw machine ID.
+- Active backend is exact `766c8184…`; active frontend is exact `2afbd0c…`.
+- SOLE runtime services, PHP-FPM, Nginx, MySQL, Redis, X-UI and WireGuard are active.
+- Protected TCP listeners 443, 2087, 8443, 9443 and 11111 are present.
+- No file, Nginx, database, service or VPN mutation occurred.
+- Exact next remains the bounded FastCGI SERVER_PORT repair with simulation, backup and automatic rollback, and it must run only on this confirmed host.
+
 ## 7. Current completion map
 
 | Acceptance item | State |
