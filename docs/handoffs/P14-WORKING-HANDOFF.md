@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.7-D1-R2_SCOPED_GIT_TRUST_CATALOG_CONTRACT_RECOVERY
+next: P14.7-D1-R3_REAL_COMMAND_CATALOG_CONTRACT_RECOVERY
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -315,7 +315,7 @@ D1 attempt evidence (2026-09-08 UTC):
 - This is a diagnostic-script failure only. The command was read-only; no database, source, service, symlink, Nginx, Cloudflare, or VPN mutation occurred.
 - D1 is not accepted yet. Remaining row/state, model/resource, route, media-config, storage and final health evidence must be rerun with corrected quoting.
 
-Exact next recovery: `P14.7-D1-R2_SCOPED_GIT_TRUST_CATALOG_CONTRACT_RECOVERY`.
+Exact next recovery: `P14.7-D1-R3_REAL_COMMAND_CATALOG_CONTRACT_RECOVERY`.
 
 Pending:
 
@@ -401,6 +401,18 @@ Status: **failed safely before application/database discovery**.
 - Do not use `safe.directory=*` and do not change release ownership for this diagnostic.
 - D1-R2 must use the exact release path through a command-scoped `git -c safe.directory=<path>` override and continue read-only discovery.
 
+
+### P14.7 D1-R2 — production command-name correction
+
+Status: **failed safely before catalog/media discovery**.
+
+- Exact active backend `766c8184…` and frontend `2afbd0c…` locks passed.
+- Command-scoped Git trust passed and no global Git configuration changed.
+- The retry stopped because `sole:production-readiness` is not defined in this application.
+- Artisan confirmed the real command is `sole:production:check`.
+- No catalog/media database query or write, service restart, symlink change, ownership change or public activation occurred.
+- D1-R3 must invoke `sole:production:check` and then continue the same read-only discovery.
+
 ## 7. Current completion map
 
 | Acceptance item | State |
@@ -437,6 +449,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.7-D1-R2_SCOPED_GIT_TRUST_CATALOG_CONTRACT_RECOVERY`
+`P14.7-D1-R3_REAL_COMMAND_CATALOG_CONTRACT_RECOVERY`
 
 The first D1 attempt confirmed exact active SHAs, production invariants, all 11 tables and zero rows, then stopped on a read-only PHP quoting error. D1-R1 must complete the remaining contract discovery before any catalog write. Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
