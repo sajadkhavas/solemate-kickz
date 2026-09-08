@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.6-R5_CANDIDATE_MEDIA_PIPELINE_PROOF
+next: P14.6-R5-R1_RESTORE_TRACKED_STORAGE_SENTINEL_AND_FINALIZE_EVIDENCE
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -204,7 +204,7 @@ Do not run the current backend `prepare-release.sh` blindly against the active s
 
 ### NEXT — P14.6-R5: isolated candidate media pipeline proof
 
-Status: **command prepared; output not yet received**.
+Status: **functional proof passed; final integrity gate failed and requires bounded recovery**.
 
 Required acceptance:
 
@@ -220,6 +220,28 @@ Required acceptance:
 - verify `malware_scan=not_performed`;
 - persist evidence under `/root/sole-p14-backups/`;
 - confirm active application symlinks, services and VPN remain unchanged.
+
+Attempt evidence from 2026-09-08 UTC:
+
+- PHP 8.5 SQLite support was installed and verified.
+- A disposable SQLite database migrated all 15 migrations successfully; the Production database was not mutated.
+- The real candidate pipeline processed a controlled 96x72 PNG.
+- Exactly three physical WebP derivatives passed MIME and SHA-256 validation: `card` 640x800, `pdp` 1200x1200, and `thumb` 320x320.
+- The private source SHA-256 was `aca7e5ca8524553f569682eff98995f974e4aaef71f52643843c07fd0105909f`.
+- Evidence reported `security_driver=trusted-admin-reencode`, `structural_validation=passed`, `public_derivatives_reencoded=true`, and truthful `malware_scan=not_performed` with no scan timestamp.
+- Evidence directory: `/root/sole-p14-backups/p14-6-media-proof-20260908T090312Z`.
+- Functional media report and physical output checks passed.
+- Final R5 result did not pass because candidate cleanup deleted tracked `storage/app/public/.gitignore`.
+- The first `SHA256SUMS` manifest also included itself while being written and therefore recorded an invalid empty-file hash for the manifest.
+- No unexpected PHP/application failure occurred. The PHP warning about importing non-compound `RuntimeException` in the one-off stdin proof script was harmless.
+
+Required bounded recovery R5-R1:
+
+1. Confirm the only tracked drift is `storage/app/public/.gitignore`.
+2. Restore that one file from exact candidate commit `766c8184…`.
+3. Regenerate `SHA256SUMS` while excluding the manifest itself.
+4. Revalidate evidence, active symlinks, API/frontend health, services and VPN.
+5. Only then mark R5 PASS and advance to R6.
 
 ### P14.6-R6: persist driver and activate backend candidate
 
@@ -347,6 +369,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.6-R5_CANDIDATE_MEDIA_PIPELINE_PROOF`
+`P14.6-R5-R1_RESTORE_TRACKED_STORAGE_SENTINEL_AND_FINALIZE_EVIDENCE`
 
-The R5 command has been issued to the server owner, but its output has not yet been received. Therefore R5 is not PASS yet.
+The functional media pipeline proof passed, but R5 remains not PASS until the single tracked `.gitignore` deletion is restored and the checksum manifest is regenerated without hashing itself.
