@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.7-D1_CATALOG_MEDIA_ACCEPTANCE_CONTRACT
+next: P14.7-D1-R1_CATALOG_MEDIA_ACCEPTANCE_CONTRACT_RECOVERY
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -36,9 +36,9 @@ Deploy and fully test SOLE on the owner's shared integration VPS before seeking 
 | Item | Exact evidence | State |
 | --- | --- | --- |
 | Frontend P14 START/current server SHA | `2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3` | Active internally |
-| Backend P14 START/current server SHA | `c65830c6eeae24ef42989feadffd8f4b22e99230` | Active internally |
+| Backend P14 START SHA | `c65830c6eeae24ef42989feadffd8f4b22e99230` | Rollback target |
 | Backend low-memory implementation commit | `b2d265b8941038f751f799b29d45e61729533929` | Superseded by formatting fix |
-| Backend exact candidate head | `766c818441b3e35b956ddb02bdc3963e0de6b822` | CI green; inactive candidate |
+| Backend exact accepted head | `766c818441b3e35b956ddb02bdc3963e0de6b822` | CI green; active internally |
 | Backend PR | [#18](https://github.com/sajadkhavas/sole-backend/pull/18) | Draft/open; do not merge yet |
 | Backend first CI attempt | Backend Quality #78 / `34162488679` | Failed only at Pint |
 | Backend accepted exact-head CI | Backend Quality #79 / `34162662838` | PASS |
@@ -51,8 +51,8 @@ Deploy and fully test SOLE on the owner's shared integration VPS before seeking 
 | Component | Verified state |
 | --- | --- |
 | Frontend active release | `/var/www/sole/releases/2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3` |
-| Backend active release | `/var/www/sole-backend/releases/c65830c6eeae24ef42989feadffd8f4b22e99230` |
-| Backend inactive candidate | `/var/www/sole-backend/releases/766c818441b3e35b956ddb02bdc3963e0de6b822` |
+| Backend active release | `/var/www/sole-backend/releases/766c818441b3e35b956ddb02bdc3963e0de6b822` |
+| Backend rollback release | `/var/www/sole-backend/releases/c65830c6eeae24ef42989feadffd8f4b22e99230` |
 | Frontend listener | `127.0.0.1:4173` |
 | Backend Nginx listener | `127.0.0.1:8081` |
 | MySQL | Loopback only |
@@ -305,6 +305,18 @@ Completed:
 
 ### P14.7: controlled catalog and media acceptance data
 
+D1 attempt evidence (2026-09-08 UTC):
+
+- Exact active backend `766c8184…` and frontend `2afbd0c…` locks passed.
+- Production readiness invariants passed.
+- Schema discovery confirmed all 11 inspected catalog/media tables exist.
+- Every inspected table reported `row_count=0`; no presentation catalog data currently exists.
+- The diagnostic then stopped at `CATALOG_ROW_COUNTS` because its one-off PHP stdin block had a quoting parse error: `unexpected single-quoted string "%s=MISSING_TABLE%s"`.
+- This is a diagnostic-script failure only. The command was read-only; no database, source, service, symlink, Nginx, Cloudflare, or VPN mutation occurred.
+- D1 is not accepted yet. Remaining row/state, model/resource, route, media-config, storage and final health evidence must be rerun with corrected quoting.
+
+Exact next recovery: `P14.7-D1-R1_CATALOG_MEDIA_ACCEPTANCE_CONTRACT_RECOVERY`.
+
 Pending:
 
 - create/import controlled categories, products, variants, price, inventory, size guide and images;
@@ -415,6 +427,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.7-D1_CATALOG_MEDIA_ACCEPTANCE_CONTRACT`
+`P14.7-D1-R1_CATALOG_MEDIA_ACCEPTANCE_CONTRACT_RECOVERY`
 
-Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
+The first D1 attempt confirmed exact active SHAs, production invariants, all 11 tables and zero rows, then stopped on a read-only PHP quoting error. D1-R1 must complete the remaining contract discovery before any catalog write. Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
