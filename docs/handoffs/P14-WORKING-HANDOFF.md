@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.7-D3_SCANNER_INVENTORY_SIZE_MEDIA_WRITE_CONTRACT
+next: P14.7-R1_CONTROLLED_PRESENTATION_DATA_DRY_RUN
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -315,7 +315,7 @@ D1 attempt evidence (2026-09-08 UTC):
 - This is a diagnostic-script failure only. The command was read-only; no database, source, service, symlink, Nginx, Cloudflare, or VPN mutation occurred.
 - D1 is not accepted yet. Remaining row/state, model/resource, route, media-config, storage and final health evidence must be rerun with corrected quoting.
 
-Exact next recovery: `P14.7-D3_SCANNER_INVENTORY_SIZE_MEDIA_WRITE_CONTRACT`.
+Exact next recovery: `P14.7-R1_CONTROLLED_PRESENTATION_DATA_DRY_RUN`.
 
 Pending:
 
@@ -446,6 +446,22 @@ Status: **partially accepted; one diagnostic binding name was wrong**.
 - No mutation occurred. The script's printed scanner `COMPLETE` is not accepted because the probe itself failed.
 - D3 must verify the real scanner binding and discover the exact inventory, size-guide and media-intent write contracts before building a production-data manifest.
 
+
+### P14.7 D3 — exact write-contract discovery
+
+Status: **PASS**.
+
+- Real `App\\Contracts\\MediaMalwareScanner` binding resolved to `App\\Services\\Media\\TrustedAdminImageScanner` under driver `trusted-admin-reencode`.
+- Inventory adjustment command/source,://? Size Guide manager resource, Media upload/processing, and Product publication workflows were discovered read-only.
+- The catalog importer accepts a versioned JSON file, dry-runs by default, applies only with `--apply`, records a unique manifest SHA-256, and executes the apply inside a retried database transaction.
+- Import creates/updates categories, collections, draft products and variants; it only attaches already-ready media assets.
+- Inventory, Size Guide, media processing and Product review/publication remain separate authoritative workflows.
+- Publication is not implicit: imported products remain draft and require the formal review then publish transition with revision evidence.
+- All catalog, import-run, inventory, size-guide, media and publication tables remained empty.
+- All application/VPN services and five protected ports passed.
+- No database, business data, media, source, environment, service, edge or VPN mutation occurred.
+- Exact next step is a root-audited, readable manifest artifact plus two identical dry-runs; Production row counts must remain zero.
+
 ## 7. Current completion map
 
 | Acceptance item | State |
@@ -482,6 +498,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.7-D3_SCANNER_INVENTORY_SIZE_MEDIA_WRITE_CONTRACT`
+`P14.7-R1_CONTROLLED_PRESENTATION_DATA_DRY_RUN`
 
 The first D1 attempt confirmed exact active SHAs, production invariants, all 11 tables and zero rows, then stopped on a read-only PHP quoting error. D1-R1 must complete the remaining contract discovery before any catalog write. Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
