@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.7-R2_CONTROLLED_MEDIA_ASSET_INGESTION
+next: P14.7-R2-D1_QUARANTINE_SIGNED_ROUTE_SECURITY_PROOF
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -315,7 +315,7 @@ D1 attempt evidence (2026-09-08 UTC):
 - This is a diagnostic-script failure only. The command was read-only; no database, source, service, symlink, Nginx, Cloudflare, or VPN mutation occurred.
 - D1 is not accepted yet. Remaining row/state, model/resource, route, media-config, storage and final health evidence must be rerun with corrected quoting.
 
-Exact next recovery: `P14.7-R2_CONTROLLED_MEDIA_ASSET_INGESTION`.
+Exact next recovery: `P14.7-R2-D1_QUARANTINE_SIGNED_ROUTE_SECURITY_PROOF`.
 
 Pending:
 
@@ -477,6 +477,19 @@ Status: **PASS; no Production database mutation**.
 - API/frontend HTTP 200, all application/VPN services and protected listeners passed.
 - Exact next: ingest controlled original images through the real privileged-admin media pipeline, validate private originals and three public WebP recipes, but do not yet publish products.
 
+
+### P14.7 R2 safety split — quarantine route proof required
+
+Before real Production media ingestion, exact source review found that the local `media_quarantine` disk has `serve=true` and Laravel registers GET/PUT storage routes. This is intended to support temporary signed upload/access URLs, but route listing alone did not prove unsigned denial. R2 is therefore split:
+
+1. Create a random non-sensitive canary in quarantine.
+2. Prove an unsigned GET cannot return the canary.
+3. Generate a short-lived signed temporary URL through the configured disk and prove it can return the canary.
+4. Delete the canary and prove no residue/database mutation.
+5. Only then ingest three controlled images through `MediaUploadService` and `MediaProcessor`.
+
+This is a safety plan update, not completion evidence. No server mutation has yet been performed for this split.
+
 ## 7. Current completion map
 
 | Acceptance item | State |
@@ -513,6 +526,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.7-R2_CONTROLLED_MEDIA_ASSET_INGESTION`
+`P14.7-R2-D1_QUARANTINE_SIGNED_ROUTE_SECURITY_PROOF`
 
 The first D1 attempt confirmed exact active SHAs, production invariants, all 11 tables and zero rows, then stopped on a read-only PHP quoting error. D1-R1 must complete the remaining contract discovery before any catalog write. Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
