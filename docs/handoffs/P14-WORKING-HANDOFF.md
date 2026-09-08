@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.7-D1-R3_REAL_COMMAND_CATALOG_CONTRACT_RECOVERY
+next: P14.7-D2_MEDIA_NAMESPACE_AND_IMPORT_CONTRACT
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -315,7 +315,7 @@ D1 attempt evidence (2026-09-08 UTC):
 - This is a diagnostic-script failure only. The command was read-only; no database, source, service, symlink, Nginx, Cloudflare, or VPN mutation occurred.
 - D1 is not accepted yet. Remaining row/state, model/resource, route, media-config, storage and final health evidence must be rerun with corrected quoting.
 
-Exact next recovery: `P14.7-D1-R3_REAL_COMMAND_CATALOG_CONTRACT_RECOVERY`.
+Exact next recovery: `P14.7-D2_MEDIA_NAMESPACE_AND_IMPORT_CONTRACT`.
 
 Pending:
 
@@ -413,6 +413,23 @@ Status: **failed safely before catalog/media discovery**.
 - No catalog/media database query or write, service restart, symlink change, ownership change or public activation occurred.
 - D1-R3 must invoke `sole:production:check` and then continue the same read-only discovery.
 
+
+### P14.7 D1-R3 — catalog contract discovery
+
+Status: **catalog/runtime discovery passed; media config namespace unresolved**.
+
+- Exact active backend `766c8184…` and frontend `2afbd0c…` locks passed with command-scoped Git trust and no global Git mutation.
+- All Production invariants passed using the real `sole:production:check` command.
+- All 11 required catalog/media tables exist in MySQL and contain zero rows.
+- All 11 expected Eloquent models exist.
+- Filament exposes manager resources for categories, collections, products, variants, inventory locations/movements and size guides.
+- Public catalog list/detail/related routes and authenticated admin media upload/complete routes exist.
+- Shared private, public and quarantine media locations contain zero business files; `public/storage` targets durable shared public storage.
+- API readiness, admin login and frontend returned HTTP 200; all application/VPN services and five protected listeners passed.
+- No database, catalog, media, source, Git config, ownership, link, service, public edge or VPN mutation occurred.
+- The diagnostic queried the wrong Laravel config namespace: all reported media configuration values were `null`. Therefore its printed `MEDIA_RUNTIME_DISCOVERY=PASS` is not accepted as evidence.
+- Before catalog mutation, D2 must discover the exact media config filename/namespace and inspect the `sole:catalog:import` command signature and input contract read-only.
+
 ## 7. Current completion map
 
 | Acceptance item | State |
@@ -449,6 +466,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.7-D1-R3_REAL_COMMAND_CATALOG_CONTRACT_RECOVERY`
+`P14.7-D2_MEDIA_NAMESPACE_AND_IMPORT_CONTRACT`
 
 The first D1 attempt confirmed exact active SHAs, production invariants, all 11 tables and zero rows, then stopped on a read-only PHP quoting error. D1-R1 must complete the remaining contract discovery before any catalog write. Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
