@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.7-R2-D6_EXACT_NGINX_REQUEST_AND_SERVEFILE_DIAGNOSTIC
+next: P14.7-R2-R3_CONTROLLED_MEDIA_INGESTION
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -588,6 +588,24 @@ Status: **no Nginx mutation; hypothesis disproven**.
 - Automatic cleanup trap ran; no config/database/real-media mutation occurred.
 - SERVER_PORT must not be changed based on this disproven hypothesis.
 - D6 must hash-compare the exact signed request target with the URI captured by Nginx, inspect Laravel `ServeFile` validation behavior, and collect redacted access/error evidence before any repair.
+
+
+### P14.7 R2-D6 / D6-R1 / D6-R2 — exact signed-route closure
+
+Status: **PASS — server path healthy; no Nginx repair required**.
+
+- D6 first stopped safely because the installed Artisan version rejected the diagnostic-only `route:list --columns` option; no canary was created.
+- D6-R1 directly inspected Laravel's route collection and confirmed GET/HEAD `storage/{path}` as `storage.local`, then stopped safely because its path guard evaluated the logical release-local storage root before canonical symlink resolution.
+- D6-R2 canonicalized the storage path and accepted its exact target under durable shared quarantine storage.
+- Laravel in-process returned HTTP 200 as a 47-byte `StreamedResponse` with the exact canary SHA-256.
+- The exact signed request sent only to `127.0.0.1:8081` with the API host and forwarded HTTPS context also returned HTTP 200, 47 bytes and the identical SHA-256.
+- The correlated internal Nginx access record reported HTTP 200; public DNS was not used.
+- Nginx configuration SHA remained `d23097aa4f827ef1c8935b00412901929706fce7312ea35ffdcfcb26aa46b1e7`.
+- Media tables remained zero; explicit and trap cleanup passed.
+- No Nginx reload/configuration, database, real-media, network, firewall or DNS mutation occurred.
+- X-UI, WireGuard and all protected VPN listeners remained healthy.
+- The earlier 404 was caused by the diagnostic request construction/path handling, not a production Nginx/FastCGI defect. `SERVER_PORT` must not be changed.
+- Exact next: `P14.7-R2-R3_CONTROLLED_MEDIA_INGESTION`.
 
 ## 7. Current completion map
 
