@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.6-R6_PERSIST_DRIVER_AND_CONTROLLED_BACKEND_ACTIVATION
+next: P14.6-R6-R1_ATOMIC_BACKEND_ACTIVATION_WITH_ROLLBACK
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -257,7 +257,23 @@ Final R5-R1 evidence:
 
 ### P14.6-R6: persist driver and activate backend candidate
 
-Pending after R5 only:
+Status: **activation discovery PASS; controlled activation pending**.
+
+R6-D1 evidence:
+
+- Active backend remains `c65830c…`; candidate is exact `766c8184…` with no tracked drift.
+- Media driver line is absent from shared environment; shared env is `root:www-data 0640`.
+- Active release uses shared storage and the legacy shared bootstrap cache.
+- Candidate currently uses isolated storage and a release-local bootstrap cache.
+- Shared storage and all required subdirectories are `sole:www-data 2770` and writable by both runtime identities.
+- Public storage links are currently missing in both releases; candidate link must be created during controlled activation.
+- Queue and scheduler resolve `/var/www/sole-backend/current`, so both must restart after the atomic switch.
+- All 15 Production migrations are already applied; no migration is required for this candidate.
+- Candidate production readiness passes as both `sole` and `www-data`.
+- Active API/admin/frontend returned HTTP 200 and all SOLE/VPN services and protected ports passed.
+- No mutation occurred during D1.
+
+Pending after D1:
 
 - back up the shared environment without exposing secrets;
 - persist `SOLE_MEDIA_MALWARE_SCANNER_DRIVER=trusted-admin-reencode`;
@@ -381,6 +397,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.6-R6_PERSIST_DRIVER_AND_CONTROLLED_BACKEND_ACTIVATION`
+`P14.6-R6-R1_ATOMIC_BACKEND_ACTIVATION_WITH_ROLLBACK`
 
-R5 is fully PASS. Persist the accepted driver with a secret-safe environment backup, convert the candidate to durable shared storage while keeping its bootstrap cache release-local, then perform atomic backend activation with automatic rollback and health evidence.
+R6 discovery is PASS. Persist the accepted driver with a secret-safe environment backup, archive the candidate proof storage, connect durable shared storage, keep bootstrap cache release-local, create the public storage link, and atomically activate `766c8184…` with automatic rollback.
