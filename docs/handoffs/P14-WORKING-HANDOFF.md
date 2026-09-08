@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.7-D2_MEDIA_NAMESPACE_AND_IMPORT_CONTRACT
+next: P14.7-D3_SCANNER_INVENTORY_SIZE_MEDIA_WRITE_CONTRACT
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -315,7 +315,7 @@ D1 attempt evidence (2026-09-08 UTC):
 - This is a diagnostic-script failure only. The command was read-only; no database, source, service, symlink, Nginx, Cloudflare, or VPN mutation occurred.
 - D1 is not accepted yet. Remaining row/state, model/resource, route, media-config, storage and final health evidence must be rerun with corrected quoting.
 
-Exact next recovery: `P14.7-D2_MEDIA_NAMESPACE_AND_IMPORT_CONTRACT`.
+Exact next recovery: `P14.7-D3_SCANNER_INVENTORY_SIZE_MEDIA_WRITE_CONTRACT`.
 
 Pending:
 
@@ -430,6 +430,22 @@ Status: **catalog/runtime discovery passed; media config namespace unresolved**.
 - The diagnostic queried the wrong Laravel config namespace: all reported media configuration values were `null`. Therefore its printed `MEDIA_RUNTIME_DISCOVERY=PASS` is not accepted as evidence.
 - Before catalog mutation, D2 must discover the exact media config filename/namespace and inspect the `sole:catalog:import` command signature and input contract read-only.
 
+
+### P14.7 D2 — media namespace and catalog import contract
+
+Status: **partially accepted; one diagnostic binding name was wrong**.
+
+- Exact active backend remains `766c8184…`.
+- Real media config is `config/sole_media.php`, namespace `sole_media`.
+- Runtime driver is `trusted-admin-reencode`; quarantine/delivery disks, limits, MIME allow-list and three v1 recipes resolved correctly.
+- The scanner probe failed because it requested nonexistent `App\\Contracts\\Media\\MalwareScanner`.
+- Exact source proves the real contract is `App\\Contracts\\MediaMalwareScanner`, bound by `AppServiceProvider` to `App\\Services\\Media\\TrustedAdminImageScanner` for this driver.
+- Catalog import command is `sole:catalog:import {manifest} {--apply}`; default is dry-run and apply is transactional/idempotent by raw manifest SHA-256.
+- Exact `CatalogImportService` supports categories, collections, draft products, variants and attachment of already-ready media assets. It does not create inventory locations/movements or size guides.
+- All catalog/media tables and durable media directories remain empty; services and VPN remain healthy.
+- No mutation occurred. The script's printed scanner `COMPLETE` is not accepted because the probe itself failed.
+- D3 must verify the real scanner binding and discover the exact inventory, size-guide and media-intent write contracts before building a production-data manifest.
+
 ## 7. Current completion map
 
 | Acceptance item | State |
@@ -466,6 +482,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.7-D2_MEDIA_NAMESPACE_AND_IMPORT_CONTRACT`
+`P14.7-D3_SCANNER_INVENTORY_SIZE_MEDIA_WRITE_CONTRACT`
 
 The first D1 attempt confirmed exact active SHAs, production invariants, all 11 tables and zero rows, then stopped on a read-only PHP quoting error. D1-R1 must complete the remaining contract discovery before any catalog write. Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
