@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.7-R2-R1_BOUNDED_FASTCGI_SERVER_PORT_REPAIR
+next: P14.7-R2-D6_EXACT_NGINX_REQUEST_AND_SERVEFILE_DIAGNOSTIC
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -315,7 +315,7 @@ D1 attempt evidence (2026-09-08 UTC):
 - This is a diagnostic-script failure only. The command was read-only; no database, source, service, symlink, Nginx, Cloudflare, or VPN mutation occurred.
 - D1 is not accepted yet. Remaining row/state, model/resource, route, media-config, storage and final health evidence must be rerun with corrected quoting.
 
-Exact next recovery: `P14.7-R2-R1_BOUNDED_FASTCGI_SERVER_PORT_REPAIR`.
+Exact next recovery: `P14.7-R2-D6_EXACT_NGINX_REQUEST_AND_SERVEFILE_DIAGNOSTIC`.
 
 Pending:
 
@@ -575,6 +575,20 @@ Status: **PASS; no mutation**.
 - No file, Nginx, database, service or VPN mutation occurred.
 - Exact next remains the bounded FastCGI SERVER_PORT repair with simulation, backup and automatic rollback, and it must run only on this confirmed host.
 
+
+### P14.7 R2-R1 attempt — SERVER_PORT hypothesis rejected safely
+
+Status: **no Nginx mutation; hypothesis disproven**.
+
+- Correct host `hwsrv-1333842.hostwindsdns.com`, exact backend `766c8184…`, valid Nginx config and zero media rows passed.
+- Nginx configuration SHA before the attempted repair was still `b9b0a9a7580c3d774585857d2c54ae0958c234dbe485b0d22617f431e28e1370`.
+- A signed canary was created without exposing its URL.
+- Laravel simulations using both SERVER_PORT 8081 and 443 returned HTTP 200 with the exact canary SHA-256; both produced the same canonical HTTP host.
+- The required precondition `PORT_8081_HTTP=404` was not reproduced, so the command stopped at `FATAL=PORT_8081_FAILURE_NOT_REPRODUCED` before editing or reloading Nginx.
+- Automatic cleanup trap ran; no config/database/real-media mutation occurred.
+- SERVER_PORT must not be changed based on this disproven hypothesis.
+- D6 must hash-compare the exact signed request target with the URI captured by Nginx, inspect Laravel `ServeFile` validation behavior, and collect redacted access/error evidence before any repair.
+
 ## 7. Current completion map
 
 | Acceptance item | State |
@@ -611,6 +625,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.7-R2-R1_BOUNDED_FASTCGI_SERVER_PORT_REPAIR`
+`P14.7-R2-D6_EXACT_NGINX_REQUEST_AND_SERVEFILE_DIAGNOSTIC`
 
 The first D1 attempt confirmed exact active SHAs, production invariants, all 11 tables and zero rows, then stopped on a read-only PHP quoting error. D1-R1 must complete the remaining contract discovery before any catalog write. Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
