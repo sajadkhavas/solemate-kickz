@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.7-R2-D4_ROBUST_NGINX_SIGNED_CONTEXT_DIAGNOSTIC
+next: P14.7-R2-D5_STREAMED_RESPONSE_AND_NGINX_DIAGNOSTIC
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -315,7 +315,7 @@ D1 attempt evidence (2026-09-08 UTC):
 - This is a diagnostic-script failure only. The command was read-only; no database, source, service, symlink, Nginx, Cloudflare, or VPN mutation occurred.
 - D1 is not accepted yet. Remaining row/state, model/resource, route, media-config, storage and final health evidence must be rerun with corrected quoting.
 
-Exact next recovery: `P14.7-R2-D4_ROBUST_NGINX_SIGNED_CONTEXT_DIAGNOSTIC`.
+Exact next recovery: `P14.7-R2-D5_STREAMED_RESPONSE_AND_NGINX_DIAGNOSTIC`.
 
 Pending:
 
@@ -532,6 +532,21 @@ Status: **failed safely before Nginx request classification**.
 - No MediaAsset rows or real product images were created; Nginx was not modified.
 - D4 removes Reflection entirely, reads framework source by fixed package path/search, inspects the binary response safely, and compares baseline/forwarded Nginx requests.
 
+
+### P14.7 R2-D4 — StreamedResponse classification
+
+Status: **diagnostic stopped before Nginx probes; cleanup trap engaged**.
+
+- Previous canary absence and zero media-table baseline passed.
+- Framework source confirmed Laravel registers protected `ServeFile`/`ReceiveFile` routes for serveable local disks.
+- New canary and signed URL were created without exposing the signature.
+- In-process request context was correct: HTTPS, API host, port 443.
+- Laravel returned HTTP 200 with `text/plain` through `Symfony\\Component\\HttpFoundation\\StreamedResponse`.
+- The diagnostic only handled `BinaryFileResponse`; it incorrectly required a binary-file hash and stopped on `FATAL=IN_PROCESS_FILE_INTEGRITY_FAILED`.
+- Empty `getContent()` on a StreamedResponse is expected and is not an integrity failure.
+- D5 must capture the stream via `sendContent()`, verify the canary hash, and then finally run the Nginx request-context variants.
+- No configuration/database/business-media mutation occurred; real ingestion remains blocked.
+
 ## 7. Current completion map
 
 | Acceptance item | State |
@@ -568,6 +583,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.7-R2-D4_ROBUST_NGINX_SIGNED_CONTEXT_DIAGNOSTIC`
+`P14.7-R2-D5_STREAMED_RESPONSE_AND_NGINX_DIAGNOSTIC`
 
 The first D1 attempt confirmed exact active SHAs, production invariants, all 11 tables and zero rows, then stopped on a read-only PHP quoting error. D1-R1 must complete the remaining contract discovery before any catalog write. Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
