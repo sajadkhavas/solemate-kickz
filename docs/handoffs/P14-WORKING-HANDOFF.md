@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.7-R1_CONTROLLED_PRESENTATION_DATA_DRY_RUN
+next: P14.7-R2_CONTROLLED_MEDIA_ASSET_INGESTION
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -315,7 +315,7 @@ D1 attempt evidence (2026-09-08 UTC):
 - This is a diagnostic-script failure only. The command was read-only; no database, source, service, symlink, Nginx, Cloudflare, or VPN mutation occurred.
 - D1 is not accepted yet. Remaining row/state, model/resource, route, media-config, storage and final health evidence must be rerun with corrected quoting.
 
-Exact next recovery: `P14.7-R1_CONTROLLED_PRESENTATION_DATA_DRY_RUN`.
+Exact next recovery: `P14.7-R2_CONTROLLED_MEDIA_ASSET_INGESTION`.
 
 Pending:
 
@@ -462,6 +462,21 @@ Status: **PASS**.
 - No database, business data, media, source, environment, service, edge or VPN mutation occurred.
 - Exact next step is a root-audited, readable manifest artifact plus two identical dry-runs; Production row counts must remain zero.
 
+
+### P14.7 R1 — controlled presentation catalog dry-run
+
+Status: **PASS; no Production database mutation**.
+
+- Root-audited manifest created at `/var/www/sole-backend/shared/imports/p14-presentation-catalog-v1.json` with `sole:www-data 0640`.
+- Manifest SHA-256: `dfc5ef64fc72677eb782437923bc74cae32a709c6f25b33f5afc7972342abee8`.
+- Manifest contains one draft category, one draft collection, three neutral SOLE presentation products and nine active IRR-priced variants; media list is empty.
+- It contains no credentials, third-party brand claim, discount claim, inventory claim or publication request.
+- Two independent importer dry-runs returned identical reports: 1 category, 1 collection, 3 products, 9 variants and 0 media.
+- Every catalog/import/inventory/size/media/publication table count remained zero afterward; no import-run record was created.
+- Evidence files and checksum verification passed at `/root/sole-p14-backups/p14-7-catalog-dry-run-20260908T125652Z`.
+- API/frontend HTTP 200, all application/VPN services and protected listeners passed.
+- Exact next: ingest controlled original images through the real privileged-admin media pipeline, validate private originals and three public WebP recipes, but do not yet publish products.
+
 ## 7. Current completion map
 
 | Acceptance item | State |
@@ -498,6 +513,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.7-R1_CONTROLLED_PRESENTATION_DATA_DRY_RUN`
+`P14.7-R2_CONTROLLED_MEDIA_ASSET_INGESTION`
 
 The first D1 attempt confirmed exact active SHAs, production invariants, all 11 tables and zero rows, then stopped on a read-only PHP quoting error. D1-R1 must complete the remaining contract discovery before any catalog write. Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
