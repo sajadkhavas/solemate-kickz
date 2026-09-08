@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.7-R2-D1_QUARANTINE_SIGNED_ROUTE_SECURITY_PROOF
+next: P14.7-R2-D2_SIGNED_QUARANTINE_FAILURE_CLASSIFICATION
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -315,7 +315,7 @@ D1 attempt evidence (2026-09-08 UTC):
 - This is a diagnostic-script failure only. The command was read-only; no database, source, service, symlink, Nginx, Cloudflare, or VPN mutation occurred.
 - D1 is not accepted yet. Remaining row/state, model/resource, route, media-config, storage and final health evidence must be rerun with corrected quoting.
 
-Exact next recovery: `P14.7-R2-D1_QUARANTINE_SIGNED_ROUTE_SECURITY_PROOF`.
+Exact next recovery: `P14.7-R2-D2_SIGNED_QUARANTINE_FAILURE_CLASSIFICATION`.
 
 Pending:
 
@@ -490,6 +490,19 @@ Before real Production media ingestion, exact source review found that the local
 
 This is a safety plan update, not completion evidence. No server mutation has yet been performed for this split.
 
+
+### P14.7 R2-D1 — quarantine signed-route proof attempt
+
+Status: **FAIL safely; real media ingestion remains blocked**.
+
+- Exact active backend `766c8184…` and empty media-table baseline passed.
+- A random non-sensitive canary was written to `media_quarantine`; its signed URL was generated but not exposed or recorded.
+- Unsigned GET returned HTTP 404 and therefore did not disclose the canary.
+- Signed GET unexpectedly also returned HTTP 404, so temporary authorized retrieval was not proven.
+- The shell exited through the registered cleanup trap, but D2 must independently prove the canary is absent.
+- No MediaAsset/variant/attachment row was created and no real image ingestion began.
+- Do not weaken the route, disable signature checks, publish quarantine, or proceed to real media until failure classification distinguishes storage, Laravel route/request and Nginx behavior.
+
 ## 7. Current completion map
 
 | Acceptance item | State |
@@ -526,6 +539,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.7-R2-D1_QUARANTINE_SIGNED_ROUTE_SECURITY_PROOF`
+`P14.7-R2-D2_SIGNED_QUARANTINE_FAILURE_CLASSIFICATION`
 
 The first D1 attempt confirmed exact active SHAs, production invariants, all 11 tables and zero rows, then stopped on a read-only PHP quoting error. D1-R1 must complete the remaining contract discovery before any catalog write. Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
