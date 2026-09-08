@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.6-R5-R1_RESTORE_TRACKED_STORAGE_SENTINEL_AND_FINALIZE_EVIDENCE
+next: P14.6-R6_PERSIST_DRIVER_AND_CONTROLLED_BACKEND_ACTIVATION
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -204,7 +204,7 @@ Do not run the current backend `prepare-release.sh` blindly against the active s
 
 ### NEXT — P14.6-R5: isolated candidate media pipeline proof
 
-Status: **functional proof passed; final integrity gate failed and requires bounded recovery**.
+Status: **PASS — functional proof and final integrity recovery verified**.
 
 Required acceptance:
 
@@ -241,7 +241,19 @@ Required bounded recovery R5-R1:
 2. Restore that one file from exact candidate commit `766c8184…`.
 3. Regenerate `SHA256SUMS` while excluding the manifest itself.
 4. Revalidate evidence, active symlinks, API/frontend health, services and VPN.
-5. Only then mark R5 PASS and advance to R6.
+5. Completed: R5 is PASS and the continuation advances to R6.
+
+Final R5-R1 evidence:
+
+- Tracked status contained only the expected deletion of `storage/app/public/.gitignore`.
+- That sentinel was restored from exact candidate SHA and final tracked drift is none.
+- `SHA256SUMS` was regenerated without self-reference and every evidence file verified successfully.
+- All three physical WebP derivatives revalidated against the report SHA-256 values.
+- Private source SHA-256 revalidated and no raw source exists in public storage.
+- Candidate production readiness and low-memory scanner binding passed again.
+- Active backend remained `c65830c…`; active frontend remained `2afbd0c…`.
+- API and frontend returned HTTP 200; all SOLE/VPN services and protected ports remained healthy.
+- Final R5 evidence directory: `/root/sole-p14-backups/p14-6-media-proof-20260908T090312Z`.
 
 ### P14.6-R6: persist driver and activate backend candidate
 
@@ -369,6 +381,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.6-R5-R1_RESTORE_TRACKED_STORAGE_SENTINEL_AND_FINALIZE_EVIDENCE`
+`P14.6-R6_PERSIST_DRIVER_AND_CONTROLLED_BACKEND_ACTIVATION`
 
-The functional media pipeline proof passed, but R5 remains not PASS until the single tracked `.gitignore` deletion is restored and the checksum manifest is regenerated without hashing itself.
+R5 is fully PASS. Persist the accepted driver with a secret-safe environment backup, convert the candidate to durable shared storage while keeping its bootstrap cache release-local, then perform atomic backend activation with automatic rollback and health evidence.
