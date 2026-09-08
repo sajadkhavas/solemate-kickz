@@ -11,7 +11,7 @@ branch: phase/sole-p14-vps-final-acceptance
 frontend_start_sha: 2afbd0cef3c97a42ca7aee1086d59e3d96ad66b3
 backend_start_sha: c65830c6eeae24ef42989feadffd8f4b22e99230
 backend_candidate_sha: 766c818441b3e35b956ddb02bdc3963e0de6b822
-next: P14.6-R6-R1_ATOMIC_BACKEND_ACTIVATION_WITH_ROLLBACK
+next: P14.7-D1_CATALOG_MEDIA_ACCEPTANCE_CONTRACT
 ---
 
 # P14 — Integration VPS Activation & Final Acceptance
@@ -257,7 +257,7 @@ Final R5-R1 evidence:
 
 ### P14.6-R6: persist driver and activate backend candidate
 
-Status: **activation discovery PASS; controlled activation pending**.
+Status: **PASS — exact backend candidate activated with rollback evidence**.
 
 R6-D1 evidence:
 
@@ -273,7 +273,25 @@ R6-D1 evidence:
 - Active API/admin/frontend returned HTTP 200 and all SOLE/VPN services and protected ports passed.
 - No mutation occurred during D1.
 
-Pending after D1:
+R6-R1 activation evidence:
+
+- Shared environment was backed up without exposing its contents.
+- `SOLE_MEDIA_MALWARE_SCANNER_DRIVER=trusted-admin-reencode` was persisted with `root:www-data 0640` permissions.
+- Candidate caches were built release-locally; shared bootstrap cache was not mutated.
+- All 15 migrations were already applied and no Production migration ran.
+- Candidate isolated proof storage was archived in the root-only activation evidence directory.
+- Durable shared storage and `public/storage` were connected.
+- Atomic current switch activated exact backend SHA `766c818441b3e35b956ddb02bdc3963e0de6b822`.
+- Rollback target is `c65830c6eeae24ef42989feadffd8f4b22e99230`.
+- PHP-FPM reloaded; queue and scheduler restarted and remained active.
+- API readiness and admin login returned HTTP 200; frontend remained unchanged and returned HTTP 200.
+- Active scanner resolved to `App\\Services\\Media\\TrustedAdminImageScanner`.
+- Production invariants passed; pending migrations were zero.
+- All protected VPN listeners/services remained healthy.
+- Activation evidence: `/root/sole-p14-backups/p14-6-backend-activation-20260908T115757Z`.
+- Public activation remained NO.
+
+Completed:
 
 - back up the shared environment without exposing secrets;
 - persist `SOLE_MEDIA_MALWARE_SCANNER_DRIVER=trusted-admin-reencode`;
@@ -397,6 +415,6 @@ A new chat should begin with:
 
 Current exact continuation:
 
-`P14.6-R6-R1_ATOMIC_BACKEND_ACTIVATION_WITH_ROLLBACK`
+`P14.7-D1_CATALOG_MEDIA_ACCEPTANCE_CONTRACT`
 
-R6 discovery is PASS. Persist the accepted driver with a secret-safe environment backup, archive the candidate proof storage, connect durable shared storage, keep bootstrap cache release-local, create the public storage link, and atomically activate `766c8184…` with automatic rollback.
+Backend activation is PASS at exact SHA `766c8184…`. Before writing controlled presentation data, inspect the live catalog/media schema, manager authority, current row counts, public API requirements and rollback identifiers without mutation.
