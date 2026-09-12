@@ -1,15 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useRef } from "react";
+import { useRef, type KeyboardEvent } from "react";
 
-import { formatPrice, SHOES, type Shoe } from "@/data/shoes";
 import { HomeImage } from "@/components/sections/HomeImage";
+import { formatPrice, SHOES, type Shoe } from "@/data/shoes";
 
 const FEATURED_IDS = [2, 3, 16, 22] as const;
 
-function hasVerifiedSale(shoe: Shoe) {
+function hasVerifiedSale(shoe: Shoe): boolean {
   return (
     typeof shoe.sale_price === "number" &&
+    Number.isFinite(shoe.sale_price) &&
+    Number.isFinite(shoe.price) &&
     shoe.sale_price > 0 &&
     shoe.price > 0 &&
     shoe.sale_price < shoe.price
@@ -28,9 +30,9 @@ function FeaturedCard({ shoe, index }: { shoe: Shoe; index: number }) {
       <Link
         to="/product/$id"
         params={{ id: String(shoe.id) }}
-        className="group block h-full rounded-2xl"
         aria-label={`مشاهده محصول نمونه ${shoe.brand} ${shoe.name}`}
         data-f3-touch-target="true"
+        className="group block h-full rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
       >
         <div className="relative aspect-[4/3] overflow-hidden bg-surface-elevated">
           <HomeImage
@@ -41,15 +43,15 @@ function FeaturedCard({ shoe, index }: { shoe: Shoe; index: number }) {
             loading="lazy"
             decoding="async"
             data-testid={index === 0 ? "home-product-image" : undefined}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] group-focus-visible:scale-[1.03] motion-reduce:transition-none"
             fallbackClassName="flex h-full w-full items-center justify-center bg-surface-elevated p-6 text-center font-fa text-sm text-muted-foreground"
           />
-          <div className="absolute inset-x-3 top-3 flex items-center justify-between gap-2">
-            <span className="rounded-full border border-white/15 bg-ink/85 px-3 py-1.5 font-fa text-xs text-white backdrop-blur">
+          <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
+            <span className="shrink-0 rounded-full border border-white/15 bg-ink/85 px-3 py-1.5 font-fa text-xs text-white backdrop-blur">
               محصول نمونه
             </span>
             {sale ? (
-              <span className="rounded-full bg-sale px-3 py-1.5 font-fa text-xs font-bold text-ink">
+              <span className="max-w-[65%] rounded-full bg-sale px-3 py-1.5 text-center font-fa text-xs font-bold text-ink">
                 قیمت کاهش‌یافته در داده پروژه
               </span>
             ) : null}
@@ -60,7 +62,7 @@ function FeaturedCard({ shoe, index }: { shoe: Shoe; index: number }) {
           <p className="eyebrow text-neon">
             <bdi dir="ltr">{shoe.brand}</bdi>
           </p>
-          <h3 className="mt-2 font-display text-xl font-black leading-tight text-foreground group-hover:text-neon">
+          <h3 className="mt-2 font-display text-xl font-black leading-tight text-foreground transition-colors group-hover:text-neon group-focus-visible:text-neon">
             <bdi dir="ltr">{shoe.name}</bdi>
           </h3>
           <p className="mt-1 font-display text-sm text-muted-foreground">
@@ -68,7 +70,7 @@ function FeaturedCard({ shoe, index }: { shoe: Shoe; index: number }) {
           </p>
 
           <div className="mt-auto flex items-end justify-between gap-4 pt-5">
-            <div>
+            <div className="min-w-0">
               <p className="font-mono-num text-base font-bold text-foreground" dir="ltr">
                 {formatPrice(currentPrice)}
               </p>
@@ -79,7 +81,7 @@ function FeaturedCard({ shoe, index }: { shoe: Shoe; index: number }) {
               ) : null}
               <p className="mt-1 font-fa text-[0.7rem] text-muted-foreground">قیمت نمایشی</p>
             </div>
-            <span className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border px-3 font-fa text-sm text-foreground group-hover:border-neon">
+            <span className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border px-3 font-fa text-sm text-foreground transition-colors group-hover:border-neon group-focus-visible:border-neon">
               جزئیات
               <ArrowLeft aria-hidden="true" size={16} />
             </span>
@@ -98,13 +100,38 @@ export function FeaturedDrops() {
 
   const scrollRail = (direction: "next" | "previous") => {
     const rail = railRef.current;
-    if (!rail) return;
+    if (!rail) {
+      return;
+    }
+
     const amount = Math.max(rail.clientWidth * 0.78, 260);
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     rail.scrollBy({
       left: direction === "next" ? -amount : amount,
       behavior: reduceMotion ? "auto" : "smooth",
     });
+  };
+
+  const handleRailKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      scrollRail("next");
+      return;
+    }
+
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      scrollRail("previous");
+    }
   };
 
   return (
@@ -130,31 +157,35 @@ export function FeaturedDrops() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => scrollRail("previous")}
-              aria-label="حرکت به محصولات قبلی"
-              aria-controls="home-featured-rail"
-              data-f3-touch-target="true"
-              className="grid size-11 place-items-center rounded-full border border-border bg-surface hover:border-neon"
-            >
-              <ArrowRight aria-hidden="true" size={18} />
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollRail("next")}
-              aria-label="حرکت به محصولات بعدی"
-              aria-controls="home-featured-rail"
-              data-f3-touch-target="true"
-              className="grid size-11 place-items-center rounded-full border border-border bg-surface hover:border-neon"
-            >
-              <ArrowLeft aria-hidden="true" size={18} />
-            </button>
+            <div className="flex items-center gap-2 lg:hidden">
+              <button
+                type="button"
+                onClick={() => scrollRail("previous")}
+                aria-label="حرکت به محصولات قبلی"
+                aria-controls="home-featured-rail"
+                data-f3-touch-target="true"
+                className="grid size-11 place-items-center rounded-full border border-border bg-surface transition-colors hover:border-neon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon"
+              >
+                <ArrowRight aria-hidden="true" size={18} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => scrollRail("next")}
+                aria-label="حرکت به محصولات بعدی"
+                aria-controls="home-featured-rail"
+                data-f3-touch-target="true"
+                className="grid size-11 place-items-center rounded-full border border-border bg-surface transition-colors hover:border-neon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon"
+              >
+                <ArrowLeft aria-hidden="true" size={18} />
+              </button>
+            </div>
+
             <Link
               to="/products"
               search={{ sort: "newest" }}
-              className="ms-1 hidden min-h-11 items-center gap-2 rounded-full px-3 font-fa text-sm font-bold text-neon sm:inline-flex"
               data-f3-touch-target="true"
+              className="ms-1 hidden min-h-11 items-center gap-2 rounded-full px-3 font-fa text-sm font-bold text-neon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon sm:inline-flex"
             >
               همه محصولات
               <ArrowLeft aria-hidden="true" size={16} />
@@ -169,18 +200,10 @@ export function FeaturedDrops() {
             data-testid="home-product-rail"
             role="region"
             aria-label="محصولات منتخب SOLE"
+            aria-roledescription="carousel"
             tabIndex={0}
-            onKeyDown={(event) => {
-              if (event.key === "ArrowLeft") {
-                event.preventDefault();
-                scrollRail("next");
-              }
-              if (event.key === "ArrowRight") {
-                event.preventDefault();
-                scrollRail("previous");
-              }
-            }}
-            className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-4 [scrollbar-color:var(--color-border)_transparent] [scrollbar-width:thin] lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0"
+            onKeyDown={handleRailKeyDown}
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon [scrollbar-color:var(--color-border)_transparent] [scrollbar-width:thin] lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0"
           >
             {featured.map((shoe, index) => (
               <FeaturedCard key={shoe.id} shoe={shoe} index={index} />
@@ -199,8 +222,8 @@ export function FeaturedDrops() {
         <Link
           to="/products"
           search={{ sort: "newest" }}
-          className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full font-fa text-sm font-bold text-neon sm:hidden"
           data-f3-touch-target="true"
+          className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full font-fa text-sm font-bold text-neon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon sm:hidden"
         >
           مشاهده همه محصولات
           <ArrowLeft aria-hidden="true" size={16} />
